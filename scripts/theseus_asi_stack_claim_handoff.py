@@ -46,8 +46,9 @@ def build_report(
     p4_path = resolve(str(activation.get("p4_terminal_disposition") or ""))
     p4 = load_optional(p4_path, p4_override)
     p4_status = str(p4.get("scientific_status") or "")
-    p4_green = p4.get("trigger_state") == activation.get(
-        "required_p4_trigger_state"
+    p4_green = (
+        p4.get("policy") == activation.get("required_p4_policy")
+        and p4.get("trigger_state") == activation.get("required_p4_trigger_state")
     )
     survivor = p4_green and p4_status == activation.get("p4_survivor_status")
     non_survivor_terminal = p4_green and p4_status in string_set(
@@ -58,6 +59,7 @@ def build_report(
     d1 = load_optional(d1_path, d1_override) if survivor else {}
     d1_terminal = (
         survivor
+        and d1.get("policy") == activation.get("required_d1_policy")
         and d1.get("trigger_state") == activation.get("required_d1_trigger_state")
         and str(d1.get("scientific_status") or "")
         in string_set(activation.get("d1_terminal_statuses"))
@@ -79,7 +81,7 @@ def build_report(
         activation_state = "WAITING_FOR_ONE_FRESH_D1_TERMINAL_RESULT"
     else:
         trigger_state = "PAUSED"
-        activation_state = "WAITING_FOR_TERMINAL_P4V2R2_DISPOSITION"
+        activation_state = "WAITING_FOR_TERMINAL_P4V2R2R2_DISPOSITION"
 
     report = {
         "policy": POLICY,
@@ -118,7 +120,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     faults: list[str] = []
     if config.get("policy") != POLICY:
         faults.append("policy_invalid")
-    if config.get("state") != "PROSPECTIVELY_BOUND_BEFORE_P4V2R2_TERMINAL_EVIDENCE":
+    if config.get("state") != "PROSPECTIVELY_BOUND_BEFORE_P4V2R2R2_TERMINAL_EVIDENCE":
         faults.append("state_invalid")
     claim = mapping(config.get("claim"))
     if claim.get("claim_id") != "cognitive-compilation-and-semantic-ir.core":
@@ -258,7 +260,7 @@ def build_packet(
         "book_pin_commit": book_binding.get("commit"),
         "book_claim_contract_sha256": claim.get("claim_contract_sha256"),
         "current_book_support_state": claim.get("current_support_state"),
-        "evidence_route": "P4V2R2_then_one_fresh_D1_only_if_survivor",
+        "evidence_route": "P4V2R2R2_then_one_fresh_D1_only_if_survivor",
         "p4": public_terminal_summary(p4),
         "d1": public_terminal_summary(d1) if survivor else {},
         "negative_results": public_strings(p4.get("negative_results"))

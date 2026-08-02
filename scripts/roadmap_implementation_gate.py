@@ -1131,7 +1131,7 @@ def audit_book_implementation_contract(
     sandbox_receipt = dict_value(sandbox_report.get("run_receipt"))
     if (
         d1_successor.get("state")
-        != "fail_closed_waiting_for_exact_P4V2R2_survivor"
+        != "fail_closed_waiting_for_exact_P4V2R2R2_survivor"
         or d1_successor.get("source_stage_implementation")
         != "complete_waiting_indefinitely_without_user_gate"
         or d1_successor.get("source_stage_terminal_boundary")
@@ -1184,13 +1184,13 @@ def audit_book_implementation_contract(
     ]
     if (
         handoff_implementation.get("state")
-        != "prospectively_bound_waiting_for_terminal_P4V2R2_evidence"
+        != "prospectively_bound_waiting_for_terminal_P4V2R2R2_evidence"
         or handoff_implementation.get("book_pin_commit")
         != dict_value(matrix.get("latest_ai_book_reconciliation")).get("book_commit")
         or handoff_implementation.get("claim_id")
         != "cognitive-compilation-and-semantic-ir.core"
         or handoff_implementation.get("d1_requirement")
-        != "required_once_only_if_P4V2R2_survives"
+        != "required_once_only_if_P4V2R2R2_survives"
         or handoff_implementation.get("public_safe_aggregate_only") is not True
         or handoff_implementation.get("automatic_support_transition_proposed") is not False
         or handoff_implementation.get("support_state_effect") != "none"

@@ -317,7 +317,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             implementation["claim_id"],
         )
         self.assertEqual(
-            "required_once_only_if_P4V2R2_survives",
+            "required_once_only_if_P4V2R2R2_survives",
             implementation["d1_requirement"],
         )
         self.assertTrue(implementation["public_safe_aggregate_only"])

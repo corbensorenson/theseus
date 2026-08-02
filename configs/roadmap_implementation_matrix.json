@@ -3748,7 +3748,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "P4V2R2_sealed_zero_consumption_waiting_on_autonomous_machine_predicates",
+    "execution_state": "P4V2R2R2_sealed_zero_consumption_waiting_on_autonomous_machine_predicates",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -8807,14 +8807,14 @@
       "forbidden_shared_state": ["hidden answers", "held-out outcomes", "private payloads", "implied support movement"],
       "support_state_effect": "none_from_roadmap_or_handoff_alone",
       "implementation": {
-        "state": "prospectively_bound_waiting_for_terminal_P4V2R2_evidence",
+        "state": "prospectively_bound_waiting_for_terminal_P4V2R2R2_evidence",
         "config": "configs/theseus_asi_stack_claim_handoff.json",
         "builder": "scripts/theseus_asi_stack_claim_handoff.py",
         "test": "tests/test_theseus_asi_stack_claim_handoff.py",
         "book_pin_commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
-        "p4_activation_status": "terminal_green_P4V2R2_disposition",
-        "d1_requirement": "required_once_only_if_P4V2R2_survives",
+        "p4_activation_status": "terminal_green_P4V2R2R2_disposition",
+        "d1_requirement": "required_once_only_if_P4V2R2R2_survives",
         "public_safe_aggregate_only": true,
         "automatic_support_transition_proposed": false,
         "support_state_effect": "none",

@@ -18,7 +18,7 @@ CLAIM = "cognitive-compilation-and-semantic-ir.core"
 
 def p4(status: str) -> dict[str, object]:
     return {
-        "policy": "project_theseus_p4v2r2_cognitive_compilation_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
         "claim_id": CLAIM,
         "trigger_state": "GREEN",
         "scientific_status": status,
@@ -82,10 +82,19 @@ def test_preterminal_state_emits_no_book_packet() -> None:
     assert report["support_state_effect"] == "none"
 
 
+def test_superseded_p4_policy_cannot_open_book_handoff() -> None:
+    stale = p4("P4V2R2R2_ADEQUATE_NO_SURVIVOR")
+    stale["policy"] = "project_theseus_p4v2r2_terminal_disposition_v1"
+    report = handoff.build_report(CONFIG, p4_override=stale)
+    assert report["trigger_state"] == "PAUSED"
+    assert report["packet_ready"] is False
+    assert report["book_review_packet"] == {}
+
+
 def test_terminal_non_survivor_opens_review_without_d1_or_support_movement() -> None:
     report = handoff.build_report(
         CONFIG,
-        p4_override=p4("P4V2R2_ADEQUATE_NO_SURVIVOR"),
+        p4_override=p4("P4V2R2R2_ADEQUATE_NO_SURVIVOR"),
     )
     assert report["trigger_state"] == "GREEN"
     assert report["activation_state"] == "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1"
@@ -100,7 +109,7 @@ def test_terminal_non_survivor_opens_review_without_d1_or_support_movement() -> 
 def test_survivor_waits_for_exactly_one_fresh_d1_terminal_result() -> None:
     report = handoff.build_report(
         CONFIG,
-        p4_override=p4("P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
+        p4_override=p4("P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
         d1_override={},
     )
     assert report["trigger_state"] == "PAUSED"
@@ -112,14 +121,14 @@ def test_survivor_waits_for_exactly_one_fresh_d1_terminal_result() -> None:
 def test_survivor_and_terminal_d1_open_review_but_never_promote() -> None:
     report = handoff.build_report(
         CONFIG,
-        p4_override=p4("P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
+        p4_override=p4("P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
         d1_override=d1(),
     )
     assert report["trigger_state"] == "GREEN"
     assert report["activation_state"] == "READY_FOR_GOVERNED_BOOK_REVIEW_AFTER_D1"
     packet = report["book_review_packet"]
     assert packet["p4"]["scientific_status"] == (
-        "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"
+        "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"
     )
     assert packet["d1"]["scientific_status"] == "D1_EXACT_IMPLEMENTATION_QUALIFIED"
     assert packet["current_book_support_state"] == "argument"
@@ -128,12 +137,24 @@ def test_survivor_and_terminal_d1_open_review_but_never_promote() -> None:
     assert report["release_authority"] == "none"
 
 
+def test_wrong_d1_policy_cannot_open_survivor_handoff() -> None:
+    stale = d1()
+    stale["policy"] = "project_theseus_d1_terminal_disposition_draft"
+    report = handoff.build_report(
+        CONFIG,
+        p4_override=p4("P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
+        d1_override=stale,
+    )
+    assert report["trigger_state"] == "PAUSED"
+    assert report["packet_ready"] is False
+
+
 def test_claim_mismatch_in_d1_cannot_open_handoff() -> None:
     wrong = d1()
     wrong["claim_id"] = "another.claim"
     report = handoff.build_report(
         CONFIG,
-        p4_override=p4("P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
+        p4_override=p4("P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE"),
         d1_override=wrong,
     )
     assert report["trigger_state"] == "PAUSED"
