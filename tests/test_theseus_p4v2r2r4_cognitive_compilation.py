@@ -26,6 +26,8 @@ def test_repair_instrument_is_green_zero_call_and_uncapped() -> None:
     assert repair["project_selected_first_artifact_character_cap"] is None
     assert repair["project_selected_first_artifact_token_cap"] is None
     assert repair["same_rule_all_learned_arms"] is True
+    runner_path = ROOT / value["candidate_runner"]
+    assert runner.p2a.sha256_file(runner_path) == value["candidate_runner_sha256"]
 
 
 def test_full_repair_prompt_retains_prefix_beyond_historical_tail_for_every_arm() -> None:

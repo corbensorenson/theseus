@@ -37,6 +37,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     for path_key, hash_key in (
         ("base_instrument", "base_instrument_sha256"),
         ("zero_call_disposition", "zero_call_disposition_sha256"),
+        ("candidate_runner", "candidate_runner_sha256"),
     ):
         owner = p2a.resolve(str(value.get(path_key) or ""))
         if not owner.is_file() or p2a.sha256_file(owner) != str(
