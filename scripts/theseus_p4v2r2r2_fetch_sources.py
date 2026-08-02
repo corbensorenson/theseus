@@ -29,6 +29,8 @@ import theseus_p4v2r2r2_source_registry as source_registry  # noqa: E402
 REGISTRY = ROOT / "configs" / "theseus_p4v2r2r2_task_sources.json"
 FIXTURES = ROOT / "tests" / "fixtures" / "theseus_p4v2r2r2_online"
 REPORT = ROOT / "reports" / "theseus_p4v2r2r2_source_fetch.json"
+ATTEMPT1_REPORT = ROOT / "reports" / "theseus_p4v2r2r2_source_fetch_attempt1.json"
+CORRECTIONS = ROOT / "configs" / "theseus_p4v2r2r2_materialization_corrections.json"
 SOURCE_SELECTION_COMMIT = "4d39b5f31d7b8d980b57230faa9ef3884bb9d04b"
 EXPECTED_REGISTRY_SHA256 = "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c"
 POLICY = "project_theseus_p4v2r2r2_source_fetch_v1"
@@ -49,10 +51,79 @@ def artifact_plan(task: dict[str, Any], label: str) -> dict[str, str]:
 
 
 def required_paths(task: dict[str, Any]) -> list[str]:
+    license_paths = p2a_strings(task.get("license_paths"))
+    corrections = read_json(CORRECTIONS) if CORRECTIONS.is_file() else {}
+    for correction in dictionaries(corrections.get("corrections")):
+        if (
+            correction.get("stem") == task.get("stem")
+            and correction.get("field") == "license_paths"
+        ):
+            license_paths = p2a_strings(correction.get("materialized_value"))
     return sorted(
-        set(p2a_strings(task.get("license_paths")))
+        set(license_paths)
         | set(p2a_strings(task.get("allowed_effect_paths")))
     )
+
+
+def audit_corrections() -> dict[str, Any]:
+    value = read_json(CORRECTIONS)
+    faults: list[str] = []
+    if value.get("policy") != "project_theseus_p4v2r2r2_materialization_corrections_v1":
+        faults.append("correction_policy_invalid")
+    if value.get("state") != "SEALED_AFTER_ARCHIVE_FETCH_BEFORE_PARENT_TARGET_ORACLE_EVALUATOR_OR_CANDIDATE_EXECUTION":
+        faults.append("correction_state_invalid")
+    registry = ROOT / str(value.get("source_registry") or "")
+    if not registry.is_file() or sha256_file(registry) != value.get("source_registry_sha256"):
+        faults.append("correction_registry_binding_invalid")
+    failed = ROOT / str(value.get("failed_fetch_report") or "")
+    if not failed.is_file() or sha256_file(failed) != value.get("failed_fetch_report_sha256"):
+        faults.append("failed_fetch_binding_invalid")
+    rows = dictionaries(value.get("corrections"))
+    if len(rows) != 1:
+        faults.append("correction_count_invalid")
+    else:
+        row = rows[0]
+        if (
+            row.get("stem") != "p4v2r2r2_07_markupsafe_418"
+            or row.get("registered_value") != ["LICENSE.txt"]
+            or row.get("materialized_value") != ["LICENSE.rst"]
+        ):
+            faults.append("correction_scope_invalid")
+        for label in ("parent", "target"):
+            upstream = FIXTURES / f"p4v2r2r2_07_markupsafe_418_{label}_upstream.tar.gz"
+            if not upstream.is_file() or sha256_file(upstream) != row.get(
+                f"{label}_upstream_sha256"
+            ):
+                faults.append(f"correction_upstream_binding_invalid:{label}")
+    invariants = value.get("invariants") if isinstance(value.get("invariants"), dict) else {}
+    false_keys = (
+        "allowed_effect_paths_changed",
+        "evaluator_or_oracle_constructed",
+        "natural_request_changed",
+        "parent_or_target_executed",
+        "repository_or_revision_changed",
+        "task_membership_changed",
+        "user_gate",
+    )
+    if any(invariants.get(key) is not False for key in false_keys):
+        faults.append("correction_invariant_invalid")
+    for key in (
+        "candidate_or_control_calls",
+        "D1_cases_consumed",
+        "D2_cases_consumed",
+        "local_or_hosted_model_calls",
+        "training_rows_written",
+    ):
+        if int(invariants.get(key) or 0) != 0:
+            faults.append(f"correction_counter_nonzero:{key}")
+    if invariants.get("project_selected_quality_token_cap") is not None:
+        faults.append("correction_quality_token_cap_present")
+    return {
+        "trigger_state": "GREEN" if not faults else "RED",
+        "faults": sorted(set(faults)),
+        "path": relative(CORRECTIONS),
+        "sha256": sha256_file(CORRECTIONS),
+    }
 
 
 def download(url: str, destination: Path) -> None:
@@ -116,6 +187,14 @@ def project_archive(
 
 
 def acquire_sources(*, fetch: bool) -> dict[str, Any]:
+    if REPORT.is_file() and not ATTEMPT1_REPORT.is_file():
+        existing = read_json(REPORT)
+        if (
+            existing.get("trigger_state") == "RED"
+            and sha256_file(REPORT)
+            == "09543890376b0f645a70ac058813f613ae0c30625c7910a891d06d3ca4914722"
+        ):
+            ATTEMPT1_REPORT.write_bytes(REPORT.read_bytes())
     registry = read_json(REGISTRY)
     faults: list[str] = []
     if sha256_file(REGISTRY) != EXPECTED_REGISTRY_SHA256:
@@ -123,6 +202,9 @@ def acquire_sources(*, fetch: bool) -> dict[str, Any]:
     registry_audit = source_registry.audit(REGISTRY)
     if registry_audit.get("trigger_state") != "GREEN":
         faults.append("sealed_registry_audit_red")
+    corrections_audit = audit_corrections()
+    if corrections_audit.get("trigger_state") != "GREEN":
+        faults.append("materialization_corrections_audit_red")
 
     task_rows: list[dict[str, Any]] = []
     for task in dictionaries(registry.get("tasks")):
@@ -208,6 +290,7 @@ def acquire_sources(*, fetch: bool) -> dict[str, Any]:
         "source_registry_sha256": sha256_file(REGISTRY),
         "source_selection_commit": SOURCE_SELECTION_COMMIT,
         "source_registry_audit": registry_audit,
+        "materialization_corrections": corrections_audit,
         "network_use": "twenty_immutable_permissively_licensed_github_codeload_archives_only",
         "archive_fetches_after_membership_freeze": artifact_count,
         "parent_target_oracle_evaluator_executions": 0,

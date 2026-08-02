@@ -32,6 +32,17 @@ def test_sealed_registry_binds_transport_before_fetch() -> None:
     assert report["archive_fetches"] == 0
 
 
+def test_materialization_correction_is_bound_and_non_membership() -> None:
+    correction = fetch.read_json(fetch.CORRECTIONS)
+    registry = fetch.read_json(fetch.REGISTRY)
+    task = next(row for row in registry["tasks"] if row["case"] == "markupsafe")
+
+    assert correction["invariants"]["task_membership_changed"] is False
+    assert correction["invariants"]["parent_or_target_executed"] is False
+    assert correction["invariants"]["candidate_or_control_calls"] == 0
+    assert fetch.required_paths(task) == ["LICENSE.rst", "src/markupsafe/__init__.py"]
+
+
 def test_projection_is_deterministic_and_omits_unrequired_members(tmp_path: Path) -> None:
     source = tmp_path / "source.tar.gz"
     first = tmp_path / "first.tar.gz"

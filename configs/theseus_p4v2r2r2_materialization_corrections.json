@@ -1,0 +1,35 @@
+{
+  "policy": "project_theseus_p4v2r2r2_materialization_corrections_v1",
+  "state": "SEALED_AFTER_ARCHIVE_FETCH_BEFORE_PARENT_TARGET_ORACLE_EVALUATOR_OR_CANDIDATE_EXECUTION",
+  "source_registry": "configs/theseus_p4v2r2r2_task_sources.json",
+  "source_registry_sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c",
+  "failed_fetch_report": "reports/theseus_p4v2r2r2_source_fetch_attempt1.json",
+  "failed_fetch_report_sha256": "09543890376b0f645a70ac058813f613ae0c30625c7910a891d06d3ca4914722",
+  "corrections": [
+    {
+      "stem": "p4v2r2r2_07_markupsafe_418",
+      "field": "license_paths",
+      "registered_value": ["LICENSE.txt"],
+      "materialized_value": ["LICENSE.rst"],
+      "reason": "The current GitHub license endpoint reported LICENSE.txt, but both exact sealed 2024 revision archives contain the same repository license at LICENSE.rst.",
+      "parent_upstream_sha256": "2355ca9c807df30ebf5965a222ffe746e5bd2812a99c42e2d54e3655279a86b2",
+      "target_upstream_sha256": "26761274e83fc9ad35c629cd23ce50dc8c6d90d776289bd2f6c17cc4da7626ee"
+    }
+  ],
+  "invariants": {
+    "allowed_effect_paths_changed": false,
+    "candidate_or_control_calls": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "evaluator_or_oracle_constructed": false,
+    "local_or_hosted_model_calls": 0,
+    "natural_request_changed": false,
+    "parent_or_target_executed": false,
+    "project_selected_quality_token_cap": null,
+    "repository_or_revision_changed": false,
+    "task_membership_changed": false,
+    "training_rows_written": 0,
+    "user_gate": false
+  },
+  "maximum_inference": "This correction repairs one historical license filename in the exact already-fetched source pair. It changes no task membership, code effect path, behavior request, revision, evaluator, oracle, model arm, or decision rule and grants no execution or scientific authority."
+}
