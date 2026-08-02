@@ -6,6 +6,23 @@
   "materialization_report": "reports/theseus_d1_source_materialization.json",
   "sandbox_config": "configs/theseus_d1_evaluator_sandbox.json",
   "sandbox_qualification": "reports/theseus_d1_evaluator_sandbox_qualification.json",
+  "prompt_addressability": {
+    "python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+    "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+    "counter": "scripts/theseus_exact_prompt_token_count.py",
+    "counter_sha256": "d01b6977067ea1e5ad3677f908470c22b7a1d813a758aad488eaa0529ca40235",
+    "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json",
+    "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed",
+    "causal_instrument": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",
+    "causal_instrument_sha256": "2cd36ca8af4a0d93459e983862c24acc6a826c12c1f67d1f4c2e1c296496bdee",
+    "required_learned_arms": [
+      "direct_target_generation",
+      "natural_language_plan_control",
+      "typed_semantic_ir_treatment"
+    ],
+    "project_selected_quality_token_cap": null,
+    "non_addressable_prompt_is_model_or_mechanism_failure": false
+  },
   "qualification_report": "reports/theseus_d1_evaluator_seal.json",
   "final_task_pool": "configs/theseus_d1_task_pool.json",
   "sealed_task_root": "runtime/d1_acquisition/sealed_tasks",
@@ -43,6 +60,7 @@
     "network": "forbidden",
     "dependency_installation": "forbidden",
     "sandbox_receipt_required_for_every_parent_target_oracle_run": true,
+    "exact_first_prompt_addressability_required_before_final_pool_seal": true,
     "boundary_hit_disposition": "TASK_NOT_EVALUATOR_QUALIFIED_RETAINED_PRE_MODEL",
     "boundary_hit_is_model_or_mechanism_failure": false,
     "project_selected_quality_token_cap": null

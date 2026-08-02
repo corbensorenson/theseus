@@ -23,7 +23,7 @@ def config() -> dict:
 
 def survivor() -> dict:
     return {
-        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
         "created_utc": "2026-08-01T18:00:00Z",
         "trigger_state": "GREEN",
         "scientific_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
@@ -40,7 +40,7 @@ def non_survivor() -> dict:
     return {
         "created_utc": "2026-08-01T18:00:00Z",
         "trigger_state": "GREEN",
-        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
         "scientific_status": "P4V2R2R2_ADEQUATE_NO_SURVIVOR",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
     }
@@ -89,7 +89,7 @@ def test_preterminal_p4_waits_without_calls_or_execution() -> None:
         lease_exists_override=False,
     )
     assert report["trigger_state"] == "PAUSED"
-    assert report["activation_state"] == "WAITING_FOR_TERMINAL_P4V2R2R2"
+    assert report["activation_state"] == "WAITING_FOR_TERMINAL_P4V2R2R3"
     assert report["terminal"] is False
     assert report["execution_authorized"] is False
     assert report["network_calls"] == report["candidate_or_control_calls"] == 0
@@ -103,7 +103,7 @@ def test_non_survivor_closes_d1_without_network_or_user_gate() -> None:
         lease_exists_override=False,
     )
     assert report["trigger_state"] == "GREEN"
-    assert report["activation_state"] == "CLOSED_P4V2R2R2_NON_SURVIVOR"
+    assert report["activation_state"] == "CLOSED_P4V2R2R3_NON_SURVIVOR"
     assert report["terminal"] is True
     assert report["execution_authorized"] is False
     assert report["network_calls"] == 0

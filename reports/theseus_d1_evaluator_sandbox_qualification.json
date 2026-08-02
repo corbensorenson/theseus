@@ -5,7 +5,7 @@
     "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"
   },
   "canary": {
-    "child_python_inherits_read_denial": true,
+    "child_python_cannot_escape_read_denial": true,
     "cpu_limit_present": true,
     "environment_minimized": true,
     "file_size_limit_present": true,
@@ -21,12 +21,12 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_d1_evaluator_sandbox.json",
-    "sha256": "ee7c78bc516384876272f51fc31b9a97bf91de24748d1c7f1b2505d06d896236"
+    "sha256": "f585d9ca048285919d7f17d40801f2c2a1d4e205a5dead1a5cf0cab33ec1a78a"
   },
-  "created_utc": "2026-08-01T19:43:16.548224Z",
+  "created_utc": "2026-08-02T05:48:06.557561Z",
   "external_inference_calls": 0,
   "faults": [],
-  "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism.",
+  "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its complete verifier streams whenever the physical output-file boundary is untouched and retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism.",
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_d1_untrusted_evaluator_sandbox_v1",
   "python": {
@@ -37,7 +37,7 @@
   "run_receipt": {
     "boundary_hit": false,
     "boundary_reason": "",
-    "duration_ms": 135.801,
+    "duration_ms": 68.934,
     "environment_keys": [
       "HOME",
       "LC_CTYPE",
@@ -57,13 +57,16 @@
     },
     "max_process_group_rss_mib": 1024.0,
     "maximum_process_group_rss_mib": 3.891,
-    "profile_sha256": "4c8c35ff6ce85deecde72bf90716431d3d204bbd7408a5ae7bf9f753783ea60b",
+    "profile_sha256": "8f9a6118c0644b17599dde8ba6391de50a2e1f6b54c963f05d030a61b65646c8",
+    "project_selected_character_cap": null,
     "returncode": 0,
     "rss_telemetry_fault": "",
     "stderr_bytes": 0,
+    "stderr_complete": true,
     "stderr_tail": "",
-    "stdout_bytes": 399,
-    "stdout_tail": "__THESEUS_D1_SANDBOX_RESULT__{\"child_python_inherits_read_denial\": true, \"cpu_limit_present\": true, \"environment_minimized\": true, \"file_size_limit_present\": true, \"host_read_denied\": true, \"inside_write_allowed\": true, \"network_denied\": true, \"open_file_limit_present\": true, \"outside_write_denied\": true, \"process_limit_present\": true, \"shell_exec_denied\": true, \"symlink_host_read_denied\": true}\n"
+    "stdout_bytes": 404,
+    "stdout_complete": true,
+    "stdout_tail": "__THESEUS_D1_SANDBOX_RESULT__{\"child_python_cannot_escape_read_denial\": true, \"cpu_limit_present\": true, \"environment_minimized\": true, \"file_size_limit_present\": true, \"host_read_denied\": true, \"inside_write_allowed\": true, \"network_denied\": true, \"open_file_limit_present\": true, \"outside_write_denied\": true, \"process_limit_present\": true, \"shell_exec_denied\": true, \"symlink_host_read_denied\": true}\n"
   },
   "sandbox_profile_sha256": "0b76cfde8a9c90f5192d05c6dc61f6ddf7944f9c7b48de0c239e7a904b7fc819",
   "trigger_state": "GREEN",

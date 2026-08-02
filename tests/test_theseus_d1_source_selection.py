@@ -18,7 +18,7 @@ def survivor() -> dict[str, object]:
     return {
         "created_utc": "2026-08-01T12:00:00Z",
         "trigger_state": "GREEN",
-        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
         "scientific_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
         "consumption": {"eligible_for_D1": True},

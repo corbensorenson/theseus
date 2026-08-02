@@ -169,7 +169,29 @@ def test_task_qualification_seals_blind_visible_hidden_surface(tmp_path: Path) -
             "nodeids_sha256": seal.stable_hash(nodeids),
         }
 
-    row = seal.qualify_task(config(), source, artifacts, runner=runner)
+    def prompt_counter(prompts: dict[str, str]) -> dict:
+        assert set(prompts) == {
+            "direct_target_generation",
+            "natural_language_plan_control",
+            "typed_semantic_ir_treatment",
+        }
+        return {
+            "policy": "project_theseus_exact_local_prompt_addressability_v1",
+            "trigger_state": "GREEN",
+            "faults": [],
+            "prompt_count": 3,
+            "minimum_context_residual_tokens": 250000,
+            "candidate_or_control_calls": 0,
+            "project_selected_quality_token_cap": None,
+        }
+
+    row = seal.qualify_task(
+        config(),
+        source,
+        artifacts,
+        runner=runner,
+        prompt_counter=prompt_counter,
+    )
     assert row["qualified"] is True
     assert row["faults"] == []
     assert row["execution_count"] == 6
@@ -181,6 +203,9 @@ def test_task_qualification_seals_blind_visible_hidden_surface(tmp_path: Path) -
     assert evaluator["blindness"]["target_source_candidate_visible"] is False
     assert evaluator["hidden_pytest_nodeids"]
     assert "oracle_callable_source" not in manifest
+    assert manifest["candidate_visible_context"]["initial_prompt_addressability"][
+        "trigger_state"
+    ] == "GREEN"
 
 
 def test_config_forbids_user_gate_cross_stage_authority_and_quality_cap() -> None:
@@ -189,6 +214,7 @@ def test_config_forbids_user_gate_cross_stage_authority_and_quality_cap() -> Non
     assert value["authority"]["user_or_operator_approval_required"] is False
     assert value["authority"]["candidate_or_control_calls_authorized"] is False
     assert value["execution"]["project_selected_quality_token_cap"] is None
+    assert value["prompt_addressability"]["project_selected_quality_token_cap"] is None
     assert value["cohort_policy"]["all_pre_model_rejections_retained"] is True
 
 

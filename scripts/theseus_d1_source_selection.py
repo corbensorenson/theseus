@@ -204,7 +204,7 @@ def build_report(
         "campaign_id": d1.read_json(instrument_path).get("campaign_id"),
         "claim_id": d1.read_json(instrument_path).get("claim_id"),
         "instrument": d1.artifact(instrument_path),
-        "P4V2R2R2_terminal_disposition": instrument_report.get("p4_terminal_disposition"),
+        "P4V2R2R3_terminal_disposition": instrument_report.get("p4_terminal_disposition"),
         "metadata_frame": base["metadata_frame"],
         "selection_config": d1.artifact(config_path),
         "task_count": len(selected),
@@ -287,9 +287,9 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("user_or_operator_gate_present")
     authority = d1.mapping(config.get("authority"))
     if authority.get(
-        "source_metadata_acquisition_opens_only_after_green_P4V2R2R2_survivor"
+        "source_metadata_acquisition_opens_only_after_green_P4V2R2R3_survivor"
     ) is not True:
-        faults.append("P4V2R2R2_survivor_activation_not_required")
+        faults.append("P4V2R2R3_survivor_activation_not_required")
     if authority.get("candidate_calls_after_registry_write") is not False:
         faults.append("registry_write_improperly_authorizes_candidate_calls")
     if authority.get("serving_training_teacher_D2_or_book_promotion_authority") is not False:

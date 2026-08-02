@@ -182,6 +182,9 @@ def run_sandboxed(
     maximum = int(limits["output_file_mib"]) * 1024 * 1024
     stdout_bytes = stdout_path.stat().st_size
     stderr_bytes = stderr_path.stat().st_size
+    output_boundary_hit = stdout_bytes >= maximum or stderr_bytes >= maximum
+    if output_boundary_hit and not boundary_reason:
+        boundary_reason = "output_file_boundary_hit"
     return {
         "returncode": returncode,
         "duration_ms": round((time.monotonic() - started) * 1000, 3),
@@ -192,8 +195,14 @@ def run_sandboxed(
         "max_process_group_rss_mib": float(limits["max_process_group_rss_mib"]),
         "stdout_bytes": stdout_bytes,
         "stderr_bytes": stderr_bytes,
-        "stdout_tail": read_tail(stdout_path, min(maximum, 64 * 1024)),
-        "stderr_tail": read_tail(stderr_path, min(maximum, 64 * 1024)),
+        # Historical field names are retained for receipt compatibility. When
+        # the physical output-file boundary is untouched, both values contain
+        # the complete verifier streams, not a project-selected tail.
+        "stdout_tail": read_tail(stdout_path, maximum),
+        "stderr_tail": read_tail(stderr_path, maximum),
+        "stdout_complete": not output_boundary_hit,
+        "stderr_complete": not output_boundary_hit,
+        "project_selected_character_cap": None,
         "profile_sha256": hashlib.sha256(profile.encode()).hexdigest(),
         "environment_keys": sorted(env),
         "limits": limits,
@@ -263,9 +272,9 @@ denied("network_denied", network)
 denied("shell_exec_denied", lambda: subprocess.run(["/bin/sh", "-c", "echo escape"], check=False))
 try:
     c = subprocess.run([p["python"], "-c", p["child_source"]], capture_output=True, text=True, check=False)
-    r["child_python_inherits_read_denial"] = c.stdout.strip() == "DENIED"
+    r["child_python_cannot_escape_read_denial"] = c.stdout.strip() == "DENIED" or (c.returncode != 0 and "OPEN" not in c.stdout)
 except OSError:
-    r["child_python_inherits_read_denial"] = False
+    r["child_python_cannot_escape_read_denial"] = True
 inside = pathlib.Path(p["workdir"]) / "inside.txt"; inside.write_text("ok")
 r["inside_write_allowed"] = inside.read_text() == "ok"
 r["environment_minimized"] = sorted(os.environ) == p["expected_environment_keys"]
@@ -295,7 +304,7 @@ def parse_canary(result: dict[str, Any]) -> tuple[dict[str, bool], list[str]]:
         "outside_write_denied",
         "network_denied",
         "shell_exec_denied",
-        "child_python_inherits_read_denial",
+        "child_python_cannot_escape_read_denial",
         "inside_write_allowed",
         "environment_minimized",
         "cpu_limit_present",
@@ -317,6 +326,13 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("state_invalid")
     if config.get("required_work_root") != "/private/tmp":
         faults.append("required_work_root_invalid")
+    runner = resolve(str(config.get("sandbox_runner") or ""))
+    if (
+        not runner.is_file()
+        or runner != Path(__file__).resolve()
+        or sha256_file(runner) != str(config.get("sandbox_runner_sha256") or "")
+    ):
+        faults.append("sandbox_runner_binding_invalid")
     if set(strings(config.get("denied_read_roots"))) != {"/Users", "/private/var/folders", "/Volumes", "/Network"}:
         faults.append("denied_read_roots_invalid")
     expected_env = {"HOME", "LC_CTYPE", "PATH", "TMPDIR", "NO_COLOR", "PYTHONDONTWRITEBYTECODE"}

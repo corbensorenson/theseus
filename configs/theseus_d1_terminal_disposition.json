@@ -1,0 +1,56 @@
+{
+  "policy": "project_theseus_d1_terminal_disposition_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_ANY_D1_CANDIDATE_OUTCOME",
+  "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
+  "campaign_config": "configs/theseus_d1_campaign.json",
+  "task_pool": "configs/theseus_d1_task_pool.json",
+  "campaign_progress": "reports/theseus_d1_campaign_progress.json",
+  "consumption_registry": "reports/theseus_d1_consumption_registry.jsonl",
+  "report": "reports/theseus_d1_terminal_disposition.json",
+  "primary_test": {
+    "treatment": "typed_semantic_ir_treatment",
+    "control_source": "campaign_progress.primary_control_selected_from_complete_artifact_P4V2R2R3",
+    "outcome": "independently_verified_useful_safe_completion",
+    "one_sided_exact_sign_alpha": 0.05,
+    "minimum_discordant_pairs": 18,
+    "minimum_absolute_useful_rate_delta_vs_learned_control": 0.15,
+    "minimum_absolute_useful_rate_delta_vs_static_control": 0.15,
+    "zero_unsafe_candidates": true,
+    "zero_rollback_failures": true,
+    "not_joined_cost_dominated": true,
+    "cost_dominance": "Pareto dominance over prompt tokens, generated tokens, model runtime, visible-verifier runtime, and hidden-verifier runtime; every learned runtime receipt must independently bind complete termination telemetry"
+  },
+  "adequacy": {
+    "tasks": 44,
+    "distinct_repositories": 44,
+    "complete_blind_evaluations": 44,
+    "target_oracle_useful": 44,
+    "candidate_integrity_recomputed": 44,
+    "evaluation_labels_attached_after_scoring": 44,
+    "context_or_host_boundary_hits": 0,
+    "consumption_registry_matches": 1,
+    "source_task_replacements_after_candidate_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "project_selected_quality_token_cap": null
+  },
+  "status_precedence": [
+    "INVALID_SOURCE_OR_CONSUMPTION_CUSTODY",
+    "INVALID_INFORMATION_FLOW",
+    "INVALID_OBSERVATION_CONTEXT_OR_HOST_BOUNDARY",
+    "INCONCLUSIVE_IMPLEMENTATION",
+    "INCONCLUSIVE_EXPERIMENT",
+    "D1_EXACT_IMPLEMENTATION_QUALIFIED",
+    "D1_EXACT_IMPLEMENTATION_NOT_QUALIFIED"
+  ],
+  "authority": {
+    "automatic_book_support_promotion": false,
+    "serving_authority": false,
+    "training_authority": false,
+    "teacher_authority": false,
+    "D2_authority": false,
+    "user_or_operator_approval_required": false
+  },
+  "maximum_inference": "The terminal status applies only to the exact frozen TMax weights/runtime, Python callable task shape, repaired Semantic-IR v2r2 implementation, P4-selected learned control, static compiler, 44 fresh source-disjoint repositories, sandbox, natural-completion policy, verifier, and cost regime. Qualification cannot establish cognitive compilation generally, cross-language transfer, AGI or ASI, serving or training fitness, or the independent D2 neural claim. A null or invalid result cannot falsify the broader mechanism, and no status automatically changes ASI Stack support."
+}

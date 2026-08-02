@@ -78,7 +78,7 @@ def build_report(
     activation_state = (
         "READY_FOR_AUTONOMOUS_D1_SOURCE_MEMBERSHIP_FREEZE"
         if activation_ready
-        else "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2R2_SURVIVOR"
+        else "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2R3_SURVIVOR"
     )
     design = recompute_power_design(mapping(config.get("power_design")))
     return {

@@ -158,9 +158,16 @@ class RoadmapBookSyncTests(unittest.TestCase):
         )
 
     def test_d1_source_successor_is_executable_but_downstream_gap_is_explicit(self) -> None:
-        successor = self.matrix["asi_stack_completion_program"][
+        flagship = self.matrix["asi_stack_completion_program"][
             "p4v2r2_cognitive_compilation_instrument"
-        ]["prospective_D1_successor"]
+        ]
+        successor = flagship["prospective_D1_successor"]
+        self.assertTrue(flagship["complete_first_call_artifact_visible_to_second_call"])
+        self.assertTrue(flagship["complete_visible_verifier_feedback_visible_to_second_call"])
+        self.assertIsNone(flagship["project_selected_quality_token_cap"])
+        self.assertIsNone(flagship["project_selected_first_artifact_character_cap"])
+        self.assertIsNone(flagship["project_selected_first_artifact_token_cap"])
+        self.assertIsNone(flagship["project_selected_verifier_feedback_character_cap"])
         self.assertEqual(
             "complete_waiting_indefinitely_without_user_gate",
             successor["source_stage_implementation"],
@@ -183,10 +190,10 @@ class RoadmapBookSyncTests(unittest.TestCase):
             ]
         )
         self.assertEqual(
-            "pre_model_evaluator_seal_implemented_campaign_integrity_and_terminal_disposition_not_implemented_do_not_claim_D1_execution_ready",
+            "blind_campaign_independent_integrity_recomputation_exact_cost_custody_and_terminal_disposition_implemented_prospectively_autonomous_pipeline_controller_not_implemented_do_not_claim_D1_execution_ready",
             successor["downstream_evaluator_campaign_and_disposition_state"],
         )
-        self.assertEqual(3, len(successor["remaining_D1_execution_owners"]))
+        self.assertEqual(2, len(successor["remaining_D1_execution_owners"]))
         for key in (
             "autonomous_source_successor_config",
             "autonomous_source_successor",
@@ -201,6 +208,18 @@ class RoadmapBookSyncTests(unittest.TestCase):
             "evaluator_seal_config",
             "evaluator_seal",
             "evaluator_seal_test",
+            "exact_prompt_token_counter",
+            "exact_prompt_token_counter_test",
+            "candidate_adapter",
+            "candidate_adapter_test",
+            "blind_evaluator",
+            "blind_evaluator_test",
+            "campaign_config",
+            "campaign",
+            "campaign_test",
+            "terminal_disposition_config",
+            "terminal_disposition",
+            "terminal_disposition_test",
         ):
             self.assertTrue((ROOT / successor[key]).is_file())
         sandbox_report = json.loads(
@@ -213,6 +232,17 @@ class RoadmapBookSyncTests(unittest.TestCase):
         self.assertFalse(sandbox_report["faults"])
         self.assertTrue(all(sandbox_report["canary"].values()))
         self.assertFalse(sandbox_report["run_receipt"]["boundary_hit"])
+        self.assertTrue(sandbox_report["run_receipt"]["stdout_complete"])
+        self.assertTrue(sandbox_report["run_receipt"]["stderr_complete"])
+        self.assertIsNone(
+            sandbox_report["run_receipt"]["project_selected_character_cap"]
+        )
+        self.assertEqual(
+            hashlib.sha256(
+                (ROOT / successor["evaluator_sandbox_config"]).read_bytes()
+            ).hexdigest(),
+            sandbox_report["config"]["sha256"],
+        )
         self.assertFalse(successor["candidate_or_control_calls_authorized"])
         self.assertFalse(successor["automatic_book_support_promotion"])
 
@@ -320,7 +350,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             implementation["claim_id"],
         )
         self.assertEqual(
-            "required_once_only_if_P4V2R2R2_survives",
+            "required_once_only_if_P4V2R2R3_survives",
             implementation["d1_requirement"],
         )
         self.assertTrue(implementation["public_safe_aggregate_only"])

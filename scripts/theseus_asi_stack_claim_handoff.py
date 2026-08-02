@@ -81,7 +81,7 @@ def build_report(
         activation_state = "WAITING_FOR_ONE_FRESH_D1_TERMINAL_RESULT"
     else:
         trigger_state = "PAUSED"
-        activation_state = "WAITING_FOR_TERMINAL_P4V2R2R2_DISPOSITION"
+        activation_state = "WAITING_FOR_TERMINAL_P4V2R2R3_DISPOSITION"
 
     report = {
         "policy": POLICY,
@@ -120,7 +120,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     faults: list[str] = []
     if config.get("policy") != POLICY:
         faults.append("policy_invalid")
-    if config.get("state") != "PROSPECTIVELY_BOUND_BEFORE_P4V2R2R2_TERMINAL_EVIDENCE":
+    if config.get("state") != "PROSPECTIVELY_BOUND_BEFORE_P4V2R2R3_TERMINAL_EVIDENCE":
         faults.append("state_invalid")
     claim = mapping(config.get("claim"))
     if claim.get("claim_id") != "cognitive-compilation-and-semantic-ir.core":
@@ -260,7 +260,7 @@ def build_packet(
         "book_pin_commit": book_binding.get("commit"),
         "book_claim_contract_sha256": claim.get("claim_contract_sha256"),
         "current_book_support_state": claim.get("current_support_state"),
-        "evidence_route": "P4V2R2R2_then_one_fresh_D1_only_if_survivor",
+        "evidence_route": "P4V2R2R3_complete_artifact_then_one_fresh_D1_only_if_survivor",
         "p4": public_terminal_summary(p4),
         "d1": public_terminal_summary(d1) if survivor else {},
         "negative_results": public_strings(p4.get("negative_results"))

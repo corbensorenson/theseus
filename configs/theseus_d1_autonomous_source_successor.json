@@ -1,15 +1,16 @@
 {
   "policy": "project_theseus_d1_autonomous_source_successor_v1",
-  "state": "BOUND_BEFORE_P4V2R2R2_TERMINAL_EVIDENCE",
+  "state": "BOUND_BEFORE_P4V2R2R3_TERMINAL_EVIDENCE",
   "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
-  "instrument_sha256": "59c4650514f75bc0e6cefd56c70301fd94c9f605f45ad835070b99e671743cfa",
+  "instrument_sha256": "fca686302b14ed57647c2a0966a3762e596d4c497828e9e21728c78ae51728ad",
   "source_selection_config": "configs/theseus_d1_source_selection.json",
-  "source_selection_config_sha256": "7dbcf20055835d865217fe9c14711c67965dcb6168e3500b7af24ba3ff86e93e",
+  "source_selection_config_sha256": "04a9b94a22f001f131a59104f1187e325d318721c8022ba5b98b0afe5e8839ee",
   "metadata_acquisition": "scripts/theseus_d1_online_metadata_acquisition.py",
   "metadata_acquisition_sha256": "254eee07099e6782b96003fde03ef5978541163488c4c12b768de9ac99744032",
   "source_selection": "scripts/theseus_d1_source_selection.py",
-  "source_selection_sha256": "84e2ccf63677dbb58d44b7bdca8b7513866e51640e017c25e9cd9b77b2ad5b38",
-  "p4_terminal_disposition": "reports/theseus_p4v2r2r2_attempt2_terminal_disposition.json",
+  "source_selection_sha256": "4f32c427a766c2882965ea08cc739e9568c149fdbb60a3b5e17b35f2233b63b2",
+  "p4_terminal_disposition": "reports/theseus_p4v2r2r3_attempt1_terminal_disposition.json",
+  "required_p4_policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
   "p4_survivor_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
   "p4_terminal_non_survivor_statuses": [
     "P4V2R2R2_ADEQUATE_NO_SURVIVOR",
@@ -44,5 +45,5 @@
     "book_support_promotion_authorized": false,
     "project_selected_quality_token_cap_allowed": false
   },
-  "maximum_inference": "A terminal GREEN source-successor report proves only that P4-v2r2-r2 did not survive or that the first design-complete, metadata-selected, post-snapshot, source-disjoint D1 cohort was frozen before archive fetch. It does not prove archive materialization, evaluator adequacy, candidate utility, D1 qualification, serving, training, D2, or ASI Stack support."
+  "maximum_inference": "A terminal GREEN source-successor report proves only that the complete-artifact P4-v2r2-r3 successor did not survive or that the first design-complete, metadata-selected, post-snapshot, source-disjoint D1 cohort was frozen before archive fetch. It does not prove archive materialization, evaluator adequacy, candidate utility, D1 qualification, serving, training, D2, or ASI Stack support."
 }

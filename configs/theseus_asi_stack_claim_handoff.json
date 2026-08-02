@@ -1,6 +1,6 @@
 {
   "policy": "project_theseus_asi_stack_claim_evidence_handoff_v1",
-  "state": "PROSPECTIVELY_BOUND_BEFORE_P4V2R2R2_TERMINAL_EVIDENCE",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_P4V2R2R3_TERMINAL_EVIDENCE",
   "book_repository": "../AI_book",
   "book_pin": {
     "commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
@@ -22,8 +22,8 @@
     "claim_contract_sha256": "f2549b21d928a184f26646a90cf47a735a8b7089075e2889c3f7280894520e0c"
   },
   "activation": {
-    "p4_terminal_disposition": "reports/theseus_p4v2r2r2_attempt2_terminal_disposition.json",
-    "required_p4_policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
+    "p4_terminal_disposition": "reports/theseus_p4v2r2r3_attempt1_terminal_disposition.json",
+    "required_p4_policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
     "required_p4_trigger_state": "GREEN",
     "p4_survivor_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
     "p4_terminal_non_survivor_statuses": [

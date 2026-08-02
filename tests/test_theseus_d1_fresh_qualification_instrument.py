@@ -19,7 +19,7 @@ def test_instrument_is_green_but_does_not_open_D1_before_survivor() -> None:
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
     assert report["activation_state"] == (
-        "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2R2_SURVIVOR"
+        "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2R3_SURVIVOR"
     )
     assert report["execution_authorized"] is False
     assert report["source_acquisition_authorized"] is False
@@ -63,7 +63,7 @@ def test_D1_language_scope_matches_the_exact_P4_implementation() -> None:
 def test_green_survivor_opens_only_source_acquisition() -> None:
     disposition = {
         "trigger_state": "GREEN",
-        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
         "scientific_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
         "consumption": {"eligible_for_D1": True},
@@ -84,7 +84,7 @@ def test_green_survivor_opens_only_source_acquisition() -> None:
 
 def test_wrong_disposition_policy_cannot_open_D1() -> None:
     disposition = {
-        "policy": "project_theseus_p4v2r2_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
         "trigger_state": "GREEN",
         "scientific_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",

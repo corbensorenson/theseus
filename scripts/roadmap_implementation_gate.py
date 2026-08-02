@@ -1122,10 +1122,30 @@ def audit_book_implementation_contract(
             "evaluator_seal_config",
             "evaluator_seal",
             "evaluator_seal_test",
+            "exact_prompt_token_counter",
+            "exact_prompt_token_counter_test",
+            "candidate_adapter",
+            "candidate_adapter_test",
+            "blind_evaluator",
+            "blind_evaluator_test",
+            "campaign_config",
+            "campaign",
+            "campaign_test",
+            "terminal_disposition_config",
+            "terminal_disposition",
+            "terminal_disposition_test",
         )
     ]
     sandbox_report_path = ROOT / str(
         d1_successor.get("evaluator_sandbox_qualification") or ""
+    )
+    sandbox_config_path = ROOT / str(
+        d1_successor.get("evaluator_sandbox_config") or ""
+    )
+    sandbox_config_sha256 = (
+        hashlib.sha256(sandbox_config_path.read_bytes()).hexdigest()
+        if sandbox_config_path.is_file()
+        else ""
     )
     sandbox_report = (
         read_json(sandbox_report_path) if sandbox_report_path.is_file() else {}
@@ -1134,7 +1154,13 @@ def audit_book_implementation_contract(
     sandbox_receipt = dict_value(sandbox_report.get("run_receipt"))
     if (
         d1_successor.get("state")
-        != "fail_closed_waiting_for_exact_P4V2R2R2_survivor"
+        != "fail_closed_waiting_for_exact_P4V2R2R3_survivor"
+        or p4v2r2.get("complete_first_call_artifact_visible_to_second_call") is not True
+        or p4v2r2.get("complete_visible_verifier_feedback_visible_to_second_call") is not True
+        or p4v2r2.get("project_selected_quality_token_cap") is not None
+        or p4v2r2.get("project_selected_first_artifact_character_cap") is not None
+        or p4v2r2.get("project_selected_first_artifact_token_cap") is not None
+        or p4v2r2.get("project_selected_verifier_feedback_character_cap") is not None
         or d1_successor.get("source_stage_implementation")
         != "complete_waiting_indefinitely_without_user_gate"
         or d1_successor.get("source_stage_terminal_boundary")
@@ -1144,19 +1170,24 @@ def audit_book_implementation_contract(
         or d1_successor.get("evaluator_sandbox_qualification_state")
         != "green_exact_local_denial_canaries"
         or d1_successor.get("evaluator_seal_implementation")
-        != "complete_prospective_pre_model_single_callable_visible_hidden_parent_fail_target_pass_transplant_pass_filter_waiting_on_source_materialization"
+        != "complete_prospective_pre_model_single_callable_visible_hidden_parent_fail_target_pass_transplant_pass_and_exact_pinned_tokenizer_first_prompt_addressability_filter_waiting_on_source_materialization"
         or d1_successor.get("untrusted_repository_execution_authorized_before_evaluator_seal")
         is not False
         or sandbox_report.get("trigger_state") != "GREEN"
         or sandbox_report.get("untrusted_execution_authorized") is not True
+        or dict_value(sandbox_report.get("config")).get("sha256")
+        != sandbox_config_sha256
         or list_values(sandbox_report.get("faults"))
         or not sandbox_canary
         or any(value is not True for value in sandbox_canary.values())
         or sandbox_receipt.get("returncode") != 0
         or sandbox_receipt.get("boundary_hit") is not False
+        or sandbox_receipt.get("stdout_complete") is not True
+        or sandbox_receipt.get("stderr_complete") is not True
+        or sandbox_receipt.get("project_selected_character_cap") is not None
         or d1_successor.get("downstream_evaluator_campaign_and_disposition_state")
-        != "pre_model_evaluator_seal_implemented_campaign_integrity_and_terminal_disposition_not_implemented_do_not_claim_D1_execution_ready"
-        or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 3
+        != "blind_campaign_independent_integrity_recomputation_exact_cost_custody_and_terminal_disposition_implemented_prospectively_autonomous_pipeline_controller_not_implemented_do_not_claim_D1_execution_ready"
+        or len(list_values(d1_successor.get("remaining_D1_execution_owners"))) != 2
         or d1_successor.get("candidate_or_control_calls_authorized") is not False
         or d1_successor.get("automatic_book_support_promotion") is not False
         or any(not path or not (ROOT / path).is_file() for path in d1_source_paths)
@@ -1189,13 +1220,13 @@ def audit_book_implementation_contract(
     ]
     if (
         handoff_implementation.get("state")
-        != "prospectively_bound_waiting_for_terminal_P4V2R2R2_evidence"
+        != "prospectively_bound_waiting_for_terminal_P4V2R2R3_evidence"
         or handoff_implementation.get("book_pin_commit")
         != dict_value(matrix.get("latest_ai_book_reconciliation")).get("book_commit")
         or handoff_implementation.get("claim_id")
         != "cognitive-compilation-and-semantic-ir.core"
         or handoff_implementation.get("d1_requirement")
-        != "required_once_only_if_P4V2R2R2_survives"
+        != "required_once_only_if_P4V2R2R3_survives"
         or handoff_implementation.get("public_safe_aggregate_only") is not True
         or handoff_implementation.get("automatic_support_transition_proposed") is not False
         or handoff_implementation.get("support_state_effect") != "none"

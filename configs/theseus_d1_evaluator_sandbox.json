@@ -1,6 +1,8 @@
 {
   "policy": "project_theseus_d1_untrusted_evaluator_sandbox_v1",
   "state": "PROSPECTIVE_QUALIFICATION_BEFORE_ANY_D1_PARENT_TARGET_OR_EVALUATOR_EXECUTION",
+  "sandbox_runner": "scripts/theseus_d1_evaluator_sandbox.py",
+  "sandbox_runner_sha256": "cc11927ff50d977d53716a6284ed81cba8691e2942c3dee75270fc1306cecfa8",
   "backend": "/usr/bin/sandbox-exec",
   "python": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3",
   "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
@@ -44,5 +46,5 @@
     "external_inference_authorized": false,
     "training_serving_D2_or_book_authority": false
   },
-  "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism."
+  "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its complete verifier streams whenever the physical output-file boundary is untouched and retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism."
 }

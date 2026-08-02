@@ -18,7 +18,7 @@ CLAIM = "cognitive-compilation-and-semantic-ir.core"
 
 def p4(status: str) -> dict[str, object]:
     return {
-        "policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
+        "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
         "claim_id": CLAIM,
         "trigger_state": "GREEN",
         "scientific_status": status,
@@ -84,7 +84,7 @@ def test_preterminal_state_emits_no_book_packet() -> None:
 
 def test_superseded_p4_policy_cannot_open_book_handoff() -> None:
     stale = p4("P4V2R2R2_ADEQUATE_NO_SURVIVOR")
-    stale["policy"] = "project_theseus_p4v2r2_terminal_disposition_v1"
+    stale["policy"] = "project_theseus_p4v2r2r2_terminal_disposition_v1"
     report = handoff.build_report(CONFIG, p4_override=stale)
     assert report["trigger_state"] == "PAUSED"
     assert report["packet_ready"] is False

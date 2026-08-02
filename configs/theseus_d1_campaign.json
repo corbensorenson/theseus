@@ -1,0 +1,62 @@
+{
+  "policy": "project_theseus_d1_blind_matched_campaign_v1",
+  "state": "PROSPECTIVELY_BOUND_BEFORE_D1_FINAL_POOL_OR_CANDIDATE_GENERATION",
+  "p4_terminal_disposition": "reports/theseus_p4v2r2r3_attempt1_terminal_disposition.json",
+  "required_p4_policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
+  "required_p4_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+  "task_pool": "configs/theseus_d1_task_pool.json",
+  "required_task_pool_policy": "project_theseus_d1_sealed_task_pool_v1",
+  "causal_instrument": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",
+  "causal_instrument_sha256": "2cd36ca8af4a0d93459e983862c24acc6a826c12c1f67d1f4c2e1c296496bdee",
+  "candidate_runner": "scripts/theseus_d1_cognitive_compilation.py",
+  "campaign": "scripts/theseus_d1_campaign.py",
+  "result_root": "reports/theseus_d1_campaign",
+  "progress_report": "reports/theseus_d1_campaign_progress.json",
+  "consumption_registry": "reports/theseus_d1_consumption_registry.jsonl",
+  "active_lease": "runtime/control/theseus_d1_campaign_lease.json",
+  "lease_archive_directory": "reports/theseus_d1_campaign_leases",
+  "runtime_attempt_namespace": "d1_fresh_qualification_attempt1",
+  "primary_arm_policy": {
+    "treatment": "typed_semantic_ir_treatment",
+    "control_candidates": [
+      "direct_target_generation",
+      "natural_language_plan_control"
+    ],
+    "selection_evidence": "P4V2R2R3 complete-artifact campaign arm_totals useful_candidates only",
+    "selection_rule": "greatest independently verified useful_candidates; tie direct_target_generation",
+    "selected_before_D1_task_pool_outcomes": true,
+    "D1_outcomes_may_change_selected_control": false,
+    "nonprimary_learned_arm_retained_as_prospectively_declared_exploratory_control": true
+  },
+  "matching": {
+    "same_frozen_weights": true,
+    "same_candidate_visible_information": true,
+    "same_two_calls_and_visible_repair_opportunity": true,
+    "same_natural_completion_policy": true,
+    "same_context_residual_rule": true,
+    "same_effect_sandbox": true,
+    "same_visible_and_hidden_verifier_budget": true,
+    "same_total_task_denominator": true,
+    "joined_cost_reported_per_arm": true,
+    "complete_first_call_artifact_visible_to_second_call": true,
+    "complete_visible_verifier_feedback_visible_to_second_call": true,
+    "project_selected_first_artifact_character_cap": null,
+    "project_selected_first_artifact_token_cap": null,
+    "project_selected_verifier_feedback_character_cap": null,
+    "project_selected_quality_token_cap": null
+  },
+  "authority": {
+    "kind": "exclusive_machine_predicate_one_shot_D1_campaign_lease",
+    "user_or_operator_approval_required": false,
+    "candidate_calls_before_green_p4_survivor_and_final_pool_seal": false,
+    "rerun_consumed_pool_allowed": false,
+    "post_candidate_task_replacement_allowed": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "serving_authority": false,
+    "D2_authority": false,
+    "book_support_promotion_authority": false
+  },
+  "maximum_inference": "Campaign custody only. A complete GREEN campaign means all 44 sealed D1 tasks have one retained matched local run and route-blind independent evaluation with exact runtime, sandbox, cost, completion, and rollback receipts. Scientific qualification requires the separate independent terminal disposition. No campaign state authorizes serving, training, D2, external inference, or ASI Stack support movement."
+}

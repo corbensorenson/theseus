@@ -17,6 +17,7 @@ import copy
 import hashlib
 import json
 import os
+import subprocess
 import tarfile
 import tempfile
 import uuid
@@ -255,6 +256,7 @@ def qualify_task(
     materialized: dict[str, Any],
     *,
     runner: Callable[[Path, list[str], dict[str, Any]], dict[str, Any]],
+    prompt_counter: Callable[[dict[str, str]], dict[str, Any]] | None = None,
 ) -> dict[str, Any]:
     faults: list[str] = []
     artifacts = {str(row.get("label") or ""): row for row in dictionaries(materialized.get("artifacts"))}
@@ -317,8 +319,38 @@ def qualify_task(
                 shutil.rmtree(transplant_root, ignore_errors=True)
         faults.extend(qualification_faults(receipts))
     qualified = not faults
-    task_manifest = build_task_manifest(task, parent_artifact, change, split) if qualified else {}
-    evaluator_manifest = build_evaluator_manifest(task, target_artifact, change, split) if qualified else {}
+    task_manifest = (
+        build_task_manifest(task, parent_artifact, change, split) if qualified else {}
+    )
+    evaluator_manifest = (
+        build_evaluator_manifest(task, target_artifact, change, split)
+        if qualified
+        else {}
+    )
+    prompt_addressability: dict[str, Any] = {}
+    if qualified:
+        with extracted(
+            parent_archive,
+            str(parent_artifact.get("source_archive_root") or ""),
+        ) as parent_root:
+            prompts = render_initial_prompts(config, parent_root, task_manifest)
+        prompt_addressability = (
+            prompt_counter(prompts)
+            if prompt_counter is not None
+            else count_initial_prompts_exact(config, prompts)
+        )
+        if (
+            prompt_addressability.get("trigger_state") != "GREEN"
+            or strings(prompt_addressability.get("faults"))
+        ):
+            faults.append("initial_prompt_not_physically_addressable")
+            qualified = False
+            task_manifest = {}
+            evaluator_manifest = {}
+        else:
+            task_manifest["candidate_visible_context"][
+                "initial_prompt_addressability"
+            ] = prompt_addressability
     return {
         "campaign_index": task.get("campaign_index"),
         "repository": task.get("repository"),
@@ -331,6 +363,7 @@ def qualify_task(
         "execution_count": execution_count,
         "task_manifest": task_manifest,
         "evaluator_manifest": evaluator_manifest,
+        "initial_prompt_addressability": prompt_addressability,
         "candidate_or_control_calls": 0,
     }
 
@@ -368,6 +401,7 @@ def changed_callable(parent_text: str, target_text: str) -> tuple[dict[str, Any]
         "path_end_line": int(parent_node.end_lineno or parent_node.lineno),
         "parent_source": parent_source,
         "parent_source_sha256": sha256_text(parent_source),
+        "parent_AST_node_count": sum(1 for _ in ast.walk(parent_node)),
         "target_source": target_source,
         "target_source_sha256": sha256_text(target_source),
     }, []
@@ -506,24 +540,38 @@ def build_task_manifest(
         "candidate_visible_context": {
             "reads": [{"path": path, "start_line": 1, "end_line": 10**9}],
             "searches": [{"literal": change["qualified_name"].split(".")[-1], "paths": [path]}],
-            "physical_context_addressability_checked_at_generation": True,
+            "physical_context_addressability_checked_before_final_pool_seal": True,
+            "complete_repair_prompt_addressability_recomputed_at_generation": True,
             "project_selected_character_or_token_cap": None,
         },
         "source_archive": parent.get("normalized"),
         "source_archive_sha256": parent.get("normalized_sha256"),
         "source_archive_root": parent.get("source_archive_root"),
         "visible_verifier": {
-            "command": ["D1_SANDBOXED_PYTEST", *split["visible"]],
+            "command": ["python3", "D1_SANDBOXED_PYTEST", *split["visible"]],
             "candidate_prompt_visibility": False,
             "answer_specific": True,
             "project_selected_quality_token_cap": None,
         },
+        "visible_feedback_map": [
+            {"marker": "FAILED", "obligation_ids": ["O1", "O2"]}
+        ],
+        "semantic_ir_contract": {
+            "version": "theseus_semantic_ir_v2r2_labeled",
+            "maximum_symbol_nodes": change["parent_AST_node_count"],
+            "maximum_units": 1,
+            "source_target_obligation_loss_and_dependency_identity_required": True,
+            "project_selected_quality_token_cap": None,
+        },
         "source_provenance": {
-            key: task.get(key)
-            for key in (
-                "repository", "repository_url", "license_spdx", "pull_request",
-                "pull_request_url", "parent_revision", "target_revision", "merged_utc",
-            )
+            "repository": task.get("repository"),
+            "url": task.get("repository_url"),
+            "license_spdx": task.get("license_spdx"),
+            "pull_request": task.get("pull_request"),
+            "pull_request_url": task.get("pull_request_url"),
+            "revision": task.get("parent_revision"),
+            "target_revision": task.get("target_revision"),
+            "merged_utc": task.get("merged_utc"),
         },
         "contamination_screen": {
             "task_selected_before_any_candidate_or_control": True,
@@ -545,6 +593,7 @@ def build_evaluator_manifest(
         "target_archive_sha256": target.get("normalized_sha256"),
         "target_archive_root": target.get("source_archive_root"),
         "hidden_pytest_nodeids": split["hidden"],
+        "test_overlay_paths": changed_test_paths(task),
         "visible_pytest_nodeids_sha256": stable_hash(split["visible"]),
         "oracle_callable_source": change.get("target_source"),
         "oracle_callable_source_sha256": change.get("target_source_sha256"),
@@ -707,6 +756,28 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     execution = mapping(config.get("execution"))
     if execution.get("project_selected_quality_token_cap") is not None:
         faults.append("quality_token_cap_present")
+    addressability = mapping(config.get("prompt_addressability"))
+    if addressability.get("project_selected_quality_token_cap") is not None:
+        faults.append("prompt_addressability_quality_cap_present")
+    if addressability.get("non_addressable_prompt_is_model_or_mechanism_failure") is not False:
+        faults.append("prompt_addressability_negative_evidence_invalid")
+    if set(strings(addressability.get("required_learned_arms"))) != {
+        "direct_target_generation",
+        "natural_language_plan_control",
+        "typed_semantic_ir_treatment",
+    }:
+        faults.append("prompt_addressability_arm_set_invalid")
+    for path_key, hash_key in (
+        ("python", "python_sha256"),
+        ("counter", "counter_sha256"),
+        ("worker_config", "worker_config_sha256"),
+        ("causal_instrument", "causal_instrument_sha256"),
+    ):
+        owner = resolve(str(addressability.get(path_key) or ""))
+        if not owner.is_file() or sha256_file(owner) != str(
+            addressability.get(hash_key) or ""
+        ):
+            faults.append(f"prompt_addressability_binding_invalid:{path_key}")
     authority = mapping(config.get("authority"))
     if authority.get("user_or_operator_approval_required") is not False:
         faults.append("user_gate_present")
@@ -718,6 +789,82 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         if authority.get(key) is not False:
             faults.append(f"cross_stage_authority_present:{key}")
     return faults
+
+
+def render_initial_prompts(
+    config: dict[str, Any], root: Path, task: dict[str, Any]
+) -> dict[str, str]:
+    import sys
+
+    sys.path.insert(0, str(ROOT / "scripts"))
+    import theseus_assistant_p2a as p2a
+    import theseus_p4_cognitive_compilation as p4
+    import theseus_p4s_cognitive_compilation as p4s
+    import theseus_p4v2r2_cognitive_compilation as causal
+
+    addressability = mapping(config.get("prompt_addressability"))
+    overlay = read_json(resolve(str(addressability.get("causal_instrument") or "")))
+    base = read_json(resolve(str(overlay.get("base_instrument") or "")))
+    local = read_json(resolve(str(base.get("base_local_instrument") or "")))
+    protocol = mapping(local.get("candidate_protocol"))
+    original_symbol_table = p4.semantic_symbol_table
+    try:
+        p4.semantic_symbol_table = p4s.semantic_scope_symbol_table
+        common = p4.render_common_context(root, task)
+    finally:
+        p4.semantic_symbol_table = original_symbol_table
+    return {
+        arm: causal.render_arm_prompt(arm, task, common, protocol)
+        for arm in p2a.strings(addressability.get("required_learned_arms"))
+    }
+
+
+def count_initial_prompts_exact(
+    config: dict[str, Any], prompts: dict[str, str]
+) -> dict[str, Any]:
+    addressability = mapping(config.get("prompt_addressability"))
+    python = resolve(str(addressability.get("python") or ""))
+    counter = resolve(str(addressability.get("counter") or ""))
+    worker = resolve(str(addressability.get("worker_config") or ""))
+    with tempfile.TemporaryDirectory(
+        prefix="theseus-d1-prompt-addressability-", dir="/private/tmp"
+    ) as temporary:
+        input_path = Path(temporary) / "prompts.json"
+        output_path = Path(temporary) / "receipt.json"
+        write_json(input_path, {"prompts": prompts})
+        completed = subprocess.run(
+            [
+                str(python),
+                str(counter),
+                "--worker-config",
+                str(worker),
+                "--prompts",
+                str(input_path),
+                "--out",
+                str(output_path),
+            ],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=False,
+        )
+        if not output_path.is_file():
+            return {
+                "policy": "project_theseus_exact_local_prompt_addressability_v1",
+                "trigger_state": "RED",
+                "faults": [
+                    f"prompt_counter_failed:{completed.returncode}",
+                ],
+                "candidate_or_control_calls": 0,
+                "project_selected_quality_token_cap": None,
+            }
+        report = read_json(output_path)
+        if completed.returncode != 0 and report.get("trigger_state") == "GREEN":
+            report["trigger_state"] = "RED"
+            report["faults"] = sorted(
+                set(strings(report.get("faults")) + ["prompt_counter_returncode_nonzero"])
+            )
+        return report
 
 
 def source_paths(task: dict[str, Any]) -> list[str]:

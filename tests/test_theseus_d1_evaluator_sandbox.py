@@ -23,6 +23,8 @@ def config() -> dict:
 def test_contract_is_prospective_and_grants_no_execution_by_itself() -> None:
     value = config()
     assert sandbox.validate_config(value) == []
+    runner = ROOT / value["sandbox_runner"]
+    assert sandbox.sha256_file(runner) == value["sandbox_runner_sha256"]
     report = sandbox.preflight(value, config_path=CONFIG_PATH)
     assert report["trigger_state"] == "PAUSED"
     assert report["untrusted_execution_authorized"] is False
@@ -64,7 +66,7 @@ def test_canary_parser_requires_exact_all_true_keyset() -> None:
         "outside_write_denied",
         "network_denied",
         "shell_exec_denied",
-        "child_python_inherits_read_denial",
+        "child_python_cannot_escape_read_denial",
         "inside_write_allowed",
         "environment_minimized",
         "cpu_limit_present",
@@ -90,3 +92,12 @@ def test_canary_parser_requires_exact_all_true_keyset() -> None:
         {"stdout_tail": sandbox.RESULT_MARKER + json.dumps(extra_payload)}
     )
     assert "sandbox_canary_keyset_invalid" in faults
+
+
+def test_verifier_output_below_physical_file_boundary_is_read_completely(
+    tmp_path: Path,
+) -> None:
+    output = "BEGIN\n" + ("x" * (128 * 1024)) + "\nEND\n"
+    path = tmp_path / "stdout.bin"
+    path.write_text(output, encoding="utf-8")
+    assert sandbox.read_tail(path, 4 * 1024 * 1024) == output

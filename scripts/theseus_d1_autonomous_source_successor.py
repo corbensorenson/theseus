@@ -103,7 +103,10 @@ def preflight(
         else read_optional(disposition_path)
     )
     status = str(disposition.get("scientific_status") or "")
-    p4_green = disposition.get("trigger_state") == "GREEN"
+    p4_green = (
+        disposition.get("policy") == config.get("required_p4_policy")
+        and disposition.get("trigger_state") == "GREEN"
+    )
     survivor = p4_green and status == config.get("p4_survivor_status")
     non_survivor = p4_green and status in set(
         strings(config.get("p4_terminal_non_survivor_statuses"))
@@ -118,7 +121,7 @@ def preflight(
         "policy": POLICY,
         "created_utc": now(now_override),
         "trigger_state": "RED" if faults else "PAUSED",
-        "activation_state": "CONTRACT_INVALID" if faults else "WAITING_FOR_TERMINAL_P4V2R2R2",
+        "activation_state": "CONTRACT_INVALID" if faults else "WAITING_FOR_TERMINAL_P4V2R2R3",
         "terminal": False,
         "execution_authorized": False,
         "next_action": "none",
@@ -146,7 +149,7 @@ def preflight(
         base.update(
             {
                 "trigger_state": "GREEN",
-                "activation_state": "CLOSED_P4V2R2R2_NON_SURVIVOR",
+                "activation_state": "CLOSED_P4V2R2R3_NON_SURVIVOR",
                 "terminal": True,
             }
         )
@@ -154,8 +157,8 @@ def preflight(
     if not survivor:
         if disposition and p4_green:
             base["trigger_state"] = "RED"
-            base["activation_state"] = "UNRECOGNIZED_TERMINAL_P4V2R2R2_STATUS"
-            base["faults"] = ["unrecognized_terminal_P4V2R2R2_status"]
+            base["activation_state"] = "UNRECOGNIZED_TERMINAL_P4V2R2R3_STATUS"
+            base["faults"] = ["unrecognized_terminal_P4V2R2R3_status"]
         return base
 
     registry_path = resolve(str(config.get("source_registry") or ""))
@@ -325,8 +328,10 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     faults: list[str] = []
     if config.get("policy") != POLICY:
         faults.append("policy_invalid")
-    if config.get("state") != "BOUND_BEFORE_P4V2R2R2_TERMINAL_EVIDENCE":
+    if config.get("state") != "BOUND_BEFORE_P4V2R2R3_TERMINAL_EVIDENCE":
         faults.append("state_invalid")
+    if config.get("required_p4_policy") != "project_theseus_p4v2r2r3_terminal_disposition_v1":
+        faults.append("required_p4_policy_invalid")
     authority = mapping(config.get("authority"))
     if authority.get("kind") != "machine_predicate_exclusive_exactly_once_source_lease":
         faults.append("authority_kind_invalid")
