@@ -1,0 +1,21 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 316b8ba640fc288d479c28556a1b5f459c9baf9b9a33348f7c0d1da62fb702c1
+OBLIGATIONS O1,O2,O3,O4
+UNIT U2 O2,O3,O4 REPLACE src/platformdirs/unix.py N-3707C5C9C9C5F677 4828a690193b2926687a043278e559af28bd9815dbaa0515c06e60e8765a1759
+<<<
+def iter_data_dirs(self) -> Iterator[str]:
+        """:yield: all user and site data directories."""
+        if not self._use_site:
+            yield self.user_data_dir
+        yield from self._site_data_dirs
+>>>
+UNIT U1 O1,O3,O4 REPLACE src/platformdirs/unix.py N-FE2D39A20D6471C9 665686a8951ef36c150ddb614ea7768fb81b9c15d596a220c1997dfa6646ac3c
+<<<
+def iter_config_dirs(self) -> Iterator[str]:
+        """:yield: all user and site configuration directories."""
+        if not self._use_site:
+            yield self.user_config_dir
+        yield from self._site_config_dirs
+>>>
+LOSS NONE
+END

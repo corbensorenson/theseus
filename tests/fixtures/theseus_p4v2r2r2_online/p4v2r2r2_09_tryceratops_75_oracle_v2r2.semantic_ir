@@ -1,0 +1,29 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE 52ee309185609fdaf6963b16c14d11f65ab3b0908052d90297cddd108d8f6d2a
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2,O3
+OP REPLACE
+PATH src/tryceratops/analyzers/call.py
+NODE N-DBA1261F7E89CEA0
+NODE_SHA 65dbc41bca7278a1e044959d5b0f64e6bbc42cecafdbb40fafbbfe7907ded27c
+<<<
+def _check_raise_callable(self, node: ast.Raise, exc: ast.Call, func: ast.Name) -> None:
+        if len(exc.args):
+            first_arg, *_ = exc.args
+            WHITESPACE = " "
+
+            if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
+                if WHITESPACE in first_arg.value:
+                    self._mark_violation(node)
+
+            if isinstance(first_arg, ast.JoinedStr):
+                for f_string_part in first_arg.values:
+                    if isinstance(f_string_part, ast.Constant):
+                        if isinstance(f_string_part.value, str):
+                            if WHITESPACE in f_string_part.value:
+                                self._mark_violation(node)
+>>>
+END_UNIT
+LOSS NONE
+END

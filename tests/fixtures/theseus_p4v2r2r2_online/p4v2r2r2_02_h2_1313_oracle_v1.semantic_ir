@@ -1,0 +1,77 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE c22782658d2d6727b5f54856dd21700ae8744e1fe72a0f863f508df5ccfcfd71
+OBLIGATIONS O1,O2,O3,O4
+UNIT U1 O1,O3,O4 REPLACE src/h2/utilities.py N-9C39D8C59ECCC15B 982d1cd0b6ed07e05ca63d786f9213684d63be39833a00e9dc9e6e604d2d015a
+<<<
+def _secure_headers(headers: Iterable[Header],
+                    hdr_validation_flags: HeaderValidationFlags | None) -> Generator[Header, None, None]:
+    """
+    Certain headers are at risk of being attacked during the header compression
+    phase, and so need to be kept out of header compression contexts. This
+    function automatically transforms certain specific headers into HPACK
+    never-indexed fields to ensure they don't get added to header compression
+    contexts.
+
+    This function currently implements two rules:
+
+    - 'authorization' and 'proxy-authorization' fields are automatically made
+      never-indexed.
+    - Any 'cookie' header field shorter than 20 bytes long is made
+      never-indexed.
+
+    These fields are the most at-risk. These rules are inspired by Firefox
+    and nghttp2.
+    """
+    for header in headers:
+        assert isinstance(header[0], bytes)
+        if header[0] in _SECURE_HEADERS or (header[0] == b"cookie" and len(header[1]) < 20):
+            yield NeverIndexedHeaderTuple(header[0], header[1])
+        else:
+            yield header
+>>>
+UNIT U2 O2,O3,O4 REPLACE src/h2/utilities.py N-32610F50BDCC4F6E 718b04c01501e54bba3a3d14f81a320460dc3079b1f9d18dc6c6b8d8a424c430
+<<<
+def _reject_pseudo_header_fields(headers: Iterable[Header],
+                                 hdr_validation_flags: HeaderValidationFlags) -> Generator[Header, None, None]:
+    """
+    Raises a ProtocolError if duplicate pseudo-header fields are found in a
+    header block or if a pseudo-header field appears in a block after an
+    ordinary header field.
+
+    Raises a ProtocolError if pseudo-header fields are found in trailers.
+    """
+    seen_pseudo_header_fields = set()
+    seen_regular_header = False
+    method = None
+
+    for header in headers:
+        if header[0][0] == SIGIL:
+            if header[0] in seen_pseudo_header_fields:
+                msg = f"Received duplicate pseudo-header field {header[0]!r}"
+                raise ProtocolError(msg)
+
+            seen_pseudo_header_fields.add(header[0])
+
+            if seen_regular_header:
+                msg = f"Received pseudo-header field out of sequence: {header[0]!r}"
+                raise ProtocolError(msg)
+
+            if header[0] not in _ALLOWED_PSEUDO_HEADER_FIELDS:
+                msg = f"Received custom pseudo-header field {header[0]!r}"
+                raise ProtocolError(msg)
+
+            if header[0] == b":method":
+                method = header[1]
+
+        else:
+            seen_regular_header = True
+
+        yield header
+
+    # Check the pseudo-headers we got to confirm they're acceptable.
+    _check_pseudo_header_field_acceptability(
+        seen_pseudo_header_fields, method, hdr_validation_flags,
+    )
+>>>
+LOSS NONE
+END

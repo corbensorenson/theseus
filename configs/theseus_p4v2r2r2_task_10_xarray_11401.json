@@ -1,0 +1,115 @@
+{
+  "allowed_effect_paths": [
+    "xarray/indexes/range_index.py"
+  ],
+  "campaign_index": 10,
+  "candidate_visible_context": {
+    "maximum_total_characters": 2769,
+    "reads": [
+      {
+        "end_line": 365,
+        "path": "xarray/indexes/range_index.py",
+        "start_line": 285
+      }
+    ],
+    "searches": [
+      {
+        "literal": "def linspace",
+        "paths": [
+          "xarray/indexes/range_index.py"
+        ]
+      },
+      {
+        "literal": "if endpoint",
+        "paths": [
+          "xarray/indexes/range_index.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_training_D1_or_D2": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_all_prior_theseus_development_sources": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4-v2r2-r2 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "Make RangeIndex.linspace support endpoint=True with num=1 without division by zero while preserving endpoint behavior for larger sizes and all behavior outside xarray/indexes/range_index.py. Modify only that file.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "RangeIndex.linspace with endpoint=True and num=1 must not divide by zero."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Preserve endpoint spacing for num greater than one and endpoint=False behavior."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Do not change RangeIndex construction or files outside xarray/indexes/range_index.py."
+    }
+  ],
+  "opaque_task_id": "p4v2r2r2-cognitive-compilation-10",
+  "partition": "p4v2r2r2_cognitive_compilation_decision_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_semantic_scope_nodes": 80,
+    "maximum_symbol_nodes": 20,
+    "maximum_units": 8,
+    "source_target_obligation_loss_and_dependency_identity_required": true,
+    "version": "theseus_semantic_ir_v2r2_labeled"
+  },
+  "source_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_parent_revision_corrected.tar.gz",
+  "source_archive_root": "xarray-49ff18c2d9bc12cc986dc6a79e2e74364fa65fee",
+  "source_archive_sha256": "f879b25eee7b63bb581ab11b19f85b9e784aa35d6ef4edac8782b01b621e62fb",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r2_10_xarray_11401_parent_revision_corrected_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "bd6012b946cc0025086233a99645d2afdb924097ae1d64a83e9274248aca19bb",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_spdx": "Apache-2.0",
+    "registered_revision": "13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+    "repository": "pydata/xarray",
+    "revision": "49ff18c2d9bc12cc986dc6a79e2e74364fa65fee",
+    "revision_correction_applied": true,
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_parent_revision_corrected_upstream.tar.gz",
+    "upstream_archive_sha256": "9209df48d8e888f8bcf834870e6c83c73cae7275e7330b382f5e77730982e7cc",
+    "upstream_request_title": "Fix RangeIndex.linspace with num=1",
+    "upstream_request_url": "https://github.com/pydata/xarray/pull/11401",
+    "url": "https://github.com/pydata/xarray"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4V2R2R2_VISIBLE_FAIL_XARRAY",
+      "obligation_ids": [
+        "O1",
+        "O2"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_visible_test.py', 'xarray'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

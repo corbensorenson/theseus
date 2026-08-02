@@ -1,0 +1,70 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE b870f8da0ae4af45f1ff452f01314db3b9ffb4b4aeb15e590ce95c8421766500
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE xarray/indexes/range_index.py N-59775CA36A6EB8BB 5176ec454212c6123f7d13d63a8755bba5babf8818d50a8eb91cc38c83552c0b
+<<<
+def linspace(
+        cls,
+        start: float,
+        stop: float,
+        num: int = 50,
+        endpoint: bool = True,
+        *,
+        coord_name: Hashable | None = None,
+        dim: str,
+        dtype: Any = None,
+    ) -> "RangeIndex":
+        """Create a new RangeIndex from given start / stop values and number of
+        values.
+
+        Parameters
+        ----------
+        start : float
+            Start of interval. The interval includes this value.
+        stop : float, optional
+            End of interval. The interval includes this value if ``endpoint=True``.
+        num : float, optional
+            Number of values in the interval, i.e., dimension size (default: 50).
+        endpoint : bool, optional
+            If True (default), the ``stop`` value is included in the interval.
+        coord_name : Hashable, optional
+            Name of the (lazy) coordinate variable that will be created and
+            associated with the new index. If ``None``, the coordinate is named
+            as the dimension name.
+        dim : str
+            Dimension name.
+        dtype : dtype, optional
+            The dtype of the coordinate variable (default: float64).
+
+        Examples
+        --------
+        >>> from xarray.indexes import RangeIndex
+
+        >>> index = RangeIndex.linspace(0.0, 1.0, 5, dim="x")
+        >>> ds = xr.Dataset(coords=xr.Coordinates.from_xindex(index))
+
+        >>> ds
+        <xarray.Dataset> Size: 40B
+        Dimensions:  (x: 5)
+        Coordinates:
+          * x        (x) float64 40B 0.0 0.25 0.5 0.75 1.0
+        Data variables:
+            *empty*
+        Indexes:
+            x        RangeIndex (start=0, stop=1.25, step=0.25)
+
+        """
+        if coord_name is None:
+            coord_name = dim
+
+        if endpoint and num > 1:
+            stop += (stop - start) / (num - 1)
+
+        transform = RangeCoordinateTransform(
+            start, stop, num, coord_name, dim, dtype=dtype
+        )
+
+        return cls(transform)
+>>>
+LOSS NONE
+END

@@ -1,0 +1,487 @@
+{
+  "candidate_generation_opened": false,
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "hosted_model_calls": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "dependency_corruptions_rejected": 10,
+  "distinct_repositories": 10,
+  "evaluator_surface": {
+    "core": {
+      "path": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_evaluator_core.py",
+      "sha256": "3d5837e8495382c271751055ee88f4e1e30851caef44ab7894c294526ff54cb2"
+    },
+    "hidden": {
+      "path": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_hidden_test.py",
+      "sha256": "d1a0665584ca5188c3bee5902238493dd51ec60d68c7acacffc50566a75baf24"
+    },
+    "visible": {
+      "path": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_visible_test.py",
+      "sha256": "f4ce84f3a7cb3057ab314399016d42f5367df560d25bb0e6c7650760a161022a"
+    }
+  },
+  "faults": [],
+  "generation_boundary": {
+    "boundary_hit_invalidates_observation": true,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "physical_context_boundary": "pinned_model_context_window_minus_exact_prompt_tokens",
+    "project_selected_quality_token_cap": null
+  },
+  "green_evaluator_audits": 10,
+  "instrument": {
+    "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+    "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+  },
+  "maximum_inference": "A GREEN seal establishes ten fresh licensed parent-fail/target-pass tasks, evaluator-only Semantic-IR v1/v2r2 replay, and corruption sensitivity before candidate generation. It is not model, mechanism-survivor, D1, D2, training, serving, or ASI Stack support evidence.",
+  "partition": "p4v2r2r2_cognitive_compilation_decision_development",
+  "policy": "project_theseus_p4v2r2r2_cognitive_compilation_task_pool_v1",
+  "revision_corrections": {
+    "path": "configs/theseus_p4v2r2r2_revision_corrections.json",
+    "sha256": "243afc079f1eeeba844001e57e93af40dd9d44238e98b2ed3051073bf3dae623"
+  },
+  "revision_repair_fetch": {
+    "path": "reports/theseus_p4v2r2r2_revision_repair_fetch.json",
+    "sha256": "06e27bcca0b104aa6f7691cdefba0cd19d8b662b7e647222a854bb6d1c626ce1"
+  },
+  "sealed_utc": "2026-08-02T03:24:02.713278Z",
+  "source_fetch": {
+    "path": "reports/theseus_p4v2r2r2_source_fetch.json",
+    "sha256": "150a449dd11a32442b9d352b463411065c3d55e1cbda874e86c9fe1f5356d12c"
+  },
+  "source_registry": {
+    "path": "configs/theseus_p4v2r2r2_task_sources.json",
+    "sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "task_contracts": {
+    "path": "configs/theseus_p4v2r2r2_task_contracts.json",
+    "sha256": "9352957f61fe16e7e3c6050867e8dcdd777b13b5ef26646ad94d29645238413c"
+  },
+  "task_count": 10,
+  "tasks": [
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 1,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_01_h11_181.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_01_h11_181_evaluator_audit.json",
+      "evaluator_audit_sha256": "78d90e23d7968b468a8b11806602c013df6cc97d736b5fb43928342d7954b9ca",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "0a959f2798b7fe8637a43ffce5e53fc9f03d256b0cc17d4a3c418cc414ac0372",
+      "exact_candidate_visible_context_characters": 5845,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_01_h11_181_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "c16d8be89a5ccc28601a2d0ba112a6fb3cff232b2a85126151690ebc0c8e33d5",
+      "parent_revision": "31e626c64e1e28db3cd73a6aa0ac057f1b915c18",
+      "repository": "python-hyper/h11",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_01_h11_181",
+      "target_revision": "60782ad107e538b9312aac7e1c119c8358bf797c",
+      "task": "configs/theseus_p4v2r2r2_task_01_h11_181.json",
+      "task_sha256": "32bb645f0009f55a6a829595482af6e2990105a36d6729c1bd06d5e66cd87215",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_01_h11_181_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "e2037f3f1b667725e5694a4861dd39f567afd7ea1342d9fd6dc2dabbd3881f72",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 2,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_02_h2_1313.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_02_h2_1313_evaluator_audit.json",
+      "evaluator_audit_sha256": "77a0744e0b39b30c10e2c795dfa5703dc637c40c60eebc11cd01ac193a957b33",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "eb205359ab9d94eafe877d9bcfa41cd0221a83395d85147d880a2b491c5384e5",
+      "exact_candidate_visible_context_characters": 4075,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_02_h2_1313_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "3beb7652cea29c70a6d5a0fdc8780b2620c67a565ad212cd34396b63e6559901",
+      "parent_revision": "18fa3480a7a9009dd2db4a59269ff46a35b18ea5",
+      "repository": "python-hyper/h2",
+      "revision_correction_applied": true,
+      "stem": "p4v2r2r2_02_h2_1313",
+      "target_revision": "8112e6328fd64a49a32bd4727b2ecb1b9799139f",
+      "task": "configs/theseus_p4v2r2r2_task_02_h2_1313.json",
+      "task_sha256": "10da469ea17cb433f121398ffc1b260f4fa0ea7cf07d17a8389aeec9a3ba55ba",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_02_h2_1313_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "cd66e384687cd356d5dc6e8c7d60e5e629d30549ac6d6ffdd78f03e3de5a0274",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 3,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_03_pygments_3215.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_03_pygments_3215_evaluator_audit.json",
+      "evaluator_audit_sha256": "e60d708da789a972fcf8e5cc53dbd67e4b04ea0d4018ba052119dd9414f293ac",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "79d63b547d97f7d51e49529db74362bda58a616ee4a2686e7950b5f85a53b156",
+      "exact_candidate_visible_context_characters": 3136,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_03_pygments_3215_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "e02e639cec30572ae3105cb206b00d78459c7d179c8e9e45003bdf4adf21a098",
+      "parent_revision": "6c2cf2819a23289acece1f5b7451af1242a07db7",
+      "repository": "pygments/pygments",
+      "revision_correction_applied": true,
+      "stem": "p4v2r2r2_03_pygments_3215",
+      "target_revision": "b856cecbc66e60149bfb65000192f47d5a6d10e0",
+      "task": "configs/theseus_p4v2r2r2_task_03_pygments_3215.json",
+      "task_sha256": "cdf3a8654438897b33e0b93f3ddf9cd15a47869b36c22a0776876b3eea541dfb",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_03_pygments_3215_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "fd770341b0e98fb8359eaad083038e3c65b2f478625ede437b2c47bd3af6260c",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 4,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_04_pluggy_545.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_04_pluggy_545_evaluator_audit.json",
+      "evaluator_audit_sha256": "191d91df7c1f95b6665ca51f69402d2490cc74af9b8562b97ed612cc21344d50",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "fb61b9a17f739c678c81e2d724c339a96f3aeb3dda830dbd83d05fad52be1029",
+      "exact_candidate_visible_context_characters": 6535,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "b1aa72cadf483d4d9abfa129cd87ca0e7152ff63b23b44d330043c7b4c51b7fb",
+      "parent_revision": "4ba6441e046ff9d0d2dbea5087c5bfd81cc37f5c",
+      "repository": "pytest-dev/pluggy",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_04_pluggy_545",
+      "target_revision": "9cf2eaa50dd1ad3ebf042978629e78c695197095",
+      "task": "configs/theseus_p4v2r2r2_task_04_pluggy_545.json",
+      "task_sha256": "19456a3f95227657d932089a8cb620e37d69500229c10b82929f4a352758a7d6",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "00b91843c47f70cf5c55b5e282b4b4e589a6a0472a1ac8d3ca8d699d089f9d1b",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 5,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_05_asgiref_537.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_05_asgiref_537_evaluator_audit.json",
+      "evaluator_audit_sha256": "667ed8f5222e41e621ff788cb21e2e7beb8ecbad4b6b3fcda6832e8ef4819792",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "489e87e23e209bfe592a396df37c9c51b1bae02b2e63160b2eacd320984133d9",
+      "exact_candidate_visible_context_characters": 3709,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_05_asgiref_537_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "bee8169d4b441918b5ae590ad9083295d05b6c398459994c83d14fec8ce2767b",
+      "parent_revision": "2b28409ab83b3e4cf6fed9019403b71f8d7d1c51",
+      "repository": "django/asgiref",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_05_asgiref_537",
+      "target_revision": "6907449d7bb124749d63867907bc4d9acb554f62",
+      "task": "configs/theseus_p4v2r2r2_task_05_asgiref_537.json",
+      "task_sha256": "ff2ef6c29e79e6afd8c3c183551ced535527d721c31b491121e963ef1188c524",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_05_asgiref_537_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "f7b3ce686eb7534a9350469cbc34c6d7bc112ae49bc65dab3e885e287dbe33b5",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 6,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O3"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_06_platformdirs_469.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_06_platformdirs_469_evaluator_audit.json",
+      "evaluator_audit_sha256": "7430b9720753a636ed9537a7cc46d26bfac8ecff853e37e9c1351b44dd4283b1",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "dc578fed72cebec0025b594ddabdbe08315be2033d619d775eb480ac8d9f64f7",
+      "exact_candidate_visible_context_characters": 2170,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "2d56ba074d4426dd6b1d45db0b35fb9d4b78c81dfe8c9ec47a6b87ff4a56c619",
+      "parent_revision": "e3cf124b8d399e76a4392573ef1d8d08041be900",
+      "repository": "tox-dev/platformdirs",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_06_platformdirs_469",
+      "target_revision": "7b0aa58d27791f9d68dc5e4510a4be4604e8365b",
+      "task": "configs/theseus_p4v2r2r2_task_06_platformdirs_469.json",
+      "task_sha256": "db63ae21aa5cf8dd6b7c3d1819eefd4b50671819de6d0b4d6bd516307191b050",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "973ae293249d4a9afaba461dd0424c9ae8c19052aa95ca86421b295e38b8a493",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 7,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_07_markupsafe_418.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_07_markupsafe_418_evaluator_audit.json",
+      "evaluator_audit_sha256": "0c756deeb45f00c1a4c19549d53820ed9b10c649575e5146211d06a82ff52d3c",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "2f8321382cf8d0f08bf8b556fe1c9c2e1f063e3786de3032809cf27b1e027e4b",
+      "exact_candidate_visible_context_characters": 2056,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_07_markupsafe_418_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "391eb7ed3968b4b199cc6534bc911b68edfa3cd5cecfca02a87f89547a012c5a",
+      "parent_revision": "73e6a4886564a554c4a19983d29c97f9fc95457d",
+      "repository": "pallets/markupsafe",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_07_markupsafe_418",
+      "target_revision": "0b6bee071fbd8d3171fb1ac4fb669baace808438",
+      "task": "configs/theseus_p4v2r2r2_task_07_markupsafe_418.json",
+      "task_sha256": "b0e59c899e2b3da4fb6bf6f98de767000fa2c1b2cf16fbb174bee4d0f2b4d5b8",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_07_markupsafe_418_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "57d29fad2436599bdc7d1044da93e9222be8bff4bb6ca32d0e219361b45ccd49",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 8,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O4"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_08_itsdangerous_378.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_08_itsdangerous_378_evaluator_audit.json",
+      "evaluator_audit_sha256": "2178c0c9ccfc5de44f95230e66eb7b7ddb3df87ae10ae51e45d13d730378d270",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "eee9c489fcb5baf08ea7fc58148ad840753109827860839562336b395e49c598",
+      "exact_candidate_visible_context_characters": 6027,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "c8ac5b07fcc47c2e036e617d9b79c42fc93d0e88001222d43f396ffcdb7c6875",
+      "parent_revision": "93ae366874bbd4f69d90495c45b2cd336387496c",
+      "repository": "pallets/itsdangerous",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_08_itsdangerous_378",
+      "target_revision": "7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+      "task": "configs/theseus_p4v2r2r2_task_08_itsdangerous_378.json",
+      "task_sha256": "7de6f2ddbe2adc7ebc8851f9210c683cb9d00f9d24e9617e817189156034a127",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "1ec87bedcfb11b759bfe0442c8356e3954f7dd0e8afdaa79b71c01b3ca214ab3",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 9,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_09_tryceratops_75.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_09_tryceratops_75_evaluator_audit.json",
+      "evaluator_audit_sha256": "fbeeba698c7c2242d6ef04cc5e5f31b0621bb761c5de2da262d4269fd2fcfe31",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "23c3b52c27b3877596743e922165ebb436a9f90087b6fe446d7f83ce901642cd",
+      "exact_candidate_visible_context_characters": 1776,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "9c0e42657ecee9287958268b236803a185e9041ba41d3104be934d3cb601e7d5",
+      "parent_revision": "6d218f4d4a82ca4aad760f5ad9e9b632216e306c",
+      "repository": "guilatrova/tryceratops",
+      "revision_correction_applied": false,
+      "stem": "p4v2r2r2_09_tryceratops_75",
+      "target_revision": "67786fb9b5436417ef18c1e3c428bd529aaa8340",
+      "task": "configs/theseus_p4v2r2r2_task_09_tryceratops_75.json",
+      "task_sha256": "714165e68502283e715d959dd7aaa95021e6b8b0303b1a862a9002e5128017b8",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "e8c062253171eefbcde9f1403fe36b8cad1ff4d61ad66d5dbd647789c10c10f7",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    },
+    {
+      "baseline_parent_failed": true,
+      "campaign_index": 10,
+      "compiler_oracle_v1_passed": true,
+      "dependency_corruption": {
+        "faults": [
+          "semantic_obligation_coverage_incomplete",
+          "semantic_unit_dependency_not_closed"
+        ],
+        "rejected": true,
+        "removed_prerequisite": "O2"
+      },
+      "evaluator": "configs/theseus_p4v2r2r2_evaluator_10_xarray_11401.json",
+      "evaluator_audit": "reports/theseus_p4v2r2r2_10_xarray_11401_evaluator_audit.json",
+      "evaluator_audit_sha256": "593ea021e69b2833dcaaf83b1ff5237428e8b8ea281874d2e038476eafb4c03b",
+      "evaluator_audit_trigger_state": "GREEN",
+      "evaluator_sha256": "9597c863034d4e04ee34c8af1270429a9a5ded24a5779a523fe93c6601f3614b",
+      "exact_candidate_visible_context_characters": 2769,
+      "four_base_corruptions_rejected": true,
+      "oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_oracle_v1.semantic_ir",
+      "oracle_ir_sha256": "b1f9bfec3e82176d880c613b5415dbc3b9a20d6f69e65e364be677a5d0b6f49d",
+      "parent_revision": "49ff18c2d9bc12cc986dc6a79e2e74364fa65fee",
+      "repository": "pydata/xarray",
+      "revision_correction_applied": true,
+      "stem": "p4v2r2r2_10_xarray_11401",
+      "target_revision": "13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+      "task": "configs/theseus_p4v2r2r2_task_10_xarray_11401.json",
+      "task_sha256": "1efbc41377a13365907639f31c2e1ebd7dd70d782abb8e28dfd18e45e9a6eb79",
+      "treatment_transport_oracle_ir": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_oracle_v2r2.semantic_ir",
+      "treatment_transport_oracle_ir_sha256": "d8854c6ee313a5bb44f0b5f5a17f42038417f3ab15d915bdf6c75ba8595d65bd",
+      "upstream_target_passed": true,
+      "v2r2_oracle_replay": {
+        "candidate_or_control_calls": 0,
+        "faults": [],
+        "hidden_passed": true,
+        "maximum_inference": "Transport-oracle parse, lowering, action-equivalence, and verifier mechanics for one sealed task only.",
+        "policy": "project_theseus_p4v2r2_transport_oracle_replay_v1",
+        "trigger_state": "GREEN",
+        "v1_v2r2_actions_equivalent": true,
+        "visible_passed": true
+      }
+    }
+  ],
+  "v2r2_oracle_replays_green": 10
+}

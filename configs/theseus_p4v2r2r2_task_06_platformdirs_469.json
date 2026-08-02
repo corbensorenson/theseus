@@ -1,0 +1,125 @@
+{
+  "allowed_effect_paths": [
+    "src/platformdirs/unix.py"
+  ],
+  "campaign_index": 6,
+  "candidate_visible_context": {
+    "maximum_total_characters": 2170,
+    "reads": [
+      {
+        "end_line": 220,
+        "path": "src/platformdirs/unix.py",
+        "start_line": 180
+      }
+    ],
+    "searches": [
+      {
+        "literal": "iter_config_dirs",
+        "paths": [
+          "src/platformdirs/unix.py"
+        ]
+      },
+      {
+        "literal": "iter_data_dirs",
+        "paths": [
+          "src/platformdirs/unix.py"
+        ]
+      }
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_training_D1_or_D2": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_all_prior_theseus_development_sources": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "bounded_python_correctness_repair",
+  "maximum_inference": "One P4-v2r2-r2 development observation only; no D1, D2, serving, training, or ASI Stack support claim.",
+  "natural_request": "When use_site_for_root is active, make both configuration and data directory iterators omit the duplicate user directory while preserving normal user-first iteration otherwise. Preserve all behavior outside src/platformdirs/unix.py. Modify only that file.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O3"
+    },
+    {
+      "after": "O2",
+      "before": "O3"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "When use_site_for_root is active, iter_config_dirs must not yield the site-backed user config directory twice."
+    },
+    {
+      "id": "O2",
+      "kind": "require",
+      "text": "When use_site_for_root is active, iter_data_dirs must not yield the site-backed user data directory twice."
+    },
+    {
+      "id": "O3",
+      "kind": "preserve",
+      "text": "When site substitution is inactive, preserve user-first followed by site-directory iteration."
+    },
+    {
+      "id": "O4",
+      "kind": "non_goal",
+      "text": "Do not change directory derivation or files outside src/platformdirs/unix.py."
+    }
+  ],
+  "opaque_task_id": "p4v2r2r2-cognitive-compilation-06",
+  "partition": "p4v2r2r2_cognitive_compilation_decision_development",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "maximum_semantic_scope_nodes": 80,
+    "maximum_symbol_nodes": 29,
+    "maximum_units": 8,
+    "source_target_obligation_loss_and_dependency_identity_required": true,
+    "version": "theseus_semantic_ir_v2r2_labeled"
+  },
+  "source_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_parent.tar.gz",
+  "source_archive_root": "platformdirs-e3cf124b8d399e76a4392573ef1d8d08041be900",
+  "source_archive_sha256": "afbafe6e72cb4111fb1ffb1acf88da7101eeabd65d608763ec2e339fad79b0ee",
+  "source_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r2_06_platformdirs_469_parent_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "e5e16c6b01db261acdca6c3460ec1390e4460ae93c84e19773c768258aa11620",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_spdx": "MIT",
+    "registered_revision": "e3cf124b8d399e76a4392573ef1d8d08041be900",
+    "repository": "tox-dev/platformdirs",
+    "revision": "e3cf124b8d399e76a4392573ef1d8d08041be900",
+    "revision_correction_applied": false,
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_parent_upstream.tar.gz",
+    "upstream_archive_sha256": "d64b327c6c77935cb633eed2a07abc333d751b382361b44fda55e5f2e64193b1",
+    "upstream_request_title": "fix: do not duplicate site dirs in Unix.iter_{config,site}_dirs() when use_site_for_root is active",
+    "upstream_request_url": "https://github.com/tox-dev/platformdirs/pull/469",
+    "url": "https://github.com/tox-dev/platformdirs"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "P4V2R2R2_VISIBLE_FAIL_PLATFORMDIRS",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', '/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_visible_test.py', 'platformdirs'])"
+    ],
+    "timeout_seconds": 60
+  }
+}

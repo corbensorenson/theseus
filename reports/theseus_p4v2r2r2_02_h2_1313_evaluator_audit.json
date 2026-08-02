@@ -1,0 +1,65 @@
+{
+  "baseline_verification": {
+    "hidden_passed": false,
+    "returncode": 1,
+    "runtime_ms": 76.137,
+    "stderr_tail": "",
+    "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_H2:AssertionError:\n"
+  },
+  "compiler_oracle_verification": {
+    "apply_faults": [],
+    "hidden_passed": true,
+    "hidden_returncode": 0,
+    "hidden_stderr_tail": "",
+    "hidden_stdout_tail": "P4V2R2R2_HIDDEN_PASS_H2\n",
+    "parse_faults": [],
+    "visible_passed": true
+  },
+  "corruption_intervention_rejections": {
+    "obligation_coverage": true,
+    "source_identity": true,
+    "target_identity": true,
+    "unresolved_loss": true
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-02T03:23:57.298169Z",
+  "evaluator_sha256": "eb205359ab9d94eafe877d9bcfa41cd0221a83395d85147d880a2b491c5384e5",
+  "faults": [],
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+  "route_labels_opened": 0,
+  "runtime_ms": 375.152,
+  "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+  "target_verification": {
+    "hidden_passed": true,
+    "returncode": 0,
+    "runtime_ms": 77.827,
+    "stderr_tail": "",
+    "stdout_tail": "P4V2R2R2_HIDDEN_PASS_H2\n"
+  },
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "158c43f35e2a1a5f7060ff60934f524558df89fcf3c12ef6447669946fe7548c",
+    "task_sha256": "10da469ea17cb433f121398ffc1b260f4fa0ea7cf07d17a8389aeec9a3ba55ba",
+    "trigger_state": "GREEN"
+  },
+  "task_manifest_sha256": "10da469ea17cb433f121398ffc1b260f4fa0ea7cf07d17a8389aeec9a3ba55ba",
+  "trigger_state": "GREEN"
+}

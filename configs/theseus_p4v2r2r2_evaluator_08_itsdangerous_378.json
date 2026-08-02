@@ -1,0 +1,57 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2R2_HIDDEN_FAIL_ITSDANGEROUS"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2r2_evaluator_core.py",
+      "sha256": "3d5837e8495382c271751055ee88f4e1e30851caef44ab7894c294526ff54cb2",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_evaluator_core.py"
+    },
+    {
+      "destination": "theseus_p4v2r2r2_hidden_test.py",
+      "sha256": "d1a0665584ca5188c3bee5902238493dd51ec60d68c7acacffc50566a75baf24",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2r2_hidden_test.py', 'itsdangerous'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed development task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "c8ac5b07fcc47c2e036e617d9b79c42fc93d0e88001222d43f396ffcdb7c6875",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_target.tar.gz",
+  "target_archive_root": "itsdangerous-7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+  "target_archive_sha256": "c48ded91c268c5594baf22405e0a152004b4cd299cae1a876dfc7ef9563989b4",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r2_08_itsdangerous_378_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "c380eba183e6347ae8d8005bf573ca9b2db58274130260b720c5ff484c119018",
+    "registered_revision": "7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+    "revision": "7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+    "revision_correction_applied": false,
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_target_upstream.tar.gz",
+    "upstream_archive_sha256": "8e22bfe38e95f11b86cbf9b978c9d3c083c5efc1d3ff0e5f4cb6cb0b4bcd3889"
+  },
+  "task_manifest": "configs/theseus_p4v2r2r2_task_08_itsdangerous_378.json",
+  "task_manifest_sha256": "7de6f2ddbe2adc7ebc8851f9210c683cb9d00f9d24e9617e817189156034a127",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "1ec87bedcfb11b759bfe0442c8356e3954f7dd0e8afdaa79b71c01b3ca214ab3"
+}

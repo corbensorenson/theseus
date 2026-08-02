@@ -1,0 +1,57 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2R2_HIDDEN_FAIL_PLUGGY"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2r2_evaluator_core.py",
+      "sha256": "3d5837e8495382c271751055ee88f4e1e30851caef44ab7894c294526ff54cb2",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_evaluator_core.py"
+    },
+    {
+      "destination": "theseus_p4v2r2r2_hidden_test.py",
+      "sha256": "d1a0665584ca5188c3bee5902238493dd51ec60d68c7acacffc50566a75baf24",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2r2_hidden_test.py', 'pluggy'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed development task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "b1aa72cadf483d4d9abfa129cd87ca0e7152ff63b23b44d330043c7b4c51b7fb",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_target.tar.gz",
+  "target_archive_root": "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095",
+  "target_archive_sha256": "af41633e440c56841334ed5054834d47a5db758883ea7fb494214e149bb29ea3",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r2_04_pluggy_545_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "c9b0ce626ecd52f553d1018b4c02b3cdd2e3fe3e85966216e0954fbcbab0c11e",
+    "registered_revision": "9cf2eaa50dd1ad3ebf042978629e78c695197095",
+    "revision": "9cf2eaa50dd1ad3ebf042978629e78c695197095",
+    "revision_correction_applied": false,
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_target_upstream.tar.gz",
+    "upstream_archive_sha256": "8bd82024d6ca9019408624022376bae4be7293cf2258fadb53130e65fd5c2ac2"
+  },
+  "task_manifest": "configs/theseus_p4v2r2r2_task_04_pluggy_545.json",
+  "task_manifest_sha256": "19456a3f95227657d932089a8cb620e37d69500229c10b82929f4a352758a7d6",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "00b91843c47f70cf5c55b5e282b4b4e589a6a0472a1ac8d3ca8d699d089f9d1b"
+}

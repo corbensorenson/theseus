@@ -1,0 +1,35 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 413c019c5f0f71dd95dfef21a5f21b7ea8c8aefb51532e1db8f2fc5e16dfc0cf
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE asgiref/sync.py N-5C6BA179A10713C5 9d83908e1eb5734e694c4b572fb1e3cd321c4b8ddc28fd4f0f378814e15f631d
+<<<
+def __init__(
+        self,
+        func: Callable[_P, _R],
+        thread_sensitive: bool = True,
+        executor: Optional["ThreadPoolExecutor"] = None,
+        context: Optional[contextvars.Context] = None,
+    ) -> None:
+        if (
+            not callable(func)
+            or iscoroutinefunction(func)
+            or iscoroutinefunction(getattr(func, "__call__", func))
+        ):
+            raise TypeError("sync_to_async can only be applied to sync functions.")
+
+        functools.update_wrapper(self, func)
+        self.func = func
+        self.context = context
+
+        self._thread_sensitive = thread_sensitive
+        markcoroutinefunction(self)
+        if thread_sensitive and executor is not None:
+            raise TypeError("executor must not be set when thread_sensitive is True")
+        self._executor = executor
+        try:
+            self.__self__ = func.__self__  # type: ignore
+        except AttributeError:
+            pass
+>>>
+LOSS NONE
+END

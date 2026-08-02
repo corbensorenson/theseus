@@ -1,0 +1,79 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE f54851adb09b7069d7584c54e658d3f86d28c125bfb7c025d770d6c69328ae06
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2
+OP INSERT_BEFORE
+PATH h11/_headers.py
+NODE N-6F3EA702553308CC
+NODE_SHA 5a141746763f9d2a8c2c6dc320ac80a34615c1a1ea2b04bf7748dd9f917259a3
+<<<
+CONTENT_LENGTH_MAX_DIGITS = 20
+>>>
+END_UNIT
+UNIT U2
+OBLIGATIONS O1,O2,O3
+OP REPLACE
+PATH h11/_headers.py
+NODE N-348A69E26D1C74F0
+NODE_SHA 90c7c99fca8522d17c31d7f0846afe35d6106f8ab5293020e706c9e337055c7a
+<<<
+def normalize_and_validate(
+    headers: Union[Headers, HeaderTypes], _parsed: bool = False
+) -> Headers:
+    new_headers = []
+    seen_content_length = None
+    saw_transfer_encoding = False
+    for name, value in headers:
+        # For headers coming out of the parser, we can safely skip some steps,
+        # because it always returns bytes and has already run these regexes
+        # over the data:
+        if not _parsed:
+            name = bytesify(name)
+            value = bytesify(value)
+            validate(_field_name_re, name, "Illegal header name {!r}", name)
+            validate(_field_value_re, value, "Illegal header value {!r}", value)
+        assert isinstance(name, bytes)
+        assert isinstance(value, bytes)
+
+        raw_name = name
+        name = name.lower()
+        if name == b"content-length":
+            lengths = {length.strip() for length in value.split(b",")}
+            if len(lengths) != 1:
+                raise LocalProtocolError("conflicting Content-Length headers")
+            value = lengths.pop()
+            validate(_content_length_re, value, "bad Content-Length")
+            if len(value) > CONTENT_LENGTH_MAX_DIGITS:
+                raise LocalProtocolError("bad Content-Length")
+            if seen_content_length is None:
+                seen_content_length = value
+                new_headers.append((raw_name, name, value))
+            elif seen_content_length != value:
+                raise LocalProtocolError("conflicting Content-Length headers")
+        elif name == b"transfer-encoding":
+            # "A server that receives a request message with a transfer coding
+            # it does not understand SHOULD respond with 501 (Not
+            # Implemented)."
+            # https://tools.ietf.org/html/rfc7230#section-3.3.1
+            if saw_transfer_encoding:
+                raise LocalProtocolError(
+                    "multiple Transfer-Encoding headers", error_status_hint=501
+                )
+            # "All transfer-coding names are case-insensitive"
+            # -- https://tools.ietf.org/html/rfc7230#section-4
+            value = value.lower()
+            if value != b"chunked":
+                raise LocalProtocolError(
+                    "Only Transfer-Encoding: chunked is supported",
+                    error_status_hint=501,
+                )
+            saw_transfer_encoding = True
+            new_headers.append((raw_name, name, value))
+        else:
+            new_headers.append((raw_name, name, value))
+    return Headers(new_headers)
+>>>
+END_UNIT
+LOSS NONE
+END

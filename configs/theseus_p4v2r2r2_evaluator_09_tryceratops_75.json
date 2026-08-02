@@ -1,0 +1,57 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2R2_HIDDEN_FAIL_TRYCERATOPS"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2r2_evaluator_core.py",
+      "sha256": "3d5837e8495382c271751055ee88f4e1e30851caef44ab7894c294526ff54cb2",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_evaluator_core.py"
+    },
+    {
+      "destination": "theseus_p4v2r2r2_hidden_test.py",
+      "sha256": "d1a0665584ca5188c3bee5902238493dd51ec60d68c7acacffc50566a75baf24",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2r2_hidden_test.py', 'tryceratops'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed development task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "9c0e42657ecee9287958268b236803a185e9041ba41d3104be934d3cb601e7d5",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_target.tar.gz",
+  "target_archive_root": "tryceratops-67786fb9b5436417ef18c1e3c428bd529aaa8340",
+  "target_archive_sha256": "0a528dac1c656fd08ceabe0fdbbb9d847cbb9ff7721f55fe6a0c049ed08b2dfd",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r2_09_tryceratops_75_target_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "a9c6134eca032adcd10f8dbcaed95067c8cc39d5cc71f549bc78137faad5213c",
+    "registered_revision": "67786fb9b5436417ef18c1e3c428bd529aaa8340",
+    "revision": "67786fb9b5436417ef18c1e3c428bd529aaa8340",
+    "revision_correction_applied": false,
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_target_upstream.tar.gz",
+    "upstream_archive_sha256": "5204fffb2a3b580c55c042f52e04aac5ec13313ccf6b7d6af2df9e9c2db3213a"
+  },
+  "task_manifest": "configs/theseus_p4v2r2r2_task_09_tryceratops_75.json",
+  "task_manifest_sha256": "714165e68502283e715d959dd7aaa95021e6b8b0303b1a862a9002e5128017b8",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "e8c062253171eefbcde9f1403fe36b8cad1ff4d61ad66d5dbd647789c10c10f7"
+}

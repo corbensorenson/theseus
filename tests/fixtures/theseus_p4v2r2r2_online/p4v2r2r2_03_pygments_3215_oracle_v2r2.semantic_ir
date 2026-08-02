@@ -1,0 +1,51 @@
+THESEUS_SEMANTIC_IR_V2
+SOURCE 4b842545a671f33e33736d5a333286356bc408674616e87ac24dc4fea3b2f755
+ALL_OBLIGATIONS O1,O2,O3
+UNIT U1
+OBLIGATIONS O1,O2,O3
+OP REPLACE
+PATH pygments/formatters/other.py
+NODE N-D1E8F2527072AF4A
+NODE_SHA 3d3df758f4a3d9d51028adc077fc71dc19161f87893c40dc8124fbebfdb0c047
+<<<
+def format(self, tokensource, outfile):
+        try:
+            outfile.write(b'')
+        except TypeError:
+            raise TypeError('The raw tokens formatter needs a binary '
+                            'output file')
+        if self.compress == 'gz':
+            import gzip
+            outfile = gzip.GzipFile('', 'wb', 9, outfile)
+
+            write = outfile.write
+            flush = outfile.close
+        elif self.compress == 'bz2':
+            import bz2
+            compressor = bz2.BZ2Compressor(9)
+
+            def write(text):
+                outfile.write(compressor.compress(text))
+
+            def flush():
+                outfile.write(compressor.flush())
+                outfile.flush()
+        else:
+            write = outfile.write
+            flush = outfile.flush
+
+        if self.error_color:
+            for ttype, value in tokensource:
+                line = b"%r\t%r\n" % (ttype, value)
+                if ttype is Token.Error:
+                    write(colorize(self.error_color, line.decode()).encode())
+                else:
+                    write(line)
+        else:
+            for ttype, value in tokensource:
+                write(b"%r\t%r\n" % (ttype, value))
+        flush()
+>>>
+END_UNIT
+LOSS NONE
+END

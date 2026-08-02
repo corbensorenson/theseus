@@ -1,0 +1,159 @@
+{
+  "policy": "project_theseus_p4v2r2r2_post_fetch_task_contracts_v1",
+  "state": "SEALED_AFTER_SOURCE_AND_EVALUATOR_ADEQUACY_BEFORE_CANDIDATE_OR_CONTROL_GENERATION",
+  "source_registry": "configs/theseus_p4v2r2r2_task_sources.json",
+  "source_registry_sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c",
+  "revision_corrections": "configs/theseus_p4v2r2r2_revision_corrections.json",
+  "revision_repair_fetch": "reports/theseus_p4v2r2r2_revision_repair_fetch.json",
+  "candidate_or_control_calls_before_seal": 0,
+  "tasks": [
+    {
+      "stem": "p4v2r2r2_01_h11_181",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Reject Content-Length values longer than 20 decimal digits."},
+        {"id": "O2", "kind": "preserve", "text": "Accept valid Content-Length values up to 20 digits and preserve numeric, duplicate, and conflicting-value validation."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change other header normalization or files outside h11/_headers.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "searches": [{"literal": "content-length", "paths": ["h11/_headers.py"]}, {"literal": "normalize_and_validate", "paths": ["h11/_headers.py"]}],
+      "reads": [{"path": "h11/_headers.py", "start_line": 1, "end_line": 22}, {"path": "h11/_headers.py", "start_line": 65, "end_line": 205}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_H11", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [
+        {"id": "U1", "path": "h11/_headers.py", "obligation_ids": ["O1", "O2"], "operation": "INSERT_BEFORE", "parent_selector": {"node_type": "Assign", "contains": "_content_length_re ="}, "target_selectors": [{"node_type": "Assign", "contains": "CONTENT_LENGTH_MAX_DIGITS = 20"}]},
+        {"id": "U2", "path": "h11/_headers.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "normalize_and_validate", "contains": "validate(_content_length_re"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "normalize_and_validate", "contains": "CONTENT_LENGTH_MAX_DIGITS"}]}
+      ]
+    },
+    {
+      "stem": "p4v2r2r2_02_h2_1313",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Use exact equality when classifying short cookie header names."},
+        {"id": "O2", "kind": "require", "text": "Use exact equality when extracting the :method pseudo-header."},
+        {"id": "O3", "kind": "preserve", "text": "Preserve true cookie sensitivity, secure headers, true :method extraction, and pseudo-header validation."},
+        {"id": "O4", "kind": "non_goal", "text": "Do not change files outside src/h2/utilities.py."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "searches": [{"literal": "_secure_headers", "paths": ["src/h2/utilities.py"]}, {"literal": "_reject_pseudo_header_fields", "paths": ["src/h2/utilities.py"]}],
+      "reads": [{"path": "src/h2/utilities.py", "start_line": 65, "end_line": 110}, {"path": "src/h2/utilities.py", "start_line": 315, "end_line": 365}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_H2", "obligation_ids": ["O1", "O2", "O3"]}],
+      "oracle_units": [
+        {"id": "U1", "path": "src/h2/utilities.py", "obligation_ids": ["O1", "O3", "O4"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_secure_headers", "contains": "in b\"cookie\""}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "_secure_headers", "contains": "== b\"cookie\""}]},
+        {"id": "U2", "path": "src/h2/utilities.py", "obligation_ids": ["O2", "O3", "O4"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_reject_pseudo_header_fields", "contains": "in b\":method\""}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "_reject_pseudo_header_fields", "contains": "== b\":method\""}]}
+      ]
+    },
+    {
+      "stem": "p4v2r2r2_03_pygments_3215",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Colorize Error-token lines as text and encode the colored result back to bytes."},
+        {"id": "O2", "kind": "preserve", "text": "Preserve binary output, uncolored formatting, and non-error token output."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change compression modes or files outside pygments/formatters/other.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "searches": [{"literal": "class RawTokenFormatter", "paths": ["pygments/formatters/other.py"]}, {"literal": "error_color", "paths": ["pygments/formatters/other.py"]}],
+      "reads": [{"path": "pygments/formatters/other.py", "start_line": 55, "end_line": 120}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_PYGMENTS", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{"id": "U1", "path": "pygments/formatters/other.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "RawTokenFormatter.format", "contains": "colorize(self.error_color, line)"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "RawTokenFormatter.format", "contains": "line.decode()).encode()"}]}]
+    },
+    {
+      "stem": "p4v2r2r2_04_pluggy_545",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Preserve an implementation StopIteration through new-style wrapper teardown."},
+        {"id": "O2", "kind": "require", "text": "Preserve an implementation StopIteration when old-style and new-style wrappers share the slow path."},
+        {"id": "O3", "kind": "preserve", "text": "Do not swallow unrelated RuntimeError or teardown exceptions and preserve teardown ordering."},
+        {"id": "O4", "kind": "non_goal", "text": "Do not change hook dispatch or files outside src/pluggy/_callers.py."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "searches": [{"literal": "def _multicall", "paths": ["src/pluggy/_callers.py"]}, {"literal": "teardown.throw", "paths": ["src/pluggy/_callers.py"]}],
+      "reads": [{"path": "src/pluggy/_callers.py", "start_line": 45, "end_line": 210}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_PLUGGY", "obligation_ids": ["O1", "O2", "O3"]}],
+      "oracle_units": [{"id": "U1", "path": "src/pluggy/_callers.py", "obligation_ids": ["O1", "O2", "O3", "O4"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_multicall", "contains": "teardown.throw(exception)"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "_multicall", "contains": "re.__cause__ is exception"}]}]
+    },
+    {
+      "stem": "p4v2r2r2_05_asgiref_537",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A callable object's own context attribute must not overwrite the wrapper's configured context."},
+        {"id": "O2", "kind": "preserve", "text": "Preserve functools metadata wrapping, ordinary function wrapping, thread-sensitive configuration, and executor validation."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change asynchronous execution or files outside asgiref/sync.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "searches": [{"literal": "class SyncToAsync", "paths": ["asgiref/sync.py"]}, {"literal": "update_wrapper", "paths": ["asgiref/sync.py"]}],
+      "reads": [{"path": "asgiref/sync.py", "start_line": 390, "end_line": 465}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_ASGIREF", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{"id": "U1", "path": "asgiref/sync.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "SyncToAsync.__init__", "contains": "self.context = context"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "SyncToAsync.__init__", "contains": "functools.update_wrapper(self, func)"}]}]
+    },
+    {
+      "stem": "p4v2r2r2_06_platformdirs_469",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "When use_site_for_root is active, iter_config_dirs must not yield the site-backed user config directory twice."},
+        {"id": "O2", "kind": "require", "text": "When use_site_for_root is active, iter_data_dirs must not yield the site-backed user data directory twice."},
+        {"id": "O3", "kind": "preserve", "text": "When site substitution is inactive, preserve user-first followed by site-directory iteration."},
+        {"id": "O4", "kind": "non_goal", "text": "Do not change directory derivation or files outside src/platformdirs/unix.py."}
+      ],
+      "obligation_dependencies": [{"before": "O3", "after": "O1"}, {"before": "O3", "after": "O2"}],
+      "searches": [{"literal": "iter_config_dirs", "paths": ["src/platformdirs/unix.py"]}, {"literal": "iter_data_dirs", "paths": ["src/platformdirs/unix.py"]}],
+      "reads": [{"path": "src/platformdirs/unix.py", "start_line": 180, "end_line": 220}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_PLATFORMDIRS", "obligation_ids": ["O1", "O2", "O3"]}],
+      "oracle_units": [
+        {"id": "U2", "path": "src/platformdirs/unix.py", "obligation_ids": ["O2", "O3", "O4"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_UnixDefaults.iter_data_dirs", "contains": "yield self.user_data_dir"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "_UnixDefaults.iter_data_dirs", "contains": "if not self._use_site"}]},
+        {"id": "U1", "path": "src/platformdirs/unix.py", "obligation_ids": ["O1", "O3", "O4"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "_UnixDefaults.iter_config_dirs", "contains": "yield self.user_config_dir"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "_UnixDefaults.iter_config_dirs", "contains": "if not self._use_site"}]}
+      ]
+    },
+    {
+      "stem": "p4v2r2r2_07_markupsafe_418",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Normalize whitespace after comments and tags are removed so removal cannot create duplicate spaces."},
+        {"id": "O2", "kind": "preserve", "text": "Preserve entity unescaping, comment removal, tag removal, and ordinary whitespace normalization."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change escaping behavior or files outside src/markupsafe/__init__.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "searches": [{"literal": "def striptags", "paths": ["src/markupsafe/__init__.py"]}, {"literal": "collapse spaces", "paths": ["src/markupsafe/__init__.py"]}],
+      "reads": [{"path": "src/markupsafe/__init__.py", "start_line": 140, "end_line": 205}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_MARKUPSAFE", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{"id": "U1", "path": "src/markupsafe/__init__.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "Markup.striptags", "contains": "join(self.split())"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "Markup.striptags", "contains": "join(value.split())"}]}]
+    },
+    {
+      "stem": "p4v2r2r2_08_itsdangerous_378",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Do not access hashlib.sha1 while the signer module and signing classes are defined."},
+        {"id": "O2", "kind": "require", "text": "HMACAlgorithm must resolve its default SHA-1 digest lazily when used."},
+        {"id": "O3", "kind": "require", "text": "Signer must resolve its default SHA-1 digest lazily when used."},
+        {"id": "O4", "kind": "preserve", "text": "Preserve default SHA-1 signatures and explicit digest override behavior."},
+        {"id": "O5", "kind": "non_goal", "text": "Do not change key derivation, encoding, or files outside src/itsdangerous/signer.py."}
+      ],
+      "obligation_dependencies": [{"before": "O4", "after": "O1"}, {"before": "O1", "after": "O2"}, {"before": "O1", "after": "O3"}],
+      "searches": [{"literal": "default_digest_method", "paths": ["src/itsdangerous/signer.py"]}, {"literal": "class HMACAlgorithm", "paths": ["src/itsdangerous/signer.py"]}, {"literal": "class Signer", "paths": ["src/itsdangerous/signer.py"]}],
+      "reads": [{"path": "src/itsdangerous/signer.py", "start_line": 1, "end_line": 140}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_ITSDANGEROUS", "obligation_ids": ["O1", "O2", "O3", "O4"]}],
+      "oracle_units": [
+        {"id": "U1", "path": "src/itsdangerous/signer.py", "obligation_ids": ["O1", "O2", "O4", "O5"], "operation": "REPLACE", "parent_selector": {"node_type": "AnnAssign", "qualified_name": "HMACAlgorithm", "contains": "staticmethod(hashlib.sha1)"}, "target_selectors": [{"node_type": "AnnAssign", "qualified_name": "HMACAlgorithm", "contains": "staticmethod(_lazy_sha1)"}], "oracle_replacement": "default_digest_method: t.Any = staticmethod(lambda string=b\"\": hashlib.sha1(string))"},
+        {"id": "U2", "path": "src/itsdangerous/signer.py", "obligation_ids": ["O1", "O3", "O4", "O5"], "operation": "REPLACE", "parent_selector": {"node_type": "AnnAssign", "qualified_name": "Signer", "contains": "staticmethod(hashlib.sha1)"}, "target_selectors": [{"node_type": "AnnAssign", "qualified_name": "Signer", "contains": "staticmethod(_lazy_sha1)"}], "oracle_replacement": "default_digest_method: t.Any = staticmethod(lambda string=b\"\": hashlib.sha1(string))"}
+      ]
+    },
+    {
+      "stem": "p4v2r2r2_09_tryceratops_75",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Do not classify an f-string as a long raise argument when its constant text contains no whitespace."},
+        {"id": "O2", "kind": "preserve", "text": "Continue classifying literal and f-string raise arguments whose constant text contains whitespace."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change other analyzers or files outside src/tryceratops/analyzers/call.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "searches": [{"literal": "CallRaiseLongArgsAnalyzer", "paths": ["src/tryceratops/analyzers/call.py"]}, {"literal": "ast.JoinedStr", "paths": ["src/tryceratops/analyzers/call.py"]}],
+      "reads": [{"path": "src/tryceratops/analyzers/call.py", "start_line": 20, "end_line": 60}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_TRYCERATOPS", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{"id": "U1", "path": "src/tryceratops/analyzers/call.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "CallRaiseLongArgsAnalyzer._check_raise_callable", "contains": "isinstance(first_arg, ast.JoinedStr)"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "CallRaiseLongArgsAnalyzer._check_raise_callable", "contains": "for f_string_part in first_arg.values"}]}]
+    },
+    {
+      "stem": "p4v2r2r2_10_xarray_11401",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "RangeIndex.linspace with endpoint=True and num=1 must not divide by zero."},
+        {"id": "O2", "kind": "preserve", "text": "Preserve endpoint spacing for num greater than one and endpoint=False behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Do not change RangeIndex construction or files outside xarray/indexes/range_index.py."}
+      ],
+      "obligation_dependencies": [{"before": "O2", "after": "O1"}],
+      "searches": [{"literal": "def linspace", "paths": ["xarray/indexes/range_index.py"]}, {"literal": "if endpoint", "paths": ["xarray/indexes/range_index.py"]}],
+      "reads": [{"path": "xarray/indexes/range_index.py", "start_line": 285, "end_line": 365}],
+      "visible_markers": [{"marker": "P4V2R2R2_VISIBLE_FAIL_XARRAY", "obligation_ids": ["O1", "O2"]}],
+      "oracle_units": [{"id": "U1", "path": "xarray/indexes/range_index.py", "obligation_ids": ["O1", "O2", "O3"], "operation": "REPLACE", "parent_selector": {"node_type": "FunctionDef", "qualified_name": "RangeIndex.linspace", "contains": "if endpoint:"}, "target_selectors": [{"node_type": "FunctionDef", "qualified_name": "RangeIndex.linspace", "contains": "if endpoint and num > 1:"}]}]
+    }
+  ],
+  "maximum_inference": "These contracts bind candidate-visible obligations and source context plus candidate-hidden oracle selectors for the ten already-sealed source identities. They grant no candidate, mechanism, D1, D2, training, serving, or ASI Stack support evidence."
+}

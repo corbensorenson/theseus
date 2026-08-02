@@ -1,0 +1,13 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 61dd2eda3e448f368c1bdd9247e6de3bb72c45ff182d5f870d588b8f0e67e71e
+OBLIGATIONS O1,O2,O3,O4,O5
+UNIT U1 O1,O2,O4,O5 REPLACE src/itsdangerous/signer.py N-EE6E2080A189ADAA 09f78d8b4c335b0627d9b481d12396aefb81ee6705c0d6af3584fb740367d0ad
+<<<
+default_digest_method: t.Any = staticmethod(lambda string=b"": hashlib.sha1(string))
+>>>
+UNIT U2 O1,O3,O4,O5 REPLACE src/itsdangerous/signer.py N-48651A28D4DEA059 09f78d8b4c335b0627d9b481d12396aefb81ee6705c0d6af3584fb740367d0ad
+<<<
+default_digest_method: t.Any = staticmethod(lambda string=b"": hashlib.sha1(string))
+>>>
+LOSS NONE
+END

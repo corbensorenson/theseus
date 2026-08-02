@@ -1,0 +1,57 @@
+{
+  "baseline_failure_markers": [
+    "P4V2R2R2_HIDDEN_FAIL_XARRAY"
+  ],
+  "baseline_must_fail": true,
+  "blindness": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_generation_may_read_this_manifest": false,
+    "hidden_test_candidate_visible": false,
+    "later_patch_candidate_visible": false,
+    "oracle_candidate_visible": false,
+    "route_label_passed_to_scoring": false
+  },
+  "hidden_test_files": [
+    {
+      "destination": "theseus_p4v2r2r2_evaluator_core.py",
+      "sha256": "3d5837e8495382c271751055ee88f4e1e30851caef44ab7894c294526ff54cb2",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_evaluator_core.py"
+    },
+    {
+      "destination": "theseus_p4v2r2r2_hidden_test.py",
+      "sha256": "d1a0665584ca5188c3bee5902238493dd51ec60d68c7acacffc50566a75baf24",
+      "source": "tests/fixtures/theseus_p4v2r2r2_online/theseus_p4v2r2r2_hidden_test.py"
+    }
+  ],
+  "hidden_verifier": {
+    "command": [
+      "python3",
+      "-c",
+      "import os; os.execv('/usr/local/bin/python3', ['python3', 'theseus_p4v2r2r2_hidden_test.py', 'xarray'])"
+    ],
+    "network": "forbidden",
+    "timeout_seconds": 60
+  },
+  "maximum_inference": "A GREEN audit establishes evaluator reachability and sensitivity for one sealed development task only.",
+  "oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_oracle_v1.semantic_ir",
+  "oracle_ir_sha256": "b1f9bfec3e82176d880c613b5415dbc3b9a20d6f69e65e364be677a5d0b6f49d",
+  "policy": "project_theseus_p4_cognitive_compilation_evaluator_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "target_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_target_revision_corrected.tar.gz",
+  "target_archive_root": "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+  "target_archive_sha256": "646b6f6b1f490a3471b7e90f842eb0380c7f550411ea086e8af377ba03e0a655",
+  "target_must_pass": true,
+  "target_provenance": {
+    "archive_sanitization_report": "reports/theseus_p4v2r2r2_10_xarray_11401_target_revision_corrected_archive_sanitization.json",
+    "archive_sanitization_report_sha256": "11e8c5b754fa6ea68cda6898bba83209492ab93838a1cb33a2ce7411b4974108",
+    "registered_revision": "d3dcda7ca86165078a474427bd7f3d398ab087e0",
+    "revision": "13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+    "revision_correction_applied": true,
+    "upstream_archive": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_target_revision_corrected_upstream.tar.gz",
+    "upstream_archive_sha256": "890a35b7271941af1d251748d025f6f76ae2db95ca08fdb2c286ad31c0a3ae39"
+  },
+  "task_manifest": "configs/theseus_p4v2r2r2_task_10_xarray_11401.json",
+  "task_manifest_sha256": "1efbc41377a13365907639f31c2e1ebd7dd70d782abb8e28dfd18e45e9a6eb79",
+  "treatment_transport_oracle_ir_file": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_oracle_v2r2.semantic_ir",
+  "treatment_transport_oracle_ir_sha256": "d8854c6ee313a5bb44f0b5f5a17f42038417f3ab15d915bdf6c75ba8595d65bd"
+}

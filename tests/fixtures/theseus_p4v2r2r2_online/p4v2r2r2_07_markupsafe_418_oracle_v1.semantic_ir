@@ -1,0 +1,52 @@
+THESEUS_SEMANTIC_IR_V1
+SOURCE 8ef9ead792b614fd9079c0285a4d9ae9d2492fa160a32e9bfc2d5f21b04b403d
+OBLIGATIONS O1,O2,O3
+UNIT U1 O1,O2,O3 REPLACE src/markupsafe/__init__.py N-F9A22E832DDDACAA 001f94522ed2c973e30abf0c8be8cf6b957ef2a82ec07032a431070b304896ce
+<<<
+def striptags(self) -> str:
+        """:meth:`unescape` the markup, remove tags, and normalize
+        whitespace to single spaces.
+
+        >>> Markup("Main &raquo;\t<em>About</em>").striptags()
+        'Main » About'
+        """
+        value = str(self)
+
+        # Look for comments then tags separately. Otherwise, a comment that
+        # contains a tag would end early, leaving some of the comment behind.
+
+        while True:
+            # keep finding comment start marks
+            start = value.find("<!--")
+
+            if start == -1:
+                break
+
+            # find a comment end mark beyond the start, otherwise stop
+            end = value.find("-->", start)
+
+            if end == -1:
+                break
+
+            value = f"{value[:start]}{value[end + 3:]}"
+
+        # remove tags using the same method
+        while True:
+            start = value.find("<")
+
+            if start == -1:
+                break
+
+            end = value.find(">", start)
+
+            if end == -1:
+                break
+
+            value = f"{value[:start]}{value[end + 1:]}"
+
+        # collapse spaces
+        value = " ".join(value.split())
+        return self.__class__(value).unescape()
+>>>
+LOSS NONE
+END
