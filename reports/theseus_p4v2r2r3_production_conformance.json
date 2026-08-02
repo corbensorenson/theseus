@@ -1,0 +1,604 @@
+{
+  "bindings": {
+    "causal_runner": {
+      "path": "scripts/theseus_p4v2r2_cognitive_compilation.py",
+      "sha256": "95426ca2a6d7b6edc6cda66028fbc3498bf44bba298d96036da943fe247c7e67"
+    },
+    "exact_prompt_token_counter": {
+      "path": "scripts/theseus_exact_prompt_token_count.py",
+      "sha256": "c576fd58f904da2b23f639900bf26e6b33afbd8c42caeb432a140ca0b4113395"
+    },
+    "instrument": {
+      "path": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",
+      "sha256": "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260bab76"
+    },
+    "pool": {
+      "path": "configs/theseus_p4v2r2r2_task_pool.json",
+      "sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f"
+    },
+    "release_runner": {
+      "path": "scripts/theseus_p4v2r2r4_cognitive_compilation.py",
+      "sha256": "dc590cb6c98f5481cc7e0aa2b7aa03ae2ff7e756a83b486b090ccc8733477463"
+    },
+    "semantic_parser": {
+      "path": "scripts/theseus_semantic_ir_v2r2.py",
+      "sha256": "092a44f17965c09f4603c40956826d5738fe9b7792c7c92736641cad242790b0"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "coverage": {
+    "delimiter_round_trips": 30,
+    "frozen_tasks": 10,
+    "malformed_rejections": 30,
+    "operation_mechanics": {
+      "INSERT_AFTER": 1,
+      "INSERT_BEFORE": 1,
+      "REPLACE": 13
+    },
+    "oracle_parse_lower_apply_visible_passes_required": 30,
+    "production_first_prompts": 30,
+    "production_repair_prompts": 30
+  },
+  "created_utc": "2026-08-02T06:30:09.228337Z",
+  "external_inference_calls": 0,
+  "faults": [],
+  "hidden_evaluator_calls": 0,
+  "interrupted_launch_reuse_custody": {
+    "blind_evaluations_before_gate": 0,
+    "candidate_or_control_output_influenced_instrument": false,
+    "candidate_run_reports_before_gate": 0,
+    "durable_call_start_receipts_before_gate": 0,
+    "durable_runtime_receipts_before_gate": 0,
+    "instrument_change_source": "joined static production-path audit and frozen evaluator-only oracle replay",
+    "instrument_changes": [
+      "advertise all parser-reachable semantic operations",
+      "restore exact direct/plan grammar in the bound local instrument",
+      "correct batched exact-token sequence counting",
+      "add durable pre-inference call-start custody"
+    ],
+    "lease": {
+      "model_call_opened": "UNKNOWN",
+      "path": "reports/theseus_p4v2r2r4_campaign_leases/8babf90cc4da4dbd9f9185282766c3f2.json",
+      "scientific_status": "NO_DURABLE_OBSERVATION",
+      "sha256": "459a7f9eac01ce544574f36c044a98f91caf28b3d468aefdea7d6a9ba5eae7e2",
+      "state": "STOPPED_RETAIN_EVIDENCE"
+    },
+    "maximum_inference": "No durable or author-observable candidate/control output from the interrupted launch was available to influence this release. The in-memory call-open state remains UNKNOWN and is not rewritten as zero calls.",
+    "observed_candidate_or_control_outputs_available_to_release": 0
+  },
+  "maximum_inference": "Production-path mechanics, transport conformance, frozen-oracle visible replay, and pre-model physical prompt addressability only; no model, mechanism, D1, D2, or book-support inference.",
+  "policy": "project_theseus_p4v2r2r3_production_conformance_v1",
+  "project_selected_quality_token_cap": null,
+  "prompt_addressability": {
+    "candidate_or_control_calls": 0,
+    "faults": [],
+    "maximum_inference": "Pre-model physical prompt addressability only; no generation, task-quality, model, or mechanism inference.",
+    "minimum_context_residual_tokens": 257268,
+    "policy": "project_theseus_exact_local_prompt_addressability_v1",
+    "project_selected_quality_token_cap": null,
+    "prompt_count": 60,
+    "prompts": {
+      "p4v2r2r2_01_h11_181:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 3650,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258494,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "95732171a7914fdf12873ccb5b92496aa58091c40adf190453cd96201906eb4d"
+      },
+      "p4v2r2r2_01_h11_181:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 4407,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 257737,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "4a5a6f9f5f23bef814bd173938a3d712628e988af3e55a70951cd3937b968de2"
+      },
+      "p4v2r2r2_01_h11_181:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 3672,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258472,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "ebf71c9698b2198f624103b80cbd006884bf1959766bf46842fe931af78fe075"
+      },
+      "p4v2r2r2_01_h11_181:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 4448,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 257696,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "007e67ef6aa095abd7203298d70f4ae71cb588d7fef08ede2c91b689e677c111"
+      },
+      "p4v2r2r2_01_h11_181:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 3828,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258316,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "02ea7ecc14ce7a9f12fac5f8b5e5d9cb2a7600e26414300870c100d29e519c4d"
+      },
+      "p4v2r2r2_01_h11_181:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 4876,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 257268,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "e9319553e91b6e419cccc7c290af9092d462f6d872765d0365607955f761faf2"
+      },
+      "p4v2r2r2_02_h2_1313:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 2146,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259998,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "8c4efebcd4ae29557452d3f99361bcaaa9befb0c18065d892c6b49117057bfd9"
+      },
+      "p4v2r2r2_02_h2_1313:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 2915,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259229,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "add773a61f8d224ff922726c35aa540c5a056c2229b86f98514edbc077f31e23"
+      },
+      "p4v2r2r2_02_h2_1313:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 2168,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259976,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "8b16a4f25746ac434d7c4d63f8892ea39c89b01308ac682e5a10d275089dd236"
+      },
+      "p4v2r2r2_02_h2_1313:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 2956,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259188,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "70b44c7acc2aaefd6ddd37b6c71ab8a8d4c72fb80d8bc06a18c0131cde99b1d6"
+      },
+      "p4v2r2r2_02_h2_1313:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 2324,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259820,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "7915da1c4725c85f95e903b15a238ddb66d0b3559039367d25ac12cc024d4470"
+      },
+      "p4v2r2r2_02_h2_1313:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 3397,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258747,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "cd6cdb3074a2d54a0e97de8513714fb8d0ee9b24522cd8bcef7a08dcfe34c238"
+      },
+      "p4v2r2r2_03_pygments_3215:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 2088,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260056,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "8a6cee5e457667d8212058721c0afd2944b2ae5b7987acdd8df57cc83c77372e"
+      },
+      "p4v2r2r2_03_pygments_3215:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 2511,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259633,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "a762130d41a5a81fc2b8f9c62809dc4516f6a3b6dcb4fc8dd6e83c46025f144f"
+      },
+      "p4v2r2r2_03_pygments_3215:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 2110,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260034,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "c3ff708011f24a2f4243ecdfca26930dedff51efb351b2daa2233939c9e7ae23"
+      },
+      "p4v2r2r2_03_pygments_3215:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 2552,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259592,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "e0306f862ed3db227ba77c6d03475b3a6733fb38f85fa64317edd9791a1676ac"
+      },
+      "p4v2r2r2_03_pygments_3215:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 2266,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259878,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "ae75dee95b1265f13caec5ac7ebe13dc106799f15c0732942b7e07dbcbaa64f0"
+      },
+      "p4v2r2r2_03_pygments_3215:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 2892,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259252,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "f4cf622c4d3a8bfd129867f07e9328c68a47286893acde9accfa528e8b4f041f"
+      },
+      "p4v2r2r2_04_pluggy_545:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 1943,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260201,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "3080120697bf2d214560707d1ccca605f9eb20225c6337c75b79907cc94b8db9"
+      },
+      "p4v2r2r2_04_pluggy_545:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 3360,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258784,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "c295ee1ec4fbc7a7384b593b1b3b0857a5fb3360a59cdc157f24b215196676bf"
+      },
+      "p4v2r2r2_04_pluggy_545:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 1965,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260179,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "94f00e87712561547324b25b3d702885498da93b95ce917f958864c5f6d1276e"
+      },
+      "p4v2r2r2_04_pluggy_545:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 3401,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258743,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "0f998e876ce3407195934b920cdf7a7283edfd16ae6278bc0d8b55b60c1261af"
+      },
+      "p4v2r2r2_04_pluggy_545:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 2121,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260023,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "4cc0a038fb87c1e9a8f12f79bacd4d49df96e017779eb179385fa01e2978e59c"
+      },
+      "p4v2r2r2_04_pluggy_545:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 3748,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258396,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "0e102da0f52e78f0f6b9246108e130dcadfaa1af11a40d066ca1e66bc3c189c0"
+      },
+      "p4v2r2r2_05_asgiref_537:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 2012,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260132,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "2acae6ada712a2562a53804650bd725eecb1006c4acc182c1db6f29868b287ce"
+      },
+      "p4v2r2r2_05_asgiref_537:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 2380,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259764,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "8da81c63e6845f3d485cf370b1d334aeca11e2b31524d803da0a03d11f98c43f"
+      },
+      "p4v2r2r2_05_asgiref_537:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 2034,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260110,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "c6d1bf9f55981d06510887dd83ae2f7fbab4dae0250fb377fe6f062d96471f89"
+      },
+      "p4v2r2r2_05_asgiref_537:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 2421,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259723,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "da6463feddade6d98839c1b207086a2204c4cd73499fb22b8be6c62db8906b05"
+      },
+      "p4v2r2r2_05_asgiref_537:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 2190,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259954,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "bcc2166e0fc79b9a694a00646e46637ac9aa978bc82f75728f417653bab9291b"
+      },
+      "p4v2r2r2_05_asgiref_537:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 2762,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259382,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "2ae8295c103a6705b2baf3b5d0cd93b2b81a2ca9ed45aa4c067437113e2b1c24"
+      },
+      "p4v2r2r2_06_platformdirs_469:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 1561,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260583,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "dd4b4af05f6a31f78e302152411845d70045eb46df46d822790c9739fb030e41"
+      },
+      "p4v2r2r2_06_platformdirs_469:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 1837,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260307,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "2739cfdfeb0045ea766f5b9c9a91903f1dc0638be60b8e7ccb2d81f0108a077d"
+      },
+      "p4v2r2r2_06_platformdirs_469:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 1583,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260561,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "11728d3c5716916e7bec7feaf6721c0e609a682d8135482b42af7bf89ae763cb"
+      },
+      "p4v2r2r2_06_platformdirs_469:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 1878,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260266,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "4c6c2dda45a4c0f49607764e604938f76610e4311315b80e20d47436db803f47"
+      },
+      "p4v2r2r2_06_platformdirs_469:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 1739,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260405,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "31b5909335c4e68f019e0dc7388438ed96bf50d8b8097268dddce1ddcec8cd25"
+      },
+      "p4v2r2r2_06_platformdirs_469:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 2317,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259827,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "530b151e882f135276b8fb810f93355fc3651b6ae32f74f5da8765ad356e7552"
+      },
+      "p4v2r2r2_07_markupsafe_418:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 1325,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260819,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "2736ed76f4d3d0cbb0ab5363a40a2ca7969f8330d5641d6fe818e5ea70ea4b77"
+      },
+      "p4v2r2r2_07_markupsafe_418:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 1767,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260377,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "5d6aafc07eda13b2e5c94e64e9f41c720cede488998284089646497df6301d84"
+      },
+      "p4v2r2r2_07_markupsafe_418:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 1347,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260797,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "dc37b1f1c9af1d949dcea18adb976de0770bb4db391561ab2444e0719e17c6c6"
+      },
+      "p4v2r2r2_07_markupsafe_418:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 1808,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260336,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "0c8881e3eeff21d6dc800873ffaefb526650d3b088c2a507396d483649a389b5"
+      },
+      "p4v2r2r2_07_markupsafe_418:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 1503,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260641,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "06b08b200ac72fe84b5cec09fbc4ed1df8ba10a1fa69bf970013aa00e5117251"
+      },
+      "p4v2r2r2_07_markupsafe_418:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 2145,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259999,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "2d6e6c1e1d0c50895731d088a12c1bbb780c9e0be253e4d4fca7a2cb06a80360"
+      },
+      "p4v2r2r2_08_itsdangerous_378:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 3005,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259139,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "fa361b30fce9989dd7389c3a0e5c827706c8a98495fb92b1f05c862208de758a"
+      },
+      "p4v2r2r2_08_itsdangerous_378:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 3229,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258915,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "4b6669b2c670e39747d871f6dada60a2587c8ccfc1749356c0fe5a2d7eb14205"
+      },
+      "p4v2r2r2_08_itsdangerous_378:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 3027,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259117,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "968a47b8edb95e5495737177fc5c658716f003f58ee311d999e6be44ae81019d"
+      },
+      "p4v2r2r2_08_itsdangerous_378:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 3270,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258874,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "f98480313df6cb7e1ad9f6cde10b4bc3f155161165cd95baeb57cfc8a2cba78c"
+      },
+      "p4v2r2r2_08_itsdangerous_378:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 3183,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258961,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "a06b919f36a9345b5e2a54c1d9b8cb6d4281c815ebbe7ee2527b67fc8dd92b17"
+      },
+      "p4v2r2r2_08_itsdangerous_378:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 3713,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 258431,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "3ea77ea1429b265bffd5b2e0b95e6a0198d2c6f4b7f0a088cbc0b9a17ad848ff"
+      },
+      "p4v2r2r2_09_tryceratops_75:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 1962,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260182,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "000b0b0ff3c78e4493a77b8f06368aeb3b537b45f2e12bf2d703293d7b819a7e"
+      },
+      "p4v2r2r2_09_tryceratops_75:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 2276,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259868,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "d6869a94a08a4d1fd9f01965bf1f1573f3a5a1bc4984bacd0311d21eb1a9a5b1"
+      },
+      "p4v2r2r2_09_tryceratops_75:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 1984,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260160,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "31c51ca551eb9c6998e14ba8a6c94cecd1af1f2ad40607b14610bd1c1babf0d3"
+      },
+      "p4v2r2r2_09_tryceratops_75:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 2317,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259827,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "2fd6932d94adc6a05a8eec098ea3c857f9cbe0997ca1e058418411e2a3a3e781"
+      },
+      "p4v2r2r2_09_tryceratops_75:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 2140,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260004,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "768e880b76dec633f91c14dde56ad1ff866dd2ca23b66ec4b32351b41ae6c8fa"
+      },
+      "p4v2r2r2_09_tryceratops_75:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 2652,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259492,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "e84afe0ec65047cd436b1a8dbaad8105b121e429955e6f2feccea2b6677bbefa"
+      },
+      "p4v2r2r2_10_xarray_11401:direct_target_generation:first": {
+        "exact_chat_templated_prompt_tokens": 1408,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260736,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "675a761192303367b42e467652f501671862509d5d66cb28d9fc242a3492c370"
+      },
+      "p4v2r2r2_10_xarray_11401:direct_target_generation:repair": {
+        "exact_chat_templated_prompt_tokens": 2080,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260064,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "fecfce2134812a9b3f270a425c0be14e1e933a0c6a5b642a77f8b994e6bca8ed"
+      },
+      "p4v2r2r2_10_xarray_11401:natural_language_plan_control:first": {
+        "exact_chat_templated_prompt_tokens": 1430,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260714,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "301a048b572078b6238d4113ef2e73abb2775c341faaafb81e057b79cc24ffa5"
+      },
+      "p4v2r2r2_10_xarray_11401:natural_language_plan_control:repair": {
+        "exact_chat_templated_prompt_tokens": 2121,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260023,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "dd30341946c0cec92da5f47cadd79280f362017e6c21fa9cfcc2e74558ff7ff1"
+      },
+      "p4v2r2r2_10_xarray_11401:typed_semantic_ir_treatment:first": {
+        "exact_chat_templated_prompt_tokens": 1586,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 260558,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "797a9f95be2bf943954d34139377eed5a8032f6610e3de8fbaf91c8cad396133"
+      },
+      "p4v2r2r2_10_xarray_11401:typed_semantic_ir_treatment:repair": {
+        "exact_chat_templated_prompt_tokens": 2458,
+        "model_declared_context_window_tokens": 262144,
+        "physical_context_residual_tokens": 259686,
+        "project_selected_quality_token_cap": null,
+        "prompt_sha256": "5d67d6257c9ee2815483dbf9e08c87f15853ddff11ce312d4eba63f2eaca3ebb"
+      }
+    },
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "system_prompt_sha256": "074e8742a6230d958be70f10386c354c0a726e20107c63b49a94d9a4d698c11d",
+    "tokenizer_config_sha256": "95c557768e6b88a7128befc7bfd3c7de50e5d51af9b8b33a9f4dee0e04f99679",
+    "tokenizer_json_sha256": "06b9509352d2af50381ab2247e083b80d32d5c0aba91c272ca9ff729b6a0e523",
+    "trigger_state": "GREEN",
+    "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+  },
+  "runtime_ms": 5447.329,
+  "tasks": [
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_01_h11_181"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_02_h2_1313"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_03_pygments_3215"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_04_pluggy_545"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_05_asgiref_537"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_06_platformdirs_469"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_07_markupsafe_418"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_08_itsdangerous_378"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_09_tryceratops_75"
+    },
+    {
+      "candidate_or_control_calls": 0,
+      "direct_plan_semantic_oracle_controls": 3,
+      "first_prompts": 3,
+      "hidden_evaluator_calls": 0,
+      "repair_prompts": 3,
+      "semantic_oracle_parse_lower_apply_visible": true,
+      "stem": "p4v2r2r2_10_xarray_11401"
+    }
+  ],
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

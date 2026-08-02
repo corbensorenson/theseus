@@ -89,6 +89,8 @@ def test_projected_instrument_changes_only_attempt_and_prompt_repair_fields() ->
     )
 
     ignored = {
+        "base_local_instrument",
+        "base_local_instrument_sha256",
         "runtime_attempt_namespace",
         "state",
         "prompt_continuity_repair",
@@ -97,3 +99,69 @@ def test_projected_instrument_changes_only_attempt_and_prompt_repair_fields() ->
     assert {key: value for key, value in projected.items() if key not in ignored} == {
         key: value for key, value in base.items() if key not in ignored
     }
+    assert projected["base_local_instrument"] == overlay["release_local_instrument"]
+    assert (
+        projected["base_local_instrument_sha256"]
+        == overlay["release_local_instrument_sha256"]
+    )
+
+
+def test_pre_inference_custody_is_durable_and_fail_closed(
+    tmp_path: Path, monkeypatch
+) -> None:
+    call_directory = tmp_path / "call-starts"
+    monkeypatch.setattr(runner, "CALL_START_DIRECTORY", call_directory)
+    runtime_report = tmp_path / "runtime-report.json"
+    runtime_report.write_text('{"trigger_state":"GREEN"}\n', encoding="utf-8")
+
+    def fake_runtime_call(*args, **kwargs):
+        return {
+            "assistant_text": "answer",
+            "runtime_report": {"trigger_state": "GREEN"},
+            "receipt": {
+                "report_path": str(runtime_report),
+                "report_sha256": runner.p2a.sha256_file(runtime_report),
+                "candidate_output_sha256": runner.p2a.sha256_text("answer"),
+                "runtime_trigger_state": "GREEN",
+                "route_integrity_ready": True,
+            },
+        }
+
+    governed = runner.bind_pre_inference_custody(fake_runtime_call)
+    governed(
+        "direct",
+        "task_typed_semantic_ir_treatment_p4v2r2r4_attempt1",
+        1,
+        "prompt",
+        262144,
+        "configs/theseus_assistant_runtime.json",
+    )
+    path = runner.call_start_path(
+        "task_typed_semantic_ir_treatment_p4v2r2r4_attempt1", 1
+    )
+    receipt = json.loads(path.read_text(encoding="utf-8"))
+    assert receipt["state"] == "RETURNED_WITH_RUNTIME_RECEIPT"
+    assert receipt["runtime_report_binding_valid"] is True
+    assert receipt["prompt_retained"] is False
+    assert receipt["candidate_output_retained"] is False
+
+    try:
+        governed(
+            "direct",
+            "task_typed_semantic_ir_treatment_p4v2r2r4_attempt1",
+            1,
+            "prompt",
+            262144,
+            "configs/theseus_assistant_runtime.json",
+        )
+    except FileExistsError:
+        pass
+    else:
+        raise AssertionError("duplicate inference call was not rejected")
+
+
+def test_semantic_prompt_advertises_every_parser_reachable_operation() -> None:
+    prompt = runner.causal.render_arm_prompt(
+        runner.p4.SEMANTIC, {"natural_request": "task"}, "context", {}
+    )
+    assert "OP <REPLACE|INSERT_BEFORE|INSERT_AFTER>" in prompt

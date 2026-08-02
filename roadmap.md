@@ -696,11 +696,31 @@ lowerer, applier, and visible verifier as one joined path. The gate must:
 - emit one source-bound conformance receipt consumed by campaign preflight, not
   a parallel test-only renderer.
 
-This is the last pre-call instrument release boundary. If the conformance gate
-is RED, park P4 and repair the instrument without consuming the sealed tasks.
-Once it is GREEN, source-lock and run the campaign once. After any learned call
-begins, a grammar or transport defect is terminal `INCONCLUSIVE_IMPLEMENTATION`
-evidence for that exact instrument; do not mint another nearby sealed campaign
+The final gate is now implemented and GREEN before a candidate call. It found
+and repaired two exact production defects that isolated mechanics tests had
+missed: the model-visible semantic shape advertised only `REPLACE` although
+the bound parser and a frozen oracle require `INSERT_BEFORE`, and the final
+local instrument omitted the direct/plan grammar string entirely. It also
+found that the shared exact-token counter was measuring a tokenizer
+`BatchEncoding` by its two mapping keys instead of by input-sequence length.
+The corrected receipt replays all three arms on all ten frozen tasks through
+the exact renderer, parser, lowerer, disposable applier, and complete visible
+verifier; covers `REPLACE`, `INSERT_BEFORE`, and `INSERT_AFTER`; accepts 30
+allowed delimiter variants; rejects 30 malformed controls; and counts all 60
+complete first/repair prompts with the pinned tokenizer. The smallest physical
+context residual is 257,268 tokens. Candidate/control calls and hidden-evaluator
+calls are both zero.
+
+Interrupted-launch reuse custody remains honest: the retained lease still says
+`model_call_opened=UNKNOWN`, but there are zero durable runtime receipts, call-
+start receipts, candidate run reports, or blind evaluations available to have
+influenced this repair. A durable, exclusive `STARTED_PRE_INFERENCE` receipt is
+now fsynced before every task inference call and advanced to a runtime-report-
+bound terminal state after return; a duplicate or orphaned start fails closed.
+This is the last pre-call instrument release boundary. Source-lock it and run
+the campaign once when machine predicates pass. After any learned call begins,
+a grammar or transport defect is terminal `INCONCLUSIVE_IMPLEMENTATION`
+evidence for this exact instrument; do not mint another nearby sealed campaign
 or rescore the consumed surface.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
@@ -797,7 +817,7 @@ book-support promotion, or a user approval gate.
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_HISTORICAL_BOUNDED_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid. The project-selected 1,536-token ceiling and missing natural-termination custody limit this to historical bounded evidence |
 | P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; its evidence is immutable and D1/book support remain closed |
-| P4 causal development | `P4V2R2R3_NO_DURABLE_OBSERVATION_CONFORMANCE_RELEASE_CANDIDATE` | The complete-artifact successor removes project-selected generation, first-artifact, and verifier-feedback caps and keeps the same frozen TMax, ten-task source denominator, controls, and evaluator. A review-time launcher interruption left no campaign progress, runtime receipt, candidate, or evaluator output, but call-open state is unknown; its lease is retained as no durable observation. Before autonomous execution resumes, the final source-bound release candidate must prove reuse custody, add a durable pre-inference call-start receipt, and pass exhaustive joined production render/grammar/transport/parser/lower/apply/verifier conformance; then it runs once or is parked without another reseal |
+| P4 causal development | `P4V2R2R3_CONFORMANCE_GREEN_AWAITING_SOURCE_LOCKED_RUN` | The final zero-call production gate is GREEN: exact joined replay repaired the missing direct/plan grammar, incomplete semantic operation shape, and batched-token counting bug; all 10 frozen tasks, 30 arm replays, 60 first/repair prompts, three operations, 30 delimiter variants, and 30 malformed controls pass with a 257,268-token minimum physical residual. Interrupted call-open state remains `UNKNOWN`, but no durable candidate/control output existed to influence the release. Durable exclusive pre-inference call-start receipts now make future call custody decidable. Source-lock and run this campaign once; do not reseal again. |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
 | D1 stack efficacy | `PROSPECTIVELY_BOUND_P4V2R2R3_CONTROLLER_INCOMPLETE` | Prior worker was inadequate; fresh D1 is bound to the exact P4V2R2R3 survivor only. Source acquisition, evaluator seal, sandbox, matched campaign, blind evaluation, and terminal disposition are implemented; append-only underfill recovery and the autonomous end-to-end pipeline controller remain open |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
@@ -828,11 +848,13 @@ book-support promotion, or a user approval gate.
    receipts, blind evaluations, and zero-unsafe rollback-valid denominator.
    Never replay or replace a task, and do not promote the integrated
    parseability shift into a usefulness or subsystem claim.
-7. Build and bind the one final P4-v2r2-r3 production conformance release
-   candidate. It must exercise every reachable grammar construct through the
-   exact live renderer, transport, parser, lowerer, applier, and verifier. If it
-   is GREEN, source-lock and run the ten-task campaign once when machine
-   predicates pass; if RED, park P4. Do not create another reseal namespace.
+7. Source-lock the GREEN final P4-v2r2-r3 production-conformance release and
+   run the ten-task campaign once when machine predicates pass. The gate has
+   already exercised the exact renderer, grammar, parser, lowerer, disposable
+   applier, complete visible verifier, and pinned tokenizer with zero model or
+   hidden-evaluator calls. Durable pre-inference call-start receipts are now
+   mandatory. Any subsequent production defect parks this exact instrument;
+   do not create another reseal namespace.
 8. Preserve all natural completions, boundary events, costs, failures, and
    weak-tail evidence; do not add an answer-length cap, replace a task, or
    interpret an incomplete/physical stop as a mechanism loss. Compute the

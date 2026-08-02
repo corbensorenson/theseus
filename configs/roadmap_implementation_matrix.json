@@ -32,9 +32,18 @@
           "durable_campaign_progress_written": false,
           "durable_runtime_receipts": 0,
           "durable_candidate_or_evaluator_output": false,
-          "model_call_opened": "UNKNOWN"
+          "model_call_opened": "UNKNOWN",
+          "final_production_conformance": "reports/theseus_p4v2r2r3_production_conformance.json",
+          "final_production_conformance_state": "GREEN",
+          "frozen_tasks_replayed": 10,
+          "production_arm_replays": 30,
+          "complete_prompts_counted": 60,
+          "minimum_context_residual_tokens": 257268,
+          "candidate_or_control_calls": 0,
+          "hidden_evaluator_calls": 0,
+          "durable_pre_inference_call_start_custody": true
         },
-        "roadmap_action": "build one final source-bound production render-to-prompt-to-transport-to-parse-to-lower-to-apply-to-visible-verifier conformance release candidate covering every reachable construct; prove no observed output informed changes; add a durable pre-inference call-start receipt; then run once or park without another pre-call namespace"
+        "roadmap_action": "source-lock the GREEN final production conformance and durable pre-inference custody release, then run P4V2R2R3 once under machine predicates; any later production defect parks this exact instrument without another pre-call namespace"
       },
       {
         "claim": "the repository still has an 88-file mixed tracked transaction",
@@ -3825,7 +3834,7 @@
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "P4V2R2R3_no_durable_observation_call_open_unknown_final_production_conformance_and_precall_custody_release_candidate",
+    "execution_state": "P4V2R2R3_final_production_conformance_green_durable_precall_custody_awaiting_source_locked_run",
     "active_work_package_ids": [
       "ASI-03",
       "ASI-07",
@@ -4087,7 +4096,21 @@
       "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
       "physical_boundary_hit_disposition": "invalidate_observation_never_score_as_model_or_mechanism_failure",
       "launch_authority": "machine_predicate_exclusive_one_shot_lease_no_user_gate",
-      "current_machine_wall": "P4V2R2R3_interrupted_launcher_has_no_progress_receipt_candidate_or_evaluator_output_but_call_open_state_unknown_requires_one_final_source_bound_joined_production_conformance_precall_receipt_and_reuse_custody_release_candidate",
+      "current_machine_wall": "P4V2R2R3_final_joined_production_conformance_and_reuse_custody_green_requires_clean_source_lock_then_one_machine_predicate_run",
+      "production_conformance": {
+        "path": "reports/theseus_p4v2r2r3_production_conformance.json",
+        "state": "GREEN",
+        "frozen_tasks": 10,
+        "production_arm_replays": 30,
+        "complete_first_and_repair_prompts": 60,
+        "reachable_operations": ["REPLACE", "INSERT_BEFORE", "INSERT_AFTER"],
+        "delimiter_round_trips": 30,
+        "malformed_rejections": 30,
+        "minimum_context_residual_tokens": 257268,
+        "candidate_or_control_calls": 0,
+        "hidden_evaluator_calls": 0,
+        "durable_pre_inference_call_start_receipt_required": true
+      },
       "D1_eligible": false,
       "prospective_D1_successor": {
         "state": "fail_closed_waiting_for_exact_P4V2R2R3_survivor",
@@ -4794,7 +4817,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-08-02",
-    "recommendation": "Preserve terminal P3 as historical bounded evidence because its project-selected 1,536-token ceiling lacks complete natural-termination custody; report its exact 1/10 versus 1/10 usefulness and 5/10 versus 9/10 parseability without capability or subsystem overclaim. Preserve interrupted P4-v1, terminal P4R, terminal P4S, and all zero-call dispositions without replay. Build one final source-bound P4V2R2R3 production conformance release candidate that joins exact renderer, chat-template prompt, transport, normalizer, parser, lowerer, applier, and visible verifier for every reachable grammar construct. If GREEN, source-lock and run once; if RED, park P4; after any model call, grammar/transport failure is terminal instrument evidence and no further reseal is allowed. Close the current storage wall through runtime-wide replay-safe custody under a measured derived envelope. Preserve the compiled-MLX microbatch-4 neural route, finish matched training, and consume D2 once under autonomous predicates. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, public calibration, and every negative, interrupted, or invalid result.",
+    "recommendation": "Preserve terminal P3 as historical bounded evidence because its project-selected 1,536-token ceiling lacks complete natural-termination custody; report its exact 1/10 versus 1/10 usefulness and 5/10 versus 9/10 parseability without capability or subsystem overclaim. Preserve interrupted P4-v1, terminal P4R, terminal P4S, and all zero-call dispositions without replay. Source-lock the now-GREEN final P4V2R2R3 joined production conformance and durable pre-inference custody release, then run it once under machine predicates; after any model call, a production defect is terminal exact-instrument evidence and no further reseal is allowed. Close the current storage wall through runtime-wide replay-safe custody under a measured derived envelope. Preserve the compiled-MLX microbatch-4 neural route, finish matched training, and consume D2 once under autonomous predicates. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, public calibration, and every negative, interrupted, or invalid result.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4805,7 +4828,7 @@
       "preserve_P4_v1_as_interrupted_inconclusive_and_never_replay_consumed_tasks_1_3",
       "preserve_terminal_P4R_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits",
       "preserve_terminal_P4S_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits_without_rescoring",
-      "build_one_final_source_bound_joined_production_conformance_release_candidate_then_run_P4V2R2R3_once_or_park_without_another_reseal",
+      "source_lock_green_joined_production_conformance_and_durable_precall_custody_then_run_P4V2R2R3_once_or_park_without_another_reseal",
       "preserve_completed_canonical_runtime_generation_boundary_migration_with_null_project_quality_caps_and_physical_context_residual_custody",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "refresh_step_11416_source_and_custody_readiness_under_machine_predicate_authority_without_user_approval",

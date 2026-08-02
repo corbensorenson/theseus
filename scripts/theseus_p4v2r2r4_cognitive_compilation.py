@@ -26,6 +26,131 @@ RUNTIME_ATTEMPT_NAMESPACE = "p4v2r2r4_attempt1"
 DEFAULT_INSTRUMENT = (
     ROOT / "configs" / "theseus_p4v2r2r3_prompt_continuity_repair.json"
 )
+CALL_START_DIRECTORY = ROOT / "runtime" / "control" / "theseus_p4v2r2r4_call_starts"
+CALL_START_POLICY = "project_theseus_p4v2r2r4_pre_inference_call_custody_v1"
+
+
+def call_start_path(task_id: str, call_number: int) -> Path:
+    return CALL_START_DIRECTORY / (
+        f"{p2a.safe_slug(task_id)}_call_{int(call_number)}.json"
+    )
+
+
+def _fsync_directory(path: Path) -> None:
+    descriptor = os.open(path, os.O_RDONLY)
+    try:
+        os.fsync(descriptor)
+    finally:
+        os.close(descriptor)
+
+
+def write_json_exclusive_durable(path: Path, payload: dict[str, Any]) -> None:
+    """Create a custody receipt durably before any inference-capable call."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+    except BaseException:
+        path.unlink(missing_ok=True)
+        raise
+    _fsync_directory(path.parent)
+
+
+def replace_json_durable(path: Path, payload: dict[str, Any]) -> None:
+    """Durably advance an existing receipt without an unrecorded state window."""
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{path.name}.", suffix=".tmp", dir=path.parent
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "w", encoding="utf-8") as handle:
+            json.dump(payload, handle, indent=2, sort_keys=True)
+            handle.write("\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(temporary, path)
+        _fsync_directory(path.parent)
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def bind_pre_inference_custody(
+    runtime_call: Callable[..., dict[str, Any]],
+) -> Callable[..., dict[str, Any]]:
+    """Write STARTED before entering the only task-inference transport."""
+
+    def governed(
+        arm: str,
+        task_id: str,
+        call_number: int,
+        prompt: str,
+        maximum: int,
+        runtime_config: str,
+    ) -> dict[str, Any]:
+        path = call_start_path(task_id, call_number)
+        receipt: dict[str, Any] = {
+            "policy": CALL_START_POLICY,
+            "created_utc": p2a.now(),
+            "state": "STARTED_PRE_INFERENCE",
+            "runtime_attempt_namespace": RUNTIME_ATTEMPT_NAMESPACE,
+            "execution_mode": arm,
+            "task_session_id": task_id,
+            "call_number": int(call_number),
+            "prompt_sha256": p2a.sha256_text(prompt),
+            "prompt_retained": False,
+            "maximum_tokens_transport_value": int(maximum),
+            "maximum_tokens_semantics": "pinned_model_physical_context_addressability_not_quality_cap",
+            "runtime_config": runtime_config,
+            "runtime_config_sha256": p2a.sha256_file(p2a.resolve(runtime_config)),
+            "inference_completion_observed": False,
+            "candidate_output_retained": False,
+        }
+        write_json_exclusive_durable(path, receipt)
+        try:
+            result = runtime_call(
+                arm, task_id, call_number, prompt, maximum, runtime_config
+            )
+        except BaseException as exc:
+            receipt.update(
+                {
+                    "updated_utc": p2a.now(),
+                    "state": "CALL_RAISED_AFTER_START",
+                    "exception_type": type(exc).__name__,
+                    "inference_completion_observed": False,
+                }
+            )
+            replace_json_durable(path, receipt)
+            raise
+        returned = p2a.mapping(result.get("receipt"))
+        report_path = p2a.resolve(str(returned.get("report_path") or ""))
+        receipt.update(
+            {
+                "updated_utc": p2a.now(),
+                "state": "RETURNED_WITH_RUNTIME_RECEIPT",
+                "inference_completion_observed": True,
+                "runtime_report": str(returned.get("report_path") or ""),
+                "runtime_report_sha256": str(returned.get("report_sha256") or ""),
+                "runtime_report_binding_valid": (
+                    report_path.is_file()
+                    and p2a.sha256_file(report_path)
+                    == str(returned.get("report_sha256") or "")
+                ),
+                "candidate_output_sha256": str(
+                    returned.get("candidate_output_sha256") or ""
+                ),
+                "candidate_output_retained": False,
+                "runtime_trigger_state": returned.get("runtime_trigger_state"),
+                "route_integrity_ready": returned.get("route_integrity_ready"),
+            }
+        )
+        replace_json_durable(path, receipt)
+        return result
+
+    return governed
 
 
 def audit_instrument(path: Path) -> dict[str, Any]:
@@ -41,6 +166,7 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         ("base_instrument", "base_instrument_sha256"),
         ("zero_call_disposition", "zero_call_disposition_sha256"),
         ("candidate_runner", "candidate_runner_sha256"),
+        ("release_local_instrument", "release_local_instrument_sha256"),
     ):
         owner = p2a.resolve(str(value.get(path_key) or ""))
         if not owner.is_file() or p2a.sha256_file(owner) != str(
@@ -94,6 +220,25 @@ def audit_instrument(path: Path) -> dict[str, Any]:
         is not None
     ):
         faults.append("project_selected_quality_or_artifact_cap_present")
+    release_gate = p2a.mapping(value.get("production_release_gate"))
+    for key in (
+        "semantic_prompt_advertises_every_parser_reachable_operation",
+        "direct_and_plan_prompts_render_exact_bound_grammar",
+        "all_ten_frozen_packets_replayed_through_exact_render_parse_lower_apply_visible_verifier_path",
+        "complete_first_and_repair_prompts_counted_with_pinned_tokenizer",
+        "durable_pre_inference_call_start_receipt_required",
+        "duplicate_call_start_fails_closed",
+    ):
+        if release_gate.get(key) is not True:
+            faults.append(f"production_release_gate_missing:{key}")
+    if (
+        int(release_gate.get("candidate_or_control_calls_during_conformance") or 0)
+        != 0
+        or int(release_gate.get("hidden_evaluator_calls_during_conformance") or 0)
+        != 0
+        or release_gate.get("project_selected_quality_token_cap") is not None
+    ):
+        faults.append("production_release_gate_boundary_invalid")
     authority = p2a.mapping(value.get("authority"))
     if authority.get("user_or_operator_approval_required") is not False:
         faults.append("user_gate_present")
@@ -215,6 +360,12 @@ def run_complete_visible_verifier(
 
 def projected_instrument(overlay: dict[str, Any]) -> dict[str, Any]:
     base = p2a.read_json(p2a.resolve(str(overlay.get("base_instrument") or "")))
+    base["base_local_instrument"] = str(
+        overlay.get("release_local_instrument") or ""
+    )
+    base["base_local_instrument_sha256"] = str(
+        overlay.get("release_local_instrument_sha256") or ""
+    )
     base["runtime_attempt_namespace"] = RUNTIME_ATTEMPT_NAMESPACE
     base["state"] = INSTRUMENT_STATE
     base["prompt_continuity_repair"] = p2a.mapping(
@@ -246,6 +397,7 @@ def run_experiment(
     original_state = predecessor.INSTRUMENT_STATE
     original_render = causal.render_final_prompt
     original_verifier = p2a.run_visible_verifier
+    original_runtime_call = p2a.runtime_call
     with tempfile.NamedTemporaryFile(
         mode="w",
         encoding="utf-8",
@@ -261,6 +413,7 @@ def run_experiment(
         predecessor.INSTRUMENT_STATE = INSTRUMENT_STATE
         causal.render_final_prompt = render_full_final_prompt
         p2a.run_visible_verifier = run_complete_visible_verifier
+        p2a.runtime_call = bind_pre_inference_custody(original_runtime_call)
         report = predecessor.run_experiment(
             temporary,
             task_path,
@@ -271,6 +424,7 @@ def run_experiment(
         predecessor.INSTRUMENT_STATE = original_state
         causal.render_final_prompt = original_render
         p2a.run_visible_verifier = original_verifier
+        p2a.runtime_call = original_runtime_call
         temporary.unlink(missing_ok=True)
     report["policy"] = POLICY
     report["instrument_overlay_sha256"] = p2a.sha256_file(instrument_path)

@@ -87,11 +87,23 @@ def count_prompts(worker_path: Path, prompts_path: Path) -> dict[str, Any]:
                 add_generation_prompt=True,
                 **mapping(card.get("chat_template_kwargs")),
             )
-            if isinstance(encoded, dict):
+            if hasattr(encoded, "get"):
                 tokens = encoded.get("input_ids", [])
             else:
                 tokens = encoded
-            count = len(tokens)
+            shape = getattr(tokens, "shape", None)
+            if shape is not None and len(shape) >= 1:
+                count = int(shape[-1])
+            elif (
+                isinstance(tokens, (list, tuple))
+                and tokens
+                and isinstance(tokens[0], (list, tuple))
+            ):
+                if len(tokens) != 1:
+                    faults.append(f"unexpected_prompt_batch_size:{arm}")
+                count = len(tokens[0])
+            else:
+                count = len(tokens)
             residual = context - count
             if count < 1:
                 faults.append(f"exact_prompt_token_count_missing:{arm}")

@@ -385,7 +385,7 @@ def render_arm_prompt(
         "ALL_OBLIGATIONS <copy all obligation ids in exact order>\n"
         "UNIT U1\n"
         "OBLIGATIONS <dependency-closed obligation ids covered by U1>\n"
-        "OP REPLACE\n"
+        "OP <REPLACE|INSERT_BEFORE|INSERT_AFTER>\n"
         "PATH <copy selected path>\n"
         "NODE <copy selected semantic-scope node id>\n"
         "NODE_SHA <copy selected node sha256>\n"

@@ -6,8 +6,10 @@
   "zero_call_disposition": "reports/theseus_p4v2r2r2_attempt2_pre_generation_information_cap_disposition.json",
   "zero_call_disposition_sha256": "27887408a24147b77f732afc3cacebd55939b441b8f7048967c02c61e156ee9d",
   "candidate_runner": "scripts/theseus_p4v2r2r4_cognitive_compilation.py",
-  "candidate_runner_sha256": "5528dae6e9a478130a5b829465d80238758721cb56409902d1543d913fec7ad1",
+  "candidate_runner_sha256": "dc590cb6c98f5481cc7e0aa2b7aa03ae2ff7e756a83b486b090ccc8733477463",
   "runtime_attempt_namespace": "p4v2r2r4_attempt1",
+  "release_local_instrument": "configs/theseus_p4v2r2r3_local_instrument.json",
+  "release_local_instrument_sha256": "98ca21e5c7ddbb4987a6faf51093af29e8b17ac27a2ddb61a3121384740bd16f",
   "generation_budget": {
     "project_selected_quality_token_cap": null,
     "numeric_boundary_source": "pinned_model_declared_context_residual",
@@ -33,6 +35,17 @@
     "evaluator_changed": false,
     "control_definition_changed": false,
     "prior_outputs_reused_or_rescored": false
+  },
+  "production_release_gate": {
+    "semantic_prompt_advertises_every_parser_reachable_operation": true,
+    "direct_and_plan_prompts_render_exact_bound_grammar": true,
+    "all_ten_frozen_packets_replayed_through_exact_render_parse_lower_apply_visible_verifier_path": true,
+    "complete_first_and_repair_prompts_counted_with_pinned_tokenizer": true,
+    "durable_pre_inference_call_start_receipt_required": true,
+    "duplicate_call_start_fails_closed": true,
+    "candidate_or_control_calls_during_conformance": 0,
+    "hidden_evaluator_calls_during_conformance": 0,
+    "project_selected_quality_token_cap": null
   },
   "authority": {
     "user_or_operator_approval_required": false,
