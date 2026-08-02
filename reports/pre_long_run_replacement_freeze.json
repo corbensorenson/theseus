@@ -2063,7 +2063,7 @@
       "source_state": {
         "branch": "main",
         "clean_at_generation": true,
-        "commit": "0f5f256697c06ae900a0f850682065af8cc53587",
+        "commit": "37914f71f795fb82c1f6cb874ed636e87bfc348b",
         "dirty_path_count": 0,
         "dirty_paths": []
       }
@@ -2076,7 +2076,7 @@
     "Scoped candidate dispositions are not broad scientific falsifications.",
     "This package does not acquire a training or D2 execution lease or start long training."
   ],
-  "package_identity": "sha256:de68665b7a43fdd9067f0d1ef07f4f11adf62a1fa3293fb5f6f1ec4690dd613a",
+  "package_identity": "sha256:e1c0c8c9477db458c4fd140157a0670380e032e88b57b160bae98ef5eb645966",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",
@@ -2222,7 +2222,7 @@
   "source_binding": {
     "branch": "main",
     "clean_at_generation": true,
-    "commit": "0f5f256697c06ae900a0f850682065af8cc53587",
+    "commit": "37914f71f795fb82c1f6cb874ed636e87bfc348b",
     "dirty_path_count": 0,
     "dirty_paths": []
   },
