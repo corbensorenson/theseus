@@ -24,7 +24,7 @@ import theseus_p4v2r2r2_campaign as campaign  # noqa: E402
 
 POLICY = "project_theseus_p4v2r2r2_autonomous_launch_v1"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_p4v2r2r2_autonomous_launch.json"
-BOUND_CAMPAIGN_COMMIT = "1f986227306c897a1657a99b35c94bda1b5af152"
+BOUND_CAMPAIGN_COMMIT = "aea5dac6a5e4ebd25391c554afb0a0c2957890c4"
 
 
 def validate_config(config: dict[str, Any]) -> list[str]:
