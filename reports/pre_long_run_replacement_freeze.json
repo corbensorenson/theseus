@@ -2063,7 +2063,7 @@
       "source_state": {
         "branch": "main",
         "clean_at_generation": true,
-        "commit": "37914f71f795fb82c1f6cb874ed636e87bfc348b",
+        "commit": "073828341c49838374de62a3ba35780cc770da1d",
         "dirty_path_count": 0,
         "dirty_paths": []
       }
@@ -2076,7 +2076,7 @@
     "Scoped candidate dispositions are not broad scientific falsifications.",
     "This package does not acquire a training or D2 execution lease or start long training."
   ],
-  "package_identity": "sha256:e1c0c8c9477db458c4fd140157a0670380e032e88b57b160bae98ef5eb645966",
+  "package_identity": "sha256:9c5f135661283fff1e5f33b8010c52f35261666d28257f900294a53666227543",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",
@@ -2164,9 +2164,9 @@
       "sha256": "344451c1f6809464bc2b388038859df49c0d96c0e13348ecbfc7aaa1aa48b926"
     },
     "configs/roadmap_implementation_matrix.json": {
-      "bytes": 1698024,
+      "bytes": 1699218,
       "path": "configs/roadmap_implementation_matrix.json",
-      "sha256": "d7974d5fc7b31f7a85ef42cb6d9630895f01b0374a46e88a2e0d7815be082222"
+      "sha256": "3228293c7e693692488ca6ad945d48f1bfe4feb7e360c15be560aefbe36eea02"
     },
     "scripts/neural_seed_autonomous_launch_controller.py": {
       "bytes": 24884,
@@ -2222,7 +2222,7 @@
   "source_binding": {
     "branch": "main",
     "clean_at_generation": true,
-    "commit": "37914f71f795fb82c1f6cb874ed636e87bfc348b",
+    "commit": "073828341c49838374de62a3ba35780cc770da1d",
     "dirty_path_count": 0,
     "dirty_paths": []
   },
