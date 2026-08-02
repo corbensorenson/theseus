@@ -11,12 +11,15 @@ import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_p4v2r2r1_instrument as instrument  # noqa: E402
 
 
-def test_recovery_instrument_is_exactly_bound_and_uncapped() -> None:
+def test_consumed_recovery_instrument_preserves_source_drift_and_uncapped_boundary() -> None:
     value = p2a.read_json(instrument.OUT)
     report = instrument.audit(value)
 
-    assert report["trigger_state"] == "GREEN"
-    assert report["faults"] == []
+    assert report["trigger_state"] == "RED"
+    assert report["faults"] == [
+        "candidate_runner_digest_mismatch",
+        "harness_binding_invalid:candidate_runner",
+    ]
     assert report["runtime_attempt_namespace"] == "p4v2r2r1_attempt1"
     assert report["project_selected_quality_token_cap"] is None
     assert report["task_candidate_or_control_calls"] == 0
