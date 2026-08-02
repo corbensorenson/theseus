@@ -36,7 +36,10 @@ def test_materialization_correction_is_bound_and_non_membership() -> None:
     correction = fetch.read_json(fetch.CORRECTIONS)
     registry = fetch.read_json(fetch.REGISTRY)
     task = next(row for row in registry["tasks"] if row["case"] == "markupsafe")
+    audit = fetch.audit_corrections()
 
+    assert audit["trigger_state"] == "GREEN"
+    assert audit["faults"] == []
     assert correction["invariants"]["task_membership_changed"] is False
     assert correction["invariants"]["parent_or_target_executed"] is False
     assert correction["invariants"]["candidate_or_control_calls"] == 0

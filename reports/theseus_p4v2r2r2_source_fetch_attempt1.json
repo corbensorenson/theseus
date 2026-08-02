@@ -1,0 +1,672 @@
+{
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "archive_fetches_after_membership_freeze": 18,
+  "candidate_or_control_calls": 0,
+  "faults": [
+    "source_artifact_count_invalid",
+    "source_projection_failed:p4v2r2r2_07_markupsafe_418:parent:projection member missing or non-regular: markupsafe-73e6a4886564a554c4a19983d29c97f9fc95457d/LICENSE.txt",
+    "source_projection_failed:p4v2r2r2_07_markupsafe_418:target:projection member missing or non-regular: markupsafe-0b6bee071fbd8d3171fb1ac4fb669baace808438/LICENSE.txt"
+  ],
+  "hosted_model_calls": 0,
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN receipt establishes only exact licensed archive transport, deterministic sanitization/projection, root identity, and required production/license member presence for the sealed ten-task source set.",
+  "network_use": "twenty_immutable_permissively_licensed_github_codeload_archives_only",
+  "parent_target_oracle_evaluator_executions": 0,
+  "policy": "project_theseus_p4v2r2r2_source_fetch_v1",
+  "project_selected_quality_token_cap": null,
+  "public_benchmark_cases": 0,
+  "source_registry": "configs/theseus_p4v2r2r2_task_sources.json",
+  "source_registry_audit": {
+    "archive_fetches": 0,
+    "behavioral_unit_distribution": {
+      "1": 5,
+      "2": 4,
+      "3": 1
+    },
+    "candidate_or_control_calls": 0,
+    "distinct_repository_count": 10,
+    "faults": [],
+    "instrument": {
+      "freeze_commit": "91dbcf57988fbf9e73f1c1d129fbcad021f54035",
+      "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+      "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+    },
+    "license_spdx_ids": [
+      "Apache-2.0",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "MIT"
+    ],
+    "maximum_inference": "This registry fixes only a fresh licensed P4 development source denominator. It grants no candidate generation, archive execution, D1, D2, training, serving, hosted-reference, or ASI Stack support authority.",
+    "policy": "project_theseus_p4v2r2r2_source_registry_audit_v1",
+    "predecessor_terminal_disposition": {
+      "path": "reports/theseus_p4v2r2r1_attempt1_terminal_disposition.json",
+      "scientific_status": "INCONCLUSIVE_EXPERIMENT",
+      "sha256": "a7fa3d3593a0cb9ef8047ea54c3a4e24bbfee9b2276f4637e6328cce8df2a2df"
+    },
+    "prior_repository_count": 50,
+    "prior_repository_overlap": [],
+    "project_selected_quality_token_cap": null,
+    "registry": {
+      "path": "configs/theseus_p4v2r2r2_task_sources.json",
+      "sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c"
+    },
+    "task_count": 10,
+    "trigger_state": "GREEN"
+  },
+  "source_registry_sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c",
+  "source_selection_commit": "4d39b5f31d7b8d980b57230faa9ef3884bb9d04b",
+  "tasks": [
+    {
+      "allowed_effect_paths": [
+        "h11/_headers.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "h11-31e626c64e1e28db3cd73a6aa0ac057f1b915c18",
+          "full_sanitized_sha256": "ba074f370f4f811460246a313c3d716a1e956abd44d79d4a7b34315349f82b39",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_01_h11_181_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_01_h11_181_parent.tar.gz",
+          "normalized_sha256": "9d888c70ba00f81f554d024a6ad7d541d955828f69bd867f00a9f138bb8e6aa4",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "9d888c70ba00f81f554d024a6ad7d541d955828f69bd867f00a9f138bb8e6aa4",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "h11-31e626c64e1e28db3cd73a6aa0ac057f1b915c18/LICENSE.txt",
+              "h11-31e626c64e1e28db3cd73a6aa0ac057f1b915c18/h11/_headers.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "31e626c64e1e28db3cd73a6aa0ac057f1b915c18",
+          "sanitization_report": "reports/theseus_p4v2r2r2_01_h11_181_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "da76e31e4e258cb6026eeccebb213eab72c7f1559b9e3984bedf7fff45192d64",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_01_h11_181_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_01_h11_181_parent_upstream.tar.gz",
+          "upstream_sha256": "98c86c11c030b88f909e324e6d49ee4537f56f7500159760a5796b08337ecd24",
+          "url": "https://codeload.github.com/python-hyper/h11/tar.gz/31e626c64e1e28db3cd73a6aa0ac057f1b915c18"
+        },
+        {
+          "expected_root": "h11-60782ad107e538b9312aac7e1c119c8358bf797c",
+          "full_sanitized_sha256": "650c4be252c85bb9b379752cfcbd3cb38a52491a9168deae800f0c2a7a15868e",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_01_h11_181_target.tar.gz",
+          "normalized_name": "p4v2r2r2_01_h11_181_target.tar.gz",
+          "normalized_sha256": "78aed1bc87a6497bbb96aa3f0cdbd24814aa7ee0a890a95b39f10a0259b94b89",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "78aed1bc87a6497bbb96aa3f0cdbd24814aa7ee0a890a95b39f10a0259b94b89",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "h11-60782ad107e538b9312aac7e1c119c8358bf797c/LICENSE.txt",
+              "h11-60782ad107e538b9312aac7e1c119c8358bf797c/h11/_headers.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "60782ad107e538b9312aac7e1c119c8358bf797c",
+          "sanitization_report": "reports/theseus_p4v2r2r2_01_h11_181_target_archive_sanitization.json",
+          "sanitization_report_sha256": "6f482fb4fa5a18811629f25ece4d4d377219455d286337396d3628bbb5c053f5",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_01_h11_181_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_01_h11_181_target_upstream.tar.gz",
+          "upstream_sha256": "f436f327bccd01630839a7641e64e0eb91dcb7fc10648c095979e4b1582f647f",
+          "url": "https://codeload.github.com/python-hyper/h11/tar.gz/60782ad107e538b9312aac7e1c119c8358bf797c"
+        }
+      ],
+      "campaign_index": 1,
+      "license_paths": [
+        "LICENSE.txt"
+      ],
+      "license_spdx": "MIT",
+      "repository": "python-hyper/h11",
+      "stem": "p4v2r2r2_01_h11_181"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/h2/utilities.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "h2-8112e6328fd64a49a32bd4727b2ecb1b9799139f",
+          "full_sanitized_sha256": "a6661c436da53d4d80d707b0dbd6edafa9c2c0db05a98e5917e80e8e19a35015",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_02_h2_1313_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_02_h2_1313_parent.tar.gz",
+          "normalized_sha256": "62fe6732f573ad16e4773e40a386d8cd8b403a35e30fba4c858640c4f9eb055f",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "62fe6732f573ad16e4773e40a386d8cd8b403a35e30fba4c858640c4f9eb055f",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "h2-8112e6328fd64a49a32bd4727b2ecb1b9799139f/LICENSE",
+              "h2-8112e6328fd64a49a32bd4727b2ecb1b9799139f/src/h2/utilities.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "8112e6328fd64a49a32bd4727b2ecb1b9799139f",
+          "sanitization_report": "reports/theseus_p4v2r2r2_02_h2_1313_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "743d6ac0e8508eae48237e410238219f31a7465ece8d646ca4bb51ba9ca4350a",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_02_h2_1313_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_02_h2_1313_parent_upstream.tar.gz",
+          "upstream_sha256": "f1c6ae95d994c036508b7b44e5c8798299fee2b5e15970a0ec82be835d5d27d3",
+          "url": "https://codeload.github.com/python-hyper/h2/tar.gz/8112e6328fd64a49a32bd4727b2ecb1b9799139f"
+        },
+        {
+          "expected_root": "h2-5c29f140199460e15e06ccbd1dd684a0f377a7fb",
+          "full_sanitized_sha256": "68b41455cffbd911efa169fdcc017ff3724269fb5484a8b99e892ba2cc07ac6e",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_02_h2_1313_target.tar.gz",
+          "normalized_name": "p4v2r2r2_02_h2_1313_target.tar.gz",
+          "normalized_sha256": "a74b0d7be7aca4cb6c114123c15386f068ba90a4cd25b9f9ae6af30a5f90e281",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "a74b0d7be7aca4cb6c114123c15386f068ba90a4cd25b9f9ae6af30a5f90e281",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "h2-5c29f140199460e15e06ccbd1dd684a0f377a7fb/LICENSE",
+              "h2-5c29f140199460e15e06ccbd1dd684a0f377a7fb/src/h2/utilities.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "5c29f140199460e15e06ccbd1dd684a0f377a7fb",
+          "sanitization_report": "reports/theseus_p4v2r2r2_02_h2_1313_target_archive_sanitization.json",
+          "sanitization_report_sha256": "53a9ec9fcb6ff3ead5cf3329d1fd05b7f183900a10b0862ad1092bef7ecfc304",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_02_h2_1313_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_02_h2_1313_target_upstream.tar.gz",
+          "upstream_sha256": "12c5243cf2e850a5e52568b6508e065936292c25c4ec19a87a7af9e4ff985862",
+          "url": "https://codeload.github.com/python-hyper/h2/tar.gz/5c29f140199460e15e06ccbd1dd684a0f377a7fb"
+        }
+      ],
+      "campaign_index": 2,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "python-hyper/h2",
+      "stem": "p4v2r2r2_02_h2_1313"
+    },
+    {
+      "allowed_effect_paths": [
+        "pygments/formatters/other.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "pygments-8a86c20ff0bde186e267950576e11779d2fda128",
+          "full_sanitized_sha256": "93cd8386ce34cdb7ed6ddc7f2f6178bed22cdca846b786235eab809a0622aa6a",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_03_pygments_3215_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_03_pygments_3215_parent.tar.gz",
+          "normalized_sha256": "d6ef7aa80103ea34604179578176c08e087890e762f9c45d0a191ee5d6c0a461",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "d6ef7aa80103ea34604179578176c08e087890e762f9c45d0a191ee5d6c0a461",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "pygments-8a86c20ff0bde186e267950576e11779d2fda128/LICENSE",
+              "pygments-8a86c20ff0bde186e267950576e11779d2fda128/pygments/formatters/other.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "8a86c20ff0bde186e267950576e11779d2fda128",
+          "sanitization_report": "reports/theseus_p4v2r2r2_03_pygments_3215_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "7b98cf47fbabacc786e6eb8c23af6ee29d15293273591e24de1ec227b3c24e38",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_03_pygments_3215_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_03_pygments_3215_parent_upstream.tar.gz",
+          "upstream_sha256": "1428d071e7a973643b1d3b137d8eb9715aef57e886d532d7906dc5b9b7d2738a",
+          "url": "https://codeload.github.com/pygments/pygments/tar.gz/8a86c20ff0bde186e267950576e11779d2fda128"
+        },
+        {
+          "expected_root": "pygments-3fdb4bb8509dedc77a062aa543776d8e3abebac2",
+          "full_sanitized_sha256": "01a2e8f87831f311e61b240d59cd769dd1cc14ca1d745df01786a691f6c8eb00",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_03_pygments_3215_target.tar.gz",
+          "normalized_name": "p4v2r2r2_03_pygments_3215_target.tar.gz",
+          "normalized_sha256": "c463f4e892b1bf85c435e9570f348404cc01c66c5c724028dcb2890555d3906b",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "c463f4e892b1bf85c435e9570f348404cc01c66c5c724028dcb2890555d3906b",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "pygments-3fdb4bb8509dedc77a062aa543776d8e3abebac2/LICENSE",
+              "pygments-3fdb4bb8509dedc77a062aa543776d8e3abebac2/pygments/formatters/other.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "3fdb4bb8509dedc77a062aa543776d8e3abebac2",
+          "sanitization_report": "reports/theseus_p4v2r2r2_03_pygments_3215_target_archive_sanitization.json",
+          "sanitization_report_sha256": "ac04ad75ecbfbca7a328523cb96b830f6311066b899f3d638f5fcd10a1170cc2",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_03_pygments_3215_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_03_pygments_3215_target_upstream.tar.gz",
+          "upstream_sha256": "84ddf59cb3119ef40d132c112e8ef30d24cd7ce55a70066d7e78eb8aa9ca8250",
+          "url": "https://codeload.github.com/pygments/pygments/tar.gz/3fdb4bb8509dedc77a062aa543776d8e3abebac2"
+        }
+      ],
+      "campaign_index": 3,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "BSD-2-Clause",
+      "repository": "pygments/pygments",
+      "stem": "p4v2r2r2_03_pygments_3215"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/pluggy/_callers.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "pluggy-4ba6441e046ff9d0d2dbea5087c5bfd81cc37f5c",
+          "full_sanitized_sha256": "5286dfbb5d3bc9088fefb91a1cf83a2544c91070114deff0cbe637b1d4466273",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_04_pluggy_545_parent.tar.gz",
+          "normalized_sha256": "4f1d19a181e35fec8c8207310e5b2c46f1ae836c1dd99aa9ea5f34094cddb44b",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "4f1d19a181e35fec8c8207310e5b2c46f1ae836c1dd99aa9ea5f34094cddb44b",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "pluggy-4ba6441e046ff9d0d2dbea5087c5bfd81cc37f5c/LICENSE",
+              "pluggy-4ba6441e046ff9d0d2dbea5087c5bfd81cc37f5c/src/pluggy/_callers.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "4ba6441e046ff9d0d2dbea5087c5bfd81cc37f5c",
+          "sanitization_report": "reports/theseus_p4v2r2r2_04_pluggy_545_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "9f1de8e7acb3551b62431e9e94e181b10e5cc6dc71a9b890173d3095b2f7fe2d",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_04_pluggy_545_parent_upstream.tar.gz",
+          "upstream_sha256": "8a8d9968ba6acc7ba5d4f31c5ac5e3c94a4fa531fd84fb145b348b70752ab7c7",
+          "url": "https://codeload.github.com/pytest-dev/pluggy/tar.gz/4ba6441e046ff9d0d2dbea5087c5bfd81cc37f5c"
+        },
+        {
+          "expected_root": "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095",
+          "full_sanitized_sha256": "793b7aabebc95cc1aba0897a721e14801c51a50c946e78229ff058d3eb4d688f",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_target.tar.gz",
+          "normalized_name": "p4v2r2r2_04_pluggy_545_target.tar.gz",
+          "normalized_sha256": "af41633e440c56841334ed5054834d47a5db758883ea7fb494214e149bb29ea3",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "af41633e440c56841334ed5054834d47a5db758883ea7fb494214e149bb29ea3",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095/LICENSE",
+              "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095/src/pluggy/_callers.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "9cf2eaa50dd1ad3ebf042978629e78c695197095",
+          "sanitization_report": "reports/theseus_p4v2r2r2_04_pluggy_545_target_archive_sanitization.json",
+          "sanitization_report_sha256": "00e486d246b66b5948d48adec9f5cf70b4b90b476e6eb7d9aeac5e52812a2c10",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_04_pluggy_545_target_upstream.tar.gz",
+          "upstream_sha256": "8bd82024d6ca9019408624022376bae4be7293cf2258fadb53130e65fd5c2ac2",
+          "url": "https://codeload.github.com/pytest-dev/pluggy/tar.gz/9cf2eaa50dd1ad3ebf042978629e78c695197095"
+        }
+      ],
+      "campaign_index": 4,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "pytest-dev/pluggy",
+      "stem": "p4v2r2r2_04_pluggy_545"
+    },
+    {
+      "allowed_effect_paths": [
+        "asgiref/sync.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "asgiref-2b28409ab83b3e4cf6fed9019403b71f8d7d1c51",
+          "full_sanitized_sha256": "ee69d1775cf14b757fc46c94fd78670a9797990ab211c47bfec290e1063bf3e6",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_05_asgiref_537_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_05_asgiref_537_parent.tar.gz",
+          "normalized_sha256": "66aaa7139e5c634ca88ab5ceab201a9bc149cf49816a276a394f1f6226c46e50",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "66aaa7139e5c634ca88ab5ceab201a9bc149cf49816a276a394f1f6226c46e50",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "asgiref-2b28409ab83b3e4cf6fed9019403b71f8d7d1c51/LICENSE",
+              "asgiref-2b28409ab83b3e4cf6fed9019403b71f8d7d1c51/asgiref/sync.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "2b28409ab83b3e4cf6fed9019403b71f8d7d1c51",
+          "sanitization_report": "reports/theseus_p4v2r2r2_05_asgiref_537_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "152436a3f9cccda291a571294d29202a4ce7b4449d436df41a7dab6f21b7035f",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_05_asgiref_537_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_05_asgiref_537_parent_upstream.tar.gz",
+          "upstream_sha256": "141fc6ed9e9f5832edd4834fe6d9cec7ebcd84af3174ddf947aaf3ef0757c763",
+          "url": "https://codeload.github.com/django/asgiref/tar.gz/2b28409ab83b3e4cf6fed9019403b71f8d7d1c51"
+        },
+        {
+          "expected_root": "asgiref-6907449d7bb124749d63867907bc4d9acb554f62",
+          "full_sanitized_sha256": "e1d78b8451bd5efa3f1daaed2b5009a1955cbe3a317a496de3ae77544a3f9b2c",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_05_asgiref_537_target.tar.gz",
+          "normalized_name": "p4v2r2r2_05_asgiref_537_target.tar.gz",
+          "normalized_sha256": "ba5c941b0e3a4427ca8fe950ade51b16bb3f755cf1ece81473ac91833361bd9d",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "ba5c941b0e3a4427ca8fe950ade51b16bb3f755cf1ece81473ac91833361bd9d",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "asgiref-6907449d7bb124749d63867907bc4d9acb554f62/LICENSE",
+              "asgiref-6907449d7bb124749d63867907bc4d9acb554f62/asgiref/sync.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "6907449d7bb124749d63867907bc4d9acb554f62",
+          "sanitization_report": "reports/theseus_p4v2r2r2_05_asgiref_537_target_archive_sanitization.json",
+          "sanitization_report_sha256": "472046832ce4ce92059770c60a62f193eb3dee8c70ad0a292cf5331139becb9e",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_05_asgiref_537_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_05_asgiref_537_target_upstream.tar.gz",
+          "upstream_sha256": "003e3d631d30364c8102984764b3324c336572ff1fae47bdc9ac4a4818f0836f",
+          "url": "https://codeload.github.com/django/asgiref/tar.gz/6907449d7bb124749d63867907bc4d9acb554f62"
+        }
+      ],
+      "campaign_index": 5,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "django/asgiref",
+      "stem": "p4v2r2r2_05_asgiref_537"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/platformdirs/unix.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "platformdirs-e3cf124b8d399e76a4392573ef1d8d08041be900",
+          "full_sanitized_sha256": "c999070b7360637a71f1a48b2feb205a8d0985f33b1b73d1218672698db4c34b",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_06_platformdirs_469_parent.tar.gz",
+          "normalized_sha256": "afbafe6e72cb4111fb1ffb1acf88da7101eeabd65d608763ec2e339fad79b0ee",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "afbafe6e72cb4111fb1ffb1acf88da7101eeabd65d608763ec2e339fad79b0ee",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "platformdirs-e3cf124b8d399e76a4392573ef1d8d08041be900/LICENSE",
+              "platformdirs-e3cf124b8d399e76a4392573ef1d8d08041be900/src/platformdirs/unix.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "e3cf124b8d399e76a4392573ef1d8d08041be900",
+          "sanitization_report": "reports/theseus_p4v2r2r2_06_platformdirs_469_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "5aff8cafcdb2a61093b202430cf9f66b5b8c7ace3300c6e908741d568e80c9af",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_06_platformdirs_469_parent_upstream.tar.gz",
+          "upstream_sha256": "d64b327c6c77935cb633eed2a07abc333d751b382361b44fda55e5f2e64193b1",
+          "url": "https://codeload.github.com/tox-dev/platformdirs/tar.gz/e3cf124b8d399e76a4392573ef1d8d08041be900"
+        },
+        {
+          "expected_root": "platformdirs-7b0aa58d27791f9d68dc5e4510a4be4604e8365b",
+          "full_sanitized_sha256": "5887a794461e31923cb9bde4887fc8b3e4ea0ef39c2a58699b27e775a9d2b100",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_target.tar.gz",
+          "normalized_name": "p4v2r2r2_06_platformdirs_469_target.tar.gz",
+          "normalized_sha256": "c89617aa2a7759932fa905d893b0745f194a105e6456bef64472a1bf06fd07f4",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "c89617aa2a7759932fa905d893b0745f194a105e6456bef64472a1bf06fd07f4",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "platformdirs-7b0aa58d27791f9d68dc5e4510a4be4604e8365b/LICENSE",
+              "platformdirs-7b0aa58d27791f9d68dc5e4510a4be4604e8365b/src/platformdirs/unix.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "7b0aa58d27791f9d68dc5e4510a4be4604e8365b",
+          "sanitization_report": "reports/theseus_p4v2r2r2_06_platformdirs_469_target_archive_sanitization.json",
+          "sanitization_report_sha256": "43923154ee6b243382b369c722cb470f44f69d5f8bc9111adb21c1db41010e6e",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_06_platformdirs_469_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_06_platformdirs_469_target_upstream.tar.gz",
+          "upstream_sha256": "c8cc4cb4b2dbbe067156ea53e3431a273bb60410ecf1287f9ff3fb66614c3e3e",
+          "url": "https://codeload.github.com/tox-dev/platformdirs/tar.gz/7b0aa58d27791f9d68dc5e4510a4be4604e8365b"
+        }
+      ],
+      "campaign_index": 6,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "tox-dev/platformdirs",
+      "stem": "p4v2r2r2_06_platformdirs_469"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/markupsafe/__init__.py"
+      ],
+      "artifacts": [],
+      "campaign_index": 7,
+      "license_paths": [
+        "LICENSE.txt"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "pallets/markupsafe",
+      "stem": "p4v2r2r2_07_markupsafe_418"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/itsdangerous/signer.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "itsdangerous-93ae366874bbd4f69d90495c45b2cd336387496c",
+          "full_sanitized_sha256": "10e9ccf3065b05089fcf78dc953086b81f4b58ef66895ac5807677634383fa4c",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_08_itsdangerous_378_parent.tar.gz",
+          "normalized_sha256": "33ba8712c3a42d340281b6eba6b327d24c16a2b8b64d9e82f633daf289f0ffeb",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "33ba8712c3a42d340281b6eba6b327d24c16a2b8b64d9e82f633daf289f0ffeb",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "itsdangerous-93ae366874bbd4f69d90495c45b2cd336387496c/LICENSE.txt",
+              "itsdangerous-93ae366874bbd4f69d90495c45b2cd336387496c/src/itsdangerous/signer.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "93ae366874bbd4f69d90495c45b2cd336387496c",
+          "sanitization_report": "reports/theseus_p4v2r2r2_08_itsdangerous_378_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "b0e14dd363cb7e235e638312b11995465905049da088154eb7b6cb6a5fd411ed",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_08_itsdangerous_378_parent_upstream.tar.gz",
+          "upstream_sha256": "ba5756b3437eddb59b81627b47f412cf0af9db8b06bdfd2cc7c3cf0cd5da6632",
+          "url": "https://codeload.github.com/pallets/itsdangerous/tar.gz/93ae366874bbd4f69d90495c45b2cd336387496c"
+        },
+        {
+          "expected_root": "itsdangerous-7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+          "full_sanitized_sha256": "cf9a6e7c98a07537e44f73c0de1a25ae90b3bb2103a5d562f5e9932d24ff1637",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_target.tar.gz",
+          "normalized_name": "p4v2r2r2_08_itsdangerous_378_target.tar.gz",
+          "normalized_sha256": "c48ded91c268c5594baf22405e0a152004b4cd299cae1a876dfc7ef9563989b4",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "c48ded91c268c5594baf22405e0a152004b4cd299cae1a876dfc7ef9563989b4",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "itsdangerous-7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90/LICENSE.txt",
+              "itsdangerous-7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90/src/itsdangerous/signer.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90",
+          "sanitization_report": "reports/theseus_p4v2r2r2_08_itsdangerous_378_target_archive_sanitization.json",
+          "sanitization_report_sha256": "02b65aadbae2e71da63e25eeb94812a2272c7daa8ec52515576dde10afbc4d91",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_08_itsdangerous_378_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_08_itsdangerous_378_target_upstream.tar.gz",
+          "upstream_sha256": "8e22bfe38e95f11b86cbf9b978c9d3c083c5efc1d3ff0e5f4cb6cb0b4bcd3889",
+          "url": "https://codeload.github.com/pallets/itsdangerous/tar.gz/7f4dcf83a07bb3d53f4e0e65ef1b43327b4cca90"
+        }
+      ],
+      "campaign_index": 8,
+      "license_paths": [
+        "LICENSE.txt"
+      ],
+      "license_spdx": "BSD-3-Clause",
+      "repository": "pallets/itsdangerous",
+      "stem": "p4v2r2r2_08_itsdangerous_378"
+    },
+    {
+      "allowed_effect_paths": [
+        "src/tryceratops/analyzers/call.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "tryceratops-6d218f4d4a82ca4aad760f5ad9e9b632216e306c",
+          "full_sanitized_sha256": "f01fc67d46b55e9d58f825dbbcd83c57217ac136d5b4fde8c5c06a958a822412",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_09_tryceratops_75_parent.tar.gz",
+          "normalized_sha256": "12c8a03c0c7435617c805f4a6cccd665a74907a3fb16f9a86bfdabe323494b91",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "12c8a03c0c7435617c805f4a6cccd665a74907a3fb16f9a86bfdabe323494b91",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "tryceratops-6d218f4d4a82ca4aad760f5ad9e9b632216e306c/LICENSE",
+              "tryceratops-6d218f4d4a82ca4aad760f5ad9e9b632216e306c/src/tryceratops/analyzers/call.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "6d218f4d4a82ca4aad760f5ad9e9b632216e306c",
+          "sanitization_report": "reports/theseus_p4v2r2r2_09_tryceratops_75_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "7091be38884c67bab25cdf7c1a5999d88325a0bca0c9a14ea9f13683b8a6bbc1",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_09_tryceratops_75_parent_upstream.tar.gz",
+          "upstream_sha256": "4df10758585305d4e4710d826018cc000d8d506f7e003f2b29a5e7bbdd8920b0",
+          "url": "https://codeload.github.com/guilatrova/tryceratops/tar.gz/6d218f4d4a82ca4aad760f5ad9e9b632216e306c"
+        },
+        {
+          "expected_root": "tryceratops-67786fb9b5436417ef18c1e3c428bd529aaa8340",
+          "full_sanitized_sha256": "39f7312fa8fa4dc7cdc6c926c3cd1b5af44d1e6ee88230e5f165548d9595a71f",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_target.tar.gz",
+          "normalized_name": "p4v2r2r2_09_tryceratops_75_target.tar.gz",
+          "normalized_sha256": "0a528dac1c656fd08ceabe0fdbbb9d847cbb9ff7721f55fe6a0c049ed08b2dfd",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "0a528dac1c656fd08ceabe0fdbbb9d847cbb9ff7721f55fe6a0c049ed08b2dfd",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "tryceratops-67786fb9b5436417ef18c1e3c428bd529aaa8340/LICENSE",
+              "tryceratops-67786fb9b5436417ef18c1e3c428bd529aaa8340/src/tryceratops/analyzers/call.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "67786fb9b5436417ef18c1e3c428bd529aaa8340",
+          "sanitization_report": "reports/theseus_p4v2r2r2_09_tryceratops_75_target_archive_sanitization.json",
+          "sanitization_report_sha256": "4b7a85420cfba0f89c613452d8fe6eb3b80be1f790c4a8c1d4515bacadf2ee8d",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_09_tryceratops_75_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_09_tryceratops_75_target_upstream.tar.gz",
+          "upstream_sha256": "5204fffb2a3b580c55c042f52e04aac5ec13313ccf6b7d6af2df9e9c2db3213a",
+          "url": "https://codeload.github.com/guilatrova/tryceratops/tar.gz/67786fb9b5436417ef18c1e3c428bd529aaa8340"
+        }
+      ],
+      "campaign_index": 9,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "MIT",
+      "repository": "guilatrova/tryceratops",
+      "stem": "p4v2r2r2_09_tryceratops_75"
+    },
+    {
+      "allowed_effect_paths": [
+        "xarray/indexes/range_index.py"
+      ],
+      "artifacts": [
+        {
+          "expected_root": "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+          "full_sanitized_sha256": "940ce6f6ddfad87cc8d5b354ebb3851b34571dd46265e3e50e09e8c8de15609f",
+          "label": "parent",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_parent.tar.gz",
+          "normalized_name": "p4v2r2r2_10_xarray_11401_parent.tar.gz",
+          "normalized_sha256": "646b6f6b1f490a3471b7e90f842eb0380c7f550411ea086e8af377ba03e0a655",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "646b6f6b1f490a3471b7e90f842eb0380c7f550411ea086e8af377ba03e0a655",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd/LICENSE",
+              "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd/xarray/indexes/range_index.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+          "sanitization_report": "reports/theseus_p4v2r2r2_10_xarray_11401_parent_archive_sanitization.json",
+          "sanitization_report_sha256": "5220b8340405cc7df8ce72094e4acc85b706971f46f3a44329872981e696b7ed",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_parent_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_10_xarray_11401_parent_upstream.tar.gz",
+          "upstream_sha256": "890a35b7271941af1d251748d025f6f76ae2db95ca08fdb2c286ad31c0a3ae39",
+          "url": "https://codeload.github.com/pydata/xarray/tar.gz/13e5cf77051c71ae5a277857e88ae10cf8725fbd"
+        },
+        {
+          "expected_root": "xarray-d3dcda7ca86165078a474427bd7f3d398ab087e0",
+          "full_sanitized_sha256": "44d85480cc016cea6a0a9d11222e5dfd378bf9eb44ed65dd7b50e25ecfd204a4",
+          "label": "target",
+          "normalized": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_target.tar.gz",
+          "normalized_name": "p4v2r2r2_10_xarray_11401_target.tar.gz",
+          "normalized_sha256": "4492a311969894e0a18a196a9f1cbb7bf53a763dd705eb9eb5abed0d8f13c064",
+          "projection": {
+            "gzip_mtime": 0,
+            "member_mtime": 0,
+            "output_sha256": "4492a311969894e0a18a196a9f1cbb7bf53a763dd705eb9eb5abed0d8f13c064",
+            "policy": "project_theseus_exact_task_source_projection_v1",
+            "retained_members": [
+              "xarray-d3dcda7ca86165078a474427bd7f3d398ab087e0/LICENSE",
+              "xarray-d3dcda7ca86165078a474427bd7f3d398ab087e0/xarray/indexes/range_index.py"
+            ],
+            "uid_gid": 0
+          },
+          "revision": "d3dcda7ca86165078a474427bd7f3d398ab087e0",
+          "sanitization_report": "reports/theseus_p4v2r2r2_10_xarray_11401_target_archive_sanitization.json",
+          "sanitization_report_sha256": "c74222c3222669dc424714682fce08884ee2e6b8f4eedebfba7ccd6ba63e728a",
+          "upstream": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_target_upstream.tar.gz",
+          "upstream_name": "p4v2r2r2_10_xarray_11401_target_upstream.tar.gz",
+          "upstream_sha256": "b613c4cd742196b6403cbc252c44dfc48509d872dcab0dff526bfcf4cbb56afb",
+          "url": "https://codeload.github.com/pydata/xarray/tar.gz/d3dcda7ca86165078a474427bd7f3d398ab087e0"
+        }
+      ],
+      "campaign_index": 10,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "license_spdx": "Apache-2.0",
+      "repository": "pydata/xarray",
+      "stem": "p4v2r2r2_10_xarray_11401"
+    }
+  ],
+  "teacher_calls": 0,
+  "training_rows_written": 0,
+  "trigger_state": "RED"
+}

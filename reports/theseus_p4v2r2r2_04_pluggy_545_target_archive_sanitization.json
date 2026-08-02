@@ -1,0 +1,45 @@
+{
+  "admitted_regular_file_or_directory_count": 80,
+  "faults": [],
+  "input": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_target_upstream.tar.gz",
+    "sha256": "8bd82024d6ca9019408624022376bae4be7293cf2258fadb53130e65fd5c2ac2"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r2_online/tmp1rhtasuq.full-sanitized.tar.gz",
+    "sha256": "793b7aabebc95cc1aba0897a721e14801c51a50c946e78229ff058d3eb4d688f"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "projected_output": {
+    "path": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_04_pluggy_545_target.tar.gz",
+    "sha256": "af41633e440c56841334ed5054834d47a5db758883ea7fb494214e149bb29ea3"
+  },
+  "projection": {
+    "gzip_mtime": 0,
+    "member_mtime": 0,
+    "output_sha256": "af41633e440c56841334ed5054834d47a5db758883ea7fb494214e149bb29ea3",
+    "policy": "project_theseus_exact_task_source_projection_v1",
+    "retained_members": [
+      "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095/LICENSE",
+      "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095/src/pluggy/_callers.py"
+    ],
+    "uid_gid": 0
+  },
+  "source_archive_root": "pluggy-9cf2eaa50dd1ad3ebf042978629e78c695197095",
+  "transport_sanitized_output_retained": false,
+  "transport_sanitized_output_sha256": "793b7aabebc95cc1aba0897a721e14801c51a50c946e78229ff058d3eb4d688f",
+  "trigger_state": "GREEN"
+}
