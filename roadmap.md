@@ -1,7 +1,8 @@
 # Project Theseus Roadmap
 
-Last corrected: 2026-07-31 UTC, to restore ASI Stack hypothesis proof as the
-primary goal and remove the user-dependent assistant loop.
+Last corrected: 2026-08-02 UTC, after reconciling the external 177-commit
+review against current source, terminal receipts, storage state, and the active
+P4/P5/neural contracts.
 
 This is the forward human execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; operating rules belong in `AGENTS.md`; detailed
@@ -411,7 +412,7 @@ label, approval, or scheduling dependency.
 
 #### P3 — Autonomous paired development
 
-State: `TERMINAL_LOCAL_P3_COMPLETE_NO_USEFULNESS_ROUTE_WINNER_LUNA_TRANSPORT_UNBOUND`.
+State: `TERMINAL_HISTORICAL_BOUNDED_P3_NO_USEFULNESS_ROUTE_WINNER_LUNA_TRANSPORT_UNBOUND`.
 
 The local P3 instrument is now frozen before task-pool acquisition. It retains
 the exact P2C Qwen3.5 revision, snapshot, decoder, runtime overlay, 1,536-token
@@ -445,6 +446,14 @@ reference remains separately defined but transport-unbound; its reserved hosted
 cell must use this identical pool exactly once if a governed callable transport
 becomes available, and its denominator remains separate. Repeated local tasks
 are regression checks only.
+
+P3 is the strongest completed real-task result in the repository, but it is not
+current-charter capability proof. Its frozen decoder imposed a project-selected
+1,536-generated-token ceiling and its receipts do not establish natural
+completion or model EOS for every call. The campaign predates the generation-
+boundary rule above. Preserve the exact numbers as bounded historical
+instrument evidence; do not call the result uncapped, publishable proof, or a
+definitive test of Theseus efficacy. P4/P5 exist in part to repair this limit.
 
 For each pair:
 
@@ -658,6 +667,42 @@ gate. The campaign still has no project-selected quality-token cap. Model
 context exhaustion or a host emergency invalidates an observation rather than
 creating negative evidence.
 
+During the 2026-08-02 external-review audit, the autonomous launcher entered
+its child subprocess and was interrupted to prevent a source-binding race.
+There is no campaign-progress file, no P4 runtime receipt, and no durable
+candidate or evaluator output from that launch; whether a model call had opened
+before interruption is not independently provable. The archived lease is
+`STOPPED_RETAIN_EVIDENCE / NO_DURABLE_OBSERVATION`, not a zero-call capability
+result. Surface reuse requires the final gate below to prove that no output was
+observed or used for repair, selection, scoring, or prompt changes and to add a
+durable pre-inference call-start receipt so this ambiguity cannot recur.
+
+Before the next P4-v2r2-r3 model call, one final production-path conformance
+release candidate must prove the actual task renderer, exact chat-template
+prompt, model-visible grammar, returned transport, bound normalizer, parser,
+lowerer, applier, and visible verifier as one joined path. The gate must:
+
+- enumerate every grammar production and delimiter surface reachable from the
+  ten sealed task packets, including header, source, obligation, unit, node,
+  operation, replacement, loss, and terminal-envelope variants;
+- render each construct through the same production functions used by every
+  learned arm, then parse/lower/apply it with the exact campaign owners;
+- prove canonical round-trip identity or an explicitly allowed non-answer-
+  bearing normalization, plus rejection of malformed, reordered, invented,
+  truncated, and transport-corrupted controls;
+- run on the exact pinned Python/MLX environment and fail before a model session
+  opens if any source digest, route, parser owner, or construct coverage is
+  missing; and
+- emit one source-bound conformance receipt consumed by campaign preflight, not
+  a parallel test-only renderer.
+
+This is the last pre-call instrument release boundary. If the conformance gate
+is RED, park P4 and repair the instrument without consuming the sealed tasks.
+Once it is GREEN, source-lock and run the campaign once. After any learned call
+begins, a grammar or transport defect is terminal `INCONCLUSIVE_IMPLEMENTATION`
+evidence for that exact instrument; do not mint another nearby sealed campaign
+or rescore the consumed surface.
+
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
 | 0 | Integrated architecture + evidence-state prerequisites | Downstream-consumed trace joins and independent claim transitions | Direct, record-only, context-decoration-only, producer self-score |
@@ -701,13 +746,40 @@ Maintenance serves P or N and does not become another research program:
 
 - keep `teacher_share_of_accepted_training_rows` durable and drive it toward
   zero; no live teacher is part of runtime A/B testing;
-- split the current 88-file, multi-domain dirty transaction before any source
-  binding or release claim;
-- inventory the roughly 41 GiB / 249,000-file runtime tree and 1.9 GiB report
-  tree under existing retention authority before deletion;
+- preserve the completed mixed-transaction recovery: the tracked worktree is
+  clean at this review boundary, so the earlier 88-file criticism is historical
+  and must not remain an active blocker;
+- close the current storage wall: runtime is roughly 41 GiB / 249,000 files and
+  reports roughly 2.1 GiB / 10,600 files, while the latest governed hot-report
+  budget receipt is RED. Extend retention custody across the whole runtime tree,
+  classify terminal evidence, checkpoints/corpora, reproducible caches,
+  rehydrated mirrors, snapshots, and abandoned leases separately, then execute
+  only manifest-backed archive/compaction actions with replay verification;
+- derive the storage envelope from the measured working set, two-checkpoint
+  transactional reserve, host free-space reserve, and durable evidence set.
+  Do not substitute arbitrary fixed file or GiB counts for those causal needs;
 - consolidate or retire superseded L0 configs, scripts, and generated reports
   only after their negative evidence and replay locators remain durable; and
 - keep one roadmap, one project-state page, one registry, and existing ledgers.
+
+### External 177-commit review reconciliation
+
+The external review is an adversarial audit, not source authority. Its useful
+pressure is incorporated as follows:
+
+| Criticism | Disposition | Roadmap response |
+| --- | --- | --- |
+| P3 is the strongest real-task result and lacks a current concise brief | `ACCEPTED_NARROWED` | Replace the historical E2/E3-only brief with P3's exact matched outcome, costs, safety, rollback, and its 1,536-token/natural-termination limitation; prepare it for review, never automatic publication |
+| P4 repeatedly sealed zero-call campaigns instead of producing a verdict | `ACCEPTED` | One final joined production conformance gate, then run once or park; no further pre-call campaign namespace ladder |
+| Grammar and transport were tested through proxies rather than the exact live path | `ACCEPTED` | Make exhaustive production render→prompt→transport→parse→lower→apply→verify conformance a campaign preflight dependency |
+| Repository remains an 88-file mixed transaction | `REJECTED_STALE` | Current tracked worktree is clean; retain transaction isolation and source binding as continuous gates |
+| Runtime/report growth is operationally uncontrolled | `ACCEPTED` | Finish runtime-wide classification and replay-safe compaction under a derived resource envelope; preserve terminal evidence and active checkpoint/corpus custody |
+| `mx.compile` is absent from the production neural step | `REJECTED_STALE` | The selected owner compiles the production step in `standard_causal_transformer_survival.py`; preserve the config-to-call-path regression and do not create a duplicate acceleration lane |
+| The >8K batch-one branch throttles the live 57M trunk | `REJECTED_SCOPE_ERROR` | The branch owns conditional ragged KERC rows; the selected trunk is width 512, compiled microbatch 4, and has zero first-campaign KERC optimizer exposure |
+| D2 capability remains unevaluated | `ACCEPTED` | Finish the already-frozen modular/dense training and consume D2 once after its autonomous source/custody/resource predicates pass; preparation artifacts cannot substitute for a numerator |
+
+No item above authorizes external publication, evidence deletion, task replay,
+book-support promotion, or a user approval gate.
 
 ## Current Program State
 
@@ -723,11 +795,11 @@ Maintenance serves P or N and does not become another research program:
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | Qwen3.5 reproduced the prompt's literal backslash-n transport on all four matched calls, but the parser required actual newlines; zero candidates were evaluable, so the exact result is a harness implementation failure only |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; one safe integrated edit parsed and reached the blind evaluator but failed correctness, direct remained malformed, rollback passed, and the consumed task cannot support a subsystem effect |
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
-| Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
+| Autonomous usefulness | `P3_TERMINAL_HISTORICAL_BOUNDED_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid. The project-selected 1,536-token ceiling and missing natural-termination custody limit this to historical bounded evidence |
 | P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; its evidence is immutable and D1/book support remain closed |
-| P4 causal development | `P4V2R2R2_SEALED_WAITING_ON_MACHINE_PREDICATES` | The corrected parser, frozen TMax instrument, fresh ten-repository source denominator, dual evaluator surface, action-equivalent transport oracles, corruption controls, repaired campaign driver, terminal disposition, and no-user-gate one-shot launcher are prospectively sealed. Candidate consumption remains 0/10 tasks and 0/60 calls; autonomous launch waits only for external power, adequate host resources, and exclusive accelerator custody |
+| P4 causal development | `P4V2R2R3_NO_DURABLE_OBSERVATION_CONFORMANCE_RELEASE_CANDIDATE` | The complete-artifact successor removes project-selected generation, first-artifact, and verifier-feedback caps and keeps the same frozen TMax, ten-task source denominator, controls, and evaluator. A review-time launcher interruption left no campaign progress, runtime receipt, candidate, or evaluator output, but call-open state is unknown; its lease is retained as no durable observation. Before autonomous execution resumes, the final source-bound release candidate must prove reuse custody, add a durable pre-inference call-start receipt, and pass exhaustive joined production render/grammar/transport/parser/lower/apply/verifier conformance; then it runs once or is parked without another reseal |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
-| D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 is prospectively bound to the exact P4V2R2R2 disposition and waits for a faithful survivor |
+| D1 stack efficacy | `PROSPECTIVELY_BOUND_P4V2R2R3_CONTROLLER_INCOMPLETE` | Prior worker was inadequate; fresh D1 is bound to the exact P4V2R2R3 survivor only. Source acquisition, evaluator seal, sandbox, matched campaign, blind evaluation, and terminal disposition are implemented; append-only underfill recovery and the autonomous end-to-end pipeline controller remain open |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_WAITING_ON_MACHINE_PREDICATES` | The campaign controller requires clean source binding, derived disk custody, exact lineage continuity, resource checks, and exclusive accelerator availability. The optional yield file is an emergency stop, not approval authority; Corben is not a gate |
 | D2 student capability | `NOT_EVALUATED_SEALED` | The 57M candidate and dense controls have no verdict |
@@ -756,11 +828,15 @@ Maintenance serves P or N and does not become another research program:
    receipts, blind evaluations, and zero-unsafe rollback-valid denominator.
    Never replay or replace a task, and do not promote the integrated
    parseability shift into a usefulness or subsystem claim.
-7. Run the prospectively sealed P4-v2r2-r2 local campaign exactly once when its
-   machine predicates pass. Preserve all natural completions, boundary events,
-   costs, failures, and weak-tail evidence; do not add an answer-length cap,
-   replace a task, or interpret an incomplete/physical stop as a mechanism loss.
-8. Compute the already-sealed terminal disposition. Open one fresh,
+7. Build and bind the one final P4-v2r2-r3 production conformance release
+   candidate. It must exercise every reachable grammar construct through the
+   exact live renderer, transport, parser, lowerer, applier, and verifier. If it
+   is GREEN, source-lock and run the ten-task campaign once when machine
+   predicates pass; if RED, park P4. Do not create another reseal namespace.
+8. Preserve all natural completions, boundary events, costs, failures, and
+   weak-tail evidence; do not add an answer-length cap, replace a task, or
+   interpret an incomplete/physical stop as a mechanism loss. Compute the
+   source-bound terminal disposition. Open one fresh,
    source-disjoint D1 qualification only if the exact development-survivor rule
    passes; otherwise retain the exact scoped terminal result and keep D1 and
    book support closed.
@@ -768,9 +844,12 @@ Maintenance serves P or N and does not become another research program:
    transport exists. Run both models direct and integrated on a prospectively
    shared task surface without mixing local/hosted denominators or allowing
    hosted outputs into serving or training.
-10. In parallel, refresh N0 with the training hold installed and implement the
-   automated N1 launch/resource/rollback controller. Start no long run until
-   that controller proves every frozen predicate.
+10. In parallel, close the storage wall through manifest-backed replay-safe
+    compaction under a measured derived envelope; do not delete evidence or use
+    fixed size/file counts as scientific or execution-quality limits.
+11. Refresh N0 with the training hold installed and implement the automated N1
+    launch/resource/rollback controller. Start no long run until that controller
+    proves every frozen predicate.
 
 ## Historical Rapid Evidence Campaign
 
@@ -946,10 +1025,10 @@ against its own claim identity and evidence-quality rules.
 
 ### E5 — Showable Evidence Brief
 
-State: `COMPLETE_PUBLIC_SAFE` — the shareable result is
+State: `CURRENT_P3_BRIEF_COMPLETE_REVIEW_READY` — the canonical public-safe location is
 `docs/CORE_EVIDENCE_BRIEF.md`.
 
-Produce a public-safe brief from the existing flagship evidence packet:
+The historical E2/E3-only brief is replaced by a public-safe P3 evidence packet:
 
 - the question in plain English;
 - a small architecture and experiment diagram;
@@ -961,8 +1040,9 @@ Produce a public-safe brief from the existing flagship evidence packet:
 - what it changes in the ASI Stack;
 - what remains unproved.
 
-The brief may be shared after review. It must remain interesting even when the
-result is negative.
+The brief may be shared only after review. It must state the 1,536-token ceiling,
+missing natural-completion custody, separate P4/P5 successor, and maximum
+inference prominently. It must remain interesting even when the result is null.
 
 ### Consumed local-worker successor dispositions
 

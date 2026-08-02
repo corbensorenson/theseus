@@ -88,9 +88,9 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
 | P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
 | P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
-| P3 ten-task instrument | `TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback |
+| P3 ten-task instrument | `TERMINAL_HISTORICAL_BOUNDED_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback. Its project-selected 1,536-token ceiling and absent per-call natural-termination custody prevent definitive capability or subsystem inference under the current charter |
 | P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 natural-completion calls with zero context-boundary hits. Information flow, evaluator replay, source custody, 10/10 oracle reachability, and all corruption controls passed, but Semantic IR parsed/lowered 0/10 because its exact-list parser rejected semantically ordinary bracketed, quoted, or whitespace-separated obligation lists. D1 and book support remain closed; consumed outputs will not be rescored |
-| P4 causal development | `P4V2R2R3_SEALED_WAITING_ON_MACHINE_PREDICATES` | P4-v2r2-r2 attempt 2 was stopped before any model call after audit found that repair prompts retained only the last 12,000 characters for direct/plan, 16,000 for Semantic IR, and 1,000 of an upstream 2,000-character visible-verifier tail. The preserved `NO_OBSERVATION` disposition records zero calls, zero receipts, zero consumed tasks, and no negative model or mechanism evidence. The prospectively sealed successor keeps the same frozen TMax, ten tasks, causal mechanism, controls, and evaluator, but every learned arm now receives its complete first-call artifact and complete visible-verifier feedback. Exact chat-templated prompt tokens are counted by the pinned tokenizer; only the model-declared context residual is a physical boundary, and touching it invalidates rather than fails the observation. Autonomous launch waits only on machine predicates and never on user approval. |
+| P4 causal development | `P4V2R2R3_NO_DURABLE_OBSERVATION_CONFORMANCE_RELEASE_CANDIDATE` | P4-v2r2-r2 attempt 2 was stopped before any model call after audit found project-selected first-artifact and verifier-feedback truncation. The P4V2R2R3 successor removes those caps. During the 2026-08-02 review, its autonomous launcher entered the child subprocess and was interrupted to prevent a source-binding race. No campaign progress, runtime receipt, candidate, or evaluator output exists, but call-open state is not independently provable; the lease is archived as `STOPPED_RETAIN_EVIDENCE / NO_DURABLE_OBSERVATION`. Before execution resumes, one final source-bound release candidate must prove no observed output influenced the instrument, add a durable pre-inference call-start receipt, and pass exhaustive joined production render→prompt→transport→parse→lower→apply→verify conformance. It then runs once or is parked without another reseal. |
 | P4→D1 successor handoff | `D1_INSTRUMENT_IMPLEMENTED_AUTONOMOUS_PIPELINE_CONTROLLER_OPEN` | D1 binds the complete-artifact P4 successor and exact TMax snapshot rather than historical P4S/Qwen owners. Its source successor waits indefinitely without a user gate, opens public metadata only after the exact survivor status, and prospectively orders a design-derived initial frame of 206 distinct repositories before archive fetch; this gives at least 0.90 probability of reaching the final 44-task cohort at the declared 0.25 evaluator-qualification floor. Exact parent/target archives retain upstream bytes and pass deterministic path/license custody. The qualified local sandbox denies home/symlink reads, write escape, network, Mach lookup, non-Python exec, excess environment, and physical resource boundaries. The pre-model evaluator seal admits only one-callable Python repairs whose public request is bound before generation, whose target tests are deterministically split into candidate-hidden visible and hidden sets, whose parent fails while target and exact callable transplant pass both sets, and whose full first prompts fit the pinned model according to exact local tokenizer counts. The matched campaign, route-blind evaluator, independent integrity recomputation, one-shot consumption custody, exact sign decision, weak-tail retention, and token/runtime/verifier Pareto-cost disposition are implemented prospectively. The append-only underfill controller and machine-predicate end-to-end D1 pipeline controller remain open, so D1 execution readiness is not claimed. |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
 | Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
@@ -101,7 +101,7 @@ The glossary in `docs/GLOSSARY.md` defines project-specific terms.
 | Instrument usefulness | `NOT_ESTABLISHED` | P2-001 and P2A both traversed matched canonical routes but produced zero independently evaluable candidates under their exact protocols; no route or subsystem won |
 | Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
 | Teacher accounting | `GREEN_ACCOUNTING` | 15 teacher-accepted rows among 115,429 accepted rows, about 0.013% |
-| Storage | `RETENTION_POLICY_PENDING` | Current trees are roughly 2.0 GiB / 7,379 report files and 41 GiB / 249,010 runtime files. A machine-readable retention controller and custody must identify safe targets before deletion; checkpoints, corpora, and negative evidence are not implicitly eligible |
+| Storage | `RETENTION_BUDGET_RED_RUNTIME_CUSTODY_INCOMPLETE` | Current trees are roughly 2.1 GiB / 10,600 report files and 41 GiB / 249,000 runtime files, and the latest governed hot-report budget receipt is RED. Existing report/checkpoint retention is replay-aware, but it does not yet classify the complete runtime tree or derive its envelope from active working set, two-checkpoint transaction reserve, host reserve, and durable evidence. No evidence, active checkpoint, or governed corpus is implicitly eligible for deletion |
 | Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
 | ASI Stack synchronization | `RECONCILED_84_OF_84` | Immutable book commit `17c6ece…` is bound in exact order with zero unmapped chapters and no automatic support movement |
 | ASI Stack claim portfolio | `BOUND_13_EXACT_CLAIMS` | Two integrity prerequisites, eight one-variable P4 candidates, one independent D2 neural claim, and two synthesis claims now have exact causal, adequacy, control, decision, and maximum-inference contracts |
@@ -643,29 +643,36 @@ In order:
    effect from its one parseable but incorrect integrated candidate.
 6. Preserve terminal P3 and its ten consumed tasks, 36 runtime receipts, blind
    evaluations, exact 1/10 versus 1/10 useful result, and zero-unsafe rollback
-   evidence. Preserve interrupted P4-v1 as pilot-only evidence and never replay
-   its consumed tasks 1-3. Run the sealed ten-task P4R pool exactly once through
-   its completion-based matched arms without replacement and without scoring
-   any safety-boundary stop. No other mechanism is active.
+   evidence as historical bounded evidence, not current-charter capability
+   proof. Preserve interrupted P4-v1, terminal P4R, and terminal P4S without
+   replay or rescoring. No other mechanism is active.
    Bind Luna-xhigh only when a callable governed transport exists, using the
    reserved identical pool once and retaining separate denominators.
-7. Refresh neural N0 source/custody readiness in parallel and implement the
+7. Complete the one final P4V2R2R3 source-bound conformance release candidate:
+   prove no observed output from the interrupted launcher influenced the
+   instrument, add a durable pre-inference call-start receipt, and exercise every
+   reachable construct through the exact production renderer, prompt transport,
+   parser, lowerer, applier, and visible verifier. If GREEN, run once; if RED,
+   park P4. Do not create another pre-call campaign namespace.
+8. Refresh neural N0 source/custody readiness in parallel and implement the
    automated launch/resource/checkpoint/rollback controller. N1/N2 wait on its
    machine predicates, not a user decision.
-8. Keep E2, D2, and public calibration sealed. Do not tune or rerun
+9. Keep E2, D2, and public calibration sealed. Do not tune or rerun
    TMax/Worker-v4 on the consumed procedural-effect task.
    Preserve its terminal post-plan edit-commitment disposition and the
    superseded source-state diagnosis.
-8. Model-shopping is optional and nonblocking. Preflight a stronger local
+10. Model-shopping is optional and nonblocking. Preflight a stronger local
    model only when it is installed or a measured worker wall makes that
    comparison the smallest decision-relevant experiment.
-9. Continue cleanup only when it removes a proof/neural blocker or a material
-   storage wall. Inventory the 41 GiB runtime and 1.9 GiB reports trees under
-   existing retention authority before deleting anything.
-10. After a live subsystem earns a reversible local default on development
+11. Continue cleanup only when it removes a proof/neural blocker or a material
+   storage wall. Classify the roughly 41 GiB runtime and 2.1 GiB reports trees
+   under replay-safe retention authority before deleting anything, and derive
+   the operating envelope from the measured working set, transaction reserve,
+   host reserve, and durable evidence rather than arbitrary fixed counts.
+12. After a live subsystem earns a reversible local default on development
    evidence, freeze a fresh source-disjoint D1 qualification before making a
    claim-bearing comparison.
-11. Continue the already-scoped custody work autonomously: commit coherent
+13. Continue the already-scoped custody work autonomously: commit coherent
     source transactions, establish independent encrypted custody, and leave
     retention or public-root mutation out of scope until exact machine policies
     exist.

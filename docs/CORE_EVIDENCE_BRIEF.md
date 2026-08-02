@@ -1,99 +1,111 @@
-# Project Theseus: First Flagship Evidence Result
+# Project Theseus: P3 Real-Task Evidence Brief
 
-Historical status: this brief preserves the pre-P1 E2/E3 result. It has no
-current scheduling or claim authority. P1 route integrity, P2C instrument
-adequacy, P3 residual measurement, and P4 mechanics are now source-bound;
-current state lives in `docs/PROJECT_STATE.md` and current execution order in
-`roadmap.md`.
+Status: review-ready, not published, and not claim-promoting.
 
-## The answer
+## The result
 
-The governance mechanics replayed cleanly; the worker frozen for this
-historical packet could not do the work needed to test stack efficacy.
+On ten autonomously acquired, licensed Python maintenance tasks, the exact
+frozen Qwen3.5 local model solved **1/10** tasks through direct generation and
+**1/10** through the Theseus-integrated route. Integration increased parseable
+typed edits from **5/10** to **9/10**, but it did not improve useful completion.
+Twelve of fourteen independently evaluated edits were semantically wrong.
 
-This is a useful negative result. Theseus reproduced one exact local
-allowed/block/revoke/rollback packet from a clean archive, but its frozen
-deterministic repository worker produced plans rather than patches. It completed
-**0 of 3** development tasks. The preregistered rule therefore stopped E2 before
-opening its four held-out tasks. On a separate six-task repeated-work cohort,
-all **42** candidate variants remained target-blind and none completed a task.
+All fourteen evaluated candidates stayed inside authorized paths and passed
+exact rollback. Unsafe outcomes and rollback failures were both zero.
 
 ```mermaid
 flowchart LR
-  P["Natural request + parent snapshot"] --> W["Frozen local worker"]
-  W --> G["Governance / route policy"]
-  G --> V["Independent hidden evaluator"]
-  V -->|useful + safe| E["Temporary effect + exact rollback"]
-  V -->|plan-only / malformed| H["Hold + residual"]
+  T["Same sealed task packet"] --> D["Frozen model: direct"]
+  T --> I["Frozen model: Theseus-integrated"]
+  D --> E["Blind independent evaluator"]
+  I --> E
+  E --> R["Useful / incorrect / malformed / unsafe + rollback"]
 ```
 
-## Matched results
+## Matched outcome
 
-| Experiment | Denominator | Useful | Result |
-| --- | ---: | ---: | --- |
-| Clean authority/effect replay | 1 packet | mechanics replayed | `POSITIVE_SCOPED` mechanics |
-| E2 development competence | 3 tasks | 0 | `INCONCLUSIVE_WORKER_INADEQUATE` |
-| E2 heldout | 4 tasks | unopened | preserved by frozen stop rule |
-| E3 repeated work | 6 tasks / 42 variants | 0 | `INCONCLUSIVE_WORKER_INADEQUATE` |
-| Existing-owner regressions | 9 controls | 9 passed | mechanics only |
+| Measure | Direct | Theseus-integrated |
+| --- | ---: | ---: |
+| Tasks | 10 | 10 |
+| Model calls | 19 | 17 |
+| Parseable candidates | 5/10 | 9/10 |
+| Correctness-evaluated candidates | 5 | 9 |
+| Useful completions | 1/10 | 1/10 |
+| Incorrect evaluated candidates | 4 | 8 |
+| Malformed candidates | 5 | 1 |
+| Unsafe candidates | 0 | 0 |
+| Rollback-verified candidates | 5 | 9 |
+| Model runtime | 623.9 s | 1,095.6 s |
 
-![Useful-safe frontier](assets/core-evidence-useful-safe-frontier.svg)
+The paired useful outcomes were one direct-only win, one integrated-only win,
+and eight tasks solved by neither arm. The parseability discordance favored
+integration on four tasks and direct on none, but the exact paired two-sided
+p-value was 0.125. The 95% Wilson interval for each arm's 1/10 useful rate was
+0.018–0.404.
 
-The apparent safety of every E2/E3 arm is not a win: no candidate emitted an
-effect-capable patch. Maximal routing consumed **114**
-cost units, cheapest routing consumed **60**, and
-least-sufficient routing held all six tasks because none met the frozen quality
-predicate.
+## What this changes
 
-## What the evidence supports
+P3 identifies the dominant next residual: semantic translation and repair after
+an edit reaches the typed protocol. That prospectively selected
+`cognitive-compilation-and-semantic-ir.core` for the first P4 causal
+experiment. It also shows why parseability cannot stand in for usefulness: the
+integrated route produced four more parseable edits while solving no more tasks.
 
-- Exact local authority separation, observation, residual recording, and
-  rollback mechanics are replayable for this packet.
-- Candidate/evaluator separation held: E2 sealed 3 candidates and E3 sealed 42
-  variants before opening their corresponding targets.
-- The evidence process behaved correctly under failure: it retained zero-result
-  denominators, did not lower the floor, did not open E2 heldout, and issued
-  claim-scoped dispositions.
+The task pool, exact parent and target revisions, model identity, arm order,
+candidate-visible context, evaluators, candidate reports, runtime receipts, and
+terminal disposition are retained. All ten tasks are consumed. They may not be
+replayed for fresh credit or used for training, D1, or D2.
 
-## What it does not support
+## Critical limitation
 
-It does not yet support governed-stack efficacy, planning utility, VCM utility,
-procedural-reuse efficiency, least-sufficient routing, learned generation, or
-student competence. This packet did not evaluate the 57M D2 candidate and did
-not consume public calibration; there were zero external-inference or teacher
-calls. A later independent maintenance audit recomputed both the current and
-historical functional contracts, verified the historical packet's append-only
-consumption, and found zero exact or normalized model-visible prompt overlap.
-That freshness result is scoped to exact measurement-surface identity; it does
-not evaluate D2, authorize its execution, or turn task-family reuse into a new
-capability claim.
+This is the strongest completed real-task evidence in the repository, but it is
+**historical bounded evidence, not current-charter capability proof**.
 
-The 95% Wilson interval for the E2 useful rate is
-**0.000–0.561**.
-The denominator is deliberately shown because 0/3 is a wall, not a universal
-falsification.
+The frozen P3 decoder imposed a project-selected maximum of 1,536 generated
+tokens per call. The retained receipts do not establish complete artifact,
+model EOS, or another natural termination for every call. P3 predates the
+current generation-boundary policy, which forbids a project-selected answer
+length from becoming a competence or mechanism-failure boundary. The campaign
+therefore cannot establish that the ceiling was causally irrelevant.
 
-## Fastest meaningful next move
+The maximum justified inference is narrow:
 
-Do not replay this cohort, add another governance surface, or weaken the
-evaluator. Continue the fresh source-disjoint P4S cognitive-compilation campaign
-under its current frozen local model and completion policy. Run D1 once only if
-the independent terminal disposition identifies a survivor; otherwise retain a
-scoped negative and move to the independently sealed modular-versus-dense D2
-experiment.
+> For this exact frozen Qwen3.5 model, these ten licensed tasks, this typed-edit
+> protocol, and this bounded decoder, direct and integrated each solved one
+> task. Integration improved parseability but not useful completion.
 
-## Reproduce
+This result does not support or falsify a Theseus subsystem, qualify serving,
+open D1 or D2, rank the local model generally, or change an ASI Stack support
+state.
 
-```bash
-python3 scripts/core_evidence_campaign.py --stage E2 --gate
-python3 scripts/core_evidence_campaign.py --stage E3 --gate
-python3 scripts/core_evidence_synthesis.py --gate
-```
+## How the successor fixes the limitation
 
-Evidence digests:
+P4/P5 use complete-artifact or model-EOS termination, exact tokenizer-derived
+context addressability, independent integrity recomputation, fresh
+source-disjoint tasks, stronger causal controls, and no project-selected
+quality-token cap. P4 must pass one final joined production
+render→prompt→transport→parse→lower→apply→verify conformance release candidate,
+then run once or be parked. A survivor may be qualified once on fresh D1
+evidence; otherwise the exact scoped negative or inconclusive result is
+retained.
 
-- E2: `d0dc3fde921435de00324bc8bb67ff9008a18805b736f6af94b3f266e07c5378`
-- E3: `dd8a923f70e21c94a24b91d7429f9ed90b625e69db6767da950c9ad55c40cd77`
-- E4: `7a59a90bb48ffc27bc99ec4eb8ffd76e739c28a9580a3e39b239d22dd3b88d87`
+The separately defined `gpt-5.6-luna` `xhigh` control has not run because no
+governed callable transport is source-bound. If it becomes available, its
+measurement-only denominator remains separate and its outputs cannot enter
+serving, training, task selection, or local-model scoring.
 
-No ASI Stack book support state changes automatically from this brief.
+## Evidence identity
+
+- Terminal disposition:
+  `reports/theseus_assistant_p3_terminal_disposition.json`
+- Frozen instrument:
+  `configs/theseus_assistant_p3_instrument.json`
+- Sealed pool:
+  `configs/theseus_p3_task_pool.json`
+- Instrument freeze commit:
+  `d08bf94653ee3a5ca508a2457ca21d58a4010a98`
+- Task-pool seal commit:
+  `1408abc829e3243f66f2b606b76aef514b11ab57`
+
+No external publication or ASI Stack evidence-state transition is automatic
+from this brief.
