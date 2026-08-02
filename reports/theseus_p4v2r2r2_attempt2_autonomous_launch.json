@@ -4,7 +4,7 @@
     "D1_cases_consumed": 0,
     "D2_cases_consumed": 0,
     "complete_tasks": 0,
-    "created_utc": "2026-08-02T03:47:10.292622Z",
+    "created_utc": "2026-08-02T04:16:25.452037Z",
     "external_inference_calls": 0,
     "faults": [],
     "instrument": {
@@ -147,7 +147,7 @@
     "path": "configs/theseus_p4v2r2r2_autonomous_launch.json",
     "sha256": "9f34106fdc3410c2db93ccaa2af9275fdb3d31a0bc065ac9cfcd7bb1d4e9d4a0"
   },
-  "created_utc": "2026-08-02T03:47:10.673180Z",
+  "created_utc": "2026-08-02T04:16:25.809834Z",
   "disk": {
     "derivation": {
       "disk_output_bytes_per_context_token": 8,
@@ -155,25 +155,26 @@
       "disk_source_copy_count": 2,
       "minimum_reclaimable_memory_source": "measured_runtime_preflight_peak_rss_mib"
     },
-    "free_bytes": 53816233984,
+    "free_bytes": 52968538112,
     "maximum_retained_output_bytes": 125829120,
     "passed": true,
     "required_bytes": 212422198,
     "source_fixture_bytes": 43296539
   },
   "failed_gates": [
-    "measured_runtime_memory_available"
+    "external_power_physically_connected",
+    "battery_not_discharging"
   ],
   "faults": [],
   "gates": {
-    "battery_not_discharging": true,
+    "battery_not_discharging": false,
     "campaign_audit_green": true,
     "campaign_has_pending_tasks": true,
     "config_valid": true,
     "derived_disk_envelope_available": true,
     "exclusive_lease_available": true,
-    "external_power_physically_connected": true,
-    "measured_runtime_memory_available": false,
+    "external_power_physically_connected": false,
+    "measured_runtime_memory_available": true,
     "metal_accelerator_usable": true,
     "no_competing_accelerator_job": true,
     "qualified_runtime_executable_bound": true,
@@ -182,8 +183,8 @@
   "launch_authorized": false,
   "maximum_inference": "Authorizes exactly one local sealed campaign under an exclusive machine lease; no D1, D2, training, serving, hosted inference, or book promotion.",
   "memory": {
-    "observed_reclaimable_mib": 4183.938,
-    "passed": false,
+    "observed_reclaimable_mib": 5105.984,
+    "passed": true,
     "physical_memory_mib": 16384.0,
     "required_reclaimable_mib": 4621.016,
     "required_source": "bound_runtime_preflight_peak_rss_mib"
@@ -198,14 +199,14 @@
   "policy": "project_theseus_p4v2r2r2_autonomous_launch_v1",
   "power": {
     "available": true,
-    "battery_percent": 96,
-    "discharging": false,
-    "external_connected": true,
+    "battery_percent": 77,
+    "discharging": true,
+    "external_connected": false,
     "ioreg_external_values": [
-      "Yes",
-      "Yes"
+      "No",
+      "No"
     ],
-    "pmset_summary": "Now drawing from 'AC Power' -InternalBattery-0 (id=65601635) 96%; charging; 0:24 remaining present: true"
+    "pmset_summary": "Now drawing from 'Battery Power' -InternalBattery-0 (id=65601635) 77%; discharging; 1:42 remaining present: true"
   },
   "project_selected_quality_token_cap": null,
   "runtime": {
