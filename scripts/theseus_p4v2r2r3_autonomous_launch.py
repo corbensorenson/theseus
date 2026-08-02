@@ -17,7 +17,7 @@ import theseus_p4v2r2r3_campaign as campaign
 ROOT = Path(__file__).resolve().parents[1]
 POLICY = "project_theseus_p4v2r2r3_autonomous_launch_v1"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_p4v2r2r3_autonomous_launch.json"
-BOUND_CAMPAIGN_COMMIT = "45b06f8a140e45cc8b27f89b99aad16f1979d72f"
+BOUND_CAMPAIGN_COMMIT = "590ceca0dd0b801ed9be64822d093e2cb691e39c"
 
 
 @contextmanager

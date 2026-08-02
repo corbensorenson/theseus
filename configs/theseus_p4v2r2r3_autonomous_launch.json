@@ -2,7 +2,7 @@
   "policy": "project_theseus_p4v2r2r3_autonomous_launch_v1",
   "campaign": "scripts/theseus_p4v2r2r3_campaign.py",
   "campaign_sha256": "86bb1d641a539aba06472bfa1ab47d064259edf5c0289602a00d8e0acaea0d9c",
-  "campaign_commit": "45b06f8a140e45cc8b27f89b99aad16f1979d72f",
+  "campaign_commit": "590ceca0dd0b801ed9be64822d093e2cb691e39c",
   "task_pool": "configs/theseus_p4v2r2r2_task_pool.json",
   "task_pool_sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f",
   "instrument": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",

@@ -25,7 +25,7 @@ ZERO_CALL_DISPOSITION = (
     / "reports"
     / "theseus_p4v2r2r2_attempt2_pre_generation_information_cap_disposition.json"
 )
-EFFECTIVE_RESEAL_COMMIT = "45b06f8a140e45cc8b27f89b99aad16f1979d72f"
+EFFECTIVE_RESEAL_COMMIT = "590ceca0dd0b801ed9be64822d093e2cb691e39c"
 
 
 def build_report() -> dict[str, Any]:
