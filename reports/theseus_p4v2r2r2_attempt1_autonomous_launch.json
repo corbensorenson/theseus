@@ -1,10 +1,15 @@
 {
-  "active_lease": "runtime/control/theseus_p4v2r2r2_campaign_lease.json",
-  "campaign_audit": {
+  "campaign_complete": false,
+  "child_returncode": 2,
+  "child_stderr_tail": "",
+  "child_stdout_tail": "{\n  \"complete_tasks\": 0,\n  \"faults\": [\n    \"candidate_run_exception:p4v2r2r2_01_h11_181:RecursionError:maximum recursion depth exceeded\"\n  ],\n  \"model_calls_retained\": 0,\n  \"pending_tasks\": 10,\n  \"physical_context_boundary_hits\": 0,\n  \"project_selected_quality_token_cap\": null,\n  \"trigger_state\": \"RED\"\n}\n",
+  "created_utc": "2026-08-02T03:35:09.957340Z",
+  "error": "",
+  "final_campaign_audit": {
     "D1_cases_consumed": 0,
     "D2_cases_consumed": 0,
     "complete_tasks": 0,
-    "created_utc": "2026-08-02T03:34:06.521444Z",
+    "created_utc": "2026-08-02T03:35:09.956376Z",
     "external_inference_calls": 0,
     "faults": [],
     "instrument": {
@@ -142,149 +147,302 @@
     "training_rows_written": 0,
     "trigger_state": "GREEN"
   },
-  "competing_accelerator_jobs": [],
-  "config": {
-    "path": "configs/theseus_p4v2r2r2_autonomous_launch.json",
-    "sha256": "265c09f51d55665a9b03d5f77aca0203c9a600a8053c65c5ef68e9e2ff016887"
-  },
-  "created_utc": "2026-08-02T03:34:06.886533Z",
-  "disk": {
-    "derivation": {
-      "disk_output_bytes_per_context_token": 8,
-      "disk_output_call_count": 60,
-      "disk_source_copy_count": 2,
-      "minimum_reclaimable_memory_source": "measured_runtime_preflight_peak_rss_mib"
-    },
-    "free_bytes": 53831856128,
-    "maximum_retained_output_bytes": 125829120,
-    "passed": true,
-    "required_bytes": 212422198,
-    "source_fixture_bytes": 43296539
-  },
-  "failed_gates": [],
-  "faults": [],
-  "gates": {
-    "battery_not_discharging": true,
-    "campaign_audit_green": true,
-    "campaign_has_pending_tasks": true,
-    "config_valid": true,
-    "derived_disk_envelope_available": true,
-    "exclusive_lease_available": true,
-    "external_power_physically_connected": true,
-    "measured_runtime_memory_available": true,
-    "metal_accelerator_usable": true,
-    "no_competing_accelerator_job": true,
-    "qualified_runtime_executable_bound": true,
-    "sealed_bindings_exact": true
-  },
   "launch_authorized": true,
-  "maximum_inference": "Authorizes exactly one local sealed campaign under an exclusive machine lease; no D1, D2, training, serving, hosted inference, or book promotion.",
-  "memory": {
-    "observed_reclaimable_mib": 6275.281,
-    "passed": true,
-    "physical_memory_mib": 16384.0,
-    "required_reclaimable_mib": 4621.016,
-    "required_source": "bound_runtime_preflight_peak_rss_mib"
-  },
-  "metal": {
-    "canary": "mlx_float32_vector_add_and_synchronize",
-    "capability_claim": "NONE_DEVICE_USABILITY_ONLY",
-    "faults": [],
-    "observed": "[2.0, 3.0]",
-    "passed": true
+  "lease": {
+    "path": "reports/theseus_p4v2r2r2_campaign_leases/dd059ca7f25d4fa0bcd8d31768fc0008.json",
+    "sha256": "01324bb055466399960ae89d830993c31ee8d6c110380dd99b27dc675214d2f2"
   },
   "policy": "project_theseus_p4v2r2r2_autonomous_launch_v1",
-  "power": {
-    "available": true,
-    "battery_percent": 92,
-    "discharging": false,
-    "external_connected": true,
-    "ioreg_external_values": [
-      "Yes",
-      "Yes"
-    ],
-    "pmset_summary": "Now drawing from 'AC Power' -InternalBattery-0 (id=65601635) 92%; charging; 0:35 remaining present: true"
+  "preflight": {
+    "active_lease": "runtime/control/theseus_p4v2r2r2_campaign_lease.json",
+    "campaign_audit": {
+      "D1_cases_consumed": 0,
+      "D2_cases_consumed": 0,
+      "complete_tasks": 0,
+      "created_utc": "2026-08-02T03:35:08.959673Z",
+      "external_inference_calls": 0,
+      "faults": [],
+      "instrument": {
+        "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+        "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+      },
+      "maximum_inference": "Campaign custody only. Scientific disposition requires all ten sealed blind evaluations and an independent terminal aggregation.",
+      "model_calls_retained": 0,
+      "pending_tasks": 10,
+      "physical_context_boundary_hits": 0,
+      "policy": "project_theseus_p4v2r2r2_campaign_v1",
+      "pool": {
+        "path": "configs/theseus_p4v2r2r2_task_pool.json",
+        "sha256": "3c5138a7690a9d620d93e4ef64925060af7b39239a99fbf758f126acdcb2ffbd"
+      },
+      "project_selected_quality_token_cap": null,
+      "route_canary": {
+        "path": "reports/theseus_p4v2r2r2_route_canary_audit.json",
+        "sha256": "042c4476af2a9c997dc1d8c6e304576e27c8db3ea55b2ef717e3f70597725af7"
+      },
+      "runtime_attempt_namespace": "p4v2r2r2_attempt1",
+      "tasks": [
+        {
+          "campaign_index": 1,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_01_h11_181",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 2,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_02_h2_1313",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 3,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_03_pygments_3215",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 4,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_04_pluggy_545",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 5,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_05_asgiref_537",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 6,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_06_platformdirs_469",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 7,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_07_markupsafe_418",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 8,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_08_itsdangerous_378",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 9,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_09_tryceratops_75",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 10,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_10_xarray_11401",
+          "unique_backend_receipts": 0
+        }
+      ],
+      "teacher_calls": 0,
+      "training_rows_written": 0,
+      "trigger_state": "GREEN"
+    },
+    "competing_accelerator_jobs": [],
+    "config": {
+      "path": "configs/theseus_p4v2r2r2_autonomous_launch.json",
+      "sha256": "265c09f51d55665a9b03d5f77aca0203c9a600a8053c65c5ef68e9e2ff016887"
+    },
+    "created_utc": "2026-08-02T03:35:09.300172Z",
+    "disk": {
+      "derivation": {
+        "disk_output_bytes_per_context_token": 8,
+        "disk_output_call_count": 60,
+        "disk_source_copy_count": 2,
+        "minimum_reclaimable_memory_source": "measured_runtime_preflight_peak_rss_mib"
+      },
+      "free_bytes": 53829058560,
+      "maximum_retained_output_bytes": 125829120,
+      "passed": true,
+      "required_bytes": 212422198,
+      "source_fixture_bytes": 43296539
+    },
+    "failed_gates": [],
+    "faults": [],
+    "gates": {
+      "battery_not_discharging": true,
+      "campaign_audit_green": true,
+      "campaign_has_pending_tasks": true,
+      "config_valid": true,
+      "derived_disk_envelope_available": true,
+      "exclusive_lease_available": true,
+      "external_power_physically_connected": true,
+      "measured_runtime_memory_available": true,
+      "metal_accelerator_usable": true,
+      "no_competing_accelerator_job": true,
+      "qualified_runtime_executable_bound": true,
+      "sealed_bindings_exact": true
+    },
+    "launch_authorized": true,
+    "maximum_inference": "Authorizes exactly one local sealed campaign under an exclusive machine lease; no D1, D2, training, serving, hosted inference, or book promotion.",
+    "memory": {
+      "observed_reclaimable_mib": 7018.422,
+      "passed": true,
+      "physical_memory_mib": 16384.0,
+      "required_reclaimable_mib": 4621.016,
+      "required_source": "bound_runtime_preflight_peak_rss_mib"
+    },
+    "metal": {
+      "canary": "mlx_float32_vector_add_and_synchronize",
+      "capability_claim": "NONE_DEVICE_USABILITY_ONLY",
+      "faults": [],
+      "observed": "[2.0, 3.0]",
+      "passed": true
+    },
+    "policy": "project_theseus_p4v2r2r2_autonomous_launch_v1",
+    "power": {
+      "available": true,
+      "battery_percent": 92,
+      "discharging": false,
+      "external_connected": true,
+      "ioreg_external_values": [
+        "Yes",
+        "Yes"
+      ],
+      "pmset_summary": "Now drawing from 'AC Power' -InternalBattery-0 (id=65601635) 92%; charging; 0:35 remaining present: true"
+    },
+    "project_selected_quality_token_cap": null,
+    "runtime": {
+      "expected": {
+        "mlx_lm_version": "0.31.3",
+        "mlx_version": "0.32.0",
+        "python_version": [
+          3,
+          12,
+          5
+        ]
+      },
+      "faults": [],
+      "observed": {
+        "executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+        "mlx": "0.32.0",
+        "mlx_lm": "0.31.3",
+        "version": [
+          3,
+          12,
+          5
+        ]
+      },
+      "passed": true,
+      "python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+      "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"
+    },
+    "sealed_bindings": {
+      "faults": [],
+      "owners": [
+        {
+          "expected_sha256": "4c0cc833906984bc249186df79294108b7e833c28a68a4739abd1a6eef9c77b0",
+          "observed_sha256": "4c0cc833906984bc249186df79294108b7e833c28a68a4739abd1a6eef9c77b0",
+          "owner": "campaign",
+          "passed": true,
+          "path": "scripts/theseus_p4v2r2r2_campaign.py"
+        },
+        {
+          "expected_sha256": "3c5138a7690a9d620d93e4ef64925060af7b39239a99fbf758f126acdcb2ffbd",
+          "observed_sha256": "3c5138a7690a9d620d93e4ef64925060af7b39239a99fbf758f126acdcb2ffbd",
+          "owner": "task_pool",
+          "passed": true,
+          "path": "configs/theseus_p4v2r2r2_task_pool.json"
+        },
+        {
+          "expected_sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288",
+          "observed_sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288",
+          "owner": "instrument",
+          "passed": true,
+          "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json"
+        },
+        {
+          "expected_sha256": "042c4476af2a9c997dc1d8c6e304576e27c8db3ea55b2ef717e3f70597725af7",
+          "observed_sha256": "042c4476af2a9c997dc1d8c6e304576e27c8db3ea55b2ef717e3f70597725af7",
+          "owner": "route_canary",
+          "passed": true,
+          "path": "reports/theseus_p4v2r2r2_route_canary_audit.json"
+        },
+        {
+          "expected_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+          "observed_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+          "owner": "runtime_preflight",
+          "passed": true,
+          "path": "reports/core_evidence_tmax_9b_runtime_preflight.json"
+        },
+        {
+          "expected_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+          "observed_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+          "owner": "python",
+          "passed": true,
+          "path": "runtime/venvs/mlx-0.32.0-py312/bin/python"
+        },
+        {
+          "expected_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
+          "observed_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
+          "owner": "accelerator_inventory",
+          "passed": true,
+          "path": "scripts/neural_seed_training_campaign.py"
+        }
+      ],
+      "passed": true
+    },
+    "trigger_state": "GREEN"
   },
   "project_selected_quality_token_cap": null,
-  "runtime": {
-    "expected": {
-      "mlx_lm_version": "0.31.3",
-      "mlx_version": "0.32.0",
-      "python_version": [
-        3,
-        12,
-        5
-      ]
-    },
-    "faults": [],
-    "observed": {
-      "executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
-      "mlx": "0.32.0",
-      "mlx_lm": "0.31.3",
-      "version": [
-        3,
-        12,
-        5
-      ]
-    },
-    "passed": true,
-    "python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
-    "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"
-  },
-  "sealed_bindings": {
-    "faults": [],
-    "owners": [
-      {
-        "expected_sha256": "4c0cc833906984bc249186df79294108b7e833c28a68a4739abd1a6eef9c77b0",
-        "observed_sha256": "4c0cc833906984bc249186df79294108b7e833c28a68a4739abd1a6eef9c77b0",
-        "owner": "campaign",
-        "passed": true,
-        "path": "scripts/theseus_p4v2r2r2_campaign.py"
-      },
-      {
-        "expected_sha256": "3c5138a7690a9d620d93e4ef64925060af7b39239a99fbf758f126acdcb2ffbd",
-        "observed_sha256": "3c5138a7690a9d620d93e4ef64925060af7b39239a99fbf758f126acdcb2ffbd",
-        "owner": "task_pool",
-        "passed": true,
-        "path": "configs/theseus_p4v2r2r2_task_pool.json"
-      },
-      {
-        "expected_sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288",
-        "observed_sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288",
-        "owner": "instrument",
-        "passed": true,
-        "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json"
-      },
-      {
-        "expected_sha256": "042c4476af2a9c997dc1d8c6e304576e27c8db3ea55b2ef717e3f70597725af7",
-        "observed_sha256": "042c4476af2a9c997dc1d8c6e304576e27c8db3ea55b2ef717e3f70597725af7",
-        "owner": "route_canary",
-        "passed": true,
-        "path": "reports/theseus_p4v2r2r2_route_canary_audit.json"
-      },
-      {
-        "expected_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
-        "observed_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
-        "owner": "runtime_preflight",
-        "passed": true,
-        "path": "reports/core_evidence_tmax_9b_runtime_preflight.json"
-      },
-      {
-        "expected_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
-        "observed_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
-        "owner": "python",
-        "passed": true,
-        "path": "runtime/venvs/mlx-0.32.0-py312/bin/python"
-      },
-      {
-        "expected_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
-        "observed_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
-        "owner": "accelerator_inventory",
-        "passed": true,
-        "path": "scripts/neural_seed_training_campaign.py"
-      }
-    ],
-    "passed": true
-  },
-  "trigger_state": "GREEN"
+  "trigger_state": "RED"
 }

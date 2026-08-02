@@ -2,9 +2,11 @@
   "D1_cases_consumed": 0,
   "D2_cases_consumed": 0,
   "complete_tasks": 0,
-  "created_utc": "2026-08-02T03:30:24.610012Z",
+  "created_utc": "2026-08-02T03:35:09.920467Z",
   "external_inference_calls": 0,
-  "faults": [],
+  "faults": [
+    "candidate_run_exception:p4v2r2r2_01_h11_181:RecursionError:maximum recursion depth exceeded"
+  ],
   "instrument": {
     "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
     "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
@@ -138,5 +140,5 @@
   ],
   "teacher_calls": 0,
   "training_rows_written": 0,
-  "trigger_state": "GREEN"
+  "trigger_state": "RED"
 }

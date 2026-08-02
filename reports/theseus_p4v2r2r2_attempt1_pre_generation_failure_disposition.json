@@ -1,0 +1,54 @@
+{
+  "candidate_generation_opened": false,
+  "classification": "INVALID_HARNESS_PRE_GENERATION_NO_DENOMINATOR_CONSUMED",
+  "created_utc": "2026-08-02T03:35:09.957340Z",
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "external_inference_calls": 0,
+  "failure": {
+    "exception": "RecursionError: maximum recursion depth exceeded",
+    "mechanism": "The namespace adapter replaced the predecessor audit function and then recursively resolved that mutable name from its own audit implementation.",
+    "phase": "candidate_instrument_audit_before_session_or_generation",
+    "stem": "p4v2r2r2_01_h11_181"
+  },
+  "faults": [],
+  "frozen_transaction": {
+    "candidate_runner": {
+      "path": "scripts/theseus_p4v2r2r2_cognitive_compilation.py",
+      "sha256": "985cf5b950106d5bbd8b9e3fb07d8168f7e81a4a4fc1e72fc75e55bfc75fa75a"
+    },
+    "commit": "7b1c79cf1f3ca56b61019c4aeae47d556977c4d6",
+    "instrument": {
+      "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+      "sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288"
+    }
+  },
+  "launch_report": {
+    "path": "reports/theseus_p4v2r2r2_attempt1_autonomous_launch.json",
+    "sha256": "9d0436032f0965f26a9e98bf0af6747cda0cb7b5294361fdb09e20fa13c522b9"
+  },
+  "lease": {
+    "path": "reports/theseus_p4v2r2r2_campaign_leases/dd059ca7f25d4fa0bcd8d31768fc0008.json",
+    "sha256": "01324bb055466399960ae89d830993c31ee8d6c110380dd99b27dc675214d2f2",
+    "state": "STOPPED_RETAIN_EVIDENCE"
+  },
+  "local_model_calls": 0,
+  "maximum_inference": "This proves only that the frozen r2r2r2 namespace adapter was not executable. It is not evidence about TMax, any learned arm, Semantic-IR v2r2, cognitive compilation, or the ten-task pool.",
+  "policy": "project_theseus_p4v2r2r2_pre_generation_failure_disposition_v1",
+  "progress_report": {
+    "path": "reports/theseus_p4v2r2r2_campaign_progress.json",
+    "sha256": "67b0fdb9cb132833ed697b778ef7cf6c9c382f2fd1ac36926e885a0713194cbe"
+  },
+  "project_selected_quality_token_cap": null,
+  "retry_authority": {
+    "same_frozen_task_pool_may_be_reused": true,
+    "same_runtime_attempt_namespace_may_be_reused": false,
+    "successor_must_fix_and_test_the_audit_owner_before_reseal": true,
+    "successor_must_use_a_fresh_runtime_attempt_namespace": true
+  },
+  "runtime_backend_receipts": 0,
+  "scientific_status": "NO_OBSERVATION",
+  "teacher_calls": 0,
+  "training_rows_written": 0,
+  "trigger_state": "RED"
+}
