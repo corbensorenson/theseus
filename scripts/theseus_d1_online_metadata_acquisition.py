@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Acquire a complete post-snapshot GitHub metadata frame for fresh D1.
 
-The transport is fail-closed and cannot make a network call before a green P4-v2r2
+The transport is fail-closed and cannot make a network call before a green P4-v2r2-r2
 survivor.  It fetches public metadata only; source archives, tests, evaluators,
 oracles, models, candidates, and controls remain outside this stage.
 """
@@ -135,7 +135,7 @@ def preflight(
         "user_or_operator_gate": False,
         "maximum_inference": (
             "Preflight authorizes public GitHub metadata transport only after a "
-            "green P4-v2r2 survivor. It does not authorize archives, execution, "
+            "green P4-v2r2-r2 survivor. It does not authorize archives, execution, "
             "evaluators, candidates, controls, D1 consumption, training, serving, "
             "D2, or book promotion."
         ),

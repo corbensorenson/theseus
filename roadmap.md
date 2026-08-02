@@ -725,9 +725,9 @@ Maintenance serves P or N and does not become another research program:
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid |
 | P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; its evidence is immutable and D1/book support remain closed |
-| P4 causal development | `P4V2R2_SEALED_WAITING_ON_MACHINE_PREDICATES` | The corrected parser, frozen TMax instrument, fresh ten-repository source denominator, dual evaluator surface, action-equivalent transport oracles, corruption controls, campaign driver, terminal disposition, and no-user-gate one-shot launcher are prospectively sealed. Candidate consumption remains 0/10 tasks and 0/60 calls; autonomous launch waits only for external power, adequate host resources, and exclusive accelerator custody |
+| P4 causal development | `P4V2R2R2_SEALED_WAITING_ON_MACHINE_PREDICATES` | The corrected parser, frozen TMax instrument, fresh ten-repository source denominator, dual evaluator surface, action-equivalent transport oracles, corruption controls, repaired campaign driver, terminal disposition, and no-user-gate one-shot launcher are prospectively sealed. Candidate consumption remains 0/10 tasks and 0/60 calls; autonomous launch waits only for external power, adequate host resources, and exclusive accelerator custody |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
-| D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 waits for a faithful P4 survivor |
+| D1 stack efficacy | `TERMINAL_PRIOR_INCONCLUSIVE_NEW_D1_SEALED` | Prior worker was inadequate; a future fresh D1 is prospectively bound to the exact P4V2R2R2 disposition and waits for a faithful survivor |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_WAITING_ON_MACHINE_PREDICATES` | The campaign controller requires clean source binding, derived disk custody, exact lineage continuity, resource checks, and exclusive accelerator availability. The optional yield file is an emergency stop, not approval authority; Corben is not a gate |
 | D2 student capability | `NOT_EVALUATED_SEALED` | The 57M candidate and dense controls have no verdict |
@@ -756,7 +756,7 @@ Maintenance serves P or N and does not become another research program:
    receipts, blind evaluations, and zero-unsafe rollback-valid denominator.
    Never replay or replace a task, and do not promote the integrated
    parseability shift into a usefulness or subsystem claim.
-7. Run the prospectively sealed P4-v2r2 local campaign exactly once when its
+7. Run the prospectively sealed P4-v2r2-r2 local campaign exactly once when its
    machine predicates pass. Preserve all natural completions, boundary events,
    costs, failures, and weak-tail evidence; do not add an answer-length cap,
    replace a task, or interpret an incomplete/physical stop as a mechanism loss.

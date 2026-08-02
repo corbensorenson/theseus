@@ -51,6 +51,13 @@ def test_terminal_classification_preserves_adequacy_and_D1_boundaries() -> None:
         experiment_floor=True,
         survivor_rule=False,
     ) == "INCONCLUSIVE_IMPLEMENTATION"
+    assert disposition.classify_status(
+        information_flow_green=True,
+        boundary_hits=1,
+        mechanics_floor=True,
+        experiment_floor=True,
+        survivor_rule=True,
+    ) == "INVALID_OBSERVATION_CONTEXT_OR_HOST_BOUNDARY"
     assert disposition.next_stage("P4V2R2R2_ADEQUATE_NO_SURVIVOR")[
         "D1_eligible"
     ] is False

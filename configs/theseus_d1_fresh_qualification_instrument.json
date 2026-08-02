@@ -5,9 +5,10 @@
   "claim_id": "cognitive-compilation-and-semantic-ir.core",
   "purpose": "Qualify a decision-relevant P4 survivor exactly once on fresh licensed source-disjoint real maintenance tasks without tuning, task replacement, user gates, or output-length caps.",
   "activation": {
-    "p4_terminal_disposition": "reports/theseus_p4v2r2_terminal_disposition.json",
+    "p4_terminal_disposition": "reports/theseus_p4v2r2r2_attempt2_terminal_disposition.json",
+    "required_policy": "project_theseus_p4v2r2r2_terminal_disposition_v1",
     "required_trigger_state": "GREEN",
-    "required_scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+    "required_scientific_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
     "required_claim_id": "cognitive-compilation-and-semantic-ir.core",
     "required_eligible_for_D1": true,
     "user_or_operator_approval_required": false,
@@ -15,12 +16,12 @@
     "candidate_or_control_calls_before_surface_seal_forbidden": true
   },
   "frozen_candidate": {
-    "model_runtime_and_mechanism_identity": "inherit_exactly_from_the_green_P4V2R2_terminal_disposition",
+    "model_runtime_and_mechanism_identity": "inherit_exactly_from_the_green_P4V2R2R2_terminal_disposition",
     "tuning_on_D1": false,
     "repair_or_prompt_changes_on_D1": false,
     "model_shopping_on_D1": false,
     "treatment": "typed_semantic_ir_treatment",
-    "learned_control_selection": "Choose the P4V2R2 learned control with the greatest independently verified useful count; break a tie in favor of direct_target_generation. Freeze that identity before D1 membership selection.",
+    "learned_control_selection": "Choose the P4V2R2R2 learned control with the greatest independently verified useful count; break a tie in favor of direct_target_generation. Freeze that identity before D1 membership selection.",
     "additional_controls": [
       "prospective_no_model_static_compiler_control",
       "evaluator_only_exact_target_oracle_ceiling"
@@ -38,14 +39,14 @@
     "measure_generated_tokens_latency_and_cost_without_using_them_as_scissors": true
   },
   "source_surface": {
-    "acquisition_timing": "after_green_P4V2R2_survivor_before_any_D1_parent_target_oracle_candidate_control_or_evaluator_execution",
+    "acquisition_timing": "after_green_P4V2R2R2_survivor_before_any_D1_parent_target_oracle_candidate_control_or_evaluator_execution",
     "network_use": "licensed_source_and_public_metadata_acquisition_only",
     "task_family": "merged_machine_verifiable_real_repository_maintenance_changes",
     "natural_language_scope": "English",
     "programming_language_scope": [
       "Python"
     ],
-    "language_scope_reason": "The exact P4V2R2 survivor candidate is the current Python AST and labeled Semantic-IR v2r2 implementation. D1 qualifies that implementation only; cross-language portability requires separately implemented and mechanics-qualified treatments and cannot be inferred here.",
+    "language_scope_reason": "The exact P4V2R2R2 survivor candidate is the current Python AST and labeled Semantic-IR v2r2 implementation. D1 qualifies that implementation only; cross-language portability requires separately implemented and mechanics-qualified treatments and cannot be inferred here.",
     "allowed_license_spdx": [
       "Apache-2.0",
       "MIT",
@@ -63,7 +64,8 @@
       "configs/theseus_p4_task_pool.json",
       "configs/theseus_p4r_task_pool.json",
       "configs/theseus_p4s_task_pool.json",
-      "configs/theseus_p4v2r2_task_pool.json"
+      "configs/theseus_p4v2r2_task_pool.json",
+      "configs/theseus_p4v2r2r2_task_pool.json"
     ],
     "also_disjoint_from": [
       "public_calibration_surfaces",

@@ -83,7 +83,7 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         self.assertEqual(currentness["capability_claim"], "NOT_EVALUATED")
         self.assertEqual(
             currentness["migration_id"],
-            "shared_trunk_step11416_uncapped_d2_contract_rebind_v1",
+            "shared_trunk_step11416_exiting_process_inventory_rebind_v1",
         )
 
     def test_current_phase0_readiness_is_bound_to_green_source_package(self) -> None:

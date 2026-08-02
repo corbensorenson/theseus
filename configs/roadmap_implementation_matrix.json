@@ -1852,7 +1852,7 @@
         "path": "configs/neural_seed_t1_lineage_anchor.json",
         "availability_policy": "configs/neural_seed_training_availability.json",
         "training_config": "configs/moecot_language_arm_training.json",
-        "required_current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
+        "required_current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
         "allow_historical_source_artifact_drift": true
       }
     },
@@ -3719,8 +3719,8 @@
     "step_11416_plan_identity_migration": {
       "state": "GREEN_EXACT_IDENTITY_ONLY",
       "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
-      "current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
-      "migration_id": "shared_trunk_step11416_uncapped_d2_contract_rebind_v1",
+      "current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
+      "migration_id": "shared_trunk_step11416_exiting_process_inventory_rebind_v1",
       "checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
       "optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
       "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
@@ -4005,10 +4005,10 @@
       "physical_boundary": "pinned_model_declared_context_window_minus_exact_prompt_tokens",
       "physical_boundary_hit_disposition": "invalidate_observation_never_score_as_model_or_mechanism_failure",
       "launch_authority": "machine_predicate_exclusive_one_shot_lease_no_user_gate",
-      "current_machine_wall": "repaired_attempt2_controller_all_host_and_runtime_preflight_gates_green_ready_for_autonomous_relaunch",
+      "current_machine_wall": "repaired_attempt2_waiter_active_zero_calls_waiting_for_external_power_battery_not_discharging_and_adequate_measured_resources",
       "D1_eligible": false,
       "prospective_D1_successor": {
-        "state": "fail_closed_waiting_for_exact_P4V2R2_survivor",
+        "state": "fail_closed_waiting_for_exact_P4V2R2R2_survivor",
         "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
         "source_selection": "configs/theseus_d1_source_selection.json",
         "autonomous_source_successor_config": "configs/theseus_d1_autonomous_source_successor.json",
@@ -4032,11 +4032,11 @@
           "blind_candidate_and_control_campaign",
           "independent_integrity_recomputation_and_terminal_disposition"
         ],
-        "activation_disposition": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
-        "required_scientific_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "activation_disposition": "reports/theseus_p4v2r2r2_attempt2_terminal_disposition.json",
+        "required_scientific_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
         "historical_P4S_survivor_cannot_activate": true,
         "temporal_contamination_identity": "mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560",
-        "source_disjoint_registry_count": 8,
+        "source_disjoint_registry_count": 9,
         "power_derived_cohort_size": 44,
         "source_acquisition_authorized": false,
         "candidate_or_control_calls_authorized": false,
@@ -4696,7 +4696,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-08-01",
-    "recommendation": "Preserve terminal P3, interrupted P4-v1, terminal P4R, and terminal P4S without replay or overclaim. P4S completed 60 natural-completion calls with zero context-boundary hits and every custody/information-flow audit green, but its learned Semantic-IR treatment parsed and lowered 0/10 against the frozen floor. Classify INCONCLUSIVE_IMPLEMENTATION and never rescore consumed outputs. The prospective v2r2 parser now passes delimiter-only adversarial tests and a 20-call retained-text mechanics diagnostic with zero identifier invention, reordering, replacement-byte changes, evaluator calls, or score changes; it also preserves two unrelated overlong NODE-field residuals. The canonical TMax assistant and resident compatibility path now use exact prompt accounting, model-declared context residual, null project quality caps, termination custody, and invalid-observation treatment at physical boundaries. Bind v2r2 into an entirely fresh source-disjoint P4 denominator next. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
+    "recommendation": "Preserve terminal P3, interrupted P4-v1, terminal P4R, and terminal P4S without replay or overclaim. P4S completed 60 natural-completion calls with zero context-boundary hits and every custody/information-flow audit green, but its learned Semantic-IR treatment parsed and lowered 0/10 against the frozen floor. Classify INCONCLUSIVE_IMPLEMENTATION and never rescore consumed outputs. The v2r2 parser passes delimiter-only adversarial tests and a 20-call retained-text mechanics diagnostic with zero identifier invention, reordering, replacement-byte changes, evaluator calls, or score changes; it also preserves two unrelated overlong NODE-field residuals. The repaired P4V2R2R2 campaign is sealed on a fresh ten-repository denominator and its autonomous waiter has made zero model calls while external-power and host-resource predicates remain closed. The canonical TMax assistant and resident compatibility path use exact prompt accounting, model-declared context residual, null project quality caps, termination custody, and invalid-observation treatment at physical boundaries. Run P4V2R2R2 exactly once when machine predicates pass, then open D1 only for its exact survivor status. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, D2, public calibration, and all negative or interrupted evidence.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4707,7 +4707,7 @@
       "preserve_P4_v1_as_interrupted_inconclusive_and_never_replay_consumed_tasks_1_3",
       "preserve_terminal_P4R_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits",
       "preserve_terminal_P4S_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits_without_rescoring",
-      "preserve_v2r2_non_answer_bearing_list_normalization_mechanics_and_bind_an_entirely_fresh_source_disjoint_P4_denominator",
+      "run_the_prospectively_sealed_P4V2R2R2_fresh_source_disjoint_campaign_once_when_machine_predicates_pass",
       "preserve_completed_canonical_runtime_generation_boundary_migration_with_null_project_quality_caps_and_physical_context_residual_custody",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "refresh_step_11416_source_and_custody_readiness_under_machine_predicate_authority_without_user_approval",
@@ -7125,7 +7125,7 @@
             "path": "configs/neural_seed_t1_lineage_anchor.json",
             "availability_policy": "configs/neural_seed_training_availability.json",
             "training_config": "configs/moecot_language_arm_training.json",
-            "required_current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
+            "required_current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
             "allow_historical_source_artifact_drift": true
           }
         },

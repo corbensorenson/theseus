@@ -1,5 +1,5 @@
 {
-  "activation_state": "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2_SURVIVOR",
+  "activation_state": "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2R2_SURVIVOR",
   "authority": {
     "external_inference_calls": 0,
     "failed_or_invalid_consumption_can_be_replaced": false,
@@ -26,11 +26,14 @@
   "faults": [],
   "instrument": {
     "path": "configs/theseus_d1_fresh_qualification_instrument.json",
-    "sha256": "483791a783fb04c66478f859edc2cb9e106e066199c4cbb3d56c022d857f5645"
+    "sha256": "ccc91f6a2a0fe870071f296aa01ec637b4a9a3b69a2e47e5f711ef4262df7c82"
   },
   "instrument_policy": "project_theseus_d1_fresh_source_disjoint_qualification_instrument_v1",
   "maximum_inference": "GREEN means the prospective D1 instrument is internally consistent. It does not mean P4 produced a survivor, does not acquire or consume a D1 task, and does not authorize candidate generation. Source acquisition opens automatically only when every survivor check is true; candidate calls remain closed until the fresh cohort and evaluator are sealed.",
-  "p4_terminal_disposition": {},
+  "p4_terminal_disposition": {
+    "path": "reports/theseus_p4v2r2r2_attempt2_terminal_disposition.json",
+    "sha256": "7f132ac8e936e31d3e47d8957883865d4fe0d49e09af187f6f2499140b25a9af"
+  },
   "policy": "project_theseus_d1_fresh_qualification_instrument_audit_v1",
   "power_design_recomputation": {
     "achieved_power_at_minimum_worthwhile_effect": 0.8670836658,
@@ -43,19 +46,21 @@
     "required_treatment_wins_at_required_pairs": 13
   },
   "prior_source_inventory": {
-    "registry_count": 8,
+    "registry_count": 9,
     "repositories": [
       "agronholm/anyio",
       "agronholm/apscheduler",
       "aio-libs/aiohttp",
       "aio-libs/yarl",
       "celery/celery",
+      "django/asgiref",
       "django/django",
       "encode/django-rest-framework",
       "encode/httpcore",
       "encode/httpx",
       "encode/uvicorn",
       "fastapi/fastapi",
+      "guilatrova/tryceratops",
       "hynek/structlog",
       "hypothesisworks/hypothesis",
       "jd/tenacity",
@@ -65,7 +70,9 @@
       "more-itertools/more-itertools",
       "pallets/click",
       "pallets/flask",
+      "pallets/itsdangerous",
       "pallets/jinja",
+      "pallets/markupsafe",
       "pallets/werkzeug",
       "prompt-toolkit/python-prompt-toolkit",
       "psf/black",
@@ -74,11 +81,16 @@
       "pycqa/pycodestyle",
       "pycqa/pyflakes",
       "pydantic/pydantic",
+      "pydata/xarray",
+      "pygments/pygments",
       "pypa/installer",
       "pypa/packaging",
       "pypa/pip",
+      "pytest-dev/pluggy",
       "pytest-dev/pytest",
       "python-attrs/attrs",
+      "python-hyper/h11",
+      "python-hyper/h2",
       "python-lsp/python-lsp-server",
       "python-pillow/pillow",
       "python-poetry/poetry",
@@ -90,21 +102,23 @@
       "textualize/textual",
       "tkem/cachetools",
       "tox-dev/filelock",
+      "tox-dev/platformdirs",
       "tox-dev/tox",
       "urllib3/urllib3"
     ],
-    "repositories_sha256": "920e518956ec8fa50adf861d109b9243e569a6022f2ad713f0eab5b9fce18ecd",
-    "repository_count": 47
+    "repositories_sha256": "231b5b57c8f37adbc1ffd1215703d230300642f7f7a8f9a70338101c459522c2",
+    "repository_count": 57
   },
   "source_acquisition_authorized": false,
   "survivor_checks": {
     "D1_eligibility_explicit": false,
-    "claim_identity_matches": false,
+    "claim_identity_matches": true,
     "decision_relevant_survivor": false,
     "effect_decision_authorized": false,
     "survivor_effect_rule_passed": false,
     "terminal_disposition_green": false,
-    "terminal_disposition_present": false
+    "terminal_disposition_policy": true,
+    "terminal_disposition_present": true
   },
   "trigger_state": "GREEN"
 }

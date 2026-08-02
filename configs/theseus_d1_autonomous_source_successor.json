@@ -1,22 +1,22 @@
 {
   "policy": "project_theseus_d1_autonomous_source_successor_v1",
-  "state": "BOUND_BEFORE_P4V2R2_TERMINAL_EVIDENCE",
+  "state": "BOUND_BEFORE_P4V2R2R2_TERMINAL_EVIDENCE",
   "instrument": "configs/theseus_d1_fresh_qualification_instrument.json",
-  "instrument_sha256": "483791a783fb04c66478f859edc2cb9e106e066199c4cbb3d56c022d857f5645",
+  "instrument_sha256": "ccc91f6a2a0fe870071f296aa01ec637b4a9a3b69a2e47e5f711ef4262df7c82",
   "source_selection_config": "configs/theseus_d1_source_selection.json",
-  "source_selection_config_sha256": "10fefb0dcf3985e0108f414d1ebd3817493a7281f54e1935e6ca12db7fee1d9b",
+  "source_selection_config_sha256": "7fb1b0ab07dbd6db4e838eee06c65a3863c02a788b29cfbb2213c4c74834daed",
   "metadata_acquisition": "scripts/theseus_d1_online_metadata_acquisition.py",
-  "metadata_acquisition_sha256": "64b025a6bcb561abb205507c06dc0ad5c9ee082b470e4d1e2a5d26acd6764c5e",
+  "metadata_acquisition_sha256": "22dfbe5394d35b3d9c2dc0ed25a7d172a6900936cf365365984ed3aab60f2408",
   "source_selection": "scripts/theseus_d1_source_selection.py",
-  "source_selection_sha256": "14a346138b8412b0c386a086a9b2d9bf872998ca91d56a2d02311626d4ad2746",
-  "p4_terminal_disposition": "reports/theseus_p4v2r2_attempt2_terminal_disposition.json",
-  "p4_survivor_status": "P4V2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+  "source_selection_sha256": "72880a09fc2d4486c45395db9ebb151f92d2705812e1b6889e237035961ed48e",
+  "p4_terminal_disposition": "reports/theseus_p4v2r2r2_attempt2_terminal_disposition.json",
+  "p4_survivor_status": "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
   "p4_terminal_non_survivor_statuses": [
-    "P4V2R2_ADEQUATE_NO_SURVIVOR",
+    "P4V2R2R2_ADEQUATE_NO_SURVIVOR",
     "INCONCLUSIVE_IMPLEMENTATION",
     "INCONCLUSIVE_EXPERIMENT",
     "INVALID_INFORMATION_FLOW",
-    "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+    "INVALID_OBSERVATION_CONTEXT_OR_HOST_BOUNDARY"
   ],
   "metadata_ledger": "runtime/d1_acquisition/theseus_d1_online_metadata_frame.json",
   "source_registry": "configs/theseus_d1_task_sources.json",
@@ -44,5 +44,5 @@
     "book_support_promotion_authorized": false,
     "project_selected_quality_token_cap_allowed": false
   },
-  "maximum_inference": "A terminal GREEN source-successor report proves only that P4-v2r2 did not survive or that the first design-complete, metadata-selected, post-snapshot, source-disjoint D1 cohort was frozen before archive fetch. It does not prove archive materialization, evaluator adequacy, candidate utility, D1 qualification, serving, training, D2, or ASI Stack support."
+  "maximum_inference": "A terminal GREEN source-successor report proves only that P4-v2r2-r2 did not survive or that the first design-complete, metadata-selected, post-snapshot, source-disjoint D1 cohort was frozen before archive fetch. It does not prove archive materialization, evaluator adequacy, candidate utility, D1 qualification, serving, training, D2, or ASI Stack support."
 }

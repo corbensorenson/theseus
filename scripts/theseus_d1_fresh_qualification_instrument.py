@@ -51,6 +51,8 @@ def build_report(
     )
     survivor_checks = {
         "terminal_disposition_present": bool(disposition),
+        "terminal_disposition_policy": disposition.get("policy")
+        == activation.get("required_policy"),
         "terminal_disposition_green": disposition.get("trigger_state")
         == activation.get("required_trigger_state"),
         "decision_relevant_survivor": disposition.get("scientific_status")
@@ -76,7 +78,7 @@ def build_report(
     activation_state = (
         "READY_FOR_AUTONOMOUS_D1_SOURCE_MEMBERSHIP_FREEZE"
         if activation_ready
-        else "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2_SURVIVOR"
+        else "WAITING_FOR_GREEN_DECISION_RELEVANT_P4V2R2R2_SURVIVOR"
     )
     design = recompute_power_design(mapping(config.get("power_design")))
     return {
@@ -144,7 +146,7 @@ def validate_config(config: dict[str, Any]) -> list[str]:
         faults.append("boundary_misclassified_as_negative_evidence")
     surface = mapping(config.get("source_surface"))
     registries = list(surface.get("source_disjoint_registry_paths") or [])
-    if len(registries) != 8 or len(set(registries)) != 8:
+    if len(registries) != 9 or len(set(registries)) != 9:
         faults.append("source_disjoint_registry_set_invalid")
     if surface.get("membership_fixed_before_archive_fetch") is not True:
         faults.append("membership_not_fixed_before_fetch")
