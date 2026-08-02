@@ -1,0 +1,9 @@
+{
+  "completed_utc": "2026-08-02T02:32:15.042369Z",
+  "created_utc": "2026-08-01T20:57:37.778758Z",
+  "lease_id": "01a5fea6d2ed4bd5b5e49fbd020136df",
+  "policy": "project_theseus_p4v2r2r1_autonomous_launch_v1",
+  "state": "STOPPED_RETAIN_EVIDENCE",
+  "stop_reason": "external_execution_session_disappeared_after_partial_task_call",
+  "terminal_scientific_status": "INCONCLUSIVE_EXPERIMENT"
+}

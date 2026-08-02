@@ -1,0 +1,144 @@
+{
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "complete_tasks": 6,
+  "created_utc": "2026-08-02T02:21:26.056282Z",
+  "external_inference_calls": 0,
+  "faults": [
+    "partial_unsealed_runtime_receipts:p4v2r2_08_pylsp_715"
+  ],
+  "instrument": {
+    "path": "configs/theseus_p4v2r2r1_cognitive_compilation_instrument.json",
+    "sha256": "028b1ce44961df62ccd5076787bb61f5dd032faee5fc2431cf8566f8a8bdfb7e"
+  },
+  "maximum_inference": "Campaign custody only. Scientific disposition requires all ten sealed blind evaluations and an independent terminal aggregation.",
+  "model_calls_retained": 36,
+  "pending_tasks": 4,
+  "physical_context_boundary_hits": 0,
+  "policy": "project_theseus_p4v2r2r1_recovery_campaign_v1",
+  "pool": {
+    "path": "configs/theseus_p4v2r2r1_task_pool.json",
+    "sha256": "12fa1a25276bd2d3bbed497a4b6e2fef4ebd868c81d570ac7d9e3c2d5c65bfa5"
+  },
+  "project_selected_quality_token_cap": null,
+  "route_canary": {
+    "path": "reports/theseus_p4v2r2r1_route_canary_audit.json",
+    "sha256": "ee29d77e01041a307056e7fa7a08508b2ec3880572f74915f58879bfaedd05c9"
+  },
+  "runtime_attempt_namespace": "p4v2r2r1_attempt1",
+  "tasks": [
+    {
+      "campaign_index": 1,
+      "complete": true,
+      "evaluation": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_02_jinja_2061_evaluation.json",
+      "evaluation_sha256": "9cda80682b9f226e2bd2ab729ad7589298fb30572472e242e782afe70e12e2b8",
+      "run": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_02_jinja_2061_run.json",
+      "run_sha256": "68e14ef430b756da49938950be18840509a971391f3068b6846dabaaa09ef822",
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_02_jinja_2061",
+      "unique_backend_receipts": 6
+    },
+    {
+      "campaign_index": 2,
+      "complete": true,
+      "evaluation": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_03_textual_6592_evaluation.json",
+      "evaluation_sha256": "866e6f74544b6dee8d0103256dceab14276b63750e2e7fd3b19ca7d2ff742aae",
+      "run": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_03_textual_6592_run.json",
+      "run_sha256": "36aeb5cca7cf7e044fdd58411169ef2e0d01d2cfdcfbe5a216e69d6945ff9080",
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_03_textual_6592",
+      "unique_backend_receipts": 6
+    },
+    {
+      "campaign_index": 3,
+      "complete": true,
+      "evaluation": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_04_scrapy_7783_evaluation.json",
+      "evaluation_sha256": "28555bcd7adb45c01d481b14eef9b428798b2ac5a0a3272aee3ed587c65d48f4",
+      "run": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_04_scrapy_7783_run.json",
+      "run_sha256": "1daeab8231116fb35f9f7ce50eca0d9112bd4fd1b65325766b1a82682bcada3f",
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_04_scrapy_7783",
+      "unique_backend_receipts": 6
+    },
+    {
+      "campaign_index": 4,
+      "complete": true,
+      "evaluation": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_05_pyflakes_765_evaluation.json",
+      "evaluation_sha256": "b50adae28fa941f55214719ac9ddfeaa1b96ce7f3bdb56b98818c34dc4319585",
+      "run": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_05_pyflakes_765_run.json",
+      "run_sha256": "5da661d5c41085fcc9901ec752c41ea1d9edeb713d2cebec9665ed4ffccb7397",
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_05_pyflakes_765",
+      "unique_backend_receipts": 6
+    },
+    {
+      "campaign_index": 5,
+      "complete": true,
+      "evaluation": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_06_pycodestyle_1286_evaluation.json",
+      "evaluation_sha256": "f6be2670ff77beebc32794ac1f97cc5071eb383012e616ba912ce7d2cb93f810",
+      "run": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_06_pycodestyle_1286_run.json",
+      "run_sha256": "50aae39d9d75274b7635f9d247d21bc69072e2ea21230bb213432191646c19b0",
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_06_pycodestyle_1286",
+      "unique_backend_receipts": 6
+    },
+    {
+      "campaign_index": 6,
+      "complete": true,
+      "evaluation": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_07_drf_9977_evaluation.json",
+      "evaluation_sha256": "a8264f9e3a511c53f09727a2837801d73827ab9723bc68c2b7c04fce2ce124dd",
+      "run": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_07_drf_9977_run.json",
+      "run_sha256": "cf6eab62aa3a6ba80ba97d0388aca81c02e6b139954b7a2d93bfe1506d064792",
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_07_drf_9977",
+      "unique_backend_receipts": 6
+    },
+    {
+      "campaign_index": 7,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 1,
+      "stem": "p4v2r2_08_pylsp_715",
+      "unique_backend_receipts": 1
+    },
+    {
+      "campaign_index": 8,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_09_hypothesis_4787",
+      "unique_backend_receipts": 0
+    },
+    {
+      "campaign_index": 9,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2_10_pillow_9821",
+      "unique_backend_receipts": 0
+    },
+    {
+      "campaign_index": 10,
+      "complete": false,
+      "evaluation": "",
+      "evaluation_sha256": "",
+      "run": "",
+      "run_sha256": "",
+      "runtime_receipts": 0,
+      "stem": "p4v2r2r1_10_pydantic_ai_6901",
+      "unique_backend_receipts": 0
+    }
+  ],
+  "teacher_calls": 0,
+  "training_rows_written": 0,
+  "trigger_state": "RED"
+}

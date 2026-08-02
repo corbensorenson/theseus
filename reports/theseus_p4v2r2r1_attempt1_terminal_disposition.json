@@ -1,0 +1,174 @@
+{
+  "adequacy": {
+    "experiment_floor_established": false,
+    "information_flow_green_on_complete_tasks": true,
+    "mechanics_floor_established": false,
+    "reason": "sealed_ten_task_denominator_interrupted_after_one_call_on_task_seven"
+  },
+  "candidate_unseen_task_stems": [
+    "p4v2r2_09_hypothesis_4787",
+    "p4v2r2_10_pillow_9821",
+    "p4v2r2r1_10_pydantic_ai_6901"
+  ],
+  "completed_tasks": [
+    {
+      "blind_evaluator_replay_match": true,
+      "campaign_index": 1,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_02_jinja_2061_evaluation.json",
+        "sha256": "9cda80682b9f226e2bd2ab729ad7589298fb30572472e242e782afe70e12e2b8"
+      },
+      "route_custody_green": true,
+      "run": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_02_jinja_2061_run.json",
+        "sha256": "68e14ef430b756da49938950be18840509a971391f3068b6846dabaaa09ef822"
+      },
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_02_jinja_2061"
+    },
+    {
+      "blind_evaluator_replay_match": true,
+      "campaign_index": 2,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_03_textual_6592_evaluation.json",
+        "sha256": "866e6f74544b6dee8d0103256dceab14276b63750e2e7fd3b19ca7d2ff742aae"
+      },
+      "route_custody_green": true,
+      "run": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_03_textual_6592_run.json",
+        "sha256": "36aeb5cca7cf7e044fdd58411169ef2e0d01d2cfdcfbe5a216e69d6945ff9080"
+      },
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_03_textual_6592"
+    },
+    {
+      "blind_evaluator_replay_match": true,
+      "campaign_index": 3,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_04_scrapy_7783_evaluation.json",
+        "sha256": "28555bcd7adb45c01d481b14eef9b428798b2ac5a0a3272aee3ed587c65d48f4"
+      },
+      "route_custody_green": true,
+      "run": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_04_scrapy_7783_run.json",
+        "sha256": "1daeab8231116fb35f9f7ce50eca0d9112bd4fd1b65325766b1a82682bcada3f"
+      },
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_04_scrapy_7783"
+    },
+    {
+      "blind_evaluator_replay_match": true,
+      "campaign_index": 4,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_05_pyflakes_765_evaluation.json",
+        "sha256": "b50adae28fa941f55214719ac9ddfeaa1b96ce7f3bdb56b98818c34dc4319585"
+      },
+      "route_custody_green": true,
+      "run": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_05_pyflakes_765_run.json",
+        "sha256": "5da661d5c41085fcc9901ec752c41ea1d9edeb713d2cebec9665ed4ffccb7397"
+      },
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_05_pyflakes_765"
+    },
+    {
+      "blind_evaluator_replay_match": true,
+      "campaign_index": 5,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_06_pycodestyle_1286_evaluation.json",
+        "sha256": "f6be2670ff77beebc32794ac1f97cc5071eb383012e616ba912ce7d2cb93f810"
+      },
+      "route_custody_green": true,
+      "run": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_06_pycodestyle_1286_run.json",
+        "sha256": "50aae39d9d75274b7635f9d247d21bc69072e2ea21230bb213432191646c19b0"
+      },
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_06_pycodestyle_1286"
+    },
+    {
+      "blind_evaluator_replay_match": true,
+      "campaign_index": 6,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_07_drf_9977_evaluation.json",
+        "sha256": "a8264f9e3a511c53f09727a2837801d73827ab9723bc68c2b7c04fce2ce124dd"
+      },
+      "route_custody_green": true,
+      "run": {
+        "path": "reports/theseus_p4v2r2r1_attempt1_p4v2r2_07_drf_9977_run.json",
+        "sha256": "cf6eab62aa3a6ba80ba97d0388aca81c02e6b139954b7a2d93bfe1506d064792"
+      },
+      "runtime_receipts": 6,
+      "stem": "p4v2r2_07_drf_9977"
+    }
+  ],
+  "created_utc": "2026-08-02T02:32:49.914271Z",
+  "denominators": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_unseen_tasks": 3,
+    "complete_matched_model_calls": 36,
+    "complete_tasks": 6,
+    "external_inference_calls": 0,
+    "learned_model_calls": 37,
+    "partial_task_model_calls": 1,
+    "partially_consumed_tasks": 1,
+    "physical_context_boundary_hits": 0,
+    "project_selected_quality_token_cap": null,
+    "sealed_tasks": 10,
+    "teacher_calls": 0
+  },
+  "faults": [],
+  "interim_observation": {
+    "complete_task_count": 6,
+    "terminal_mechanism_decision_authorized": false,
+    "typed_semantic_ir_treatment_useful": 0
+  },
+  "interruption": {
+    "campaign_process_active": false,
+    "kind": "external_execution_session_disappeared",
+    "partially_consumed_task_replay_authorized": false,
+    "same_denominator_resume_authorized": false
+  },
+  "maximum_inference": "The six complete tasks and one route-clean partial call are valid retained development evidence, but the interrupted ten-task denominator cannot establish a survivor, adequate no-survivor result, or broader conclusion about cognitive compilation. It grants no D1, D2, training, serving, hosted-control, or ASI Stack support-promotion authority.",
+  "next_stage": {
+    "D1_eligible": false,
+    "book_support_state_effect": "none",
+    "state": "FRESH_PROSPECTIVELY_SEALED_P4_RECOVERY_REQUIRED"
+  },
+  "partial_task": {
+    "campaign_index": 7,
+    "route_custody_green": true,
+    "runtime_receipts": 1,
+    "stem": "p4v2r2_08_pylsp_715"
+  },
+  "policy": "project_theseus_p4v2r2r1_interruption_disposition_v1",
+  "scientific_status": "INCONCLUSIVE_EXPERIMENT",
+  "source_identities": {
+    "campaign_progress": {
+      "path": "reports/theseus_p4v2r2r1_campaign_progress.json",
+      "sha256": "bacbb701bc8c18317d2e6604e17994ad02143bc31ccabb82605b7c4fe7620535"
+    },
+    "instrument": {
+      "path": "configs/theseus_p4v2r2r1_cognitive_compilation_instrument.json",
+      "sha256": "028b1ce44961df62ccd5076787bb61f5dd032faee5fc2431cf8566f8a8bdfb7e"
+    },
+    "lease": {
+      "path": "reports/theseus_p4v2r2r1_campaign_leases/01a5fea6d2ed4bd5b5e49fbd020136df.json",
+      "sha256": "a2b095b8d4644622af1fc10eb0ed70b69e495a0708b05848365649774c456553"
+    },
+    "partial_backend_receipt": {
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2-cognitive-compilation-08_natural_language_plan_control_p4v2r2r1_attempt1_direct_lo_3cf766a431f9e168.json",
+      "sha256": "1b1620d6953070b48ca9ce6d4415211bc24881fd2b2c781c8162cd506dba88ca"
+    },
+    "partial_runtime_receipt": {
+      "path": "runtime/p2a/p2a_p4_p4v2r2-cognitive-compilation-08_natural_language_plan_control_p4v2r2r1_attempt1_direct_local_model_1.json",
+      "sha256": "6675be298a413a17f4604232c38f7b3456dcc727e160d0a990e6a69e7ecfd8f1"
+    },
+    "pool": {
+      "path": "configs/theseus_p4v2r2r1_task_pool.json",
+      "sha256": "12fa1a25276bd2d3bbed497a4b6e2fef4ebd868c81d570ac7d9e3c2d5c65bfa5"
+    }
+  },
+  "trigger_state": "GREEN"
+}
