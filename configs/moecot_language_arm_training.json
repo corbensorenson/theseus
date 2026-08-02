@@ -232,6 +232,20 @@
         "reason": "Rebind the exact immutable step-11416 receipt to the semantic plan digest deterministically recomputed after the source-bound D2 evaluator contract removed project-selected generation caps, adopted exact prompt tokenization and model-context-residual completion, replaced the human completion gate with independent machine audit, and added the autonomous one-shot controller. The candidate checkpoint, AdamW state, MLX RNG, optimizer position, sampler cursor, admitted training rows and order, topology, active training math, objective mass, and schedule are unchanged. The functional evaluation identity remains unconsumed and NOT_EVALUATED; this migration grants no training, D2, serving, capability, or support authority, and the transactional safety hold remains active."
       },
       {
+        "migration_id": "shared_trunk_step11416_exiting_process_inventory_rebind_v1",
+        "target_id": "shared_trunk",
+        "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
+        "legacy_checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
+        "legacy_optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
+        "legacy_mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
+        "legacy_optimizer_steps": 11416,
+        "legacy_optimizer_positions": 87441996,
+        "required_current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
+        "required_stage_signature": "d35a80daa9cba706f9f67acbd4d0650ca2a73b7fc548e9c8464f79d033f369f9",
+        "evidence": "commit ed9f7a0038d54ee53f3210aee66aff4ba476a76f tests/test_neural_seed_training_campaign.py tests/test_neural_seed_d2_autonomous_evaluation_controller.py",
+        "reason": "Rebind the exact immutable step-11416 receipt after the shared process-inventory owner learned to ignore Darwin exiting, zombie, and dead processes while retaining independent Metal usability and live-process exclusion. The change affects only outer accelerator lease telemetry and cannot alter model topology, active operation, tensor, checkpoint byte, optimizer byte, RNG byte, sampler cursor, data row or order, objective mass, schedule, evaluation contract, or capability state. Training remains incomplete and D2 remains sealed behind the existing machine-only source, freeze, checkpoint, local-rater, collision, consumption, and exclusive-accelerator predicates."
+      },
+      {
         "migration_id": "shared_trunk_step500_prereg_report_replay_v1",
         "target_id": "shared_trunk",
         "legacy_plan_sha256": "b55e7ae19ed5956b0e02ecc73809846fc0d51a867c20c83d15198daec4eeab9e",

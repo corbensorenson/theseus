@@ -125,7 +125,7 @@ def test_checkpoint_audit_honors_exact_registered_plan_migration() -> None:
         "ACCEPTED_EXACT_IDENTITY_MIGRATION"
     )
     assert shared["plan_binding"]["migration"]["migration_id"] == (
-        "shared_trunk_step11416_uncapped_d2_contract_rebind_v1"
+        "shared_trunk_step11416_exiting_process_inventory_rebind_v1"
     )
     assert "plan_mismatch" not in shared["hard_gaps"]
     assert "training_incomplete" in shared["hard_gaps"]
