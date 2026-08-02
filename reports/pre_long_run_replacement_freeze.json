@@ -3,7 +3,7 @@
     "acceleration_residual_audit": {
       "bytes": 19293,
       "path": "reports/pre_long_run_acceleration_residual_audit.json",
-      "sha256": "e51c44f16245358c183b92fa23600fc1d1865e8aae35d6d67e2bad46bd86af9b"
+      "sha256": "435d5cf132cddfef54189fad484f46c17c7ca53bef871c3573dffb0b6fbda093"
     },
     "candidate_contract": {
       "bytes": 40694,
@@ -11,9 +11,9 @@
       "sha256": "255803b4a017bf84b2829a1e26a4cc9db5370ed5caff320c740d5c213740c180"
     },
     "config": {
-      "bytes": 5469,
+      "bytes": 5474,
       "path": "configs/pre_long_run_replacement_freeze.json",
-      "sha256": "5dfe50f4ef452b4e2520c9f49795904f6bed5201485063b83bd5ef6b2d151022"
+      "sha256": "8cf1d10a159f09c59b701775985493fcbc7a35c6999d6026f9a6c66bfd87eba6"
     },
     "d2_controller": {
       "bytes": 27553,
@@ -43,7 +43,7 @@
     "independent_readiness_audit": {
       "bytes": 61873,
       "path": "reports/pre_long_run_independent_readiness_audit.json",
-      "sha256": "ad80c61818c861bb3ca7bb65dc28e399d7097cf468428d3a6fc4c240800e133e"
+      "sha256": "bdaed8c87f31899541af88f7a7f9ab7f5383eeb370c8e06fb0b59ee2d5516ab7"
     },
     "pre_long_run_review": {
       "bytes": 17569,
@@ -51,9 +51,9 @@
       "sha256": "d165a3c4ff4d309fe4b30437f080335ca611b33726327920b41ac667674e8158"
     },
     "production_trainer_config": {
-      "bytes": 144982,
+      "bytes": 146707,
       "path": "configs/moecot_language_arm_training.json",
-      "sha256": "4906be726ffc0193b3f6dab360ce5bcb62f5d478b7e1199015d80cbcba8a3e7d"
+      "sha256": "8e9a059c5d01cae9bcc9f31132489d7d2c34390d1960f66d866226a059510d0f"
     },
     "training_availability_config": {
       "bytes": 1477,
@@ -61,9 +61,9 @@
       "sha256": "96358877261da8cfe01d24921f7550f683b88fc9fef9129b8f9ef4c05732b475"
     },
     "training_campaign": {
-      "bytes": 29590,
+      "bytes": 30136,
       "path": "scripts/neural_seed_training_campaign.py",
-      "sha256": "ca623d022722c8facdd86bd55dbe8996e96b8fd28dde320a1c60d5128d879622"
+      "sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d"
     }
   },
   "boundaries": {
@@ -2038,19 +2038,19 @@
       "production_wall_deadline_seconds": 0
     },
     "semantic_plan_resume": {
-      "current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
+      "current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
       "migration": {
-        "current_plan_sha256": "46de0ea6a115a2c5ee4a065dbb9892d66bbff4f12fdc43b35e297490eafa32e1",
-        "evidence": "configs/neural_seed_57m_functional_utility_freeze.json configs/neural_seed_functional_utility.json configs/neural_seed_local_english_raters.json configs/neural_seed_d2_autonomous_evaluation_controller.json configs/theseus_generation_completion_policy.json scripts/neural_seed_functional_generate.py scripts/neural_seed_functional_utility.py scripts/neural_seed_local_english_raters.py scripts/neural_seed_d2_autonomous_evaluation_controller.py tests/test_neural_seed_functional_utility.py tests/test_neural_seed_local_english_raters.py tests/test_neural_seed_d2_autonomous_evaluation_controller.py",
+        "current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
+        "evidence": "commit ed9f7a0038d54ee53f3210aee66aff4ba476a76f tests/test_neural_seed_training_campaign.py tests/test_neural_seed_d2_autonomous_evaluation_controller.py",
         "legacy_checkpoint_sha256": "d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506",
         "legacy_optimizer_positions": 87441996,
         "legacy_optimizer_state_sha256": "4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb",
         "legacy_optimizer_steps": 11416,
         "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
         "legacy_scale_report_sha256": null,
-        "migration_id": "shared_trunk_step11416_uncapped_d2_contract_rebind_v1",
+        "migration_id": "shared_trunk_step11416_exiting_process_inventory_rebind_v1",
         "policy": "project_theseus_semantic_training_plan_identity_v3",
-        "reason": "Rebind the exact immutable step-11416 receipt to the semantic plan digest deterministically recomputed after the source-bound D2 evaluator contract removed project-selected generation caps, adopted exact prompt tokenization and model-context-residual completion, replaced the human completion gate with independent machine audit, and added the autonomous one-shot controller. The candidate checkpoint, AdamW state, MLX RNG, optimizer position, sampler cursor, admitted training rows and order, topology, active training math, objective mass, and schedule are unchanged. The functional evaluation identity remains unconsumed and NOT_EVALUATED; this migration grants no training, D2, serving, capability, or support authority, and the transactional safety hold remains active.",
+        "reason": "Rebind the exact immutable step-11416 receipt after the shared process-inventory owner learned to ignore Darwin exiting, zombie, and dead processes while retaining independent Metal usability and live-process exclusion. The change affects only outer accelerator lease telemetry and cannot alter model topology, active operation, tensor, checkpoint byte, optimizer byte, RNG byte, sampler cursor, data row or order, objective mass, schedule, evaluation contract, or capability state. Training remains incomplete and D2 remains sealed behind the existing machine-only source, freeze, checkpoint, local-rater, collision, consumption, and exclusive-accelerator predicates.",
         "reset_data_cursor_phase": null,
         "reset_data_cursor_seed": null
       },
@@ -2063,7 +2063,7 @@
       "source_state": {
         "branch": "main",
         "clean_at_generation": true,
-        "commit": "05ba25b642f8af8c889d73f7f8f3051be2614a1d",
+        "commit": "d5ac7aac01d9c74e4f106546a60831b0dfda0719",
         "dirty_path_count": 0,
         "dirty_paths": []
       }
@@ -2076,7 +2076,7 @@
     "Scoped candidate dispositions are not broad scientific falsifications.",
     "This package does not acquire a training or D2 execution lease or start long training."
   ],
-  "package_identity": "sha256:d54f9af2dae5949096ccc5d1927bec19a3a184960a83d160c69905f3e5c744d9",
+  "package_identity": "sha256:82133e87e7977903c9ecae9ae28b6648041064d4ba99a940fe6dd0f2fdf5c8c8",
   "policy": "project_theseus_pre_long_run_replacement_freeze_v1",
   "required_gates": [
     "authoritative_audits",
@@ -2154,9 +2154,9 @@
       "sha256": "3cc8cbbec4ffc46dee79511fa484915c757148846709abe3ff84e3f31b380dff"
     },
     "configs/pre_long_run_replacement_freeze.json": {
-      "bytes": 5469,
+      "bytes": 5474,
       "path": "configs/pre_long_run_replacement_freeze.json",
-      "sha256": "5dfe50f4ef452b4e2520c9f49795904f6bed5201485063b83bd5ef6b2d151022"
+      "sha256": "8cf1d10a159f09c59b701775985493fcbc7a35c6999d6026f9a6c66bfd87eba6"
     },
     "configs/project_manifest_registry.json": {
       "bytes": 548106,
@@ -2164,9 +2164,9 @@
       "sha256": "344451c1f6809464bc2b388038859df49c0d96c0e13348ecbfc7aaa1aa48b926"
     },
     "configs/roadmap_implementation_matrix.json": {
-      "bytes": 1690039,
+      "bytes": 1690570,
       "path": "configs/roadmap_implementation_matrix.json",
-      "sha256": "3980d251bbbedd8137e1dec52c4b2218427aeece1403572a65a04bf092c98d91"
+      "sha256": "7764034dd8291dee3acac0113e3e8fb234d68cf60ba9ed2662ecc329d8bef04d"
     },
     "scripts/neural_seed_autonomous_launch_controller.py": {
       "bytes": 24884,
@@ -2179,9 +2179,9 @@
       "sha256": "9095c88b32eae9c6d85ab0686a8b1cb78b288cb64d7c161e4ca6645246c0036c"
     },
     "scripts/neural_seed_training_campaign.py": {
-      "bytes": 29590,
+      "bytes": 30136,
       "path": "scripts/neural_seed_training_campaign.py",
-      "sha256": "ca623d022722c8facdd86bd55dbe8996e96b8fd28dde320a1c60d5128d879622"
+      "sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d"
     },
     "scripts/pre_long_run_acceleration_residual_audit.py": {
       "bytes": 26147,
@@ -2209,9 +2209,9 @@
       "sha256": "66bbf51cd8b7253d5580208ee519d22c5c913d45b51a13bbddee6f624f13e1de"
     },
     "tests/test_pre_long_run_independent_readiness_audit.py": {
-      "bytes": 7560,
+      "bytes": 7565,
       "path": "tests/test_pre_long_run_independent_readiness_audit.py",
-      "sha256": "36c39355485ba25c4c01e9f45b20b13bc0df4bfe9d1a5920530b2b6477b884f3"
+      "sha256": "5c3c986ad372006af444c8d71e1cbdaff14e42fc7651d694b4eda0e64b7ee179"
     },
     "tests/test_pre_long_run_replacement_freeze.py": {
       "bytes": 7045,
@@ -2222,7 +2222,7 @@
   "source_binding": {
     "branch": "main",
     "clean_at_generation": true,
-    "commit": "05ba25b642f8af8c889d73f7f8f3051be2614a1d",
+    "commit": "d5ac7aac01d9c74e4f106546a60831b0dfda0719",
     "dirty_path_count": 0,
     "dirty_paths": []
   },
