@@ -41,9 +41,23 @@
           "minimum_context_residual_tokens": 257268,
           "candidate_or_control_calls": 0,
           "hidden_evaluator_calls": 0,
-          "durable_pre_inference_call_start_custody": true
+          "durable_pre_inference_call_start_custody": true,
+          "terminal_campaign_state": "GREEN",
+          "terminal_scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+          "complete_tasks": 10,
+          "learned_calls_returned": 60,
+          "physical_context_boundary_hits": 0,
+          "direct_useful": 3,
+          "plan_control_useful": 1,
+          "semantic_ir_useful": 0,
+          "semantic_ir_parse_and_lower": 2,
+          "semantic_ir_required_floor": 8,
+          "information_flow_green": true,
+          "experiment_floor_passed": true,
+          "mechanics_floor_passed": false,
+          "D1_opened": false
         },
-        "roadmap_action": "source-lock the GREEN final production conformance and durable pre-inference custody release, then run P4V2R2R3 once under machine predicates; any later production defect parks this exact instrument without another pre-call namespace"
+        "roadmap_action": "preserve the completed P4V2R2R3 transaction as scoped INCONCLUSIVE_IMPLEMENTATION evidence; the surface is consumed, D1 stays closed, no further reseal is authorized, and repair pressure belongs to the exact Semantic-IR identity/obligation/target/unit mechanics owner on non-claim fixtures"
       },
       {
         "claim": "the repository still has an 88-file mixed tracked transaction",
@@ -4817,7 +4831,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-08-02",
-    "recommendation": "Preserve terminal P3 as historical bounded evidence because its project-selected 1,536-token ceiling lacks complete natural-termination custody; report its exact 1/10 versus 1/10 usefulness and 5/10 versus 9/10 parseability without capability or subsystem overclaim. Preserve interrupted P4-v1, terminal P4R, terminal P4S, and all zero-call dispositions without replay. Source-lock the now-GREEN final P4V2R2R3 joined production conformance and durable pre-inference custody release, then run it once under machine predicates; after any model call, a production defect is terminal exact-instrument evidence and no further reseal is allowed. Close the current storage wall through runtime-wide replay-safe custody under a measured derived envelope. Preserve the compiled-MLX microbatch-4 neural route, finish matched training, and consume D2 once under autonomous predicates. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve D1, public calibration, and every negative, interrupted, or invalid result.",
+    "recommendation": "Preserve terminal P3 as historical bounded evidence because its project-selected 1,536-token ceiling lacks complete natural-termination custody; report its exact 1/10 versus 1/10 usefulness and 5/10 versus 9/10 parseability without capability or subsystem overclaim. Preserve interrupted P4-v1, terminal P4R, terminal P4S, and all zero-call dispositions without replay. Preserve the completed P4V2R2R3 ten-task/60-call campaign as GREEN-audited INCONCLUSIVE_IMPLEMENTATION: Semantic IR parsed/lowered 2/10 against the 8/10 mechanics floor, so its 0/10 usefulness cannot support an effect loss or broad falsification; D1 stays closed and no reseal is allowed. Return the public-safe packet to governed book review with support state unchanged. Close the current storage wall through runtime-wide replay-safe custody under a measured derived envelope. Advance the compiled-MLX microbatch-4 neural route through autonomous source/resource predicates, finish matched modular/dense training, and consume D2 once. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve public calibration and every negative, interrupted, or invalid result.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4828,7 +4842,8 @@
       "preserve_P4_v1_as_interrupted_inconclusive_and_never_replay_consumed_tasks_1_3",
       "preserve_terminal_P4R_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits",
       "preserve_terminal_P4S_as_INCONCLUSIVE_IMPLEMENTATION_with_60_natural_completion_calls_and_zero_boundary_hits_without_rescoring",
-      "source_lock_green_joined_production_conformance_and_durable_precall_custody_then_run_P4V2R2R3_once_or_park_without_another_reseal",
+      "preserve_terminal_P4V2R2R3_as_INCONCLUSIVE_IMPLEMENTATION_with_2_of_10_semantic_parse_lower_against_8_of_10_floor_and_no_reseal",
+      "keep_D1_closed_and_return_public_safe_claim_packet_to_book_review_without_support_movement",
       "preserve_completed_canonical_runtime_generation_boundary_migration_with_null_project_quality_caps_and_physical_context_residual_custody",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "refresh_step_11416_source_and_custody_readiness_under_machine_predicate_authority_without_user_approval",
@@ -8929,10 +8944,14 @@
       "forbidden_shared_state": ["hidden answers", "held-out outcomes", "private payloads", "implied support movement"],
       "support_state_effect": "none_from_roadmap_or_handoff_alone",
       "implementation": {
-        "state": "prospectively_bound_waiting_for_terminal_P4V2R2R3_evidence",
+        "state": "green_ready_for_governed_book_review_without_D1",
         "config": "configs/theseus_asi_stack_claim_handoff.json",
         "builder": "scripts/theseus_asi_stack_claim_handoff.py",
         "test": "tests/test_theseus_asi_stack_claim_handoff.py",
+        "report": "reports/theseus_asi_stack_claim_handoff.json",
+        "report_trigger_state": "GREEN",
+        "activation_state": "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1",
+        "packet_ready": true,
         "book_pin_commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
         "claim_id": "cognitive-compilation-and-semantic-ir.core",
         "p4_activation_status": "terminal_green_complete_artifact_P4V2R2R3_disposition",
@@ -8944,7 +8963,7 @@
         "release_authority": "none"
       }
     },
-    "rule": "The primary goal is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. The 84-chapter pin and 13-claim causal portfolio are source-bound; immediate work is P2A instrument adequacy and P3 autonomous pairs, then exactly one residual-selected P4 mechanism and fresh P5/D1 qualification. Neural N0 source/custody readiness proceeds in parallel; N1/N2 require the automated launch/resource/rollback controller, never user presence. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
+    "rule": "The primary goal is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. The 84-chapter pin and 13-claim causal portfolio are source-bound. P4V2R2R3 is terminal scoped INCONCLUSIVE_IMPLEMENTATION because its Semantic-IR treatment failed the predeclared mechanics floor; D1 is closed and the public-safe packet is ready for governed book review without support movement. Repair that exact mechanics owner only on non-claim fixtures while the independent neural N0/N1/N2/D2 track advances under automated source/resource/rollback authority, never user presence. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
     "why": "Theseus currently has a canonical control-plane runtime without the frozen local model and a local-model worker without the canonical control plane. Joining those halves is the smallest honest step. Only causally live mechanisms and useful natural outcomes can justify subsystem A/B work; record production, route labels, and context decoration cannot.",
     "allowed_parallel_work": [
       "P1 frozen TMax backend integration behind the existing canonical assistant runtime",

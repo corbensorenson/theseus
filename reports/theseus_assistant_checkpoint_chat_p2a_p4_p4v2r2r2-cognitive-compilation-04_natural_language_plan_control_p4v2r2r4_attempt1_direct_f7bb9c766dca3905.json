@@ -1,0 +1,102 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560",
+    "local_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4v2r2r2-cognitive-compilation-04",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-02T07:30:49.121809Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": "stop",
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_context_residual_tokens": 260179,
+    "effective_maximum_tokens": 260179,
+    "exact_prompt_tokens": 1965,
+    "generated_tokens": 302,
+    "generation_tokens_per_second": 4.628,
+    "generation_wall_ms": 94957.307,
+    "load_wall_ms": 18200.865,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 19.029,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 3,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "prompt_tokens": 1965,
+    "prompt_tokens_per_second": 67.373,
+    "runtime_ms": 95020,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": true,
+    "termination_reason": "model_eos"
+  },
+  "policy": "project_theseus_local_inference_backend_v2",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "94f00e87712561547324b25b3d702885498da93b95ce917f958864c5f6d1276e",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_PLAN_V1\nPLAN\nModify src/pluggy/_callers.py to catch `StopIteration` in the \"Slow path\" (old-style wrapper handling) and propagate its value via `outcome.force_result()` instead of letting it bubble up as a `RuntimeError` (which happens when `StopIteration` is raised outside a try/except block in generator teardowns). Ensure the fast path (new-style only) behavior remains unchanged. The fix involves wrapping the `teardown.send()` and `teardown.throw()` calls in the slow path with a specific `except StopIteration` handler that updates the outcome, mirroring the logic already present in the fast path.\n\nTARGET\nsrc/pluggy/_callers.py 163 178\n<<<\n                else:\n                    try:\n                        if outcome._exception is not None:\n                            teardown.throw(outcome._exception)\n                        else:\n                            teardown.send(outcome._result)\n                        # Following is unreachable for a well behaved hook wrapper.\n                        # Try to force finalizers otherwise postponed till GC action.\n                        # Note: close() may raise if generator handles GeneratorExit.\n                        teardown.close()\n                    except StopIteration as si:\n                        outcome.force_result(si.value)\n                        continue\n                    except BaseException as e:\n                        outcome.force_exception(e)\n                        continue\n                    _raise_wrapfail(teardown, \"has second yield\")\n>>>\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v2",
+      "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4v2r2r2-cognitive-compilation-04_natural_language_plan_control_p4v2r2r4_attempt1_direct",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

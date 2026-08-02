@@ -176,3 +176,23 @@ def test_evaluator_replay_projection_normalizes_only_evaluator_oracle_identity()
     assert disposition.stable_evaluation_projection(first) != (
         disposition.stable_evaluation_projection(second)
     )
+
+
+def test_candidate_integrity_accepts_independently_rejected_bad_seal() -> None:
+    assert disposition.candidate_integrity_recomputed({
+        "sealed": 0,
+        "failure_reason": "candidate_seal_invalid",
+        "candidate_inventory_recomputed": 0,
+        "correctness_evaluated": 0,
+        "useful": 0,
+    }) is True
+    assert disposition.candidate_integrity_recomputed({
+        "sealed": 1,
+        "candidate_inventory_recomputed": 0,
+    }) is False
+    assert disposition.candidate_integrity_recomputed({
+        "sealed": 0,
+        "failure_reason": "candidate_seal_invalid",
+        "correctness_evaluated": 1,
+        "useful": 0,
+    }) is False

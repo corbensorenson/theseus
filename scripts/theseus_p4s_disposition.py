@@ -44,6 +44,30 @@ COST_DIMENSIONS = (
 )
 
 
+def run_instrument_binding_valid(run: dict[str, Any]) -> bool:
+    """Bind an ordinary campaign run to the disposition instrument."""
+    return run.get("instrument_sha256") == p2a.sha256_file(INSTRUMENT)
+
+
+def candidate_integrity_recomputed(result: dict[str, Any]) -> bool:
+    """Require independent inventory custody only for a valid sealed candidate.
+
+    A candidate whose seal is independently recomputed as invalid never reaches
+    archive application, so there is no post-application inventory to compare.
+    Its fail-closed rejection is still an integrity result, not an integrity
+    audit failure.
+    """
+    if not result:
+        return True
+    if int(result.get("sealed") or 0) == 1:
+        return result.get("candidate_inventory_recomputed") == 1
+    return (
+        result.get("failure_reason") == "candidate_seal_invalid"
+        and int(result.get("correctness_evaluated") or 0) == 0
+        and int(result.get("useful") or 0) == 0
+    )
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", default=p2a.rel(OUT))
@@ -110,7 +134,7 @@ def build_report() -> dict[str, Any]:
         evaluation = p2a.read_json(paths["evaluation"])
         if run.get("policy") != p4s.POLICY:
             faults.append(f"run_policy_invalid:{stem}")
-        if run.get("instrument_sha256") != p2a.sha256_file(INSTRUMENT):
+        if not run_instrument_binding_valid(run):
             faults.append(f"run_instrument_mismatch:{stem}")
         if run.get("task_sha256") != p2a.sha256_file(task_path):
             faults.append(f"run_task_mismatch:{stem}")
@@ -233,7 +257,7 @@ def build_report() -> dict[str, Any]:
             totals[arm]["verifier_runtime_ms"] += float(
                 p2a.mapping(result.get("verification")).get("runtime_ms") or 0.0
             )
-            inventory_recomputed = (not result) or result.get("candidate_inventory_recomputed") == 1
+            inventory_recomputed = candidate_integrity_recomputed(result)
             task_integrity_green = task_integrity_green and inventory_recomputed
             parse_faults = p2a.strings(attempt.get("parse_faults"))
             if arm == p4.SEMANTIC:

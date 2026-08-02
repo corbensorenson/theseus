@@ -1216,11 +1216,24 @@ def audit_book_implementation_contract(
         )
     required_handoff_paths = [
         str(handoff_implementation.get(key) or "")
-        for key in ("config", "builder", "test")
+        for key in ("config", "builder", "test", "report")
     ]
+    handoff_report_path = ROOT / str(handoff_implementation.get("report") or "")
+    handoff_report = (
+        read_json(handoff_report_path) if handoff_report_path.is_file() else {}
+    )
     if (
         handoff_implementation.get("state")
-        != "prospectively_bound_waiting_for_terminal_P4V2R2R3_evidence"
+        != "green_ready_for_governed_book_review_without_D1"
+        or handoff_implementation.get("report_trigger_state") != "GREEN"
+        or handoff_implementation.get("activation_state")
+        != "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1"
+        or handoff_implementation.get("packet_ready") is not True
+        or handoff_report.get("trigger_state") != "GREEN"
+        or handoff_report.get("activation_state")
+        != "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1"
+        or handoff_report.get("packet_ready") is not True
+        or handoff_report.get("support_state_effect") != "none"
         or handoff_implementation.get("book_pin_commit")
         != dict_value(matrix.get("latest_ai_book_reconciliation")).get("book_commit")
         or handoff_implementation.get("claim_id")

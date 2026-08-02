@@ -353,12 +353,22 @@ class RoadmapBookSyncTests(unittest.TestCase):
             "required_once_only_if_P4V2R2R3_survives",
             implementation["d1_requirement"],
         )
+        self.assertEqual(
+            "green_ready_for_governed_book_review_without_D1",
+            implementation["state"],
+        )
+        self.assertEqual("GREEN", implementation["report_trigger_state"])
+        self.assertEqual(
+            "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1",
+            implementation["activation_state"],
+        )
+        self.assertTrue(implementation["packet_ready"])
         self.assertTrue(implementation["public_safe_aggregate_only"])
         self.assertFalse(implementation["automatic_support_transition_proposed"])
         self.assertEqual("none", implementation["support_state_effect"])
         self.assertEqual("none", implementation["publication_authority"])
         self.assertEqual("none", implementation["release_authority"])
-        for key in ("config", "builder", "test"):
+        for key in ("config", "builder", "test", "report"):
             self.assertTrue((ROOT / implementation[key]).is_file())
 
         report = self.audit(self.matrix)

@@ -1,0 +1,102 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560",
+    "local_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4v2r2r2-cognitive-compilation-07",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-02T08:24:06.800858Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": null,
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_context_residual_tokens": 260050,
+    "effective_maximum_tokens": 260050,
+    "exact_prompt_tokens": 2094,
+    "generated_tokens": 478,
+    "generation_tokens_per_second": 5.741,
+    "generation_wall_ms": 114235.001,
+    "load_wall_ms": 16662.798,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 19.029,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 6,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "prompt_tokens": 2094,
+    "prompt_tokens_per_second": 68.417,
+    "runtime_ms": 114263,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "parser_complete"
+  },
+  "policy": "project_theseus_local_inference_backend_v2",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "30e3ee734f99e4b945f2e4f2202487ad707a8a5306e68a5a9a675e5feed6a91b",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V2\nSOURCE 8ef9ead792b614fd9079c0285a4d9ae9d2492fa160a32e9bfc2d5f21b04b403d\nALL_OBLIGATIONS O1 O2 O3\nUNIT U1\nOBLIGATIONS O1 O2\nOP REPLACE\nPATH src/markupsafe/__init__.py\nNODE N-F9A22E832DDDACAA\nNODE_SHA 001f94522ed2c973e30abf0c8be8cf6b957ef2a82ec07032a431070b304896ce\n<<<\n    def striptags(self) -> str:\n        \"\"\":meth:`unescape` the markup, remove tags, and normalize\n        whitespace to single spaces.\n\n        >>> Markup(\"Main &raquo;\\t<em>About</em>\").striptags()\n        'Main \u00bb About'\n        \"\"\"\n        # collapse spaces\n        value = \" \".join(self.split())\n\n        # Look for comments then tags separately. Otherwise, a comment that\n        # contains a tag would end early, leaving some of the comment behind.\n\n        while True:\n            # keep finding comment start marks\n            start = value.find(\"<!--\")\n\n            if start == -1:\n                break\n\n            # find a comment end mark beyond the start, otherwise stop\n            end = value.find(\"-->\", start)\n\n            if end == -1:\n                break\n\n            value = f\"{value[:start]}{value[end + 3:]}\"\n\n        # remove tags using the same method\n        while True:\n            start = value.find(\"<\")\n\n            if start == -1:\n                break\n\n            end = value.find(\">\", start)\n\n            if end == -1:\n                break\n\n            value = f\"{value[:start]}{value[end + 1:]}\"\n\n        return self.__class__(value).unescape()\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v2",
+      "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4v2r2r2-cognitive-compilation-07_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

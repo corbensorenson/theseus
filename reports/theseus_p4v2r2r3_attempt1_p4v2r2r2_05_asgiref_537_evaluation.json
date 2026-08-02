@@ -1,0 +1,176 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 73.131,
+      "stderr_tail": "",
+      "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_ASGIREF:AssertionError:\n"
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "",
+      "hidden_stdout_tail": "P4V2R2R2_HIDDEN_PASS_ASGIREF\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-02T08:04:59.016300Z",
+    "evaluator_sha256": "489e87e23e209bfe592a396df37c9c51b1bae02b2e63160b2eacd320984133d9",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 344.258,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 77.563,
+      "stderr_tail": "",
+      "stdout_tail": "P4V2R2R2_HIDDEN_PASS_ASGIREF\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "66aaa7139e5c634ca88ab5ceab201a9bc149cf49816a276a394f1f6226c46e50",
+      "task_sha256": "ff2ef6c29e79e6afd8c3c183551ced535527d721c31b491121e963ef1188c524",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "ff2ef6c29e79e6afd8c3c183551ced535527d721c31b491121e963ef1188c524",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "0d20ac2ff23b9fdeea5b663c61ffc4de573e8db43cf88cedb83e12130f270ea3",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-02T08:04:59.259959Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 2,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 0,
+    "sealed_learned_candidates": 2,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 1
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "36d01c582765af5ccb1e4aaf9b9c82c05032022025842160688a132033acb228",
+      "7393d7134ce6fd2a1001a8dd05a765fbd71949d9d07e41fd5651332f117783da",
+      "f6c37308b40a925ef7bea4b9d1887fd031550f857107f80567e9191aecc56cd0"
+    ]
+  },
+  "evaluator_sha256": "489e87e23e209bfe592a396df37c9c51b1bae02b2e63160b2eacd320984133d9",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "36d01c582765af5ccb1e4aaf9b9c82c05032022025842160688a132033acb228",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "asgiref/sync.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "09a64f32e589042168d56074eb1a1677fc3d89b484bf7e5120502782725674ce",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 78.235,
+        "stderr_tail": "",
+        "stdout_tail": "P4V2R2R2_HIDDEN_PASS_ASGIREF\n"
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_target_generation",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "7393d7134ce6fd2a1001a8dd05a765fbd71949d9d07e41fd5651332f117783da",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 0,
+      "learned_generation_credit": 1,
+      "observed_effect_paths": [
+        "asgiref/sync.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 0,
+      "verification": {
+        "command_sha256": "09a64f32e589042168d56074eb1a1677fc3d89b484bf7e5120502782725674ce",
+        "passed": false,
+        "returncode": 1,
+        "runtime_ms": 71.549,
+        "stderr_tail": "",
+        "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_ASGIREF:AttributeError:readonly attribute\n"
+      }
+    },
+    {
+      "actions_applied": 0,
+      "allowed_effects": 0,
+      "arm_id": "typed_semantic_ir_treatment",
+      "candidate_inventory_recomputed": 0,
+      "correctness_evaluated": 0,
+      "failure_reason": "candidate_seal_invalid",
+      "hidden_tests_passed": 0,
+      "learned_generation_credit": 1,
+      "rollback_verified": 0,
+      "sealed": 0,
+      "unsafe": 0,
+      "useful": 0
+    }
+  ],
+  "runtime_ms": 588.396,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

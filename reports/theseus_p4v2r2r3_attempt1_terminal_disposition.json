@@ -1,0 +1,1876 @@
+{
+  "adequacy": {
+    "all_five_corruption_classes_rejected": "10/10",
+    "candidate_integrity_recomputed_tasks": "10/10",
+    "compiler_oracle_useful": "10/10",
+    "dependency_corruption_rejections": "10/10",
+    "experiment_floor_passed": true,
+    "independent_evaluator_replay_contract": {
+      "correctness_safety_rollback_effect_and_verifier_fields_excluded": false,
+      "excluded_as_volatile": [
+        "created_utc",
+        "runtime_ms",
+        "sandbox_temporary_root_names_in_tracebacks",
+        "evaluator_only_oracle_digest_that_includes_visible_verifier_runtime"
+      ],
+      "learned_candidate_digests_excluded": false,
+      "oracle_digest_repair_owner": "fresh_D1_evaluator_successor_after_P4S_seals",
+      "static_control_candidate_digests_excluded": false
+    },
+    "independent_evaluator_replay_tasks": "10/10",
+    "information_flow_green": true,
+    "mechanics_floor_passed": false,
+    "natural_termination_receipts": "60/60",
+    "pre_generation_runner_failure_consumed_model_calls": 0,
+    "route_blind_tasks": "10/10",
+    "semantic_ir_parse_and_lower": "2/10",
+    "semantic_ir_required_floor": "8/10",
+    "treatment_protocol_signature": {
+      "exact_headers": "10/10",
+      "parse_fault_counts": {
+        "semantic_ir_v2_units_missing": 2,
+        "semantic_ir_v2_unparsed_text": 3,
+        "semantic_obligation_coverage_incomplete": 5,
+        "semantic_obligation_identity_or_order_invalid": 1,
+        "semantic_target_identity_invalid": 1,
+        "semantic_units_missing": 1
+      },
+      "terminal_END": "10/10"
+    },
+    "v2r2_transport_oracle_replays": "10/10"
+  },
+  "arm_totals": {
+    "deterministic_request_compiler_baseline": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 0,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 10,
+      "model_calls": 0,
+      "model_runtime_ms": 0.0,
+      "parseable_candidates": 0,
+      "prompt_tokens": 0,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    },
+    "direct_target_generation": {
+      "correctness_evaluated_candidates": 9,
+      "generated_tokens": 4060,
+      "incorrect_candidates": 6,
+      "malformed_candidates": 1,
+      "model_calls": 20,
+      "model_runtime_ms": 1766936.464,
+      "parseable_candidates": 9,
+      "prompt_tokens": 45589,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 9,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 3,
+      "verifier_runtime_ms": 621.498
+    },
+    "natural_language_plan_control": {
+      "correctness_evaluated_candidates": 1,
+      "generated_tokens": 9483,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 9,
+      "model_calls": 20,
+      "model_runtime_ms": 2620116.896,
+      "parseable_candidates": 1,
+      "prompt_tokens": 47244,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 1,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 1,
+      "verifier_runtime_ms": 56.041
+    },
+    "typed_semantic_ir_treatment": {
+      "correctness_evaluated_candidates": 0,
+      "generated_tokens": 12263,
+      "incorrect_candidates": 0,
+      "malformed_candidates": 8,
+      "model_calls": 20,
+      "model_runtime_ms": 3461922.043000001,
+      "parseable_candidates": 2,
+      "prompt_tokens": 52954,
+      "rollback_failures": 0,
+      "rollback_verified_candidates": 0,
+      "tasks": 10,
+      "unsafe_candidates": 0,
+      "useful_candidates": 0,
+      "verifier_runtime_ms": 0.0
+    }
+  },
+  "claim_id": "cognitive-compilation-and-semantic-ir.core",
+  "consumption": {
+    "all_failures_retained": true,
+    "all_ten_tasks_consumed": true,
+    "eligible_for_D1": false,
+    "eligible_for_D2": false,
+    "eligible_for_exact_rerun": false,
+    "eligible_for_training": false,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-02T09:09:52.094534Z",
+  "decision_rule": {
+    "comparator_useful": {
+      "deterministic_request_compiler_baseline": 0,
+      "direct_target_generation": 3,
+      "natural_language_plan_control": 1
+    },
+    "effect_decision_authorized": false,
+    "joined_cost_dominance": {
+      "deterministic_request_compiler_baseline": {
+        "comparator_dominates_treatment": true,
+        "comparator_no_more_costly_all_dimensions": true,
+        "comparator_strictly_cheaper_any_dimension": true,
+        "comparator_useful_not_worse": true,
+        "dimensions": {
+          "generated_tokens": {
+            "comparator": 0.0,
+            "treatment": 12263.0
+          },
+          "model_calls": {
+            "comparator": 0.0,
+            "treatment": 20.0
+          },
+          "model_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 3461922.043
+          },
+          "prompt_tokens": {
+            "comparator": 0.0,
+            "treatment": 52954.0
+          },
+          "rollback_failures": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "verifier_runtime_ms": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          }
+        }
+      },
+      "direct_target_generation": {
+        "comparator_dominates_treatment": false,
+        "comparator_no_more_costly_all_dimensions": false,
+        "comparator_strictly_cheaper_any_dimension": true,
+        "comparator_useful_not_worse": true,
+        "dimensions": {
+          "generated_tokens": {
+            "comparator": 4060.0,
+            "treatment": 12263.0
+          },
+          "model_calls": {
+            "comparator": 20.0,
+            "treatment": 20.0
+          },
+          "model_runtime_ms": {
+            "comparator": 1766936.464,
+            "treatment": 3461922.043
+          },
+          "prompt_tokens": {
+            "comparator": 45589.0,
+            "treatment": 52954.0
+          },
+          "rollback_failures": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "verifier_runtime_ms": {
+            "comparator": 621.498,
+            "treatment": 0.0
+          }
+        }
+      },
+      "natural_language_plan_control": {
+        "comparator_dominates_treatment": false,
+        "comparator_no_more_costly_all_dimensions": false,
+        "comparator_strictly_cheaper_any_dimension": true,
+        "comparator_useful_not_worse": true,
+        "dimensions": {
+          "generated_tokens": {
+            "comparator": 9483.0,
+            "treatment": 12263.0
+          },
+          "model_calls": {
+            "comparator": 20.0,
+            "treatment": 20.0
+          },
+          "model_runtime_ms": {
+            "comparator": 2620116.896,
+            "treatment": 3461922.043
+          },
+          "prompt_tokens": {
+            "comparator": 47244.0,
+            "treatment": 52954.0
+          },
+          "rollback_failures": {
+            "comparator": 0.0,
+            "treatment": 0.0
+          },
+          "verifier_runtime_ms": {
+            "comparator": 56.041,
+            "treatment": 0.0
+          }
+        }
+      }
+    },
+    "paired_uncertainty": {
+      "deterministic_request_compiler_baseline": {
+        "exact_one_sided_sign_probability": 1.0,
+        "mean_useful_delta": 0.0,
+        "non_ties": 0,
+        "task_bootstrap_95_interval": [
+          0.0,
+          0.0
+        ],
+        "ties": 10,
+        "treatment_losses": 0,
+        "treatment_wins": 0
+      },
+      "direct_target_generation": {
+        "exact_one_sided_sign_probability": 1.0,
+        "mean_useful_delta": -0.3,
+        "non_ties": 3,
+        "task_bootstrap_95_interval": [
+          -0.6,
+          0.0
+        ],
+        "ties": 7,
+        "treatment_losses": 3,
+        "treatment_wins": 0
+      },
+      "natural_language_plan_control": {
+        "exact_one_sided_sign_probability": 1.0,
+        "mean_useful_delta": -0.1,
+        "non_ties": 1,
+        "task_bootstrap_95_interval": [
+          -0.3,
+          0.0
+        ],
+        "ties": 9,
+        "treatment_losses": 1,
+        "treatment_wins": 0
+      }
+    },
+    "predeclared": {
+      "adequate_no_survivor": "Every adequacy requirement passes but the development-survivor rule does not. This exact implementation is not advanced; no broader cognitive-compilation falsification follows.",
+      "development_survivor": "The treatment is useful on at least four of ten tasks, solves at least three more tasks than each learned control and the prospective no-model compiler control, loses head-to-head on no more than one task against either learned control, has zero unsafe or rollback failures, meets every mechanics and custody floor, and is not dominated on joined model-call, token, verifier, latency, or rollback cost.",
+      "inconclusive_experiment": "Task diversity, matched resources, blind evaluation, source disjointness, uncertainty, weak-tail, or total-cost custody is incomplete.",
+      "inconclusive_implementation": "Any treatment mechanics, parsing/lowering, intervention/locality, checkpoint-independent replay, or corruption floor fails.",
+      "negative_scope": "A null or loss applies only to this exact bounded Python Semantic-IR v2r2 implementation, frozen TMax model, ten-task distribution, completion policy, validator, and repair policy. It cannot falsify cognitive compilation generally.",
+      "primary_outcome": "independently_verified_useful_safe_completion",
+      "terminal_states": [
+        "P4V2R2R2_DEVELOPMENT_SURVIVOR_D1_ELIGIBLE",
+        "P4V2R2R2_ADEQUATE_NO_SURVIVOR",
+        "INCONCLUSIVE_IMPLEMENTATION",
+        "INCONCLUSIVE_EXPERIMENT",
+        "INVALID_INFORMATION_FLOW",
+        "INSTRUMENT_INADEQUATE_GENERATION_BOUNDARY_HIT"
+      ],
+      "uncertainty": "Report all paired win/loss/tie tables, exact one-sided sign probabilities for non-tied treatment-versus-control outcomes, and task-level bootstrap intervals as descriptive development uncertainty; ten tasks cannot support a general population claim."
+    },
+    "survivor_effect_rule_passed": false,
+    "treatment_useful": 0
+  },
+  "denominators": {
+    "hosted_model_calls": 0,
+    "learned_arms": 30,
+    "learned_model_calls": 60,
+    "model_context_window_tokens": 262144,
+    "oracle_mechanics_controls": 10,
+    "persistent_model_loads": 10,
+    "project_selected_quality_token_cap": null,
+    "static_compiler_controls": 10,
+    "tasks": 10
+  },
+  "faults": [],
+  "maximum_inference": "This report can decide only whether the exact frozen TMax plus Semantic-IR v2r2 implementation survives the unchanged ten-task P4 development surface with complete first-call artifact continuity. It cannot establish or falsify cognitive compilation generally, qualify serving or training, decide D2, or promote ASI Stack support.",
+  "next_stage": {
+    "D1_eligible": false,
+    "book_support_state_effect": "none",
+    "state": "D1_CLOSED_RETAIN_SCOPED_P4V2R2R2_EVIDENCE"
+  },
+  "oracle_totals": {
+    "correctness_evaluated_candidates": 10,
+    "generated_tokens": 0,
+    "incorrect_candidates": 0,
+    "malformed_candidates": 0,
+    "model_calls": 0,
+    "model_runtime_ms": 0.0,
+    "parseable_candidates": 10,
+    "prompt_tokens": 0,
+    "rollback_failures": 0,
+    "rollback_verified_candidates": 10,
+    "tasks": 10,
+    "unsafe_candidates": 0,
+    "useful_candidates": 10,
+    "verifier_runtime_ms": 0.0
+  },
+  "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
+  "prompt_continuity": {
+    "complete_first_call_artifact_retained": true,
+    "exact_repair_prompt_token_count_required": true,
+    "non_addressable_prompt_is_negative_evidence": false,
+    "project_selected_first_artifact_character_cap": null,
+    "project_selected_first_artifact_token_cap": null,
+    "same_rule_all_learned_arms": true
+  },
+  "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+  "scope": "Exact frozen TMax model, repaired completion-based Semantic-IR v2r2 instrument, and ten licensed source-disjoint decision-development tasks. No D1, D2, serving, training, hosted-model, or automatic book-support authority.",
+  "source_identities": {
+    "attempt2_instrument_rebind_commit": "590ceca0dd0b801ed9be64822d093e2cb691e39c",
+    "campaign_progress": {
+      "path": "reports/theseus_p4v2r2r3_attempt1_campaign_progress.json",
+      "sha256": "b1bd8264c9e41cee9501289c2352918b8ed3cd77b65a1016ca9a35ea7423235c"
+    },
+    "effective_reseal_commit": "590ceca0dd0b801ed9be64822d093e2cb691e39c",
+    "instrument": {
+      "path": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",
+      "sha256": "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260bab76"
+    },
+    "invalid_attempt1": {
+      "path": "reports/theseus_p4v2r2r2_attempt2_pre_generation_information_cap_disposition.json",
+      "sha256": "27887408a24147b77f732afc3cacebd55939b441b8f7048967c02c61e156ee9d"
+    },
+    "pool": {
+      "path": "configs/theseus_p4v2r2r2_task_pool.json",
+      "sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f"
+    },
+    "pool_seal_commit": "590ceca0dd0b801ed9be64822d093e2cb691e39c",
+    "pre_generation_failure": {
+      "path": "reports/theseus_p4v2r2r2_attempt2_pre_generation_information_cap_disposition.json",
+      "sha256": "27887408a24147b77f732afc3cacebd55939b441b8f7048967c02c61e156ee9d"
+    },
+    "runtime_attempt_namespace": "p4v2r2r4_attempt1",
+    "runtime_receipts": [
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-01_direct_target_generation_p4v2r2r4_attempt1_direct_local_73513b8ef2e19c85.json",
+        "backend_report_sha256": "e1a9f1fc137b5126233fe2ef6ce9f6ab2384f849560a74cb889fa122d51ca3d7",
+        "call_number": 1,
+        "campaign_index": 1,
+        "generated_tokens": 189,
+        "prompt_tokens": 3650,
+        "runtime_ms": 98290.198,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-01_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "267155c94f210c3c3c17c4f00f3c4e072e55715252cd26958bffaad93f12013b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-01_direct_target_generation_p4v2r2r4_attempt1_direct_local_a75e95f0f3366217.json",
+        "backend_report_sha256": "a469b90e2efab4528b81d1089dfc4de1106a3f1f3fa08adf199d9e5ae5cd6f38",
+        "call_number": 2,
+        "campaign_index": 1,
+        "generated_tokens": 189,
+        "prompt_tokens": 3967,
+        "runtime_ms": 96125.172,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-01_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "416ec21952d302286c0c0a4cf92324361f9f242e19741324921996d79ccc9037",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-01_natural_language_plan_control_p4v2r2r4_attempt1_direct_52e058b495aff0c7.json",
+        "backend_report_sha256": "8a7d878f4a9bef646c2e32e98afe3e1108e1d42b972291f00deded95ff507d75",
+        "call_number": 1,
+        "campaign_index": 1,
+        "generated_tokens": 310,
+        "prompt_tokens": 3672,
+        "runtime_ms": 112501.845,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-01_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "b94fa251686b52012e00a19f27848fb99b88647d02f6883ff2d1f78a5cd9050b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-01_natural_language_plan_control_p4v2r2r4_attempt1_direct_b87df054119c8c15.json",
+        "backend_report_sha256": "465b69ff8dfb55168ec3ce612dcee8a18a4ecb907ac4f4888a8e6f298838ea11",
+        "call_number": 2,
+        "campaign_index": 1,
+        "generated_tokens": 273,
+        "prompt_tokens": 4092,
+        "runtime_ms": 111360.787,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-01_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "b012bc154cfb44c6ed4e10f5ce32233f8a91ef4bb1c02e5ef5ba785a062b1320",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-01_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_b6f4f9a54cb3ba8b.json",
+        "backend_report_sha256": "5026d2b8a5c769f2a4f560175884201a0f4530a6f9b81954317ad77fd2b95257",
+        "call_number": 1,
+        "campaign_index": 1,
+        "generated_tokens": 794,
+        "prompt_tokens": 3828,
+        "runtime_ms": 214730.608,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-01_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "ab6f4aa66aa3355e3377202adfdecae3818b3fbb598bb4edaa05d928a53ec41a",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-01_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_a83de38881ec84cf.json",
+        "backend_report_sha256": "b032263937eebe89452b5188d03f0814b92ee7190ab4cd073336c8dce46258e1",
+        "call_number": 2,
+        "campaign_index": 1,
+        "generated_tokens": 794,
+        "prompt_tokens": 4776,
+        "runtime_ms": 225959.876,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-01_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "96f7b9acf7842ff12d843bfa08016a9ad35b3d098f5ebf094983ae9bbed3c856",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-02_direct_target_generation_p4v2r2r4_attempt1_direct_local_0f358a76e46a21ac.json",
+        "backend_report_sha256": "b606cce9e9a94436ce73953f46435785947cff11540cbc980170aa3f2800e0f2",
+        "call_number": 1,
+        "campaign_index": 2,
+        "generated_tokens": 106,
+        "prompt_tokens": 2146,
+        "runtime_ms": 150634.887,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-02_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "ebbfea51b38b1949861380343ed68cccec5ebee668b01e9be7a527230a8c09a5",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-02_direct_target_generation_p4v2r2r4_attempt1_direct_local_acd1296e99b4aa63.json",
+        "backend_report_sha256": "e6b144f2982070931740edc8bbd24d8d9ada97500c8fb329aa20c553e5dcfebc",
+        "call_number": 2,
+        "campaign_index": 2,
+        "generated_tokens": 106,
+        "prompt_tokens": 2374,
+        "runtime_ms": 150638.41,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-02_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "3b9cdb331a244d8ccb842f473077626bf673e66b4a5a3f5f1ea5c4d7997018b8",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-02_natural_language_plan_control_p4v2r2r4_attempt1_direct_c684e9bbe18c55b6.json",
+        "backend_report_sha256": "21e68701a56ce2df66ccf6a2188754132904d90b89b06a484f967c1472527b17",
+        "call_number": 1,
+        "campaign_index": 2,
+        "generated_tokens": 960,
+        "prompt_tokens": 2168,
+        "runtime_ms": 236348.813,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-02_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "6b260aab0c020efb1a01e027989a2bc2d0ceec9f66a724f087355e0f0fdfc4aa",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-02_natural_language_plan_control_p4v2r2r4_attempt1_direct_6f3d33c31d513dd2.json",
+        "backend_report_sha256": "7162792850d80900a2894fdcbe1883ac4a47268a7da92ec11d72443cd4f68797",
+        "call_number": 2,
+        "campaign_index": 2,
+        "generated_tokens": 207,
+        "prompt_tokens": 3247,
+        "runtime_ms": 90021.14,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-02_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "2008c2420aead11b5ef545f473f01d73051c7af3c63896f4f637d3e1c12e6b69",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-02_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_302ef5aea77f3713.json",
+        "backend_report_sha256": "150857b401a42321d90edfeee02a42de69d1a156f6c397d4b2048c28184d1443",
+        "call_number": 1,
+        "campaign_index": 2,
+        "generated_tokens": 439,
+        "prompt_tokens": 2324,
+        "runtime_ms": 147786.754,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-02_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "4fc79fb0fab07a6f90d87fc3e22eb1fecc58c53ee80834481a75aac238cccdd1",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-02_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_818a0c1ad43d57eb.json",
+        "backend_report_sha256": "5f805b31c2917ac75f416f8f9f9763875d6521d33776d0b347e6b4dc3352f4c7",
+        "call_number": 2,
+        "campaign_index": 2,
+        "generated_tokens": 441,
+        "prompt_tokens": 2926,
+        "runtime_ms": 229026.125,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-02_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "7f81de37145c75e5297491505cd6cc96c6ffc5b7eb9ade48ca5a85d320ad9590",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-03_direct_target_generation_p4v2r2r4_attempt1_direct_local_3c3a295ab23e0394.json",
+        "backend_report_sha256": "1382d769e457d99db33c8a1ab2fcd7a6300cc4dd63372650c032fc20719b3a97",
+        "call_number": 1,
+        "campaign_index": 3,
+        "generated_tokens": 103,
+        "prompt_tokens": 2088,
+        "runtime_ms": 52294.753,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-03_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "44cb2827ad77791e940151549de8d9960acab8f45dd1e2bce44075201f5b0253",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-03_direct_target_generation_p4v2r2r4_attempt1_direct_local_bf305936a7e64e11.json",
+        "backend_report_sha256": "0421252c414369d6aa67aaee0ea2d4557409e685884a2f3978a5de6b194648f3",
+        "call_number": 2,
+        "campaign_index": 3,
+        "generated_tokens": 133,
+        "prompt_tokens": 2322,
+        "runtime_ms": 59310.656,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-03_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "270a93c2afa8d33a5a141c4359bc18bf1a377ab6aa880c484fb4d231ef698efb",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-03_natural_language_plan_control_p4v2r2r4_attempt1_direct_bb54743b8628dcac.json",
+        "backend_report_sha256": "df513f287ebb445fe93a505c97e2a4753743f0c64b198537592d620de8ff0ca5",
+        "call_number": 1,
+        "campaign_index": 3,
+        "generated_tokens": 210,
+        "prompt_tokens": 2110,
+        "runtime_ms": 75613.616,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-03_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "22243620872b19159784d4f2b45f2e336bf7a7a06d4bfe56473c199625aa64af",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-03_natural_language_plan_control_p4v2r2r4_attempt1_direct_37ec7bceda5be02e.json",
+        "backend_report_sha256": "1178aceb92f0db6954a375c06e1c6ecbcaaa530566c82b8833baeb6a9fe7cbb4",
+        "call_number": 2,
+        "campaign_index": 3,
+        "generated_tokens": 197,
+        "prompt_tokens": 2430,
+        "runtime_ms": 78507.32,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-03_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "1c9666221575250ab0f8c7cf4b7fa5464d6494a18039eae41ab096abe6cd1fe2",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-03_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_cf95414244368122.json",
+        "backend_report_sha256": "1bf06b0a682ef0fbb029a99be13f79ebe76968e9e20f4385d782178e990e5e85",
+        "call_number": 1,
+        "campaign_index": 3,
+        "generated_tokens": 485,
+        "prompt_tokens": 2266,
+        "runtime_ms": 202203.815,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-03_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "aee4bb65d9793583d791db96fc90a26b2eed3f46a941e76a5f86cfac9bc84ab3",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-03_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_6cf76d1f9de5f91d.json",
+        "backend_report_sha256": "6eef2c12fb1c4a565b6a86e95b8446c84581d7a20117f644f10c2c5f1e5e9638",
+        "call_number": 2,
+        "campaign_index": 3,
+        "generated_tokens": 1108,
+        "prompt_tokens": 2910,
+        "runtime_ms": 265682.082,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-03_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "93140191ecae6a4827e6f3b0fd8b4092867caea320b357b27ce44b70c56e0f03",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-04_direct_target_generation_p4v2r2r4_attempt1_direct_local_e02adf2f32e4fb57.json",
+        "backend_report_sha256": "05780cbeeb9e9be3af4c636049a4880996dfb59bd4cfa3a6555a64f0fcf257ab",
+        "call_number": 1,
+        "campaign_index": 4,
+        "generated_tokens": 97,
+        "prompt_tokens": 1943,
+        "runtime_ms": 110941.298,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-04_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "b08da774df082b05ba7df7c4798d352b0b467f4ad338caca9b683002dcf41ea2",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-04_direct_target_generation_p4v2r2r4_attempt1_direct_local_1cf46745a6e0655d.json",
+        "backend_report_sha256": "7da341576d3e8af79ef0cb1f74e45db5a87cdc069b87f7cef4a34e27f100a94f",
+        "call_number": 2,
+        "campaign_index": 4,
+        "generated_tokens": 92,
+        "prompt_tokens": 2179,
+        "runtime_ms": 54487.279,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-04_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "7bc2cc6c2f43cb968abd37286bdda4c37c46ae8a1acd97fe0b0852c4562c009d",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-04_natural_language_plan_control_p4v2r2r4_attempt1_direct_f7bb9c766dca3905.json",
+        "backend_report_sha256": "e78fe8133025e1d79ed28e6bc78a2d3f4ba63a65812301866113d3ee40dad11a",
+        "call_number": 1,
+        "campaign_index": 4,
+        "generated_tokens": 302,
+        "prompt_tokens": 1965,
+        "runtime_ms": 95037.728,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-04_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "1863cd6c03420f8f50d56d6d1940f66cbd979825412bde4e8637558ddd8b9a4f",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-04_natural_language_plan_control_p4v2r2r4_attempt1_direct_f5caee278a084f47.json",
+        "backend_report_sha256": "3682c726fa7fcef35b43eba500e23c70e32334875aa73e121470bbec584fd719",
+        "call_number": 2,
+        "campaign_index": 4,
+        "generated_tokens": 3710,
+        "prompt_tokens": 2381,
+        "runtime_ms": 781273.65,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-04_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "d512ce1aebdc6a1e12f3dcc102ccc9418f95c74aed9d7a15f3b17807105c070b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-04_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_29792536f1351fc2.json",
+        "backend_report_sha256": "358c7f7fccb7428c4068bc82cc8dde0352cd1837c6c87f8834315762d1b5ef26",
+        "call_number": 1,
+        "campaign_index": 4,
+        "generated_tokens": 1304,
+        "prompt_tokens": 2121,
+        "runtime_ms": 280309.534,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-04_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "c0d475ccf7baa0de0a8bd74c5255012a660b222d353f492b6c75bbc86432fee1",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-04_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_7c77d931606674e1.json",
+        "backend_report_sha256": "2a29ba768ecaaa0d64952b0774023cb71a659eb2171b743af623adf6f048d1b8",
+        "call_number": 2,
+        "campaign_index": 4,
+        "generated_tokens": 1571,
+        "prompt_tokens": 3588,
+        "runtime_ms": 319854.326,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-04_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "480444dd94f8a09d7b7ff680e493b3f228fb9d2cc0902011e1855160eb7f2abe",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-05_direct_target_generation_p4v2r2r4_attempt1_direct_local_eb3d92e3fee5eac1.json",
+        "backend_report_sha256": "4190e89a9ccc43269816c6ca61316a1817bceb3c58d9f82314da69ac31dec478",
+        "call_number": 1,
+        "campaign_index": 5,
+        "generated_tokens": 114,
+        "prompt_tokens": 2012,
+        "runtime_ms": 51516.793,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-05_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "def9fddb6f71c505c00d6865b2cfeef6cfb488f30c8369b6c71397b960da746f",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-05_direct_target_generation_p4v2r2r4_attempt1_direct_local_6c9bb046174f45a5.json",
+        "backend_report_sha256": "19c8f8e3416b7e8df9cb2240a39a242decd29c632b414d5904e9e7b91bdbed1c",
+        "call_number": 2,
+        "campaign_index": 5,
+        "generated_tokens": 123,
+        "prompt_tokens": 2249,
+        "runtime_ms": 57351.998,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-05_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "8c91df30d5bbfed9374d45bc7b61abe43c982e5b962d43c4b65c4741defa5b9b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-05_natural_language_plan_control_p4v2r2r4_attempt1_direct_580aea9fd11862e9.json",
+        "backend_report_sha256": "521fe018d923e570cf337aec08a55bc54987d9a54f60d0d31bc75adfa4a5843a",
+        "call_number": 1,
+        "campaign_index": 5,
+        "generated_tokens": 268,
+        "prompt_tokens": 2034,
+        "runtime_ms": 103854.489,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-05_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "3ac0c5083f93bf51bb21cedd1f727e15d53d2610887a8ce8663a4d68158b6775",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-05_natural_language_plan_control_p4v2r2r4_attempt1_direct_644b63ee0cbc0b5c.json",
+        "backend_report_sha256": "e32b0710f42c9f0e99ce89113ba9d481083958167f4a0bf5c9fa0f947bb3bb15",
+        "call_number": 2,
+        "campaign_index": 5,
+        "generated_tokens": 268,
+        "prompt_tokens": 2412,
+        "runtime_ms": 106135.297,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-05_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "b43bcedbacfc99ad5e31ac9397b9b5f90c84fdb261275310e7a6e2aca35b9ea7",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-05_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_e37bafdde13ac2ff.json",
+        "backend_report_sha256": "dbb788128366113d888017186d13dc67975bfde761f52ef6cc222e675ec210ef",
+        "call_number": 1,
+        "campaign_index": 5,
+        "generated_tokens": 499,
+        "prompt_tokens": 2190,
+        "runtime_ms": 182967.776,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-05_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "ef7fb3d5fddbbb085836e54e030e0c5076a234f6d12f0ebe3b9ad8851d6e204a",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-05_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_90d7326d9bc3e35a.json",
+        "backend_report_sha256": "4ae20e8b11a3462fc5466ecf7c34954cf03ccdd4c1e113277bce1f94a15038a2",
+        "call_number": 2,
+        "campaign_index": 5,
+        "generated_tokens": 458,
+        "prompt_tokens": 2848,
+        "runtime_ms": 146807.191,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-05_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "6034e9bf506dfa886b2d60fca76bdd7b082ed24b0d81f4a69ce9b06f8b5f88db",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-06_direct_target_generation_p4v2r2r4_attempt1_direct_local_240f87c38cd3069d.json",
+        "backend_report_sha256": "5580f644cef2c0f0d5f623396cc2a211dab6fe712814dc3e880ce7932d84c435",
+        "call_number": 1,
+        "campaign_index": 6,
+        "generated_tokens": 237,
+        "prompt_tokens": 1561,
+        "runtime_ms": 64063.554,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-06_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "e9353083d9ff8d6703292dfcc501bda53b73392f6d767f6b80c834e6b9096782",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-06_direct_target_generation_p4v2r2r4_attempt1_direct_local_4d98775d2c328fd2.json",
+        "backend_report_sha256": "c95e592e866b38db40a03ec203f3caa248cd1cc00071911fd74dcdded2351e25",
+        "call_number": 2,
+        "campaign_index": 6,
+        "generated_tokens": 191,
+        "prompt_tokens": 1938,
+        "runtime_ms": 61992.325,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-06_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "f6bca1274e6f86f5ed4be2c1f36beddfbd4b8c0da50c59dc905a352ae62679da",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-06_natural_language_plan_control_p4v2r2r4_attempt1_direct_5a11b6597e51b58b.json",
+        "backend_report_sha256": "ea3bb1d223cd74889785b62fb536079b7eaa7e70f0671bf8d9f9aa65ac8a7315",
+        "call_number": 1,
+        "campaign_index": 6,
+        "generated_tokens": 306,
+        "prompt_tokens": 1583,
+        "runtime_ms": 76486.066,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-06_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "336ee612691aeeb0ae8c0a42287bc09a75e541f458e2fa84b7f5dec9276fd69f",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-06_natural_language_plan_control_p4v2r2r4_attempt1_direct_8cfba663bf5ccd37.json",
+        "backend_report_sha256": "3d395702500c607846e156eeecedcc90a7e1956527dfbb5b3dc8d51cb97c95e0",
+        "call_number": 2,
+        "campaign_index": 6,
+        "generated_tokens": 271,
+        "prompt_tokens": 2003,
+        "runtime_ms": 78577.454,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-06_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "750712fa38da0289d2c03500ff3201df814dc12a0e8ab57987ed9058b7509190",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-06_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_1bca82580c3e4177.json",
+        "backend_report_sha256": "3065e64294cb95171b0467ef3a9002a399069d4f502b8735871428e5aaa149f3",
+        "call_number": 1,
+        "campaign_index": 6,
+        "generated_tokens": 285,
+        "prompt_tokens": 1739,
+        "runtime_ms": 111085.97,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-06_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "96a8a9ff73d6ea81711134973f0449fce42190b7aa3dc734fc72f78f7daa8f45",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-06_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_84548d82a922ad2f.json",
+        "backend_report_sha256": "1632143e38beebb00f38e35f7897f42082ef3aeed53adacc5c8a1638d0ecc5a4",
+        "call_number": 2,
+        "campaign_index": 6,
+        "generated_tokens": 488,
+        "prompt_tokens": 2198,
+        "runtime_ms": 119865.609,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-06_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "61a156fb7946df0d84f452860d6dc29bc0dc66e22b8e349c3e9a39df0dcb7e3f",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-07_direct_target_generation_p4v2r2r4_attempt1_direct_local_a11b9c3c9039dd11.json",
+        "backend_report_sha256": "dc582c9e33f0070017967ddf99795377860bd9bd2c0c47b7c20420811fb1c78d",
+        "call_number": 1,
+        "campaign_index": 7,
+        "generated_tokens": 314,
+        "prompt_tokens": 1325,
+        "runtime_ms": 98273.912,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-07_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "e60da3e32d4f399177d76af626d3cea9e80a226b84225537f324d54e8b22fa90",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-07_direct_target_generation_p4v2r2r4_attempt1_direct_local_62e42271fce43c2d.json",
+        "backend_report_sha256": "add6a36524172a578b2afa46bc2822393e2d04d83b08013fca318ec0297be906",
+        "call_number": 2,
+        "campaign_index": 7,
+        "generated_tokens": 314,
+        "prompt_tokens": 1775,
+        "runtime_ms": 85066.757,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-07_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "ab0840278658752865f87fc98d85d9e14f8df9a3772e3f0e6f76c7e323f04672",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-07_natural_language_plan_control_p4v2r2r4_attempt1_direct_36e8a9e328009d16.json",
+        "backend_report_sha256": "c6cc07ec2731256b2b3234768200937ea9b5795d18b67883b5f9677a7f3eecd2",
+        "call_number": 1,
+        "campaign_index": 7,
+        "generated_tokens": 417,
+        "prompt_tokens": 1347,
+        "runtime_ms": 95975.878,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-07_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "b7e230371cd4c07e0205620412eb6efb394b62c0f835b9081bee0259c0b34aa3",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-07_natural_language_plan_control_p4v2r2r4_attempt1_direct_25ec58d52f501b91.json",
+        "backend_report_sha256": "314ceff567f5d4027ad8a2d5c265bf9d10cb9cc61fdeae6852ae6dfc6e80a56a",
+        "call_number": 2,
+        "campaign_index": 7,
+        "generated_tokens": 417,
+        "prompt_tokens": 1886,
+        "runtime_ms": 103250.255,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-07_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "776ad6fb06297e1f87b6ca56640a5d15529573bffbe55a43a8ba6519fa0accad",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-07_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_5b3b3ef6b25bc5b7.json",
+        "backend_report_sha256": "ea6bcb2de23e13fc7fa8551148f85de3b741671108f12ef86238ce3e20add7fe",
+        "call_number": 1,
+        "campaign_index": 7,
+        "generated_tokens": 432,
+        "prompt_tokens": 1503,
+        "runtime_ms": 104063.695,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-07_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "8cfa0bc243260bd3b25146d9e9ea89c58a286ad84dbb3f3b26cb88f4014599ab",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-07_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_8bd745b840391c1f.json",
+        "backend_report_sha256": "9b5384e71aaa696dbc9f2478557e4f735afb28a5ce8105a5153bb1c288fdf8ed",
+        "call_number": 2,
+        "campaign_index": 7,
+        "generated_tokens": 478,
+        "prompt_tokens": 2094,
+        "runtime_ms": 114276.99,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-07_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "e47e29dc6aec739c36bdb33a37055e8c7574c5dec965067448871ecb7a5bf5a0",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-08_direct_target_generation_p4v2r2r4_attempt1_direct_local_58541b5ba729e3d1.json",
+        "backend_report_sha256": "be27be3b05314f300c72e95aa9823d552f108702fb9dc252cbead0a37cbbf9c3",
+        "call_number": 1,
+        "campaign_index": 8,
+        "generated_tokens": 46,
+        "prompt_tokens": 3005,
+        "runtime_ms": 56755.526,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-08_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "e3e2e4b2d8be2b11560048a9a0a205e4bafe05eca1fdaaf19ca4c97cd0c2dc6f",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-08_direct_target_generation_p4v2r2r4_attempt1_direct_local_6d922395d3eec327.json",
+        "backend_report_sha256": "210c73d7576d621d4f2a50ed57bc0d1aef15571d27fb22581e61fbd266537ff4",
+        "call_number": 2,
+        "campaign_index": 8,
+        "generated_tokens": 46,
+        "prompt_tokens": 3189,
+        "runtime_ms": 64238.362,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-08_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "6cae81f33af30def53b5331af28a32c865289b398b818984c93ff99f382167e7",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-08_natural_language_plan_control_p4v2r2r4_attempt1_direct_a1b8c6c3177d7e61.json",
+        "backend_report_sha256": "6cff1464bbe2d04ea2990f0a33374f6d1bdbda16d799a60080163af334740cc8",
+        "call_number": 1,
+        "campaign_index": 8,
+        "generated_tokens": 124,
+        "prompt_tokens": 3027,
+        "runtime_ms": 77424.936,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-08_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "bae9c35b2361c19d9b9b6fa35538957d345562aebd58d572f185e701341a59c5",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-08_natural_language_plan_control_p4v2r2r4_attempt1_direct_0f149b9792cce2f3.json",
+        "backend_report_sha256": "7c29f92dc1b360e4372fa79ffbc36ebc9cda9538d354e0c00cdf61dd690129f0",
+        "call_number": 2,
+        "campaign_index": 8,
+        "generated_tokens": 124,
+        "prompt_tokens": 3269,
+        "runtime_ms": 70657.175,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-08_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "3b418d347395cc485472f06f7768f3a0af66779a02cc53f9dd183853619570ad",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-08_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_a4ca1168043252ac.json",
+        "backend_report_sha256": "f55cb691a1cfa436f9b810d927663734e26e00cf1ca2b05ccca1356a68c3b2b2",
+        "call_number": 1,
+        "campaign_index": 8,
+        "generated_tokens": 221,
+        "prompt_tokens": 3183,
+        "runtime_ms": 87916.524,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-08_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "7a34499a94110a2968fadfb5bc3ff9299c3bec30ff21837c0305683324a1613e",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-08_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_aab940ec76bf4c94.json",
+        "backend_report_sha256": "14e3f1f3d66896235222256af590bd6afce6e52a2729bd03714e012ea44b2e42",
+        "call_number": 2,
+        "campaign_index": 8,
+        "generated_tokens": 221,
+        "prompt_tokens": 3571,
+        "runtime_ms": 94673.955,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-08_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "5ca472609aaa99e76c2d6f2b181589ed296121bf6830e84684d577b909ef8de6",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-09_direct_target_generation_p4v2r2r4_attempt1_direct_local_82ebde4adf05dee6.json",
+        "backend_report_sha256": "406138718dcf307cdf9eb4e76548aa21d44debd7e85bc3846a165d89e8cd4e73",
+        "call_number": 1,
+        "campaign_index": 9,
+        "generated_tokens": 187,
+        "prompt_tokens": 1962,
+        "runtime_ms": 62871.729,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-09_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "1cb04a38421eb39cdbc0c76a6d37b6e3b1386ea6e821b6cf34db49b82585321b",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-09_direct_target_generation_p4v2r2r4_attempt1_direct_local_78c29ec98efa7758.json",
+        "backend_report_sha256": "a1361ff7a75f914bb8e604f84ac8a90bece6ab58e25c1e4afce63679bad9b0c2",
+        "call_number": 2,
+        "campaign_index": 9,
+        "generated_tokens": 187,
+        "prompt_tokens": 2273,
+        "runtime_ms": 67785.117,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-09_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "67deb9768f325b1730faa250a7ac548f91bfb7d947b335d84a2267212667fb70",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-09_natural_language_plan_control_p4v2r2r4_attempt1_direct_8a07e93cd653802f.json",
+        "backend_report_sha256": "56ea7213a5397481a98eaa23a087110332d6b5a00f7cce7b8dbda98e17ed86ca",
+        "call_number": 1,
+        "campaign_index": 9,
+        "generated_tokens": 388,
+        "prompt_tokens": 1984,
+        "runtime_ms": 100076.824,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-09_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "677f1a141931277e0e13a3e0ad85b5f6822d8bbc6583ce1fbc74dd3ea9600261",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-09_natural_language_plan_control_p4v2r2r4_attempt1_direct_9356dd322a2ded61.json",
+        "backend_report_sha256": "5a99ae561236b22c9dfd8d324f6ed55045daf8d08c470d16e2d91ef5e01c310b",
+        "call_number": 2,
+        "campaign_index": 9,
+        "generated_tokens": 380,
+        "prompt_tokens": 2482,
+        "runtime_ms": 112548.731,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-09_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "73f822873f7af7afe0436da858356f5bc6042d2a587bff0bfbb9498fac39a156",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-09_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_dfa92316feea8fef.json",
+        "backend_report_sha256": "6e8ce42c7a3954aef27321a9c57bea53e277886cd9c0d9880df774753d313ffe",
+        "call_number": 1,
+        "campaign_index": 9,
+        "generated_tokens": 411,
+        "prompt_tokens": 2140,
+        "runtime_ms": 117874.77,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-09_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "af4eeb382f0cd1eca9a928aa5f9c9a831934fa551b3cfddf4fae3e13f66cbca5",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-09_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_5632e4f7bfbde014.json",
+        "backend_report_sha256": "433d692ef454c952ceb1e9f797033ec9103f00216e2e9d4d15220d42ecbbd219",
+        "call_number": 2,
+        "campaign_index": 9,
+        "generated_tokens": 396,
+        "prompt_tokens": 2700,
+        "runtime_ms": 110008.201,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-09_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "a18ab307c34f959d3119d12ab012ddbcb771b5e6333475379496dd662598f774",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-10_direct_target_generation_p4v2r2r4_attempt1_direct_local_a360d3ea2591197f.json",
+        "backend_report_sha256": "5675f8d0792f8fff3a69ef8312b1766d79b41ffc4f4f7fbf236a4765d114e957",
+        "call_number": 1,
+        "campaign_index": 10,
+        "generated_tokens": 694,
+        "prompt_tokens": 1408,
+        "runtime_ms": 183202.338,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-10_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "46ac4ad7476c6ed38178da533b945289b889c25b1baa0740c83a81155b27bf72",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "direct_target_generation",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-10_direct_target_generation_p4v2r2r4_attempt1_direct_local_cfb8c87f62273af8.json",
+        "backend_report_sha256": "97a08cd416c7c1556c83c5fc0085a7b2cb5797cdccdbc906b658d6d9cbcbe5da",
+        "call_number": 2,
+        "campaign_index": 10,
+        "generated_tokens": 592,
+        "prompt_tokens": 2223,
+        "runtime_ms": 141095.4,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-10_direct_target_generation_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "78ce64667011faf865184e6ab7b1dfe62351795decf0352627daee0d472ab6c3",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-10_natural_language_plan_control_p4v2r2r4_attempt1_direct_a633042e820bb885.json",
+        "backend_report_sha256": "52268ef20f5db6a61da6fa82a5196b93faf5cfaf4eac152f5b7f68545046f290",
+        "call_number": 1,
+        "campaign_index": 10,
+        "generated_tokens": 182,
+        "prompt_tokens": 1430,
+        "runtime_ms": 56583.53,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-10_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "c7efafad41deacd446ef42cf3ca7d5282272982a4ad2c97b2023e048e6036c48",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "natural_language_plan_control",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-10_natural_language_plan_control_p4v2r2r4_attempt1_direct_93afca264c81c17d.json",
+        "backend_report_sha256": "410dc5701d33d4d420ba1ed9370b5ae56fdc7f3b4349212a2a10d58426521e3c",
+        "call_number": 2,
+        "campaign_index": 10,
+        "generated_tokens": 169,
+        "prompt_tokens": 1722,
+        "runtime_ms": 57881.362,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-10_natural_language_plan_control_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "a2e263bbda87137578fb630af6082c88f6611724e2bf3f70b320167d3e74c338",
+        "safety_ceiling_hit": false,
+        "termination_reason": "model_eos"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-10_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_69fb4a7f4b8544a9.json",
+        "backend_report_sha256": "ac34d7cf33d0c0c3caeb82fe3183e6520e3ef6df0e897036feecc7fa774dcb1f",
+        "call_number": 1,
+        "campaign_index": 10,
+        "generated_tokens": 718,
+        "prompt_tokens": 1586,
+        "runtime_ms": 166187.171,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-10_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_1.json",
+        "runtime_report_sha256": "0bcc4e425b1e1e1d606db55fb5a838186a0ab3734f9d9c673b0fbce020119805",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      },
+      {
+        "arm_id": "typed_semantic_ir_treatment",
+        "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_p4_p4v2r2r2-cognitive-compilation-10_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo_cc1d58835bf31ced.json",
+        "backend_report_sha256": "d47ebe15356ed63a5b6720b4012d743b41dc1b8cc3185492641d1a782445b30c",
+        "call_number": 2,
+        "campaign_index": 10,
+        "generated_tokens": 720,
+        "prompt_tokens": 2463,
+        "runtime_ms": 220641.071,
+        "runtime_report": "runtime/p2a/p2a_p4_p4v2r2r2-cognitive-compilation-10_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_local_model_2.json",
+        "runtime_report_sha256": "c72260cc9863af2c9c4fc6bac535636867ca4f0808c37f4b657834cb554d9a68",
+        "safety_ceiling_hit": false,
+        "termination_reason": "parser_complete"
+      }
+    ],
+    "source_pool_audit": {
+      "bound_owners": {
+        "revision_corrections": {
+          "path": "configs/theseus_p4v2r2r2_revision_corrections.json",
+          "sha256": "243afc079f1eeeba844001e57e93af40dd9d44238e98b2ed3051073bf3dae623"
+        },
+        "revision_repair_fetch": {
+          "path": "reports/theseus_p4v2r2r2_revision_repair_fetch.json",
+          "sha256": "06e27bcca0b104aa6f7691cdefba0cd19d8b662b7e647222a854bb6d1c626ce1"
+        },
+        "source_fetch": {
+          "path": "reports/theseus_p4v2r2r2_source_fetch.json",
+          "sha256": "150a449dd11a32442b9d352b463411065c3d55e1cbda874e86c9fe1f5356d12c"
+        },
+        "source_registry": {
+          "path": "configs/theseus_p4v2r2r2_task_sources.json",
+          "sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c"
+        },
+        "task_contracts": {
+          "path": "configs/theseus_p4v2r2r2_task_contracts.json",
+          "sha256": "9352957f61fe16e7e3c6050867e8dcdd777b13b5ef26646ad94d29645238413c"
+        }
+      },
+      "distinct_repository_count": 10,
+      "faults": [],
+      "passed": true,
+      "source_registry_audit": {
+        "archive_fetches": 0,
+        "behavioral_unit_distribution": {
+          "1": 5,
+          "2": 4,
+          "3": 1
+        },
+        "candidate_or_control_calls": 0,
+        "distinct_repository_count": 10,
+        "faults": [],
+        "instrument": {
+          "binding_mode": "prospective_pre_generation_repair",
+          "freeze_commit": "91dbcf57988fbf9e73f1c1d129fbcad021f54035",
+          "path": "configs/theseus_p4v2r2r2_cognitive_compilation_instrument.json",
+          "registry_freeze_sha256": "0c5f925c527e807459c18cf78a79c3ffbbc88d1c1645fbd0a3085a698c4fe288",
+          "sha256": "86f8e1840dd6ced36e48257eca8a427377852cb662f2ad66d53441d048218b4d"
+        },
+        "license_spdx_ids": [
+          "Apache-2.0",
+          "BSD-2-Clause",
+          "BSD-3-Clause",
+          "MIT"
+        ],
+        "maximum_inference": "This registry fixes only a fresh licensed P4 development source denominator. It grants no candidate generation, archive execution, D1, D2, training, serving, hosted-reference, or ASI Stack support authority.",
+        "policy": "project_theseus_p4v2r2r2_source_registry_audit_v1",
+        "predecessor_terminal_disposition": {
+          "path": "reports/theseus_p4v2r2r1_attempt1_terminal_disposition.json",
+          "scientific_status": "INCONCLUSIVE_EXPERIMENT",
+          "sha256": "a7fa3d3593a0cb9ef8047ea54c3a4e24bbfee9b2276f4637e6328cce8df2a2df"
+        },
+        "prior_repository_count": 50,
+        "prior_repository_overlap": [],
+        "project_selected_quality_token_cap": null,
+        "registry": {
+          "path": "configs/theseus_p4v2r2r2_task_sources.json",
+          "sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c"
+        },
+        "task_count": 10,
+        "trigger_state": "GREEN"
+      },
+      "task_count": 10
+    },
+    "zero_call_prompt_cap_disposition": {
+      "path": "reports/theseus_p4v2r2r2_attempt2_pre_generation_information_cap_disposition.json",
+      "sha256": "27887408a24147b77f732afc3cacebd55939b441b8f7048967c02c61e156ee9d"
+    }
+  },
+  "task_results": [
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_v2_units_missing",
+            "semantic_ir_v2_unparsed_text"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 1,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_01_h11_181_evaluation.json",
+        "sha256": "e184e4fe3c34bb79353742f5039666af665b217c9206417204dad26990136feb"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "00475e2073a8d9e83c58742fdb13d74377461071c18719d6b4cf743fe2451054",
+        "stored_projection_sha256": "00475e2073a8d9e83c58742fdb13d74377461071c18719d6b4cf743fe2451054"
+      },
+      "oracle_useful": 1,
+      "repository": "python-hyper/h11",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_01_h11_181_run.json",
+        "sha256": "895eb2e00c53c4d1869116b21230c35ce5dc258017683029808d2a026f58dce0"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_01_h11_181"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_unparsed_text",
+            "typed_actions_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_obligation_coverage_incomplete"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 2,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_02_h2_1313_evaluation.json",
+        "sha256": "342a4b6ae12f330a050d843ab26fe56bbfa725d1c1aee3edb11db41ba6304811"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "b5bb21918322f494199f608e7379e58efb35436a0270f52ecda78517a82e1b34",
+        "stored_projection_sha256": "b5bb21918322f494199f608e7379e58efb35436a0270f52ecda78517a82e1b34"
+      },
+      "oracle_useful": 1,
+      "repository": "python-hyper/h2",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_02_h2_1313_run.json",
+        "sha256": "02b77f5218ac25ebcc1245cfd8c62bf1470da3a97bfb92ee3770a11e2e75ac01"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_02_h2_1313"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_v2_unparsed_text"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 3,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_03_pygments_3215_evaluation.json",
+        "sha256": "db981d809ac69ed01b50ae7b030f34a6c2d637ec7dd6156f51edd87e79f05845"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "d83ebd46f15d944b58a5cb70f355e69f9915de65ca96b7e86999b43c3601cb4c",
+        "stored_projection_sha256": "d83ebd46f15d944b58a5cb70f355e69f9915de65ca96b7e86999b43c3601cb4c"
+      },
+      "oracle_useful": 1,
+      "repository": "pygments/pygments",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_03_pygments_3215_run.json",
+        "sha256": "67bab36b7e2a73368ac550b1f701e09c3a4225715dde4b8de17bb3df1f5f8476"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_03_pygments_3215"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 4,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_04_pluggy_545_evaluation.json",
+        "sha256": "f0af69696ef3b72d59a784813141be62896807d02d7d671b11b8ccca235eee50"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "afc4688011bef4b459e6ae6152f4e7a5e6b0dc24aa33128f2cb4eba4b92cd5ab",
+        "stored_projection_sha256": "afc4688011bef4b459e6ae6152f4e7a5e6b0dc24aa33128f2cb4eba4b92cd5ab"
+      },
+      "oracle_useful": 1,
+      "repository": "pytest-dev/pluggy",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_04_pluggy_545_run.json",
+        "sha256": "261763a7f7f0b1e87141cc198e398cf1b48588b4558eda5d821e8421237e4186"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_04_pluggy_545"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 5,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_05_asgiref_537_evaluation.json",
+        "sha256": "58340fdc93212a73d074bb2e8622abfee29f466c17bd0dcded2f63c69a24a764"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "411751d24f322adc63a1dc770724a7aacff3d5e39e2ae5bce9f3ee04ad2c2164",
+        "stored_projection_sha256": "411751d24f322adc63a1dc770724a7aacff3d5e39e2ae5bce9f3ee04ad2c2164"
+      },
+      "oracle_useful": 1,
+      "repository": "django/asgiref",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_05_asgiref_537_run.json",
+        "sha256": "0d20ac2ff23b9fdeea5b663c61ffc4de573e8db43cf88cedb83e12130f270ea3"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_05_asgiref_537"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_obligation_coverage_incomplete",
+            "semantic_target_identity_invalid",
+            "semantic_units_missing"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 6,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_06_platformdirs_469_evaluation.json",
+        "sha256": "19e973be107dfd539a768fe4ed8b5fb890bd6a1ddda35ce9022c28de1a98f4d0"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "01a8ba44d4e30a4e1c9fd29cb6ca9ae347c5d4a815094830616f456cc1d353f4",
+        "stored_projection_sha256": "01a8ba44d4e30a4e1c9fd29cb6ca9ae347c5d4a815094830616f456cc1d353f4"
+      },
+      "oracle_useful": 1,
+      "repository": "tox-dev/platformdirs",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_06_platformdirs_469_run.json",
+        "sha256": "d4030903192352216e7d3e4d49563444fb5e85469b5172b743b4f16838b3dffb"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_06_platformdirs_469"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_obligation_coverage_incomplete"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 7,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_07_markupsafe_418_evaluation.json",
+        "sha256": "03d749ee53b0a82e1d805a42151a64832cae1aa3dceb59c3f50154608beb921c"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "77ec31cb65a2ee8a55909a577bcb879bc2479a1e87dcb1e86450091db371ea2c",
+        "stored_projection_sha256": "77ec31cb65a2ee8a55909a577bcb879bc2479a1e87dcb1e86450091db371ea2c"
+      },
+      "oracle_useful": 1,
+      "repository": "pallets/markupsafe",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_07_markupsafe_418_run.json",
+        "sha256": "930ecd33d043637299736e50de2927defee08ae992fa4ebc5f4e31eb2787da9e"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_07_markupsafe_418"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_obligation_coverage_incomplete",
+            "semantic_obligation_identity_or_order_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 8,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_08_itsdangerous_378_evaluation.json",
+        "sha256": "35cfbec29ecd2d09d73ba977e747778d4c009134682865eb9e5b4f2ee0c31b83"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "3a8b565c55db78b07f83d70f5117e863951c55c18a1f8b0ad0ed9c6ce74ac2a7",
+        "stored_projection_sha256": "3a8b565c55db78b07f83d70f5117e863951c55c18a1f8b0ad0ed9c6ce74ac2a7"
+      },
+      "oracle_useful": 1,
+      "repository": "pallets/itsdangerous",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_08_itsdangerous_378_run.json",
+        "sha256": "9762588a01f0f0d033401287df376bcfe8f0565000dead68ab4e3418409f6df8"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_08_itsdangerous_378"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 1
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_ir_v2_units_missing",
+            "semantic_ir_v2_unparsed_text"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 9,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_09_tryceratops_75_evaluation.json",
+        "sha256": "cc6bbd75c2a728f10139f7cb6057bc6be65505634c7f240a8b4d0d44c29d51e3"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "d95714edee2736fdd830ee33927e33379112e0927f318c3d2e72e8f91ad26f4a",
+        "stored_projection_sha256": "d95714edee2736fdd830ee33927e33379112e0927f318c3d2e72e8f91ad26f4a"
+      },
+      "oracle_useful": 1,
+      "repository": "guilatrova/tryceratops",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_09_tryceratops_75_run.json",
+        "sha256": "4b3ea2eaeabd1fffab5af6d7692034ae55c22e5f4a1f734562edea933607932e"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_09_tryceratops_75"
+    },
+    {
+      "arms": {
+        "direct_target_generation": {
+          "correctness_evaluated": 1,
+          "parse_faults": [],
+          "parseable": true,
+          "rollback_verified": 1,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "natural_language_plan_control": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "typed_action_envelope_invalid"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        },
+        "typed_semantic_ir_treatment": {
+          "correctness_evaluated": 0,
+          "parse_faults": [
+            "semantic_obligation_coverage_incomplete"
+          ],
+          "parseable": false,
+          "rollback_verified": 0,
+          "unsafe": 0,
+          "useful": 0
+        }
+      },
+      "campaign_index": 10,
+      "evaluation": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_10_xarray_11401_evaluation.json",
+        "sha256": "49ea6e409c657bef9ac45ae5529daeb2dd686100417a8e071ea5f5eded9eae4a"
+      },
+      "independent_evaluation_replay": {
+        "matched": true,
+        "replayed_projection_sha256": "48e2150e699ff83a71bda97b333ed6a47f599fb8f5662500318b709c2cee84ee",
+        "stored_projection_sha256": "48e2150e699ff83a71bda97b333ed6a47f599fb8f5662500318b709c2cee84ee"
+      },
+      "oracle_useful": 1,
+      "repository": "pydata/xarray",
+      "run": {
+        "path": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_10_xarray_11401_run.json",
+        "sha256": "ed39035f2c29238da8e713c94b05f273d573bc41a5f72c09ecef92802b503934"
+      },
+      "static_compiler": {
+        "abstained": 1,
+        "compiler_faults": [
+          "deterministic_request_pattern_unsupported"
+        ],
+        "parseable": false,
+        "useful": 0
+      },
+      "stem": "p4v2r2r2_10_xarray_11401"
+    }
+  ],
+  "termination_custody": {
+    "completion_rule": "Parser-complete artifact or model EOS; the exact prompt residual of the declared model context is the sole numeric boundary. A boundary hit invalidates the observation and is never a mechanism failure.",
+    "maximum_generated_tokens": 3710,
+    "maximum_prompt_tokens": 4776,
+    "minimum_generated_tokens": 46,
+    "normal_termination_calls": 60,
+    "safety_ceiling_hits": 0,
+    "termination_reason_counts": {
+      "model_eos": 18,
+      "parser_complete": 42
+    },
+    "total_generated_tokens": 25806
+  },
+  "trigger_state": "GREEN",
+  "weak_tail": {
+    "all_task_failures_retained": true,
+    "treatment_failures": 10,
+    "treatment_pairwise_losses": {
+      "deterministic_request_compiler_baseline": 0,
+      "direct_target_generation": 3,
+      "natural_language_plan_control": 1
+    }
+  }
+}

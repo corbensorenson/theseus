@@ -717,11 +717,20 @@ start receipts, candidate run reports, or blind evaluations available to have
 influenced this repair. A durable, exclusive `STARTED_PRE_INFERENCE` receipt is
 now fsynced before every task inference call and advanced to a runtime-report-
 bound terminal state after return; a duplicate or orphaned start fails closed.
-This is the last pre-call instrument release boundary. Source-lock it and run
-the campaign once when machine predicates pass. After any learned call begins,
-a grammar or transport defect is terminal `INCONCLUSIVE_IMPLEMENTATION`
-evidence for this exact instrument; do not mint another nearby sealed campaign
-or rescore the consumed surface.
+The source-locked campaign is now terminal. All 60 learned calls returned under
+natural parser-complete or model-EOS termination, all ten tasks were sealed and
+independently replayed, and no physical context or host-safety boundary fired.
+Direct generation produced 3/10 useful completions, the natural-language plan
+control produced 1/10, and the Semantic-IR treatment produced 0/10. The
+treatment emitted the exact header and terminal envelope on 10/10 tasks but
+parsed and lowered only 2/10 against the predeclared 8/10 mechanics floor.
+Information flow and the experiment floor are GREEN, but the mechanics floor
+is not, so the exact terminal result is `INCONCLUSIVE_IMPLEMENTATION`, not an
+adequate loss and not evidence against cognitive compilation generally. The
+surface is consumed, D1 stays closed, and no nearby reseal or rescoring is
+authorized. Repair must target the observed Semantic-IR identity, obligation-
+coverage, target-identity, and unit-parsing residuals on non-claim mechanics
+evidence before any entirely fresh development denominator is considered.
 
 | Order | Exact claim | Causal variable | Strongest required contrasts |
 | --- | --- | --- | --- |
@@ -741,7 +750,7 @@ book mechanism.
 
 #### P5 — Fresh D1 qualification
 
-State: `BLOCKED_ON_A_DECISION_RELEVANT_P4_SURVIVOR`.
+State: `CLOSED_P4V2R2R3_NO_DECISION_RELEVANT_SURVIVOR`.
 
 Only after L0 selects a mechanism, deterministically freeze a fresh
 source-disjoint cohort from the autonomous online task pool, with competent
@@ -790,7 +799,7 @@ pressure is incorporated as follows:
 | Criticism | Disposition | Roadmap response |
 | --- | --- | --- |
 | P3 is the strongest real-task result and lacks a current concise brief | `ACCEPTED_NARROWED` | Replace the historical E2/E3-only brief with P3's exact matched outcome, costs, safety, rollback, and its 1,536-token/natural-termination limitation; prepare it for review, never automatic publication |
-| P4 repeatedly sealed zero-call campaigns instead of producing a verdict | `ACCEPTED` | One final joined production conformance gate, then run once or park; no further pre-call campaign namespace ladder |
+| P4 repeatedly sealed zero-call campaigns instead of producing a verdict | `ACCEPTED_REPAIRED` | The final joined gate was source-locked and the full ten-task/60-call campaign completed once. Its GREEN audit produced scoped `INCONCLUSIVE_IMPLEMENTATION` because Semantic IR parsed/lowered 2/10 against the 8/10 floor; the surface is consumed and no further reseal is authorized |
 | Grammar and transport were tested through proxies rather than the exact live path | `ACCEPTED` | Make exhaustive production render→prompt→transport→parse→lower→apply→verify conformance a campaign preflight dependency |
 | Repository remains an 88-file mixed transaction | `REJECTED_STALE` | Current tracked worktree is clean; retain transaction isolation and source binding as continuous gates |
 | Runtime/report growth is operationally uncontrolled | `ACCEPTED` | Finish runtime-wide classification and replay-safe compaction under a derived resource envelope; preserve terminal evidence and active checkpoint/corpus custody |
@@ -817,9 +826,9 @@ book-support promotion, or a user approval gate.
 | L0-003-R2 | `INTERRUPTED_DIRECTION_CANCELLED` | Five reads, no mutation, candidate, verification, or comparison; do not resume |
 | Autonomous usefulness | `P3_TERMINAL_HISTORICAL_BOUNDED_NO_USEFULNESS_ROUTE_WINNER` | Across ten counterbalanced tasks, direct and integrated each solved 1/10; integrated raised parseability from 5/10 to 9/10 but did not raise useful completion, while all 14 evaluated candidates were safe and rollback-valid. The project-selected 1,536-token ceiling and missing natural-termination custody limit this to historical bounded evidence |
 | P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 uncapped natural-completion calls with zero boundary hits. Every custody and information-flow audit passed, but Semantic IR parsed/lowered 0/10 because its exact-list grammar rejected semantically ordinary obligation-list spellings; its evidence is immutable and D1/book support remain closed |
-| P4 causal development | `P4V2R2R3_CONFORMANCE_GREEN_AWAITING_SOURCE_LOCKED_RUN` | The final zero-call production gate is GREEN: exact joined replay repaired the missing direct/plan grammar, incomplete semantic operation shape, and batched-token counting bug; all 10 frozen tasks, 30 arm replays, 60 first/repair prompts, three operations, 30 delimiter variants, and 30 malformed controls pass with a 257,268-token minimum physical residual. Interrupted call-open state remains `UNKNOWN`, but no durable candidate/control output existed to influence the release. Durable exclusive pre-inference call-start receipts now make future call custody decidable. Source-lock and run this campaign once; do not reseal again. |
+| P4 causal development | `P4V2R2R3_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | The source-locked campaign completed 10/10 tasks and 60/60 natural-completion calls with zero boundary hits, GREEN information flow, GREEN experiment floor, 10/10 oracle usefulness, and 10/10 independent evaluator replay. Direct was useful on 3/10 tasks, plan control on 1/10, and Semantic IR on 0/10. Semantic IR parsed/lowered 2/10 versus the predeclared 8/10 mechanics floor, so effect inference is unauthorized. Preserve the exact scoped implementation result; do not replay, rescore, reseal, open D1, or infer that cognitive compilation generally failed. |
 | Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` at `xhigh` is prospectively scoped as a measurement-only 2×2 reference; no callable experiment adapter is yet source-bound |
-| D1 stack efficacy | `PROSPECTIVELY_BOUND_P4V2R2R3_CONTROLLER_INCOMPLETE` | Prior worker was inadequate; fresh D1 is bound to the exact P4V2R2R3 survivor only. Source acquisition, evaluator seal, sandbox, matched campaign, blind evaluation, and terminal disposition are implemented; append-only underfill recovery and the autonomous end-to-end pipeline controller remain open |
+| D1 stack efficacy | `CLOSED_P4V2R2R3_NO_SURVIVOR` | The exact P4 implementation did not pass its mechanics floor and therefore did not earn the one-shot D1 qualification. D1 remains unconsumed and closed; its prepared controller grants no reason to run it without a future prospectively qualified survivor. |
 | Neural checkpoint custody | `CUSTODY_GREEN` | Exact step-11,416 model, AdamW, RNG, cursor, and prospective lineage |
 | Long training | `TRAINING_WAITING_ON_MACHINE_PREDICATES` | The campaign controller requires clean source binding, derived disk custody, exact lineage continuity, resource checks, and exclusive accelerator availability. The optional yield file is an emergency stop, not approval authority; Corben is not a gate |
 | D2 student capability | `NOT_EVALUATED_SEALED` | The 57M candidate and dense controls have no verdict |
@@ -848,30 +857,29 @@ book-support promotion, or a user approval gate.
    receipts, blind evaluations, and zero-unsafe rollback-valid denominator.
    Never replay or replace a task, and do not promote the integrated
    parseability shift into a usefulness or subsystem claim.
-7. Source-lock the GREEN final P4-v2r2-r3 production-conformance release and
-   run the ten-task campaign once when machine predicates pass. The gate has
-   already exercised the exact renderer, grammar, parser, lowerer, disposable
-   applier, complete visible verifier, and pinned tokenizer with zero model or
-   hidden-evaluator calls. Durable pre-inference call-start receipts are now
-   mandatory. Any subsequent production defect parks this exact instrument;
-   do not create another reseal namespace.
-8. Preserve all natural completions, boundary events, costs, failures, and
-   weak-tail evidence; do not add an answer-length cap, replace a task, or
-   interpret an incomplete/physical stop as a mechanism loss. Compute the
-   source-bound terminal disposition. Open one fresh,
-   source-disjoint D1 qualification only if the exact development-survivor rule
-   passes; otherwise retain the exact scoped terminal result and keep D1 and
-   book support closed.
-9. Bind the measurement-only Luna-xhigh adapter when a callable governed
+7. Preserve the terminal P4V2R2R3 campaign, its 60 returned call-start/runtime
+   receipts, ten blind evaluations, independent replay, exact costs, and weak
+   tail. The consumed surface is ineligible for replay, training, D1, or D2.
+   Retain `INCONCLUSIVE_IMPLEMENTATION` at the exact 2/10-versus-8/10 mechanics
+   boundary; do not convert the 0/10 treatment utility into a mechanism loss.
+8. Keep D1 closed. Repair the named Semantic-IR mechanics owner using only
+   non-claim fixtures and corruption/intervention canaries; a future effect
+   test requires a fully new source-disjoint development denominator and the
+   same adequacy audit, not another namespace over these tasks.
+9. Preserve the GREEN public-safe ASI Stack handoff for governed book review.
+   It binds the terminal negative result to the pinned claim, keeps the book at
+   `argument`, and grants no automatic support, publication, or release action.
+10. Bind the measurement-only Luna-xhigh adapter when a callable governed
    transport exists. Run both models direct and integrated on a prospectively
    shared task surface without mixing local/hosted denominators or allowing
    hosted outputs into serving or training.
-10. In parallel, close the storage wall through manifest-backed replay-safe
+11. In parallel, close the storage wall through manifest-backed replay-safe
     compaction under a measured derived envelope; do not delete evidence or use
     fixed size/file counts as scientific or execution-quality limits.
-11. Refresh N0 with the training hold installed and implement the automated N1
-    launch/resource/rollback controller. Start no long run until that controller
-    proves every frozen predicate.
+12. Advance the independent neural track: refresh N0 with the hold installed,
+    run the automated N1 source/resource/checkpoint/rollback predicates, finish
+    the already-frozen modular, dense-active, and dense-total matched training,
+    then consume D2 once. Preparation artifacts are not a capability result.
 
 ## Historical Rapid Evidence Campaign
 

@@ -1,0 +1,14 @@
+{
+  "child_returncode": null,
+  "completed_utc": "2026-08-02T06:06:57Z",
+  "created_utc": "2026-08-02T05:55:00.481225Z",
+  "durable_campaign_progress_written": false,
+  "durable_runtime_receipts": 0,
+  "error": "parent_interrupted_during_child_subprocess_for_source_bound_external_review_reconciliation",
+  "lease_id": "8babf90cc4da4dbd9f9185282766c3f2",
+  "model_call_opened": "UNKNOWN",
+  "policy": "project_theseus_p4v2r2r3_autonomous_launch_v1",
+  "scientific_status": "NO_DURABLE_OBSERVATION",
+  "state": "STOPPED_RETAIN_EVIDENCE",
+  "surface_reuse_authority": "REQUIRES_FINAL_PRODUCTION_CONFORMANCE_AND_PRECALL_CUSTODY_AUDIT"
+}

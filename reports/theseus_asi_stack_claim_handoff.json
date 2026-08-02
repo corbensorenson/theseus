@@ -1,0 +1,133 @@
+{
+  "activation_state": "READY_FOR_GOVERNED_BOOK_REVIEW_WITHOUT_D1",
+  "authority": {
+    "automatic_support_transition_proposed": false,
+    "book_review_required": true,
+    "candidate_outputs_included": false,
+    "exact_artifact_digests_required": true,
+    "hidden_tests_or_oracles_included": false,
+    "maximum_inference_required": true,
+    "negative_results_and_weak_tails_required": true,
+    "private_payloads_included": false,
+    "public_safe_aggregate_only": true,
+    "task_selection_metadata_included": false,
+    "user_or_operator_approval_required": false
+  },
+  "book_binding": {
+    "artifacts": {
+      "claim_matrix_path": {
+        "expected_sha256": "fdbbb62faa4630acb0b3ebadbdd3826eb33bc98ba62265bb6fea54f9ccae22d0",
+        "observed_sha256": "fdbbb62faa4630acb0b3ebadbdd3826eb33bc98ba62265bb6fea54f9ccae22d0",
+        "passed": true,
+        "path": "appendices/C_claim_evidence_matrix.qmd"
+      },
+      "evidence_transition_schema_path": {
+        "expected_sha256": "6f684709d3dd1317b5db372cf99a86ec57f67c70ae9a635e7bae416c486d15fd",
+        "observed_sha256": "6f684709d3dd1317b5db372cf99a86ec57f67c70ae9a635e7bae416c486d15fd",
+        "passed": true,
+        "path": "schemas/evidence_transition_record.schema.json"
+      },
+      "manifest_path": {
+        "expected_sha256": "ab8db6fddc6a367beac24d16866d0dc687b85cc796f5fc4086833b752bbfae4e",
+        "observed_sha256": "ab8db6fddc6a367beac24d16866d0dc687b85cc796f5fc4086833b752bbfae4e",
+        "passed": true,
+        "path": "book_structure.json"
+      }
+    },
+    "chapter_count": 84,
+    "chapter_id": "cognitive-compilation-and-semantic-ir",
+    "claim_contract_sha256": "f2549b21d928a184f26646a90cf47a735a8b7089075e2889c3f7280894520e0c",
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+    "current_support_state": "argument",
+    "passed": true,
+    "repository": "/Users/corbensorenson/Documents/AI_book"
+  },
+  "book_review_packet": {
+    "book_claim_contract_sha256": "f2549b21d928a184f26646a90cf47a735a8b7089075e2889c3f7280894520e0c",
+    "book_pin_commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+    "chapter_id": "cognitive-compilation-and-semantic-ir",
+    "claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "current_book_support_state": "argument",
+    "d1": {},
+    "evidence_route": "P4V2R2R3_complete_artifact_then_one_fresh_D1_only_if_survivor",
+    "limitations": [
+      "The evidence is scoped to the exact frozen local model, mechanism implementation, task surfaces, controls, evaluator, budgets, and operating regime.",
+      "P4 is decision-development evidence; a survivor requires one fresh source-disjoint D1 result before handoff.",
+      "A non-survivor or inconclusive result does not broadly falsify cognitive compilation.",
+      "The handoff does not establish cross-language transfer, serving or training readiness, AGI, ASI, or book support movement."
+    ],
+    "maximum_inference": "A GREEN handoff proves only that public-safe terminal Theseus evidence is bound to the reviewed 84-chapter book pin and exact cognitive-compilation core claim for independent book review. It does not itself change support state, prove the chapter core claim, authorize publication or release, establish general cognitive compilation, or transfer beyond the exact model, mechanism, tasks, controls, evaluator, budgets, and operating regime recorded by the terminal evidence.",
+    "negative_results": [],
+    "p4": {
+      "adequacy": {
+        "experiment_floor_passed": true,
+        "information_flow_green": true,
+        "mechanics_floor_passed": false
+      },
+      "claim_id": "cognitive-compilation-and-semantic-ir.core",
+      "consumption": {
+        "eligible_for_D1": false
+      },
+      "decision_rule": {
+        "effect_decision_authorized": false,
+        "survivor_effect_rule_passed": false
+      },
+      "denominators": {
+        "hosted_model_calls": 0,
+        "learned_model_calls": 60,
+        "project_selected_quality_token_cap": null,
+        "tasks": 10
+      },
+      "maximum_inference": "This report can decide only whether the exact frozen TMax plus Semantic-IR v2r2 implementation survives the unchanged ten-task P4 development surface with complete first-call artifact continuity. It cannot establish or falsify cognitive compilation generally, qualify serving or training, decide D2, or promote ASI Stack support.",
+      "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
+      "report_sha256": "904589826c532bee192766fc32f2e9079bf7eafa95f4454cfc90757aea1c3b91",
+      "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+      "scope": "Exact frozen TMax model, repaired completion-based Semantic-IR v2r2 instrument, and ten licensed source-disjoint decision-development tasks. No D1, D2, serving, training, hosted-model, or automatic book-support authority.",
+      "trigger_state": "GREEN"
+    },
+    "packet_policy": "project_theseus_public_safe_claim_evidence_packet_v1",
+    "publication_authority": "none",
+    "release_authority": "none",
+    "review_request": {
+      "automatic_transition_proposed": false,
+      "book_must_create_separate_evidence_transition_record": true,
+      "book_review_may_accept_reject_narrow_or_block": true,
+      "kind": "claim_level_evidence_review",
+      "support_state_effect": "none"
+    },
+    "support_state_effect": "none",
+    "weak_tail_summary": {
+      "d1": {},
+      "p4": {}
+    }
+  },
+  "config": {
+    "path": "configs/theseus_asi_stack_claim_handoff.json",
+    "sha256": "56d80aa1ffe194ca6b3e97dedac3bb79c06b4fb85ee025e8500c3d0611b67c55"
+  },
+  "consumer": {
+    "action": "independently review the packet against the pinned claim and create, reject, or block a separate evidence_transition_record",
+    "owner": "ASI Stack governed evidence-transition workflow",
+    "publication_authority": "none",
+    "release_authority": "none",
+    "support_state_effect_from_handoff": "none"
+  },
+  "created_utc": "2026-08-02T09:09:52.195328Z",
+  "d1_terminal_disposition": {},
+  "faults": [],
+  "maximum_inference": "A GREEN handoff proves only that public-safe terminal Theseus evidence is bound to the reviewed 84-chapter book pin and exact cognitive-compilation core claim for independent book review. It does not itself change support state, prove the chapter core claim, authorize publication or release, establish general cognitive compilation, or transfer beyond the exact model, mechanism, tasks, controls, evaluator, budgets, and operating regime recorded by the terminal evidence.",
+  "p4_terminal_disposition": {
+    "path": "reports/theseus_p4v2r2r3_attempt1_terminal_disposition.json",
+    "policy": "project_theseus_p4v2r2r3_terminal_disposition_v1",
+    "scientific_status": "INCONCLUSIVE_IMPLEMENTATION",
+    "sha256": "c23fa0a318b3f3072d8d77d0a2f0ce286e7811a974e51b3987f262e67d452634",
+    "trigger_state": "GREEN"
+  },
+  "packet_ready": true,
+  "policy": "project_theseus_asi_stack_claim_evidence_handoff_v1",
+  "publication_authority": "none",
+  "release_authority": "none",
+  "support_state_effect": "none",
+  "trigger_state": "GREEN"
+}

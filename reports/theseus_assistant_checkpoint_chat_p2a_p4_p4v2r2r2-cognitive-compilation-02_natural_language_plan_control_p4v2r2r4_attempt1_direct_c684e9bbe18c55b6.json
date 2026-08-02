@@ -1,0 +1,102 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560",
+    "local_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4v2r2r2-cognitive-compilation-02",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-02T07:00:35.519964Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": null,
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_context_residual_tokens": 259976,
+    "effective_maximum_tokens": 259976,
+    "exact_prompt_tokens": 2168,
+    "generated_tokens": 960,
+    "generation_tokens_per_second": 5.052,
+    "generation_wall_ms": 236304.19,
+    "load_wall_ms": 18085.079,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 19.029,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 1,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "prompt_tokens": 2168,
+    "prompt_tokens_per_second": 68.129,
+    "runtime_ms": 236325,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "parser_complete"
+  },
+  "policy": "project_theseus_local_inference_backend_v2",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "8b16a4f25746ac434d7c4d63f8892ea39c89b01308ac682e5a10d275089dd236",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_PLAN_V1\nPLAN\n1. In `_secure_headers`, change `header[0] in b\"cookie\"` to `header[0] == b\"cookie\"` to ensure exact byte equality for the cookie header name check.\n2. In `extract_method_header`, change `k == b\":method\"` and `k == \":method\"` to use exact equality (already present, but verify no substring logic exists; the current code uses `==` which is correct, so no change needed there unless the prompt implies a hidden issue. Re-reading: \"Use exact equality... so substrings are not misclassified\". The current code `k == b\":method\"` is exact. However, looking at `_reject_pseudo_header_fields`, it checks `if header[0] in b\":method\"`. This is the bug. It should be `header[0] == b\":method\"`.\n3. In `_reject_pseudo_header_fields`, change `if header[0] in b\":method\"` to `if header[0] == b\":method\"` to prevent matching headers like `:method-something` or similar if they were to exist as pseudo-headers (though unlikely, strict equality is required by O1/O2). Wait, `b\":method\"` is a bytes literal. `in` on bytes checks for substring. So `b\":method\" in b\":method-something\"` is True. The code does `header[0] in b\":method\"`. If `header[0]` is `b\":method\"`, it matches. If `header[0]` is `b\":methodx\"`, `b\":methodx\" in b\":method\"` is False. But if the check was reversed or if the variable was the container... Let's re-read carefully: `if header[0] in b\":method\":`. Here `header[0]` is the key (e.g., `b\":method\"`). `b\":method\"` is a bytes object of length 8. Checking `b\":method\"` (length 8) `in` `b\":method\"` (length 8) works. But checking `b\":methodx\"` (length 9) `in` `b\":method\"` (length 8) fails.\nWait, the requirement says \"Use exact equality when identifying cookie and :method fields so substrings are not misclassified.\"\nIn `_secure_headers`: `header[0] in b\"cookie\"`. If `header[0]` is `b\"cookie1\"`, `b\"cookie1\" in b\"cookie\"` is False. If `header[0]` is `b\"cookie\"`, it is True. This seems safe for the container direction? No. `x in y` checks if x is a substring of y.\nCase A: `header[0] = b\"cookie\"`, `y = b\"cookie\"`. `b\"cookie\" in b\"cookie\"` -> True.\nCase B: `header[0] = b\"cookie1\"`, `y = b\"cookie\"`. `b\"cookie1\" in b\"cookie\"` -> False.\nCase C: `header[0] = b\"mycookie\"`, `y = b\"cookie\"`. `b\"mycookie\" in b\"cookie\"` -> False.\nThis direction seems okay for preventing false positives on the *left* side being longer. But what if `header[0]` is a substring of `b\"cookie\"`? e.g. `b\"ookie\"`. `b\"ookie\" in b\"cookie\"` -> True. This would be a misclassification. The header name `b\"ookie\"` is not `b\"cookie\"`. So `in` is dangerous here. It must be `==`.\n\nIn `_reject_pseudo_header_fields`: `if header[0] in b\":method\":`. Same logic. If `header[0]` is `b\":meth\"`, it matches `b\":method\"`. This is a bug. Must use `==`.\n\nTARGET\nsrc/h2/utilities.py 67:13-67:13\n<<<\nif header[0] == b\"cookie\" and len(header[1]) < 20):\n>>>\nEND\n\nTHESEUS_EDIT_V1\nREPLACE src/h2/utilities.py 67:13-67:13\n<<<\nif header[0] == b\"cookie\" and len(header[1]) < 20):\n>>>\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v2",
+      "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4v2r2r2-cognitive-compilation-02_natural_language_plan_control_p4v2r2r4_attempt1_direct",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

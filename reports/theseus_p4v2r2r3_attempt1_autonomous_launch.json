@@ -1,0 +1,518 @@
+{
+  "campaign_complete": true,
+  "child_returncode": 0,
+  "child_stderr_tail": "ack logging because it was not enabled.\nPython(62913) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(62915) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(64395) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(64666) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65680) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65681) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65682) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65684) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65685) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65687) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(65688) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(66688) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(67300) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70062) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70063) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70064) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70065) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70066) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70067) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\nPython(70068) MallocStackLogging: can't turn off malloc stack logging because it was not enabled.\n",
+  "child_stdout_tail": "{\n  \"complete_tasks\": 10,\n  \"faults\": [],\n  \"model_calls_retained\": 60,\n  \"pending_tasks\": 0,\n  \"physical_context_boundary_hits\": 0,\n  \"project_selected_quality_token_cap\": null,\n  \"trigger_state\": \"GREEN\"\n}\n",
+  "created_utc": "2026-08-02T08:56:02.366379Z",
+  "error": "",
+  "final_campaign_audit": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "complete_tasks": 10,
+    "created_utc": "2026-08-02T08:56:02.341852Z",
+    "external_inference_calls": 0,
+    "faults": [],
+    "instrument": {
+      "path": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",
+      "sha256": "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260bab76"
+    },
+    "maximum_inference": "Campaign custody only. Scientific disposition requires all ten sealed blind evaluations and an independent terminal aggregation.",
+    "model_calls_retained": 60,
+    "pending_tasks": 0,
+    "physical_context_boundary_hits": 0,
+    "policy": "project_theseus_p4v2r2r3_campaign_v1",
+    "pool": {
+      "path": "configs/theseus_p4v2r2r2_task_pool.json",
+      "sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f"
+    },
+    "pre_inference_call_start_receipts": 60,
+    "production_conformance": {
+      "candidate_or_control_calls": 0,
+      "hidden_evaluator_calls": 0,
+      "minimum_context_residual_tokens": 257268,
+      "path": "reports/theseus_p4v2r2r3_production_conformance.json",
+      "sha256": "c206e2bbbffd0e61b75d810a7c1760ef511ae5c73de671f688a71f4815bf555b",
+      "trigger_state": "GREEN"
+    },
+    "project_selected_quality_token_cap": null,
+    "prompt_continuity": {
+      "complete_first_call_artifact_retained": true,
+      "project_selected_first_artifact_character_cap": null,
+      "project_selected_first_artifact_token_cap": null,
+      "same_rule_all_learned_arms": true
+    },
+    "route_canary": {
+      "path": "reports/theseus_p4v2r2r2_route_canary_audit.json",
+      "sha256": "14b3c8775b835972d4866e9cad2ed3d64928d600583f266e832201bcf50a15be"
+    },
+    "runtime_attempt_namespace": "p4v2r2r4_attempt1",
+    "tasks": [
+      {
+        "campaign_index": 1,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_01_h11_181_evaluation.json",
+        "evaluation_sha256": "e184e4fe3c34bb79353742f5039666af665b217c9206417204dad26990136feb",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_01_h11_181_run.json",
+        "run_sha256": "895eb2e00c53c4d1869116b21230c35ce5dc258017683029808d2a026f58dce0",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_01_h11_181",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 2,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_02_h2_1313_evaluation.json",
+        "evaluation_sha256": "342a4b6ae12f330a050d843ab26fe56bbfa725d1c1aee3edb11db41ba6304811",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_02_h2_1313_run.json",
+        "run_sha256": "02b77f5218ac25ebcc1245cfd8c62bf1470da3a97bfb92ee3770a11e2e75ac01",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_02_h2_1313",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 3,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_03_pygments_3215_evaluation.json",
+        "evaluation_sha256": "db981d809ac69ed01b50ae7b030f34a6c2d637ec7dd6156f51edd87e79f05845",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_03_pygments_3215_run.json",
+        "run_sha256": "67bab36b7e2a73368ac550b1f701e09c3a4225715dde4b8de17bb3df1f5f8476",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_03_pygments_3215",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 4,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_04_pluggy_545_evaluation.json",
+        "evaluation_sha256": "f0af69696ef3b72d59a784813141be62896807d02d7d671b11b8ccca235eee50",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_04_pluggy_545_run.json",
+        "run_sha256": "261763a7f7f0b1e87141cc198e398cf1b48588b4558eda5d821e8421237e4186",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_04_pluggy_545",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 5,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_05_asgiref_537_evaluation.json",
+        "evaluation_sha256": "58340fdc93212a73d074bb2e8622abfee29f466c17bd0dcded2f63c69a24a764",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_05_asgiref_537_run.json",
+        "run_sha256": "0d20ac2ff23b9fdeea5b663c61ffc4de573e8db43cf88cedb83e12130f270ea3",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_05_asgiref_537",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 6,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_06_platformdirs_469_evaluation.json",
+        "evaluation_sha256": "19e973be107dfd539a768fe4ed8b5fb890bd6a1ddda35ce9022c28de1a98f4d0",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_06_platformdirs_469_run.json",
+        "run_sha256": "d4030903192352216e7d3e4d49563444fb5e85469b5172b743b4f16838b3dffb",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_06_platformdirs_469",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 7,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_07_markupsafe_418_evaluation.json",
+        "evaluation_sha256": "03d749ee53b0a82e1d805a42151a64832cae1aa3dceb59c3f50154608beb921c",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_07_markupsafe_418_run.json",
+        "run_sha256": "930ecd33d043637299736e50de2927defee08ae992fa4ebc5f4e31eb2787da9e",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_07_markupsafe_418",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 8,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_08_itsdangerous_378_evaluation.json",
+        "evaluation_sha256": "35cfbec29ecd2d09d73ba977e747778d4c009134682865eb9e5b4f2ee0c31b83",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_08_itsdangerous_378_run.json",
+        "run_sha256": "9762588a01f0f0d033401287df376bcfe8f0565000dead68ab4e3418409f6df8",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_08_itsdangerous_378",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 9,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_09_tryceratops_75_evaluation.json",
+        "evaluation_sha256": "cc6bbd75c2a728f10139f7cb6057bc6be65505634c7f240a8b4d0d44c29d51e3",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_09_tryceratops_75_run.json",
+        "run_sha256": "4b3ea2eaeabd1fffab5af6d7692034ae55c22e5f4a1f734562edea933607932e",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_09_tryceratops_75",
+        "unique_backend_receipts": 6
+      },
+      {
+        "campaign_index": 10,
+        "complete": true,
+        "evaluation": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_10_xarray_11401_evaluation.json",
+        "evaluation_sha256": "49ea6e409c657bef9ac45ae5529daeb2dd686100417a8e071ea5f5eded9eae4a",
+        "pre_inference_call_start_receipts": 6,
+        "returned_call_start_receipts": 6,
+        "run": "reports/theseus_p4v2r2r3_attempt1_p4v2r2r2_10_xarray_11401_run.json",
+        "run_sha256": "ed39035f2c29238da8e713c94b05f273d573bc41a5f72c09ecef92802b503934",
+        "runtime_receipts": 6,
+        "stem": "p4v2r2r2_10_xarray_11401",
+        "unique_backend_receipts": 6
+      }
+    ],
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "trigger_state": "GREEN"
+  },
+  "launch_authorized": true,
+  "lease": {
+    "path": "reports/theseus_p4v2r2r4_campaign_leases/e73d172483734adf9048be13ae2c26cc.json",
+    "sha256": "4f0c7ea620a7dbb9aa97e916152c7368adca5cf40c3276a45d79387b9965d0fb"
+  },
+  "policy": "project_theseus_p4v2r2r3_autonomous_launch_v1",
+  "preflight": {
+    "active_lease": "runtime/control/theseus_p4v2r2r4_campaign_lease.json",
+    "campaign_audit": {
+      "D1_cases_consumed": 0,
+      "D2_cases_consumed": 0,
+      "complete_tasks": 0,
+      "created_utc": "2026-08-02T06:41:50.813726Z",
+      "external_inference_calls": 0,
+      "faults": [],
+      "instrument": {
+        "path": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json",
+        "sha256": "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260bab76"
+      },
+      "maximum_inference": "Campaign custody only. Scientific disposition requires all ten sealed blind evaluations and an independent terminal aggregation.",
+      "model_calls_retained": 0,
+      "pending_tasks": 10,
+      "physical_context_boundary_hits": 0,
+      "policy": "project_theseus_p4v2r2r3_campaign_v1",
+      "pool": {
+        "path": "configs/theseus_p4v2r2r2_task_pool.json",
+        "sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f"
+      },
+      "pre_inference_call_start_receipts": 0,
+      "production_conformance": {
+        "candidate_or_control_calls": 0,
+        "hidden_evaluator_calls": 0,
+        "minimum_context_residual_tokens": 257268,
+        "path": "reports/theseus_p4v2r2r3_production_conformance.json",
+        "sha256": "c206e2bbbffd0e61b75d810a7c1760ef511ae5c73de671f688a71f4815bf555b",
+        "trigger_state": "GREEN"
+      },
+      "project_selected_quality_token_cap": null,
+      "prompt_continuity": {
+        "complete_first_call_artifact_retained": true,
+        "project_selected_first_artifact_character_cap": null,
+        "project_selected_first_artifact_token_cap": null,
+        "same_rule_all_learned_arms": true
+      },
+      "route_canary": {
+        "path": "reports/theseus_p4v2r2r2_route_canary_audit.json",
+        "sha256": "14b3c8775b835972d4866e9cad2ed3d64928d600583f266e832201bcf50a15be"
+      },
+      "runtime_attempt_namespace": "p4v2r2r4_attempt1",
+      "tasks": [
+        {
+          "campaign_index": 1,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_01_h11_181",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 2,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_02_h2_1313",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 3,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_03_pygments_3215",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 4,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_04_pluggy_545",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 5,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_05_asgiref_537",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 6,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_06_platformdirs_469",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 7,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_07_markupsafe_418",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 8,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_08_itsdangerous_378",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 9,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_09_tryceratops_75",
+          "unique_backend_receipts": 0
+        },
+        {
+          "campaign_index": 10,
+          "complete": false,
+          "evaluation": "",
+          "evaluation_sha256": "",
+          "pre_inference_call_start_receipts": 0,
+          "returned_call_start_receipts": 0,
+          "run": "",
+          "run_sha256": "",
+          "runtime_receipts": 0,
+          "stem": "p4v2r2r2_10_xarray_11401",
+          "unique_backend_receipts": 0
+        }
+      ],
+      "teacher_calls": 0,
+      "training_rows_written": 0,
+      "trigger_state": "GREEN"
+    },
+    "competing_accelerator_jobs": [],
+    "config": {
+      "path": "configs/theseus_p4v2r2r3_autonomous_launch.json",
+      "sha256": "16e5475f352163aad5500a3b1d4c2cdb285c23a2ea37d3f23f8abde6aeaf8d0c"
+    },
+    "created_utc": "2026-08-02T06:41:51.088773Z",
+    "disk": {
+      "derivation": {
+        "disk_output_bytes_per_context_token": 8,
+        "disk_output_call_count": 60,
+        "disk_source_copy_count": 2,
+        "minimum_reclaimable_memory_source": "measured_runtime_preflight_peak_rss_mib"
+      },
+      "free_bytes": 49571340288,
+      "maximum_retained_output_bytes": 125829120,
+      "passed": true,
+      "required_bytes": 212422198,
+      "source_fixture_bytes": 43296539
+    },
+    "failed_gates": [],
+    "faults": [],
+    "gates": {
+      "battery_not_discharging": true,
+      "campaign_audit_green": true,
+      "campaign_has_pending_tasks": true,
+      "config_valid": true,
+      "derived_disk_envelope_available": true,
+      "exclusive_lease_available": true,
+      "external_power_physically_connected": true,
+      "measured_runtime_memory_available": true,
+      "metal_accelerator_usable": true,
+      "no_competing_accelerator_job": true,
+      "qualified_runtime_executable_bound": true,
+      "sealed_bindings_exact": true
+    },
+    "launch_authorized": true,
+    "maximum_inference": "Authorizes exactly one local sealed campaign under an exclusive machine lease; no D1, D2, training, serving, hosted inference, or book promotion.",
+    "memory": {
+      "observed_reclaimable_mib": 4943.656,
+      "passed": true,
+      "physical_memory_mib": 16384.0,
+      "required_reclaimable_mib": 4621.016,
+      "required_source": "bound_runtime_preflight_peak_rss_mib"
+    },
+    "metal": {
+      "canary": "mlx_float32_vector_add_and_synchronize",
+      "capability_claim": "NONE_DEVICE_USABILITY_ONLY",
+      "faults": [],
+      "observed": "[2.0, 3.0]",
+      "passed": true
+    },
+    "policy": "project_theseus_p4v2r2r3_autonomous_launch_v1",
+    "power": {
+      "available": true,
+      "battery_percent": 87,
+      "discharging": false,
+      "external_connected": true,
+      "ioreg_external_values": [
+        "Yes",
+        "Yes"
+      ],
+      "pmset_summary": "Now drawing from 'AC Power' -InternalBattery-0 (id=65601635) 87%; charging; 0:44 remaining present: true"
+    },
+    "project_selected_quality_token_cap": null,
+    "runtime": {
+      "expected": {
+        "mlx_lm_version": "0.31.3",
+        "mlx_version": "0.32.0",
+        "python_version": [
+          3,
+          12,
+          5
+        ]
+      },
+      "faults": [],
+      "observed": {
+        "executable": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+        "mlx": "0.32.0",
+        "mlx_lm": "0.31.3",
+        "version": [
+          3,
+          12,
+          5
+        ]
+      },
+      "passed": true,
+      "python": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+      "python_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"
+    },
+    "sealed_bindings": {
+      "faults": [],
+      "owners": [
+        {
+          "expected_sha256": "56ca48d3b3c45381237f1d839fefa818af070155ebedfebab422ada2f399a6ff",
+          "observed_sha256": "56ca48d3b3c45381237f1d839fefa818af070155ebedfebab422ada2f399a6ff",
+          "owner": "campaign",
+          "passed": true,
+          "path": "scripts/theseus_p4v2r2r3_campaign.py"
+        },
+        {
+          "expected_sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f",
+          "observed_sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f",
+          "owner": "task_pool",
+          "passed": true,
+          "path": "configs/theseus_p4v2r2r2_task_pool.json"
+        },
+        {
+          "expected_sha256": "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260bab76",
+          "observed_sha256": "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260bab76",
+          "owner": "instrument",
+          "passed": true,
+          "path": "configs/theseus_p4v2r2r3_prompt_continuity_repair.json"
+        },
+        {
+          "expected_sha256": "14b3c8775b835972d4866e9cad2ed3d64928d600583f266e832201bcf50a15be",
+          "observed_sha256": "14b3c8775b835972d4866e9cad2ed3d64928d600583f266e832201bcf50a15be",
+          "owner": "route_canary",
+          "passed": true,
+          "path": "reports/theseus_p4v2r2r2_route_canary_audit.json"
+        },
+        {
+          "expected_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+          "observed_sha256": "681844f4cdb8f69d2a78ad41c8589ef8ac7991b8f7539866933d0690d8059c82",
+          "owner": "runtime_preflight",
+          "passed": true,
+          "path": "reports/core_evidence_tmax_9b_runtime_preflight.json"
+        },
+        {
+          "expected_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+          "observed_sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+          "owner": "python",
+          "passed": true,
+          "path": "runtime/venvs/mlx-0.32.0-py312/bin/python"
+        },
+        {
+          "expected_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
+          "observed_sha256": "a73395e15db30969fda1973221ced89cf67b8e8088beee51c2c6d652506cbd3d",
+          "owner": "accelerator_inventory",
+          "passed": true,
+          "path": "scripts/neural_seed_training_campaign.py"
+        }
+      ],
+      "passed": true
+    },
+    "trigger_state": "GREEN"
+  },
+  "project_selected_quality_token_cap": null,
+  "trigger_state": "GREEN"
+}

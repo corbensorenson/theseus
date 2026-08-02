@@ -1,0 +1,161 @@
+{
+  "alignment_audit": {
+    "baseline_verification": {
+      "hidden_passed": false,
+      "returncode": 1,
+      "runtime_ms": 149.394,
+      "stderr_tail": "",
+      "stdout_tail": "P4V2R2R2_HIDDEN_FAIL_PYGMENTS:AssertionError:\n"
+    },
+    "compiler_oracle_verification": {
+      "apply_faults": [],
+      "hidden_passed": true,
+      "hidden_returncode": 0,
+      "hidden_stderr_tail": "",
+      "hidden_stdout_tail": "P4V2R2R2_HIDDEN_PASS_PYGMENTS\n",
+      "parse_faults": [],
+      "visible_passed": true
+    },
+    "corruption_intervention_rejections": {
+      "obligation_coverage": true,
+      "source_identity": true,
+      "target_identity": true,
+      "unresolved_loss": true
+    },
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "created_utc": "2026-08-02T07:26:09.831578Z",
+    "evaluator_sha256": "79d63b547d97f7d51e49529db74362bda58a616ee4a2686e7950b5f85a53b156",
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_evaluator_audit_v1",
+    "route_labels_opened": 0,
+    "runtime_ms": 443.78,
+    "target_and_oracle_artifacts_opened_by_evaluator_only": 1,
+    "target_verification": {
+      "hidden_passed": true,
+      "returncode": 0,
+      "runtime_ms": 100.866,
+      "stderr_tail": "",
+      "stdout_tail": "P4V2R2R2_HIDDEN_PASS_PYGMENTS\n"
+    },
+    "task_audit": {
+      "counters": {
+        "D2_cases_consumed": 0,
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "public_calibration_cases_consumed": 0,
+        "public_training_rows_written": 0,
+        "teacher_calls": 0,
+        "user_facing_effects": 0
+      },
+      "faults": [],
+      "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+      "source_archive_sha256": "1cb5a5d29f067404848763374546ebf2855137e2e18f91b519f262d8e7c05a8f",
+      "task_sha256": "cdf3a8654438897b33e0b93f3ddf9cd15a47869b36c22a0776876b3eea541dfb",
+      "trigger_state": "GREEN"
+    },
+    "task_manifest_sha256": "cdf3a8654438897b33e0b93f3ddf9cd15a47869b36c22a0776876b3eea541dfb",
+    "trigger_state": "GREEN"
+  },
+  "candidate_report_sha256": "67bab36b7e2a73368ac550b1f701e09c3a4225715dde4b8de17bb3df1f5f8476",
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-02T07:26:10.146015Z",
+  "denominators": {
+    "compiler_oracle_candidates": 1,
+    "correctness_evaluated_candidates": 2,
+    "deterministic_compiler_control_abstentions": 1,
+    "deterministic_compiler_control_candidates": 0,
+    "learned_arms": 3,
+    "learned_useful_candidates": 1,
+    "sealed_learned_candidates": 1,
+    "tasks": 1,
+    "useful_candidates_including_oracle": 2
+  },
+  "evaluation_blinding": {
+    "arm_labels_attached_after_scoring": true,
+    "arm_labels_passed_to_scoring": false,
+    "candidate_authored_integrity_flags_trusted": false,
+    "compiler_oracle_answer_visible_to_generation": false,
+    "deterministic_control_target_or_oracle_visibility": false,
+    "scoring_order": [
+      "91af4c57bded0168ca7b516ef42563e5537a3644fe97a0f8285cc08ca28f1d1e",
+      "cde39f87861ffdfc7a35301c09e74340b0184814b1ae883dafcef45611c266dd"
+    ]
+  },
+  "evaluator_sha256": "79d63b547d97f7d51e49529db74362bda58a616ee4a2686e7950b5f85a53b156",
+  "faults": [],
+  "maximum_inference": "Only candidate correctness on this exact development task. The prospective static compiler is a no-model control; the target-derived oracle proves lowering reachability. Neither receives learned credit. No single task supports or falsifies cognitive compilation.",
+  "policy": "project_theseus_p4_cognitive_compilation_route_blind_evaluation_v1",
+  "results": [
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "direct_target_generation",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "91af4c57bded0168ca7b516ef42563e5537a3644fe97a0f8285cc08ca28f1d1e",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 1,
+      "observed_effect_paths": [
+        "pygments/formatters/other.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "8f19c7ddff3389e671064f43a7bac03039ee7ca5c33ae7641770e6355467d5b0",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 131.155,
+        "stderr_tail": "",
+        "stdout_tail": "P4V2R2R2_HIDDEN_PASS_PYGMENTS\n"
+      }
+    },
+    {
+      "actions_applied": 1,
+      "allowed_effects": 1,
+      "apply_faults": [],
+      "arm_id": "deterministic_compiler_oracle_ceiling",
+      "candidate_inventory_recomputed": 1,
+      "candidate_output_sha256": "cde39f87861ffdfc7a35301c09e74340b0184814b1ae883dafcef45611c266dd",
+      "correctness_evaluated": 1,
+      "hidden_tests_passed": 1,
+      "learned_generation_credit": 0,
+      "observed_effect_paths": [
+        "pygments/formatters/other.py"
+      ],
+      "rollback_verified": 1,
+      "sealed": 1,
+      "unsafe": 0,
+      "useful": 1,
+      "verification": {
+        "command_sha256": "8f19c7ddff3389e671064f43a7bac03039ee7ca5c33ae7641770e6355467d5b0",
+        "passed": true,
+        "returncode": 0,
+        "runtime_ms": 75.871,
+        "stderr_tail": "",
+        "stdout_tail": "P4V2R2R2_HIDDEN_PASS_PYGMENTS\n"
+      }
+    }
+  ],
+  "runtime_ms": 758.774,
+  "scope": "One P4 cognitive-compilation development task; the prospective no-model compiler is a real control and the target-derived oracle is only a mechanics ceiling; both receive zero learned credit",
+  "trigger_state": "GREEN"
+}

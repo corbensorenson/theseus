@@ -1,0 +1,102 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560",
+    "local_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4v2r2r2-cognitive-compilation-03",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-02T07:21:43.331070Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": null,
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_context_residual_tokens": 259234,
+    "effective_maximum_tokens": 259234,
+    "exact_prompt_tokens": 2910,
+    "generated_tokens": 1108,
+    "generation_tokens_per_second": 5.007,
+    "generation_wall_ms": 265466.969,
+    "load_wall_ms": 23949.782,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 19.029,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 2,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "prompt_tokens": 2910,
+    "prompt_tokens_per_second": 66.827,
+    "runtime_ms": 265662,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "parser_complete"
+  },
+  "policy": "project_theseus_local_inference_backend_v2",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "aa4646061c17e020448ba692cf02fe14a1aae1f1590929caefb36ffd4f940f4c",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V2\nSOURCE 4b842545a671f33e33736d5a333286356bc408674616e87ac24dc4fea3b2f755\nALL_OBLIGATIONS [O1, O2, O3]\nUNIT U1\nOBLIGATIONS [O1, O2]\nOP REPLACE\nPATH pygments/formatters/other.py\nNODE N-D1E8F2527072AF4A\nNODE_SHA 3d3df758f4a3d9d51028adc077fc71dc19161f87893c40dc8124fbebfdb0c047\n<<<\n    def format(self, tokensource, outfile):\n        try:\n            outfile.write(b'')\n        except TypeError:\n            raise TypeError('The raw tokens formatter needs a binary '\n                            'output file')\n        if self.compress == 'gz':\n            import gzip\n            outfile = gzip.GzipFile('', 'wb', 9, outfile)\n\n            write = outfile.write\n            flush = outfile.close\n        elif self.compress == 'bz2':\n            import bz2\n            compressor = bz2.BZ2Compressor(9)\n\n            def write(text):\n                outfile.write(compressor.compress(text))\n\n            def flush():\n                outfile.write(compressor.flush())\n                outfile.flush()\n        else:\n            write = outfile.write\n            flush = outfile.flush\n\n        if self.error_color:\n            for ttype, value in tokensource:\n                line = b\"%r\\t%r\\n\" % (ttype, value)\n                if ttype is Token.Error:\n                    write(colorize(self.error_color, line.decode('ascii')).encode('ascii'))\n                else:\n                    write(line)\n        else:\n            for ttype, value in tokensource:\n                write(b\"%r\\t%r\\n\" % (ttype, value))\n        flush()\n>>>\nEND_UNIT\nUNIT U2\nOBLIGATIONS [O3]\nOP COPY\nPATH pygments/formatters/other.py\nNODE N-EA294D5EB6C88548\nNODE_SHA 8bdddb796bb8330b5ac9d6265999385392c49f44280f7182051eccc5f35dad0\n<<<\n    def __init__(self, **options):\n        Formatter.__init__(self, **options)\n        # We ignore self.encoding if it is set, since it gets set for lexer\n        # and formatter if given with -Oencoding on the command line.\n        # The RawTokenFormatter outputs only ASCII. Override here.\n        self.encoding = 'ascii'  # let pygments.format() do the right thing\n        self.compress = get_choice_opt(options, 'compress',\n                                       ['', 'none', 'gz', 'bz2'], '')\n        self.error_color = options.get('error_color', None)\n        if self.error_color is True:\n            self.error_color = 'red'\n        if self.error_color is not None:\n            try:\n                colorize(self.error_color, '')\n            except KeyError:\n                raise ValueError(f\"Invalid color {self.error_color!r} specified\")\n>>>\nEND_UNIT\nUNIT U3\nOBLIGATIONS []\nOP COPY\nPATH pygments/formatters/other.py\nNODE N-F75D761B2961006F\nNODE_SHA 6d79a8ec0850bc9b7196e7851ef56af3387a5694bbedb9d2e43784e5a21c1ab7\n<<<\n    def write(self, text):\n        if self.compress == 'gz':\n            self.outfile.write(text)\n        elif self.compress == 'bz2':\n            self.compressor.write(text)\n        else:\n            self.outfile.write(text)\n>>>\nEND_UNIT\nUNIT U4\nOBLIGATIONS []\nOP COPY\nPATH pygments/formatters/other.py\nNODE N-282B6CA44AA793DC\nNODE_SHA d01f742fd2e15d0bcabc9c4d7555be8bcadc72dd92edf85f57f4bb5a33d286b2\n<<<\n    def flush(self):\n        if self.compress == 'gz':\n            self.outfile.close()\n        elif self.compress == 'bz2':\n            self.outfile.write(self.compressor.flush())\n            self.outfile.flush()\n        else:\n            self.outfile.flush()\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v2",
+      "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4v2r2r2-cognitive-compilation-03_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

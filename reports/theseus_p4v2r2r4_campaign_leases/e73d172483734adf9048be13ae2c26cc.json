@@ -1,0 +1,9 @@
+{
+  "child_returncode": 0,
+  "completed_utc": "2026-08-02T08:56:02.365115Z",
+  "created_utc": "2026-08-02T06:41:51.089019Z",
+  "error": "",
+  "lease_id": "e73d172483734adf9048be13ae2c26cc",
+  "policy": "project_theseus_p4v2r2r3_autonomous_launch_v1",
+  "state": "COMPLETED"
+}

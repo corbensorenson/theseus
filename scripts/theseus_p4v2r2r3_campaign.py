@@ -30,6 +30,10 @@ INSTRUMENT_SHA256 = "831fbefeab84d856b87233f3e8bfd63cf0655ea080eda5d24f58bc69260
 ROUTE_CANARY_SHA256 = "14b3c8775b835972d4866e9cad2ed3d64928d600583f266e832201bcf50a15be"
 PRODUCTION_CONFORMANCE_SHA256 = "c206e2bbbffd0e61b75d810a7c1760ef511ae5c73de671f688a71f4815bf555b"
 RUNTIME_ATTEMPT_NAMESPACE = candidate.RUNTIME_ATTEMPT_NAMESPACE
+# The terminal disposition reuses the independently audited P4S aggregator,
+# which validates termination reasons through the campaign module it is bound
+# to. Preserve that interface when wrapping the predecessor campaign.
+NORMAL_TERMINATIONS = predecessor.NORMAL_TERMINATIONS
 
 
 def result_paths(row: dict[str, Any]) -> dict[str, Path]:

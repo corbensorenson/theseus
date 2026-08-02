@@ -10,14 +10,15 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_p4v2r2r3_campaign as campaign  # noqa: E402
 
 
-def test_repaired_campaign_is_green_pending_and_zero_call() -> None:
+def test_repaired_campaign_is_green_complete_and_uncapped() -> None:
     report = campaign.audit_campaign()
 
     assert report["trigger_state"] == "GREEN"
     assert report["faults"] == []
-    assert report["complete_tasks"] == 0
-    assert report["pending_tasks"] == 10
-    assert report["model_calls_retained"] == 0
+    assert report["complete_tasks"] == 10
+    assert report["pending_tasks"] == 0
+    assert report["model_calls_retained"] == 60
+    assert report["pre_inference_call_start_receipts"] == 60
     assert report["physical_context_boundary_hits"] == 0
     assert report["project_selected_quality_token_cap"] is None
     assert report["prompt_continuity"][

@@ -1,0 +1,102 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560",
+    "local_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "p4r-p4v2r2r2-cognitive-compilation-10",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-02T08:55:52.367805Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": null,
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_context_residual_tokens": 259681,
+    "effective_maximum_tokens": 259681,
+    "exact_prompt_tokens": 2463,
+    "generated_tokens": 720,
+    "generation_tokens_per_second": 3.952,
+    "generation_wall_ms": 220417.857,
+    "load_wall_ms": 19259.489,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 19.029,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 6,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "prompt_tokens": 2463,
+    "prompt_tokens_per_second": 65.802,
+    "runtime_ms": 220533,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "parser_complete"
+  },
+  "policy": "project_theseus_local_inference_backend_v2",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "c40602bff5bd845b5c8d8393c40b28e61aeba76bbeaad3d05eb8dbc47ef32988",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V2\nSOURCE b870f8da0ae4af45f1ff452f01314db3b9ffb4b4aeb15e590ce95c8421766500\nALL_OBLIGATIONS O1 O2 O3\nUNIT U1\nOBLIGATIONS O1 O2\nOP REPLACE\nPATH xarray/indexes/range_index.py\nNODE N-59775CA36A6EB8BB\nNODE_SHA 5176ec454212c6123f7d13d63a8755bba5babf8818d50a8eb91cc38c83552c0b\n<<<\n    @classmethod\n    def linspace(\n        cls,\n        start: float,\n        stop: float,\n        num: int = 50,\n        endpoint: bool = True,\n        *,\n        coord_name: Hashable | None = None,\n        dim: str,\n        dtype: Any = None,\n    ) -> \"RangeIndex\":\n        \"\"\"Create a new RangeIndex from given start / stop values and number of\n        values.\n\n        Parameters\n        ----------\n        start : float\n            Start of interval. The interval includes this value.\n        stop : float, optional\n            End of interval. The interval includes this value if ``endpoint=True``.\n        num : float, optional\n            Number of values in the interval, i.e., dimension size (default: 50).\n        endpoint : bool, optional\n            If True (default), the ``stop`` value is included in the interval.\n        coord_name : Hashable, optional\n            Name of the (lazy) coordinate variable that will be created and\n            associated with the new index. If ``None``, the coordinate is named\n            as the dimension name.\n        dim : str\n            Dimension name.\n        dtype : dtype, optional\n            The dtype of the coordinate variable (default: float64).\n\n        Examples\n        --------\n        >>> from xarray.indexes import RangeIndex\n\n        >>> index = RangeIndex.linspace(0.0, 1.0, 5, dim=\"x\")\n        >>> ds = xr.Dataset(coords=xr.Coordinates.from_xindex(index))\n\n        >>> ds\n        <xarray.Dataset> Size: 40B\n        Dimensions:  (x: 5)\n        Coordinates:\n          * x        (x) float64 40B 0.0 0.25 0.5 0.75 1.0\n        Data variables:\n            *empty*\n        Indexes:\n            x        RangeIndex (start=0, stop=1.25, step=0.25)\n\n        \"\"\"\n        if coord_name is None:\n            coord_name = dim\n\n        if endpoint and num > 1:\n            stop += (stop - start) / (num - 1)\n\n        transform = RangeCoordinateTransform(\n            start, stop, num, coord_name, dim, dtype=dtype\n        )\n\n        return cls(transform)\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v2",
+      "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_p4_p4v2r2r2-cognitive-compilation-10_typed_semantic_ir_treatment_p4v2r2r4_attempt1_direct_lo",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}
