@@ -1,0 +1,72 @@
+{
+  "policy": "project_theseus_p4v2r2r2_revision_corrections_v1",
+  "state": "SEALED_AFTER_INDEPENDENT_EVALUATOR_FOUND_NONFAILING_REGISTERED_PARENTS_BEFORE_CANDIDATE_OR_CONTROL_GENERATION",
+  "source_registry": "configs/theseus_p4v2r2r2_task_sources.json",
+  "source_registry_sha256": "43ceb81b7790f07d9b60d208c947320fddc4deb511be62a781341360642ac99c",
+  "original_source_fetch": "reports/theseus_p4v2r2r2_source_fetch.json",
+  "original_source_fetch_sha256": "150a449dd11a32442b9d352b463411065c3d55e1cbda874e86c9fe1f5356d12c",
+  "discovery": {
+    "command_surface": "independent visible and hidden evaluator mechanics against the exact projected parent and target archives",
+    "process_executions": 24,
+    "finding": "The registered h2, Pygments, and xarray parent revisions already contained the requested source behavior. Their registered target revisions were later test, changelog, or branch-merge commits rather than the commits that introduced the production-code effect.",
+    "scientific_effect": "The three original pairs are invalid as parent-fail/target-pass task instruments and cannot enter the P4 denominator.",
+    "candidate_or_control_calls": 0
+  },
+  "corrections": [
+    {
+      "stem": "p4v2r2r2_02_h2_1313",
+      "repository": "python-hyper/h2",
+      "registered_parent_revision": "8112e6328fd64a49a32bd4727b2ecb1b9799139f",
+      "registered_target_revision": "5c29f140199460e15e06ccbd1dd684a0f377a7fb",
+      "corrected_parent_revision": "18fa3480a7a9009dd2db4a59269ff46a35b18ea5",
+      "corrected_target_revision": "8112e6328fd64a49a32bd4727b2ecb1b9799139f",
+      "corrected_parent_root": "h2-18fa3480a7a9009dd2db4a59269ff46a35b18ea5",
+      "corrected_target_root": "h2-8112e6328fd64a49a32bd4727b2ecb1b9799139f",
+      "effect_commit_files": ["src/h2/utilities.py"],
+      "registered_target_commit_files": ["tests/test_header_indexing.py", "tests/test_utility_functions.py"],
+      "reason": "The first PR commit introduced both exact-equality source repairs; the second PR commit added only regression tests. Bind the effect commit and its sole parent."
+    },
+    {
+      "stem": "p4v2r2r2_03_pygments_3215",
+      "repository": "pygments/pygments",
+      "registered_parent_revision": "8a86c20ff0bde186e267950576e11779d2fda128",
+      "registered_target_revision": "3fdb4bb8509dedc77a062aa543776d8e3abebac2",
+      "corrected_parent_revision": "6c2cf2819a23289acece1f5b7451af1242a07db7",
+      "corrected_target_revision": "b856cecbc66e60149bfb65000192f47d5a6d10e0",
+      "corrected_parent_root": "pygments-6c2cf2819a23289acece1f5b7451af1242a07db7",
+      "corrected_target_root": "pygments-b856cecbc66e60149bfb65000192f47d5a6d10e0",
+      "effect_commit_files": ["pygments/formatters/other.py", "tests/test_raw_token.py"],
+      "registered_target_commit_files": ["AUTHORS", "CHANGES", "pygments/formatters/groff.py", "pygments/lexers/c_like.py", "pygments/lexers/css.py", "pygments/lexers/dotnet.py", "pygments/lexers/go.py", "pygments/lexers/jsonnet.py", "pygments/lexers/jsx.py", "pygments/lexers/jvm.py", "pygments/lexers/kusto.py", "pygments/lexers/markup.py", "tests/examplefiles/go/3199.go", "tests/examplefiles/go/3199.go.output", "tests/examplefiles/go/generics.go.output", "tests/snippets/clojure/test_characters.txt", "tests/snippets/csharp/2685.txt", "tests/snippets/jsonnet/test_array_slice.txt", "tests/snippets/jsx/test_apostrophe_text.txt", "tests/snippets/kotlin/test_anonymous_companion_object.txt", "tests/snippets/kusto/test_kusto.txt", "tests/snippets/scss/2818.txt", "tests/snippets/vala/2858.txt", "tests/snippets/vala/verbatim-string.txt", "tests/test_groff_formatter.py", "tests/test_markup.py"],
+      "reason": "The first PR commit introduced the formatter repair and its regression test. The registered parent was the later changelog commit, and the registered target was a branch-merge commit. Bind the effect commit and its sole parent."
+    },
+    {
+      "stem": "p4v2r2r2_10_xarray_11401",
+      "repository": "pydata/xarray",
+      "registered_parent_revision": "13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+      "registered_target_revision": "d3dcda7ca86165078a474427bd7f3d398ab087e0",
+      "corrected_parent_revision": "49ff18c2d9bc12cc986dc6a79e2e74364fa65fee",
+      "corrected_target_revision": "13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+      "corrected_parent_root": "xarray-49ff18c2d9bc12cc986dc6a79e2e74364fa65fee",
+      "corrected_target_root": "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+      "effect_commit_files": ["xarray/indexes/range_index.py", "xarray/tests/test_range_index.py"],
+      "registered_target_commit_files": ["xarray/tests/test_range_index.py"],
+      "reason": "The first PR commit introduced the production repair and test; the second changed only the test. Bind the effect commit and its sole parent."
+    }
+  ],
+  "invariants": {
+    "allowed_effect_paths_changed": false,
+    "candidate_or_control_calls": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "local_or_hosted_model_calls": 0,
+    "natural_request_changed": false,
+    "original_artifacts_and_fetch_receipt_retained": true,
+    "project_selected_quality_token_cap": null,
+    "repository_changed": false,
+    "revision_identity_repaired": true,
+    "task_membership_changed": false,
+    "training_rows_written": 0,
+    "user_gate": false
+  },
+  "maximum_inference": "This pre-candidate correction repairs three source-pair identities within the same already-sealed repositories, pull requests, natural requests, and effect paths. It preserves the invalid original pairs as evidence and grants no candidate generation, mechanism, D1, D2, training, serving, or ASI Stack support claim."
+}

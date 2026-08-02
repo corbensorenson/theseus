@@ -1,0 +1,45 @@
+{
+  "admitted_regular_file_or_directory_count": 481,
+  "faults": [],
+  "input": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_target_revision_corrected_upstream.tar.gz",
+    "sha256": "890a35b7271941af1d251748d025f6f76ae2db95ca08fdb2c286ad31c0a3ae39"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/tests/fixtures/theseus_p4v2r2r2_online/tmpxwdamhi4.full-sanitized.tar.gz",
+    "sha256": "940ce6f6ddfad87cc8d5b354ebb3851b34571dd46265e3e50e09e8c8de15609f"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "projected_output": {
+    "path": "tests/fixtures/theseus_p4v2r2r2_online/p4v2r2r2_10_xarray_11401_target_revision_corrected.tar.gz",
+    "sha256": "646b6f6b1f490a3471b7e90f842eb0380c7f550411ea086e8af377ba03e0a655"
+  },
+  "projection": {
+    "gzip_mtime": 0,
+    "member_mtime": 0,
+    "output_sha256": "646b6f6b1f490a3471b7e90f842eb0380c7f550411ea086e8af377ba03e0a655",
+    "policy": "project_theseus_exact_task_source_projection_v1",
+    "retained_members": [
+      "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd/LICENSE",
+      "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd/xarray/indexes/range_index.py"
+    ],
+    "uid_gid": 0
+  },
+  "source_archive_root": "xarray-13e5cf77051c71ae5a277857e88ae10cf8725fbd",
+  "transport_sanitized_output_retained": false,
+  "transport_sanitized_output_sha256": "940ce6f6ddfad87cc8d5b354ebb3851b34571dd46265e3e50e09e8c8de15609f",
+  "trigger_state": "GREEN"
+}
