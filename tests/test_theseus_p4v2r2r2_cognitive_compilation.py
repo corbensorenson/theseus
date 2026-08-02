@@ -20,6 +20,7 @@ PREDECESSOR_INSTRUMENT = (
 def successor_instrument(tmp_path: Path, *, namespace: str) -> Path:
     value = p2a.read_json(PREDECESSOR_INSTRUMENT)
     value["runtime_attempt_namespace"] = namespace
+    value["state"] = successor.INSTRUMENT_STATE
     value["harness"]["candidate_runner"] = p2a.rel(Path(successor.__file__).resolve())
     value["harness"]["candidate_runner_sha256"] = p2a.sha256_file(
         Path(successor.__file__).resolve()

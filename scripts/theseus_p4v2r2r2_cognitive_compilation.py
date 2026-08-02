@@ -18,6 +18,8 @@ POLICY = predecessor.POLICY
 INSTRUMENT_POLICY = predecessor.INSTRUMENT_POLICY
 RUNTIME_ATTEMPT_NAMESPACE = "p4v2r2r2_attempt1"
 PREDECESSOR_RUNTIME_ATTEMPT_NAMESPACE = "p4v2r2r1_attempt1"
+INSTRUMENT_STATE = "PROSPECTIVELY_RESEALED_AFTER_EXTERNAL_EXECUTION_INTERRUPTION"
+PREDECESSOR_INSTRUMENT_STATE = "PROSPECTIVELY_RESEALED_AFTER_ROUTE_IMPLEMENTATION_FAILURE"
 
 # The causal implementation remains the committed v2r2 runner.  Only the
 # receipt namespace and its prospective instrument binding change here.
@@ -34,9 +36,12 @@ def audit_instrument(path: Path) -> dict[str, Any]:
     namespace_faults: list[str] = []
     if namespace != RUNTIME_ATTEMPT_NAMESPACE:
         namespace_faults.append("runtime_attempt_namespace_invalid")
+    if value.get("state") != INSTRUMENT_STATE:
+        namespace_faults.append("instrument_state_invalid")
 
     projected = dict(value)
     projected["runtime_attempt_namespace"] = PREDECESSOR_RUNTIME_ATTEMPT_NAMESPACE
+    projected["state"] = PREDECESSOR_INSTRUMENT_STATE
     with tempfile.NamedTemporaryFile(
         mode="w",
         encoding="utf-8",
