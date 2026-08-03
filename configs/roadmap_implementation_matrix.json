@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_36_COMPATIBILITY_GREEN_DEPENDENCY_CANARY_SEAL_NEXT",
+      "state": "VCM_V3_TASK_36_DEPENDENCY_CANARY_PROSPECTIVELY_SEALED",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1030,6 +1030,12 @@
         "owner_sha256":"469101a4c3ae6d5241b8f1eaf4ed942b94b92a02e49b64ee5529101b62e3006b","config_sha256":"a2f423a9999985af7c87013d221a4e67b1c16123974380f77cebbed88ddb6618","test_sha256":"6b09a6258a71d174f373f05a41a3439e83687c00181096142b81e849e627e182","report_sha256":"f0f78210d2d9c05c6e95c5edbb3b3bdf051584547617688958d5eb3b8d4c320d",
         "state":"GREEN_FORTY_EIGHT_LOCKED_TASK_COMPATIBILITY_RECLASSIFIED_WITH_EXACT_RUST_1_97_1","locked_task_count":48,"compatible_declared_requirement_task_count":21,"no_declared_version_requirement_task_count":16,"incompatible_declared_requirement_task_count":11,"unresolved_requirement_syntax_task_count":0,"changed_task_indices":[29,36],"task_36_compatible_profile":"cargo1_97_1_rustc1_97_1","dependency_prefetch_executions":0,"repository_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"source-bound static reclassification only; exact Rust/Cargo 1.97.1 changes tasks 29 and 36 to declared-compatible while the other 46 states are preserved, but no dependency repository evaluator task VCM or model result is established","next_boundary":"prospectively seal task 36 exact Cargo-lock dependency acquisition and network-denied offline replay without repository-runner execution"
+      },
+      "vcm_task36_dependency_canary": {
+        "config":"configs/theseus_vcm_task36_dependency_canary.json","owner":"scripts/theseus_vcm_task36_dependency_canary.py","test":"tests/test_theseus_vcm_task36_dependency_canary.py","report":"reports/theseus_vcm_task36_dependency_canary.json",
+        "owner_sha256":"e830589cb922a3f09dee2b1d7f0cd77b06be3f416c7f27544d789c7c4087665d","config_sha256":"2bbfccd3ef69249dbf1e3ebb1d4cdd29eb3d5878b4355dcdf226a206cc8c4ff2","test_sha256":"1dbb0563585f6141a396c2277c638b2f8cc8f353049b062b4d7bafa2ae9b73e4","report_sha256":"588f86a4148c36803461630d9c62c2914cf39f609f569875ebcfda38051f0d22",
+        "state":"PAUSED_READY_FOR_TASK_36_EXACT_CARGO_DEPENDENCY_CANARY","task_index":36,"schedule_ordinal":3,"lock_package_count":34,"checksum_package_count":32,"checksum_identity_sha256":"d5f9f546d3892877a83ca1b16d235b8e5f1860bcc937dfade65b0897b8c4eacc","network_enabled_dependency_fetches":0,"network_denied_offline_replays":0,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"prospective exact task-36 Cargo checksum fetch and deny-network replay seal only; no dependency fetch build repository evaluator task VCM or model result is established","next_boundary":"execute one online cargo fetch --locked and one deny-network offline replay, verify all 32 crate checksums, preserve source identity, and retain only the bounded Cargo home"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

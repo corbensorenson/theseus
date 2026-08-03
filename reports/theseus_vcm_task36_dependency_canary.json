@@ -1,0 +1,49 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_task36_dependency_canary.json",
+    "sha256": "2bbfccd3ef69249dbf1e3ebb1d4cdd29eb3d5878b4355dcdf226a206cc8c4ff2"
+  },
+  "created_utc": "2026-08-03T19:05:53.310973Z",
+  "dependency_installations": 0,
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "lock_checksum_identity_sha256": "d5f9f546d3892877a83ca1b16d235b8e5f1860bcc937dfade65b0897b8c4eacc",
+  "lock_checksum_package_count": 32,
+  "maximum_inference": "A GREEN canary proves only that task 36's identical parent/target Cargo lock can fetch all 32 checksum-bearing crates once, replay with network denied, preserve source identity, and retain the bounded Cargo home. It does not compile crates, run build scripts, execute or qualify the repository runner, evaluator, task, VCM mechanism, model, D1, D2, or book claim.",
+  "network_denied_offline_replays": 0,
+  "network_enabled_dependency_fetches": 0,
+  "observed_parent_target_dependency_identities": {
+    "parent": {
+      "lock": {
+        "bytes": 7784,
+        "path": "Cargo.lock",
+        "sha256": "680461bbfb2b6e77bbf3387fc7999b0a1737cf340b311adc836db8a215940e42"
+      },
+      "manifest": {
+        "bytes": 884,
+        "path": "Cargo.toml",
+        "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+      }
+    },
+    "target": {
+      "lock": {
+        "bytes": 7784,
+        "path": "Cargo.lock",
+        "sha256": "680461bbfb2b6e77bbf3387fc7999b0a1737cf340b311adc836db8a215940e42"
+      },
+      "manifest": {
+        "bytes": 884,
+        "path": "Cargo.toml",
+        "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+      }
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task36_dependency_canary_v1",
+  "repository_build_executions": 0,
+  "repository_runner_executions": 0,
+  "state": "READY_FOR_TASK_36_EXACT_CARGO_DEPENDENCY_CANARY",
+  "trigger_state": "PAUSED"
+}

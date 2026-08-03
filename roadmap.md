@@ -873,7 +873,11 @@ files/567,822,045 bytes. No Cargo dependency fetch or repository runner ran.
 The source-bound successor audit is GREEN: tasks 36 and 29 change to compatible,
 the other 46 states are preserved, and counts become 21 compatible, 16
 no-declaration, 11 incompatible, and zero unresolved. Seal task 36's exact
-Cargo-lock dependency-only canary before any fetch.
+Cargo-lock dependency-only canary is prospectively sealed at zero execution.
+Parent and target dependency identities match and all 32 registry checksums are
+bound. Execute only one `cargo fetch --locked` plus one deny-network offline
+replay; compilation, build scripts, tests, runners, evaluators, and models stay
+closed.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
