@@ -4,14 +4,16 @@
     "path": "configs/theseus_vcm_dependency_prefetch_canary.json",
     "sha256": "8cf89880766a890be431259a4d9ccf6699244b29cbfbcc44348e41b9ebfbf592"
   },
-  "created_utc": "2026-08-03T18:13:28.638006Z",
-  "dependency_installations": 0,
-  "execution_performed": false,
+  "created_utc": "2026-08-03T18:15:10.589630Z",
+  "dependency_installations": 1,
+  "execution_performed": true,
   "external_reference_calls": 0,
-  "faults": [],
+  "faults": [
+    "online_dependency_acquisition_failed"
+  ],
   "maximum_inference": "A GREEN canary proves only that task 3's identical parent/target npm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a cache whose SHA-512 content includes both exact lock artifacts under the declared host boundaries. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim.",
   "network_denied_dependency_installations": 0,
-  "network_enabled_dependency_installations": 0,
+  "network_enabled_dependency_installations": 1,
   "network_request_count_exact": null,
   "observed_parent_target_dependency_identities": {
     "parent": {
@@ -41,7 +43,64 @@
   },
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_dependency_prefetch_canary_v1",
+  "receipts": {
+    "cache": {
+      "content_blob_bytes": 5906247,
+      "content_blob_count": 2,
+      "content_blobs_sha256": "60e8e5af98c2f87b1878c56df4dbc5592fe7d2e794ac1c76d2f544bc7662b1d6",
+      "expected_lock_integrity_count": 2,
+      "matched_lock_integrity_count": 2,
+      "missing_lock_integrity_packages": [],
+      "total_cache_bytes": 5914100,
+      "total_cache_file_count": 5
+    },
+    "free_bytes_after": 36929290240,
+    "free_bytes_before": 36929748992,
+    "offline_installed_dependencies": {},
+    "online_acquisition": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "/private/tmp/theseus-vcm-dependency-canary-3e_v3qnv/cache"
+      ],
+      "duration_ms": 1706.097,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 127.016,
+      "network_denied": false,
+      "returncode": 1,
+      "rss_telemetry_fault": "",
+      "stderr_bytes": 267,
+      "stderr_head": "npm warn tar TAR_ENTRY_ERROR EFBIG: file too large, write\nnpm error process terminated\nnpm error signal SIGXFSZ\nnpm error A complete log of this run can be found in: /private/tmp/theseus-vcm-dependency-canary-3e_v3qnv/cache/_logs/2026-08-03T18_15_08_821Z-debug-0.log\n",
+      "stderr_sha256": "cbcc85515d68d30e73495d11fad811670bda53f27a097468e8328975766b7568",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "online_installed_dependencies": {},
+    "repository_extraction": {
+      "member_receipts_sha256": "8e5334b29e2b751f65e0fb3921ae9f5187a78b30d896ce20e05919e00de14904",
+      "regular_file_bytes": 7862760,
+      "regular_file_count": 560
+    },
+    "repository_source_after": {
+      "bytes": 7862760,
+      "file_count": 560,
+      "identity_sha256": "273b51c63694c555e84961dd2bca174316d0b7a558b28ff3b539444f00b673c5"
+    },
+    "repository_source_before": {
+      "bytes": 7862760,
+      "file_count": 560,
+      "identity_sha256": "273b51c63694c555e84961dd2bca174316d0b7a558b28ff3b539444f00b673c5"
+    },
+    "retained_store": {}
+  },
   "repository_runner_executions": 0,
-  "state": "READY_FOR_SINGLE_TASK_3_DEPENDENCY_CANARY",
-  "trigger_state": "PAUSED"
+  "state": "TASK_3_DEPENDENCY_CANARY_FAILED",
+  "trigger_state": "RED"
 }

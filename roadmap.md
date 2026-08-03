@@ -805,6 +805,16 @@ cache after independent content-integrity and storage checks. `npm test`, every
 repository entrypoint, evaluators, candidates, local models, and Luna remain
 zero-authority.
 
+The first execution is preserved RED as `INCONCLUSIVE_INSTRUMENT`. Its online
+phase acquired both exact lockfile SHA-512 blobs and left repository bytes
+unchanged, but npm received `SIGXFSZ` because the canary owner incorrectly used
+the 8 MiB captured-log ceiling as `RLIMIT_FSIZE` for dependency extraction.
+Offline replay did not start, no cache was retained, and no runner or model ran.
+The successor may change only this resource-owner defect: keep captured logs at
+8 MiB, monitor that boundary directly, and give dependency files a distinct
+physical ceiling no larger than the already frozen 4 GiB per-task retention
+limit.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

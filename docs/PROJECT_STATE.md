@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_3_DEPENDENCY_CANARY_PROSPECTIVELY_SEALED` | The first real lock canary is frozen before execution: one lifecycle-disabled acquisition followed by a network-denied offline replay against identical parent/target lock bytes and the exact Node 22.20.0/npm 10.9.3 runtime. Repository, evaluator, local-model, and Luna execution remain closed |
+| Active VCM claim | `VCM_V3_TASK_3_CANARY_V1_INCONCLUSIVE_INSTRUMENT_FSIZE_REPAIR` | V1 acquired both lock artifacts but an owner-side `RLIMIT_FSIZE`/log-limit coupling terminated dependency extraction before offline replay. No cache, runner, evaluator, or model result exists. V2 may repair only that physical-boundary implementation |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -425,6 +425,13 @@ Node/npm runtime, one lifecycle-disabled network acquisition, and a second
 network-denied offline replay after removing only temporary `node_modules`.
 Repository runners, evaluators, packets, and models remain closed.
 
+V1 then stopped during the online install with `SIGXFSZ`. The cache already
+contained both exact lock artifacts and repository bytes were unchanged, but
+the owner had coupled the 8 MiB log ceiling to dependency-file writes through
+`RLIMIT_FSIZE`. This is `INCONCLUSIVE_INSTRUMENT`, not a task negative. Offline
+replay did not run, no cache was retained, and every runner/model counter stayed
+zero. V2 may only separate the captured-output and dependency-file boundaries.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -604,8 +611,9 @@ authorize regenerating historical reports or reopening neural work.
    trusted offline build mechanics are GREEN. A static plan binds all 48 exact
    lock tasks and schedules task 3 first. First materialize and version-qualify
    its exact checksum-bound Node 22.20.0/npm 10.9.3 runtime. **Complete:** that
-   runtime is GREEN. The real dependency-acquisition canary is sealed; execute
-   only it and independently audit its retained closure,
+   runtime is GREEN. Preserve the v1 `SIGXFSZ` instrument failure and seal a v2
+   that separates captured-output and dependency-file limits. Execute only that
+   successor and independently audit its retained closure,
    network boundary, script suppression, and storage accounting, then expand
    sequentially only if the canary passes. Resolve the six immutable-resolution
    tasks separately, qualify TypeScript and untrusted Rust builds, and only then

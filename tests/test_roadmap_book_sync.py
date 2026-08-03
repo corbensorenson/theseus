@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_TASK_3_DEPENDENCY_CANARY_PROSPECTIVELY_SEALED",
+            "VCM_V3_TASK_3_CANARY_V1_INCONCLUSIVE_INSTRUMENT_FSIZE_REPAIR",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
