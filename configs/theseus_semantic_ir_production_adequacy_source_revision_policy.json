@@ -1,0 +1,44 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_source_revision_policy_v1",
+  "state": "FIXED_AFTER_SOURCE_ONLY_REVISION_FAILURE_BEFORE_EVALUATOR_OR_MODEL",
+  "candidate_registry": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v2.json",
+  "candidate_registry_sha256": "a9d406faa639ed4d1b7939a0eb7ccf6ba777fc89006dac63f9dc670f7dea5359",
+  "trigger_failure_reports": [
+    {
+      "path": "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure.json",
+      "sha256": "56e0354645d7eb02d94cff65f9b9a017e407b4fefaf3bcd81f4041348ddf3fca"
+    },
+    {
+      "path": "reports/theseus_semantic_ir_production_adequacy_materialization_v2_source_revision_failure.json",
+      "sha256": "1c3aa7e2155d4c7bd6845b47666ae5c73fb95de8f578ee9c617d8960bed67ca1"
+    }
+  ],
+  "revision_semantics": {
+    "parent_revision": "pull.base.sha",
+    "target_revision": "pull.head.sha",
+    "merge_commit_sha_role": "merge_and_timing_identity_only",
+    "merge_first_parent_role": "lineage_receipt_only",
+    "selected_path_membership": "pull_files_net_diff",
+    "selected_source_bytes_must_differ": true,
+    "reason": "GitHub merge_commit_sha is merge-method dependent. For rebased PR 214 it identifies a final documentation commit whose first-parent delta omits the PR-head source repair. The public PR base/head pair is the revision pair corresponding to the PR changed-file surface."
+  },
+  "unchanged_design": {
+    "panel_size": 18,
+    "repository_selection": true,
+    "pull_request_selection": true,
+    "strata": true,
+    "statistical_thresholds": true,
+    "candidate_information_flow": true
+  },
+  "prohibited_counters": {
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "maximum_inference": "This policy repairs only the source revision identity used to materialize the already-selected PR tasks. It does not establish parent failure, target success, evaluator adequacy, mechanics competence, a subsystem effect, D1, D2, training, or book support."
+}

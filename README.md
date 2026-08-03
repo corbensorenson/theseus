@@ -109,10 +109,13 @@ The first selected-file materialization failed closed because task 4's selected
 file was byte-identical across the exact revisions. The RED receipt is
 preserved, including an audited 36-to-34 archive-counter overcount. A versioned
 single-path amendment now selects the actual `cli.py` predicate repair from the
-same frozen PR and stratum. Renewed metadata acquisition is GREEN for 18/18
-through a fresh 90-request digest chain, and a v2 materialization contract binds
-that result plus the prior failure before renewed source retrieval. No evaluator
-or model call informed the repair. Source-byte materialization and
+same frozen PR and stratum. A second source-only failure then established that
+this rebased PR's `merge_commit_sha` identifies a docs-only final commit rather
+than the PR-head source repair. Both RED receipts are preserved. A prospective
+revision policy now uses the public PR `base.sha` and `head.sha` for task bytes
+while retaining merge commit and first parent as lineage only; its metadata
+preflight is GREEN with zero calls. No evaluator or model call informed either
+repair. Source-byte materialization and
 parent-negative/target-positive evaluator qualification remain active; the
 panel is not sealed and no adequacy observation is yet authorized.
 

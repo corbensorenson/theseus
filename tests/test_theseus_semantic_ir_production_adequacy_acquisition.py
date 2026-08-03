@@ -33,7 +33,8 @@ class FakeClient:
                 "merge_commit_sha": self.selected["merge_revision"],
                 "html_url": f"https://github.com/{repo}/pull/{self.selected['pull_request']}",
                 "changed_files": len(self.selected["selected_source_paths"]),
-                "base": {"repo": {"full_name": repo}},
+                "base": {"repo": {"full_name": repo}, "sha": "b" * 40},
+                "head": {"sha": "c" * 40},
             }
         if path.endswith(f"/commits/{self.selected['merge_revision']}"):
             return {"parents": [{"sha": "a" * 40}]}
@@ -80,8 +81,10 @@ def test_independent_metadata_row_recomputes_parent_files_and_license() -> None:
         FakeClient(selected), selected
     )
     assert faults == []
-    assert row["parent_revision"] == "a" * 40
-    assert row["target_revision"] == selected["merge_revision"]
+    assert row["parent_revision"] == "b" * 40
+    assert row["target_revision"] == "c" * 40
+    assert row["merge_first_parent_revision"] == "a" * 40
+    assert row["merge_revision"] == selected["merge_revision"]
     assert row["license"]["verified"] is True
 
 

@@ -22,6 +22,7 @@ import theseus_semantic_ir_production_adequacy as adequacy  # noqa: E402
 
 
 DEFAULT_CANDIDATES = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_candidates_v2.json"
+DEFAULT_REVISION_POLICY = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_revision_policy.json"
 DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_metadata.json"
 POLICY = "project_theseus_semantic_ir_production_adequacy_acquisition_v1"
 CANDIDATE_POLICY_V1 = "project_theseus_semantic_ir_production_adequacy_source_candidates_v1"
@@ -66,12 +67,14 @@ class GitHubCliMetadataClient:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--candidates", default=relative(DEFAULT_CANDIDATES))
+    parser.add_argument("--revision-policy", default=relative(DEFAULT_REVISION_POLICY))
     parser.add_argument("--out", default=relative(DEFAULT_OUT))
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--transport", choices=("gh_cli", "urllib"), default="gh_cli")
     args = parser.parse_args()
     candidates_path = resolve(args.candidates)
-    report = preflight(candidates_path)
+    revision_policy_path = resolve(args.revision_policy)
+    report = preflight(candidates_path, revision_policy_path)
     if args.execute and report["trigger_state"] == "GREEN":
         try:
             client: Client = (
@@ -79,7 +82,11 @@ def main() -> int:
                 if args.transport == "gh_cli"
                 else github_metadata.GitHubPublicMetadataClient()
             )
-            report = acquire(candidates_path, client=client)
+            report = acquire(
+                candidates_path,
+                revision_policy_path=revision_policy_path,
+                client=client,
+            )
         except (OSError, RuntimeError, ValueError, json.JSONDecodeError) as exc:
             report = {
                 **report,
@@ -92,7 +99,10 @@ def main() -> int:
     return 0 if report["trigger_state"] in {"GREEN", "PAUSED"} else 2
 
 
-def preflight(path: Path = DEFAULT_CANDIDATES) -> dict[str, Any]:
+def preflight(
+    path: Path = DEFAULT_CANDIDATES,
+    revision_policy_path: Path = DEFAULT_REVISION_POLICY,
+) -> dict[str, Any]:
     candidates = read_json(path)
     adequacy_path = resolve(str(candidates.get("adequacy_preregistration") or ""))
     config = read_json(adequacy_path) if adequacy_path.is_file() else {}
@@ -104,12 +114,16 @@ def preflight(path: Path = DEFAULT_CANDIDATES) -> dict[str, Any]:
     adequacy_report = adequacy.audit(adequacy_path) if adequacy_path.is_file() else {}
     if adequacy_report.get("trigger_state") != "GREEN":
         faults.append("adequacy_preregistration_not_green")
+    faults.extend(audit_revision_policy(revision_policy_path, path))
     return {
         "policy": POLICY,
         "stage": "metadata_preflight",
         "trigger_state": "GREEN" if not faults else "RED",
         "faults": sorted(set(faults)),
         "candidate_registry": artifact(path),
+        "source_revision_policy": artifact(revision_policy_path)
+        if revision_policy_path.is_file()
+        else {"path": relative(revision_policy_path), "sha256": ""},
         "adequacy_preregistration_audit": {
             "trigger_state": adequacy_report.get("trigger_state"),
             "config_sha256": adequacy_report.get("config_sha256"),
@@ -122,8 +136,13 @@ def preflight(path: Path = DEFAULT_CANDIDATES) -> dict[str, Any]:
     }
 
 
-def acquire(path: Path, *, client: Client) -> dict[str, Any]:
-    before = preflight(path)
+def acquire(
+    path: Path,
+    *,
+    revision_policy_path: Path = DEFAULT_REVISION_POLICY,
+    client: Client,
+) -> dict[str, Any]:
+    before = preflight(path, revision_policy_path)
     if before["trigger_state"] != "GREEN":
         return before
     candidates = read_json(path)
@@ -152,7 +171,7 @@ def acquire(path: Path, *, client: Client) -> dict[str, Any]:
             "raw_response_bodies_retained": False,
         },
         "counters": counters,
-        "maximum_inference": "A GREEN report proves that the 18 preselected public PR identities, first-parent revisions, changed-source membership, post-snapshot timing, distinct-repository rule, and license files were independently recomputed before source materialization. It is metadata eligibility only, not evaluator, mechanics, capability, claim, D1, D2, or book evidence.",
+        "maximum_inference": "A GREEN report proves that the 18 preselected public PR identities, exact public PR base/head source revisions, merge lineage, changed-source membership, post-snapshot timing, distinct-repository rule, and license files were independently recomputed before source materialization. It is metadata eligibility only, not evaluator, mechanics, capability, claim, D1, D2, or book evidence.",
     }
 
 
@@ -164,6 +183,8 @@ def fetch_and_audit_candidate(
     pull = mapping(client.get(f"/repos/{repository}/pulls/{number}"))
     repo = mapping(client.get(f"/repos/{repository}"))
     merge_revision = str(pull.get("merge_commit_sha") or "").lower()
+    base_revision = str(mapping(pull.get("base")).get("sha") or "").lower()
+    head_revision = str(mapping(pull.get("head")).get("sha") or "").lower()
     commit = mapping(client.get(f"/repos/{repository}/commits/{merge_revision}"))
     parents = dictionaries(commit.get("parents"))
     changed_count = integer(pull.get("changed_files"))
@@ -192,6 +213,9 @@ def fetch_and_audit_candidate(
         (str(pull.get("title") or "") == str(selected.get("title") or ""), "title_mismatch"),
         (str(pull.get("merged_at") or "") == str(selected.get("merged_utc") or ""), "merged_utc_mismatch"),
         (merge_revision == str(selected.get("merge_revision") or ""), "merge_revision_mismatch"),
+        (valid_sha(base_revision), "pull_base_revision_missing"),
+        (valid_sha(head_revision), "pull_head_revision_missing"),
+        (base_revision != head_revision, "pull_revision_pair_degenerate"),
         (len(parents) >= 1 and valid_sha(str(parents[0].get("sha") or "")), "first_parent_missing"),
         (len(files) == changed_count and changed_count >= 1, "changed_file_inventory_incomplete"),
         (set(selected_paths).issubset(file_paths), "selected_source_path_not_changed"),
@@ -207,8 +231,11 @@ def fetch_and_audit_candidate(
         "pull_request_url": str(pull.get("html_url") or ""),
         "title": str(pull.get("title") or ""),
         "merged_utc": str(pull.get("merged_at") or ""),
-        "parent_revision": str(parents[0].get("sha") or "").lower() if parents else "",
-        "target_revision": merge_revision,
+        "parent_revision": base_revision,
+        "target_revision": head_revision,
+        "merge_revision": merge_revision,
+        "merge_first_parent_revision": str(parents[0].get("sha") or "").lower() if parents else "",
+        "source_revision_semantics": "public_pull_base_to_head_v1",
         "changed_file_count": changed_count,
         "changed_file_inventory_sha256": adequacy.stable_hash([
             {
@@ -371,6 +398,62 @@ def audit_source_only_amendment(registry: dict[str, Any]) -> list[str]:
         faults.append("amendment_archive_receipt_count_invalid")
     if any(integer(boundaries.get(key)) != 0 for key in prohibited):
         faults.append("amendment_boundary_invalid")
+    return faults
+
+
+def audit_revision_policy(policy_path: Path, candidate_path: Path) -> list[str]:
+    if not policy_path.is_file():
+        return ["source_revision_policy_missing"]
+    policy = read_json(policy_path)
+    faults: list[str] = []
+    if policy.get("policy") != "project_theseus_semantic_ir_production_adequacy_source_revision_policy_v1":
+        faults.append("source_revision_policy_invalid")
+    if policy.get("state") != "FIXED_AFTER_SOURCE_ONLY_REVISION_FAILURE_BEFORE_EVALUATOR_OR_MODEL":
+        faults.append("source_revision_policy_state_invalid")
+    if (
+        resolve(str(policy.get("candidate_registry") or "")) != candidate_path
+        or sha256_file(candidate_path) != str(policy.get("candidate_registry_sha256") or "")
+    ):
+        faults.append("source_revision_candidate_binding_invalid")
+    failures = adequacy.dictionaries(policy.get("trigger_failure_reports"))
+    if len(failures) != 2:
+        faults.append("source_revision_failure_count_invalid")
+    for row in failures:
+        path = resolve(str(row.get("path") or ""))
+        if not path.is_file() or sha256_file(path) != str(row.get("sha256") or ""):
+            faults.append("source_revision_failure_binding_invalid")
+            continue
+        report = read_json(path)
+        counters = adequacy.mapping(report.get("counters"))
+        if report.get("trigger_state") != "RED" or report.get("faults") != [
+            "task_4:selected_source_bytes_unchanged"
+        ]:
+            faults.append("source_revision_failure_receipt_invalid")
+        if any(
+            integer(counters.get(key)) != 0
+            for key in (
+                "parent_target_evaluator_executions",
+                "candidate_or_control_calls",
+                "local_model_calls",
+                "external_inference_calls",
+                "teacher_calls",
+                "training_rows_written",
+                "D1_cases_consumed",
+                "D2_cases_consumed",
+            )
+        ):
+            faults.append("source_revision_failure_crossed_prohibited_boundary")
+    semantics = mapping(policy.get("revision_semantics"))
+    expected = {
+        "parent_revision": "pull.base.sha",
+        "target_revision": "pull.head.sha",
+        "merge_commit_sha_role": "merge_and_timing_identity_only",
+        "merge_first_parent_role": "lineage_receipt_only",
+        "selected_path_membership": "pull_files_net_diff",
+        "selected_source_bytes_must_differ": True,
+    }
+    if any(semantics.get(key) != value for key, value in expected.items()):
+        faults.append("source_revision_semantics_invalid")
     return faults
 
 

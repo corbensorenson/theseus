@@ -211,13 +211,15 @@ an inadequate 0.50 mechanics rate is 0.048126220703125 and power at an adequate
 public changes merged strictly after the frozen model was observed; no model or
 reference call is authorized until the complete panel is sealed.
 
-Metadata selection is complete and source-bound: all 18 repository identities,
-PR titles, merge revisions, first-parent revisions, selected changed paths, and
-license files were independently recomputed through 90 public GitHub metadata
-requests with a retained response-digest chain. The first urllib transport
-attempt failed closed with zero admitted rows and is preserved. Source archives,
-parent/target evaluators, and model calls remain unopened; the next boundary is
-source materialization and independent evaluator qualification.
+Metadata selection remains source-bound for all 18 repository identities, PR
+titles, selected changed paths, and license files. Source-only materialization
+exposed that GitHub's `merge_commit_sha` is merge-method dependent: for one
+rebased PR it names a docs-only final commit whose first-parent delta omits the
+PR-head source repair. Both RED materialization receipts are preserved. Before
+any evaluator or model call, the task revision policy is therefore frozen to
+the public PR `base.sha` and `head.sha`; merge commit and first parent remain
+lineage receipts only. Renewed metadata acquisition and source materialization
+must pass under that policy before independent evaluator qualification opens.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
