@@ -1,0 +1,1276 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_toolchain_identity_audit_v2.json",
+    "sha256": "19af9ed3eccec7a5955cea9e10ad16c996ade4bdfbc44f2df69761abb592bfe9"
+  },
+  "created_utc": "2026-08-03T17:14:32.062990Z",
+  "dependency_class_report": {
+    "path": "reports/theseus_vcm_dependency_class_audit_v2.json",
+    "sha256": "1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"
+  },
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN v2 toolchain audit binds all exact local manager identities to the corrected evaluator-ecosystem dependency classes. It does not qualify dependency resolution, installation, build behavior, repositories, evaluators, tasks, VCM, or models.",
+  "missing_tool_task_indices": {},
+  "observations": {
+    "available_tool_count": 12,
+    "declared_tool_count": 12,
+    "missing_tool_count": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "task_count": 62,
+    "tasks_evaluator_execution_ready": 0,
+    "tasks_lock_not_required_for_scoped_evaluator": 8,
+    "tasks_requiring_immutable_resolution": 6,
+    "tasks_with_complete_lock_manager_identity": 48,
+    "tasks_with_missing_lock_manager_identity": 0
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_toolchain_identity_audit_v1",
+  "rows": [
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 1,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "endoftheline818/opensourcesai-cmdcenter",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 2,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 3,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "QoderAI/better-harness",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "yarn"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 4,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "yarn"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "frappe/draw",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 5,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "didaquis/didibudget-frontend",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 6,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "elkimek/get-based",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 7,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "moshcoder/moshcode",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 8,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "manufosela/karajan-code",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 9,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "KosAlyohyn/vue-route-state",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 10,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "Autodidac/OrphanedMiscProjects",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 11,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "frootai/frootai",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": true,
+      "index": 12,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": true,
+      "index": 13,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "dknowles2/ha-pitboss",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 14,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "scrape-badger/scrapebadger-python",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 15,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "ray-manaloto/macos-development-environment",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": true,
+      "index": 16,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 17,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "presidio-v/presidio-hardened-x402",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 18,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "NousResearch/hermes-agent",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 19,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "cs0lar/treelang",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 20,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "bnet47/codexicon",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 21,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "ctsdownloads/easyspeak",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 22,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "TejashPrakash/student-management-system",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 23,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "pullboxapp/pullbox-direct-providers",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 24,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "openonion/connectonion",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": true,
+      "index": 25,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "fibsem-os/fibsem-os",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 26,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "quodeq/quodeq",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 27,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "malkreide/mcp-audit-skill",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "uv"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 28,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "uv"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "microsoft/winml-cli",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 29,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "TAJD/cofferdam",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 30,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "kanso-lang/kanso",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 31,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "matssun/mcp-re",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 32,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "Rul1an/assay",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 33,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "elan8/sysml-v2-parser",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 34,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "elan8/spec42",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": true,
+      "index": 35,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "Stranger6667/jsonschema",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 36,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "tomerwave/godlint",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 37,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "BrokkAi/bifrost",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 38,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "surrealdb/surrealkv",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 39,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "Syynth/brink",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 40,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "ainetus/Co-Study4Grid",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "bun",
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 41,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "bun",
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "positonic/exponential",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 42,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "constructive-io/constructive",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 43,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "cwh555/AnimeList",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 44,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "Gigadrive/sdk",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 45,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "bun"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 46,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "bun"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "celados/gkit",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 47,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "handsontable/examples",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "bun"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 48,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "bun"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "pokle/glidecomp",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 49,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "AKogut/flakemetry",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "bun"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 50,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "bun"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "tutur3u/platform",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 51,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "inkeep/open-knowledge",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "pnpm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 52,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "pnpm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "masumi-network/sokosumi",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 53,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "omnist-dev/omnist-ts",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 54,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 55,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "JavaScript",
+      "repository": "rickfelix/EHG_Engineer",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": true,
+      "index": 56,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "AbsoluteMode/session-recall",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 57,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "matt82198/aesop",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [],
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 58,
+      "lock_manager_identity_complete": false,
+      "lock_managers": [],
+      "lock_not_required_for_scoped_evaluator": true,
+      "missing_lock_managers": [],
+      "query_language": "Python",
+      "repository": "ShadowEnemyx/serien-sammler",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 59,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "dcdpr/jp",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "cargo"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 60,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "cargo"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "Rust",
+      "repository": "tsz-org/tsz",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "bun"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 61,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "bun"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "pocket-stack/pocketjs",
+      "repository_execution_performed": false
+    },
+    {
+      "available_lock_managers": [
+        "npm"
+      ],
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "immutable_resolution_required_before_execution": false,
+      "index": 62,
+      "lock_manager_identity_complete": true,
+      "lock_managers": [
+        "npm"
+      ],
+      "lock_not_required_for_scoped_evaluator": false,
+      "missing_lock_managers": [],
+      "query_language": "TypeScript",
+      "repository": "conorbronsdon/substack-mcp",
+      "repository_execution_performed": false
+    }
+  ],
+  "state": "LOCAL_TOOLCHAIN_IDENTITIES_COMPLETE",
+  "tools": {
+    "bun": {
+      "available": true,
+      "path": "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+      "sha256": "ccb160515c299e9509f8735808913aec3b3055476f71eca045a140260bb3a932",
+      "support_files": [],
+      "version_command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "--version"
+      ],
+      "version_output": "1.2.0",
+      "version_output_sha256": "9f77034b1eb57d24f21ac7deb65c9cc99f63b72775e311f1f280ab2b6c2e06a2",
+      "version_returncode": 0
+    },
+    "cargo": {
+      "available": true,
+      "path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+      "sha256": "b617f75ab3fadd5d764368413b7e87532dfa45039aac431f9c0af883b824a6e6",
+      "support_files": [],
+      "version_command": [
+        "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
+        "--version"
+      ],
+      "version_output": "cargo 1.90.0 (840b83a10 2025-07-30)",
+      "version_output_sha256": "da2b28a845602c049d30d9c8615451e0082fcdf61fbefa810ea221163ee1c893",
+      "version_returncode": 0
+    },
+    "deno": {
+      "available": true,
+      "path": "/Users/corbensorenson/miniforge3/bin/deno",
+      "sha256": "d224f15938109fe892a5637a6fbe6c5c4e98cbd1b07fdf56682e8915430e5fd0",
+      "support_files": [],
+      "version_command": [
+        "/Users/corbensorenson/miniforge3/bin/deno",
+        "--version"
+      ],
+      "version_output": "deno 2.4.5 (stable, release, aarch64-apple-darwin)\nv8 13.7.152.14-rusty\ntypescript 5.8.3",
+      "version_output_sha256": "9022b60ace650aedade25be5473095883a6be1b8fa4e63b1a5973d58aa3c2fd2",
+      "version_returncode": 0
+    },
+    "node": {
+      "available": true,
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+      "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [],
+      "version_command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "--version"
+      ],
+      "version_output": "v22.15.0",
+      "version_output_sha256": "0b3068cf7d14104af4592c6627f7613c7dd2fcc3e047de6a3be4f1dedbd36238",
+      "version_returncode": 0
+    },
+    "npm": {
+      "available": true,
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+      "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [
+        {
+          "path": "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
+          "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7"
+        }
+      ],
+      "version_command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
+        "--version"
+      ],
+      "version_output": "10.9.2",
+      "version_output_sha256": "1e7ace575526f19bfd54884c0cac7ac1a48c2b366df6a107c689f191d21ef7c5",
+      "version_returncode": 0
+    },
+    "pip": {
+      "available": true,
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "support_files": [],
+      "version_command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "-m",
+        "pip",
+        "--version"
+      ],
+      "version_output": "pip 25.2 from /Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/pip (python 3.12)",
+      "version_output_sha256": "00f4ed11bd2b25735e11711dc748f86859816f2ad65d1b7a9c0ad79e537c2b64",
+      "version_returncode": 0
+    },
+    "pnpm": {
+      "available": true,
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+      "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [
+        {
+          "path": "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs",
+          "sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9"
+        }
+      ],
+      "version_command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs",
+        "--version"
+      ],
+      "version_output": "10.13.1",
+      "version_output_sha256": "5075a97a3fbaa659e4e365b5194f6094ba4f8e3b6118e40dc18f43ba0528566e",
+      "version_returncode": 0
+    },
+    "pytest": {
+      "available": true,
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "support_files": [],
+      "version_command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "-m",
+        "pytest",
+        "--version"
+      ],
+      "version_output": "pytest 9.0.2",
+      "version_output_sha256": "da63ec27c10b24f9375428d721f4df96cda5b21c3805013e72f45581ec7d3068",
+      "version_returncode": 0
+    },
+    "python": {
+      "available": true,
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "support_files": [],
+      "version_command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "--version"
+      ],
+      "version_output": "Python 3.12.5",
+      "version_output_sha256": "a3e7da58268df338e579dc91ff20b4518baff3ef54102ca2a6b843bc9feb3369",
+      "version_returncode": 0
+    },
+    "rustc": {
+      "available": true,
+      "path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+      "sha256": "b2011d06d5c7efff7b48b1e1aec6106989e44f3a5ad1d171e06a41c0fbc3ffea",
+      "support_files": [],
+      "version_command": [
+        "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "--version"
+      ],
+      "version_output": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+      "version_output_sha256": "3072c8a64690e28cb5b19c5cff29e3bc3d96c8807b7235f60792edfc91458bc4",
+      "version_returncode": 0
+    },
+    "uv": {
+      "available": true,
+      "path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+      "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf",
+      "support_files": [],
+      "version_command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+        "--version"
+      ],
+      "version_output": "uv 0.11.28 (ebf0f43d7 2026-07-07 aarch64-apple-darwin)",
+      "version_output_sha256": "157329540d2be6e588ac42f7059e3dad3ded196cdde217e0cdb560d9ca4dc053",
+      "version_returncode": 0
+    },
+    "yarn": {
+      "available": true,
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+      "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [
+        {
+          "path": "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+          "sha256": "148e19db309ec9eaf7720b28df811337906eea8a1758deaa54afee60a6305e04"
+        }
+      ],
+      "version_command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+        "--version"
+      ],
+      "version_output": "1.22.22",
+      "version_output_sha256": "feb97ccb8fb16be6aabb7e25a3434679be448969f8ea27b677d44a0b6ea294ba",
+      "version_returncode": 0
+    }
+  },
+  "trigger_state": "GREEN"
+}

@@ -731,9 +731,10 @@ self-contained Node built-in test, two standard-library `unittest` files, and
 one verifier-embedded `pytest` command. All 62 tasks now have source-bound runner
 candidates; no repository ran.
 
-The dependency-class audit replaces the misleading blanket lock gap with three
-exact classes. Forty-nine tasks have relevant lock receipts. Seven scoped
-evaluators (indices 1, 10, 20, 22, 23, 27, and 58) have a statically closed
+The dependency-class successor replaces the misleading blanket lock gap with
+three exact classes and requires every lock to match the evaluator ecosystem.
+Forty-eight tasks have relevant lock receipts. Eight scoped evaluators (indices
+1, 10, 20, 22, 23, 27, 57, and 58) have a statically closed
 standard-library or Node-built-in import path, with `pytest` tracked separately
 as evaluator harness where needed, so a project lock is not required for that
 exact evaluator path. Six tasks (12, 13, 16, 25, 35, and 56) expose third-party
@@ -748,18 +749,24 @@ Python 3.12, pytest, pip, Node 22, npm, pnpm, Bun, Deno with TypeScript 5.8.3,
 the existing repository-local uv 0.11.28 binary, and concrete Cargo/Rust 1.90
 by content hash and observed version. An exact Yarn Classic 1.22.22 successor
 was then acquired from one registry request with both registry digests, safe
-extraction, and package identity verified. All 49 lock-bearing tasks now have an
+extraction, and package identity verified. All 48 evaluator-ecosystem lock tasks now have an
 exact manager identity. Tool presence is not install/build qualification, and
 every evaluator remains closed.
 
 Trusted offline build canaries are now GREEN for pip, npm, pnpm, Bun, Yarn,
 Deno/TypeScript, and concrete rustc. All fixture installs used local artifacts,
 network denial, write confinement, resource ceilings, and lifecycle-script
-suppression; 16 command receipts passed. The preserved first failures were
+suppression; 19 command receipts passed. The preserved first failures were
 owner defects: outer sandbox nesting, an obsolete Deno flag, and an `RLIMIT_NPROC`
 below the host's existing process count. This does not qualify real locks,
 untrusted build scripts, repository compilation, or runner adequacy.
 Content-addressed real dependency prefetch remains next.
+
+The v2 correction changes only task 57: its Python evaluator can no longer
+borrow an unrelated root JavaScript lock, and its apparent third-party imports
+are independently resolved to repository-local modules. The current split is
+48 exact ecosystem locks, eight no-project-lock scoped paths, and six immutable-
+resolution tasks. No dependency or repository execution produced this result.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

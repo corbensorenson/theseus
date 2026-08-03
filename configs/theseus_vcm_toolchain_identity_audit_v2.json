@@ -1,0 +1,53 @@
+{
+  "policy": "project_theseus_vcm_toolchain_identity_audit_v1",
+  "state": "TRUSTED_LOCAL_TOOL_IDENTITY_AUDIT_AGAINST_EVALUATOR_ECOSYSTEM_DEPENDENCY_CLASSES",
+  "dependency_class_report": {
+    "path": "reports/theseus_vcm_dependency_class_audit_v2.json",
+    "sha256": "1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"
+  },
+  "tools": {
+    "python": {"path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12", "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3", "version_command": ["--version"]},
+    "pytest": {"path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12", "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3", "version_command": ["-m", "pytest", "--version"]},
+    "pip": {"path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12", "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3", "version_command": ["-m", "pip", "--version"]},
+    "node": {"path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951", "version_command": ["--version"]},
+    "npm": {"path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951", "version_command": ["/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js", "--version"], "support_files": [{"path": "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js", "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7"}]},
+    "pnpm": {"path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951", "version_command": ["/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs", "--version"], "support_files": [{"path": "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs", "sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9"}]},
+    "bun": {"path": "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun", "sha256": "ccb160515c299e9509f8735808913aec3b3055476f71eca045a140260bb3a932", "version_command": ["--version"]},
+    "deno": {"path": "/Users/corbensorenson/miniforge3/bin/deno", "sha256": "d224f15938109fe892a5637a6fbe6c5c4e98cbd1b07fdf56682e8915430e5fd0", "version_command": ["--version"]},
+    "uv": {"path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv", "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf", "version_command": ["--version"]},
+    "cargo": {"path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo", "sha256": "b617f75ab3fadd5d764368413b7e87532dfa45039aac431f9c0af883b824a6e6", "version_command": ["--version"]},
+    "rustc": {"path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc", "sha256": "b2011d06d5c7efff7b48b1e1aec6106989e44f3a5ad1d171e06a41c0fbc3ffea", "version_command": ["--version"]},
+    "yarn": {"path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951", "version_command": ["runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js", "--version"], "support_files": [{"path": "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js", "sha256": "148e19db309ec9eaf7720b28df811337906eea8a1758deaa54afee60a6305e04"}]}
+  },
+  "expected_observations": {
+    "task_count": 62,
+    "declared_tool_count": 12,
+    "available_tool_count": 12,
+    "missing_tool_count": 0,
+    "tasks_with_complete_lock_manager_identity": 48,
+    "tasks_with_missing_lock_manager_identity": 0,
+    "tasks_lock_not_required_for_scoped_evaluator": 8,
+    "tasks_requiring_immutable_resolution": 6,
+    "tasks_evaluator_execution_ready": 0,
+    "parent_target_or_evaluator_executions": 0
+  },
+  "report": "reports/theseus_vcm_toolchain_identity_audit_v2.json",
+  "authority": {
+    "trusted_tool_identity_queries_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_resolution_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN v2 toolchain audit binds all exact local manager identities to the corrected evaluator-ecosystem dependency classes. It does not qualify dependency resolution, installation, build behavior, repositories, evaluators, tasks, VCM, or models."
+}

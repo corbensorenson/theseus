@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE` | The repaired 62-task English panel, all 124 exact parent/head closures, and source-bound runner candidates are GREEN. Forty-nine tasks have exact lock receipts, seven scoped evaluators need no project lock under static closure, and six require immutable resolution. No task is execution-ready; local and Luna calls remain zero-authority until dependency/build qualification, parent-fail/target-pass canaries, packets, scorers, call/spend ceilings, and stop conditions are sealed |
+| Active VCM claim | `V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE` | The repaired 62-task English panel, all 124 exact parent/head closures, and source-bound runner candidates are GREEN. Forty-eight tasks have evaluator-ecosystem lock receipts, eight scoped evaluators need no project lock under static closure, and six require immutable resolution. No task is execution-ready; local and Luna calls remain zero-authority until dependency/build qualification, parent-fail/target-pass canaries, packets, scorers, call/spend ceilings, and stop conditions are sealed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -373,8 +373,8 @@ their report hashes; repository and model execution remain zero.
 The v3 runner baseline then found 59 root manifests, 48 root locks, and 58
 independently declared runners. Exact selected-verifier conventions closed the
 four runner residuals, giving 62/62 source-bound runner candidates with zero
-execution. Static dependency classification found 49 relevant lock receipts,
-seven evaluator paths whose reachable imports are standard-library or Node
+execution. Corrected static dependency classification found 48 evaluator-
+ecosystem lock receipts, eight evaluator paths whose reachable imports are standard-library or Node
 built-ins only, and six tasks requiring immutable dependency resolution. A lock
 receipt is not installed closure proof, and no task is evaluator-ready. The next
 owner is offline dependency/harness materialization plus TypeScript and untrusted
@@ -383,17 +383,22 @@ Rust build qualification, followed only then by parent-fail/target-pass canaries
 Exact identity queries first bound 11 local tools: Python, pytest, pip, Node,
 npm, pnpm, Bun, Deno/TypeScript, the existing repository-local uv binary, Cargo,
 and Rust. One bounded registry request then safely materialized hash-bound Yarn
-Classic 1.22.22 for task 4. All 49 lock-bearing tasks now have an available exact
+Classic 1.22.22 for task 4. All 48 evaluator-ecosystem lock tasks now have an available exact
 manager identity. This is tool evidence only; no repository, evaluator, or model
 execution occurred.
 
 Trusted offline build canaries subsequently passed for local-wheel pip installs,
 local-file npm/pnpm/Bun/Yarn installs with lifecycle scripts suppressed, dependency-
 free Deno TypeScript check/run, and concrete rustc compile/run. Network denial,
-write confinement, and resource ceilings were active for all 16 commands. The
+write confinement, and resource ceilings were active for all 19 commands. The
 initial outer-sandbox, obsolete Deno flag, and too-low host process ceiling
-failures remain scoped canary-owner evidence. Real locks, Yarn, remote prefetch,
+failures remain scoped canary-owner evidence. Real locks, remote prefetch,
 untrusted build scripts, repositories, evaluators, and models remain closed.
+
+The v2 dependency successor changes only task 57: its Python evaluator no longer
+borrows an unrelated JavaScript lock, and four apparent external imports resolve
+to repository-local aliases. The current split is 48 exact ecosystem locks,
+eight scoped no-lock paths, and six immutable-resolution tasks.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve

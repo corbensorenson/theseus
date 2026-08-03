@@ -1,0 +1,38 @@
+{
+  "policy": "project_theseus_vcm_dependency_class_audit_v2",
+  "state": "EVALUATOR_ECOSYSTEM_DEPENDENCY_CLASS_SUCCESSOR_BEFORE_RESOLUTION_OR_EXECUTION",
+  "reports": {
+    "dependency_class_v1": {"path": "reports/theseus_vcm_dependency_class_audit.json", "sha256": "375c6fa5f06c7f2ef4e481ed28f3d6b12249d1c98a1f53ce4582adefddc68826"},
+    "runner_inventory": {"path": "reports/theseus_vcm_repository_runner_inventory_v3.json", "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"}
+  },
+  "expected_changed_indices": [57],
+  "expected_observations": {
+    "task_count": 62,
+    "tasks_with_exact_evaluator_ecosystem_lock_receipt": 48,
+    "tasks_lock_not_required_for_static_evaluator_closure": 8,
+    "tasks_requiring_immutable_resolution": 6,
+    "tasks_dependency_classified": 62,
+    "tasks_evaluator_execution_ready": 0,
+    "dependency_resolutions": 0,
+    "parent_target_or_evaluator_executions": 0
+  },
+  "report": "reports/theseus_vcm_dependency_class_audit_v2.json",
+  "authority": {
+    "normalized_archive_static_read_authorized": true,
+    "archive_extraction_authorized": false,
+    "dependency_resolution_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN v2 audit corrects dependency classes only by requiring locks to match the evaluator ecosystem and by recognizing repository-local Python aliases. It does not prove dependency availability, installation, build safety, repository execution, evaluator validity, task quality, VCM efficacy, or any model or book claim."
+}
