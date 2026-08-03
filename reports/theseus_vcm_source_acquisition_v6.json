@@ -1,0 +1,49 @@
+{
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_source_acquisition_v6.json",
+    "sha256": "6d5630d8be704cf5c7bb038cfdf735cacf1c8980fc15d9c33cb52e35a2d1fefb"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 0,
+    "public_metadata_requests": 0,
+    "public_metadata_rows_selected": 0,
+    "public_source_content_requests": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T10:22:30.345396Z",
+  "faults": [],
+  "live_schema_qualification": {
+    "body_patch_or_review_content_returned": false,
+    "consumed_pr": "urllib3/urllib3#5102",
+    "consumed_pr_query_shape_green": true,
+    "consumed_pr_was_already_denylisted": true,
+    "fresh_candidate_queries": 0,
+    "node_id_retained": false,
+    "recorded_utc": "2026-08-03T10:21:35Z",
+    "required_schema_fields_missing": [],
+    "returned_commit_node_count": 1,
+    "returned_file_node_count": 3,
+    "returned_typename": "PullRequest",
+    "source_content_requests": 0
+  },
+  "maximum_inference": "A GREEN v6 preflight authorizes one rate-window-bound GraphQL-batched public metadata run only. A GREEN acquisition report proves only that 62 fresh, licensed, structurally machine-verifiable, mutually source-disjoint repository/PR identities were selected by the frozen rule. It does not authorize source-content retrieval, task packets, candidate generation, local or Luna calls, hidden evaluation, D1, D2, training, serving, book support movement, or a VCM usefulness claim.",
+  "metadata_selection_opened": false,
+  "policy": "project_theseus_vcm_source_acquisition_report_v1",
+  "prior_repository_denylist": {
+    "count": 87,
+    "identities_retained": false,
+    "sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774"
+  },
+  "runtime_ms": 197.778,
+  "selected_repository_count": 0,
+  "source_content_retrieval_opened": false,
+  "state": "METADATA_SELECTION_V6_GRAPHQL_BATCH_LIVE_SCHEMA_QUALIFIED",
+  "trigger_state": "GREEN"
+}

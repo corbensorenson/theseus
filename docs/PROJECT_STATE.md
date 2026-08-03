@@ -163,6 +163,15 @@ identities and opened no source, evaluator, or model path. The next transport
 owner must batch the identical metadata fields through GraphQL nodes while
 preserving the REST search population, hash order, and all scientific filters.
 
+The v6 GraphQL-batch successor is now prospectively sealed and live-schema
+qualified at zero fresh-candidate queries. All required schema fields exist,
+and the exact nodes query returned the expected metadata shape for the already
+consumed denylisted `urllib3/urllib3#5102` surface without body, patch, review,
+or source content. V6 batches 40 nodes through one request at a time, preserves
+the REST search population and all scientific selection rules, and independently
+rejects a commit identity that does not match the PR head. The full run may not
+start before `2026-08-03T10:43:25Z`; every downstream authority remains closed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -345,8 +354,9 @@ authorize regenerating historical reports or reopening neural work.
    bug before any identity sealed. It is preserved and v4's owner-only repair is
    preserved; v4 then paused on transient transport with zero identities sealed.
    V5's retry owner paused on secondary throttling with exact accounting and
-   zero identities. Replace only per-candidate REST fan-out with GraphQL node
-   batches. Then
+   zero identities. V6's single-request GraphQL node batches now pass live
+   schema and consumed-PR query-shape qualification with zero fresh candidates;
+   execute the reset-bound metadata run. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

@@ -13,6 +13,7 @@ import theseus_vcm_source_acquisition as acquisition  # noqa: E402
 import theseus_vcm_source_acquisition_v3 as acquisition_v3  # noqa: E402
 import theseus_vcm_source_acquisition_v4 as acquisition_v4  # noqa: E402
 import theseus_vcm_source_acquisition_v5 as acquisition_v5  # noqa: E402
+import theseus_vcm_source_acquisition_v6 as acquisition_v6  # noqa: E402
 
 
 def test_vcm_source_acquisition_preflight_is_green_and_call_free() -> None:
@@ -143,6 +144,122 @@ def test_v5_retry_client_rejects_permanent_candidate_404_without_retry(tmp_path:
     assert summary["physical_attempt_count"] == 1
     assert summary["retry_attempt_count"] == 0
     assert summary["permanent_candidate_failure_count"] == 1
+
+
+def test_vcm_source_acquisition_v6_batches_transport_only() -> None:
+    report = acquisition_v6.preflight()
+    v5 = p2a.read_json(acquisition_v5.DEFAULT_CONFIG)
+    v6 = p2a.read_json(acquisition_v6.DEFAULT_CONFIG)
+    assert report["trigger_state"] == "GREEN"
+    assert report["state"] == "METADATA_SELECTION_V6_GRAPHQL_BATCH_LIVE_SCHEMA_QUALIFIED"
+    assert v6["selection"] == v5["selection"]
+    assert v6["panels"] == v5["panels"]
+    assert v6["chronology"] == v5["chronology"]
+    assert v6["authority"] == v5["authority"]
+    assert v6["graphql_transport"]["node_batch_size"] == 40
+    assert v6["graphql_transport"]["maximum_parallel_graphql_requests"] == 1
+    lowered = acquisition_v6.GRAPHQL_QUERY.lower()
+    assert "body" not in lowered
+    assert "patch" not in lowered
+    assert "reviews" not in lowered
+
+
+def test_v6_graphql_fixture_preserves_existing_eligibility() -> None:
+    candidate = {
+        "repository": "owner/repo",
+        "pull_request": 7,
+        "query_language": "Python",
+        "node_id": "PR_fixture",
+        "rank": "f" * 64,
+    }
+    node = {
+        "__typename": "PullRequest",
+        "id": "PR_fixture",
+        "number": 7,
+        "url": "https://github.com/owner/repo/pull/7",
+        "state": "MERGED",
+        "isDraft": False,
+        "createdAt": "2026-08-01T00:00:00Z",
+        "mergedAt": "2026-08-01T02:00:00Z",
+        "additions": 5,
+        "deletions": 1,
+        "changedFiles": 2,
+        "baseRefOid": "a" * 40,
+        "headRefOid": "b" * 40,
+        "mergeCommit": {"oid": "c" * 40},
+        "author": {"login": "human"},
+        "repository": {
+            "nameWithOwner": "owner/repo",
+            "isFork": False,
+            "isArchived": False,
+            "isDisabled": False,
+            "stargazerCount": 500,
+            "primaryLanguage": {"name": "Python"},
+            "licenseInfo": {"spdxId": "MIT"},
+        },
+        "files": {"nodes": [
+            {"path": "src/module.py", "changeType": "MODIFIED"},
+            {"path": "tests/test_module.py", "changeType": "MODIFIED"},
+        ]},
+        "commits": {"nodes": [
+            {"commit": {"oid": "b" * 40, "committedDate": "2026-08-01T01:00:00Z"}}
+        ]},
+    }
+    config = p2a.read_json(acquisition_v6.DEFAULT_CONFIG)
+    row, reasons = acquisition_v6.qualify_node(node, candidate, config)
+    assert reasons == []
+    assert row["metadata_qualified"] is True
+    assert row["head_chronology_source"] == "graphql_pull_request_commit_connection"
+    assert row["source_paths"] == ["src/module.py"]
+    assert row["verifier_paths"] == ["tests/test_module.py"]
+    assert row["candidate_content_retrieved"] is False
+
+
+def test_v6_graphql_fixture_rejects_head_commit_identity_mismatch() -> None:
+    candidate = {
+        "repository": "owner/repo",
+        "pull_request": 7,
+        "query_language": "Python",
+        "node_id": "PR_fixture",
+        "rank": "f" * 64,
+    }
+    node = {
+        "__typename": "PullRequest",
+        "id": "PR_fixture",
+        "number": 7,
+        "url": "https://github.com/owner/repo/pull/7",
+        "state": "MERGED",
+        "isDraft": False,
+        "createdAt": "2026-08-01T00:00:00Z",
+        "mergedAt": "2026-08-01T02:00:00Z",
+        "additions": 5,
+        "deletions": 1,
+        "changedFiles": 2,
+        "baseRefOid": "a" * 40,
+        "headRefOid": "b" * 40,
+        "mergeCommit": {"oid": "c" * 40},
+        "author": {"login": "human"},
+        "repository": {
+            "nameWithOwner": "owner/repo",
+            "isFork": False,
+            "isArchived": False,
+            "isDisabled": False,
+            "stargazerCount": 500,
+            "primaryLanguage": {"name": "Python"},
+            "licenseInfo": {"spdxId": "MIT"},
+        },
+        "files": {"nodes": [
+            {"path": "src/module.py", "changeType": "MODIFIED"},
+            {"path": "tests/test_module.py", "changeType": "MODIFIED"},
+        ]},
+        "commits": {"nodes": [
+            {"commit": {"oid": "d" * 40, "committedDate": "2026-08-01T01:00:00Z"}}
+        ]},
+    }
+    config = p2a.read_json(acquisition_v6.DEFAULT_CONFIG)
+    row, reasons = acquisition_v6.qualify_node(node, candidate, config)
+    assert row["metadata_qualified"] is False
+    assert "head_commit_identity_mismatch" in reasons
 
 
 def test_panel_quotas_are_exact_and_source_disjoint_by_construction() -> None:
