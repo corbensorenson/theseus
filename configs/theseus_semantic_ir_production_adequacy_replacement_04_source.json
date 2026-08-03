@@ -1,0 +1,70 @@
+{
+  "authority": {
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "candidate_or_control_calls_authorized": false,
+    "external_inference_authorized": false,
+    "local_model_calls_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "public_source_file_retrieval_authorized": true,
+    "serving_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "consumed_observation": {
+    "campaign_candidate_report": "reports/theseus_semantic_ir_production_adequacy_candidates_v2.json",
+    "campaign_candidate_report_sha256": "74759b382c31bc1cbc9a6d3854c7a795bf62c19441497147ce5a7125f633779a",
+    "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_04.json",
+    "candidate_packet_sha256": "389a73ba6c65efe6c4ac813307d4bc0e229fa939a5f58a50bbafb6093de4fa2d",
+    "interruption_receipt": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_watchdog_interruption.json",
+    "interruption_receipt_sha256": "19406846e48b4b302dc1fe4f4a924bfe5c08284154971b7a18724049f1a675ca",
+    "original_task_manifest": "configs/theseus_semantic_ir_production_adequacy_task_04.json",
+    "original_task_manifest_sha256": "857b64d677c96ddb2ede783c2dae3ded797cbfd977192f809f4067a9763de754",
+    "rerun_authorized": false
+  },
+  "expected_change": {
+    "added_fragments_in_order": [
+      "# Cast tolerance to the same type.",
+      "if atol is None:",
+      "atol = 0.0",
+      "atol = dtype(atol)"
+    ],
+    "changed_paths": [
+      "CHANGELOG.md",
+      "skbio/alignment/_pair.py",
+      "skbio/alignment/tests/test_pair.py"
+    ],
+    "forbidden_parent_fragments": [
+      "if atol is None:",
+      "atol = dtype(atol)"
+    ],
+    "selected_source_paths": [
+      "skbio/alignment/_pair.py"
+    ]
+  },
+  "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+  "license": {
+    "path": "LICENSE.txt",
+    "required_notice": "Copyright (c) 2013--, scikit-bio development team.",
+    "spdx": "BSD-3-Clause"
+  },
+  "maximum_inference": "A GREEN source report proves only that a fresh, licensed, source-disjoint same-stratum replacement was independently metadata-checked and that exact parent and target bytes were frozen. It does not establish evaluator adequacy, candidate competence, Semantic-IR adequacy, a subsystem effect, D1, D2, training value, serving, or book support.",
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_04",
+  "policy": "project_theseus_semantic_ir_production_adequacy_replacement_04_source_v1",
+  "prior_materialization": "reports/theseus_semantic_ir_production_adequacy_materialization_v4.json",
+  "prior_materialization_sha256": "7572e6ebb82ae6b16575298c42450a31d7c50ce2823fd5fc6346b12d6216f122",
+  "replacement": {
+    "base_revision": "25107a5dae11f1d2c8514bceb77e4b224931d7b2",
+    "head_revision": "a4e59838a21886c521eff05120bca603a7588fe6",
+    "index": 4,
+    "merge_revision": "48f599c2dc98f11c1e893cc5de612e4f96c684cd",
+    "merged_utc": "2026-08-02T21:40:01Z",
+    "pull_request": 2504,
+    "repository": "scikit-bio/scikit-bio",
+    "stratum": "branch_or_predicate_replacement",
+    "title": "fix: handle atol=None in pair_align"
+  },
+  "state": "FIXED_BEFORE_REPLACEMENT_SOURCE_RETRIEVAL"
+}

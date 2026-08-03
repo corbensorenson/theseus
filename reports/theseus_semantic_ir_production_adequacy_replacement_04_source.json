@@ -1,0 +1,91 @@
+{
+  "archives": {
+    "parent": {
+      "members": [
+        {
+          "bytes": 1515,
+          "path": "LICENSE.txt",
+          "sha256": "bd113b93ac18e79ccf11a3f69eb3047d8af6a10bb9e9215c49af4b27301c0bd6"
+        },
+        {
+          "bytes": 46919,
+          "path": "skbio/alignment/_pair.py",
+          "sha256": "b809e243245d0f923470bc7697b862926c26dbcae3308aa6de438d5854a2bae8"
+        }
+      ],
+      "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_04/semantic-adequacy-04r1-parent.tar.gz",
+      "root": "semantic-adequacy-04r1",
+      "sha256": "df7745bb51d9216598cafcb10fef6bcd3164bf2cf449cc9814560d2dd9d3ad55"
+    },
+    "target": {
+      "members": [
+        {
+          "bytes": 1515,
+          "path": "LICENSE.txt",
+          "sha256": "bd113b93ac18e79ccf11a3f69eb3047d8af6a10bb9e9215c49af4b27301c0bd6"
+        },
+        {
+          "bytes": 47022,
+          "path": "skbio/alignment/_pair.py",
+          "sha256": "812949fc94b3f9794269ed5f21469d14f7c9463433d906d063dcd3f95d2da905"
+        }
+      ],
+      "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_04/semantic-adequacy-04r1-target.tar.gz",
+      "root": "semantic-adequacy-04r1",
+      "sha256": "5e923080ae0b06f0527a3ab2e09db6980f90f231c2c5b6abb636b6ad544f6261"
+    }
+  },
+  "candidate_packet_materialized": false,
+  "config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
+    "sha256": "52e459c53b467afc82ee9a94a86bf345f0b0aa05c0161d3e68b88734a6c8a317"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "network_source_calls": 7,
+    "parent_target_evaluator_executions": 0,
+    "source_archives_materialized": 2,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "faults": [],
+  "maximum_inference": "A GREEN source report proves only that a fresh, licensed, source-disjoint same-stratum replacement was independently metadata-checked and that exact parent and target bytes were frozen. It does not establish evaluator adequacy, candidate competence, Semantic-IR adequacy, a subsystem effect, D1, D2, training value, serving, or book support.",
+  "metadata": {
+    "changed_files": [
+      "CHANGELOG.md",
+      "skbio/alignment/_pair.py",
+      "skbio/alignment/tests/test_pair.py"
+    ],
+    "license_spdx": "BSD-3-Clause",
+    "merge_first_parent_revision": "25107a5dae11f1d2c8514bceb77e4b224931d7b2",
+    "merge_revision": "48f599c2dc98f11c1e893cc5de612e4f96c684cd",
+    "merged_utc": "2026-08-02T21:40:01Z",
+    "parent_revision": "25107a5dae11f1d2c8514bceb77e4b224931d7b2",
+    "pull_request": 2504,
+    "pull_request_url": "https://github.com/scikit-bio/scikit-bio/pull/2504",
+    "repository": "scikit-bio/scikit-bio",
+    "selected_source_paths": [
+      "skbio/alignment/_pair.py"
+    ],
+    "stratum": "branch_or_predicate_replacement",
+    "target_revision": "a4e59838a21886c521eff05120bca603a7588fe6",
+    "title": "fix: handle atol=None in pair_align"
+  },
+  "policy": "project_theseus_semantic_ir_production_adequacy_replacement_04_source_v1",
+  "same_stratum_as_consumed_task": true,
+  "source_disjoint_from_prior_panel": true,
+  "source_pair_admitted": true,
+  "state": "SOURCE_PAIR_FROZEN_BEFORE_EVALUATOR_QUALIFICATION",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_API_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "request_count": 7,
+    "response_digest_chain_sha256": "bca7c4640bbe868af7ef36532452f073a504e21d28e4891546541967ad1abb7f"
+  },
+  "trigger_state": "GREEN"
+}
