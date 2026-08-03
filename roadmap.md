@@ -679,6 +679,17 @@ intermediate RED was the generic D1 license-name assumption; task 32's exact
 panel-bound root `LICENSE-APACHE` receipts repaired that helper assumption without
 changing source membership. No repository, dependency, evaluator, or model ran.
 
+The first full-closure runner inventory found 62/62 source closures, 58 root
+manifests, 44 root locks, and 57 independently sourced runner receipts. During
+residual inspection, however, the selected-byte language audit invalidated the
+panel: slots 14, 19, 21, 28, 32, 54, and 60 contain Cyrillic, Arabic, CJK,
+Japanese, or Korean natural-language bytes in selected source or verifier files.
+Binary fixtures are skipped rather than mis-decoded. Some hits are legitimate
+Unicode robustness cases, but Rule 7 requires exclusion or quarantine for this
+English seed. Preserve all closures and inventory evidence, replace exactly the
+seven slots with same-panel/same-programming-language English-content tasks, and
+rerun admission before any evaluator execution.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

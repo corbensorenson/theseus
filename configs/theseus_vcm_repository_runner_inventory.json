@@ -1,0 +1,24 @@
+{
+  "policy": "project_theseus_vcm_repository_runner_inventory_v1",
+  "state": "STATIC_INVENTORY_AFTER_EXACT_CLOSURE_BEFORE_DEPENDENCY_OR_REPOSITORY_EXECUTION",
+  "closure_report": "reports/theseus_vcm_repository_closure_materialization.json",
+  "closure_report_sha256": "39a38caf836c9a1e310ad50a73c81b36b703ff50d9a361edf9cf6a500d050dd9",
+  "report": "reports/theseus_vcm_repository_runner_inventory.json",
+  "authority": {
+    "normalized_archive_static_read_authorized": true,
+    "archive_extraction_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN inventory proves only which exact root manifests, locks, CI test lines, package test scripts, Cargo-standard test commands, and pytest declarations occur in the admitted normalized closures. A derived runner receipt is a prospective command candidate, not evidence that dependencies resolve or any parent fails or target passes. Missing metadata is an evaluator-instrument gap, never task, model, VCM, mechanism, or book evidence."
+}

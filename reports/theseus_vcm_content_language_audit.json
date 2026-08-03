@@ -1,0 +1,1187 @@
+{
+  "binary_identities_skipped": 4,
+  "candidate_or_control_calls": 0,
+  "created_utc": "2026-08-03T16:09:01.361470Z",
+  "external_reference_calls": 0,
+  "faults": [
+    "non_english_selected_content:14",
+    "non_english_selected_content:19",
+    "non_english_selected_content:21",
+    "non_english_selected_content:28",
+    "non_english_selected_content:32",
+    "non_english_selected_content:54",
+    "non_english_selected_content:60"
+  ],
+  "maximum_inference": "A RED result proves only that selected source or verifier bytes contain natural-language scripts outside the English seed scope. It invalidates panel admission until exact slots are replaced and re-audited. It is not evidence against a repository, task quality, model, VCM, mechanism, multilingual capability, or ASI Stack claim. Binary files are skipped rather than decoded as text.",
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_content_language_audit_v1",
+  "replacement_required_before_evaluator_execution": true,
+  "selected_text_identities_scanned": 429,
+  "source_panel_admission_remains_valid": false,
+  "source_panel_previously_admitted": true,
+  "state": "SOURCE_PANEL_CONTENT_LANGUAGE_SCOPE_VIOLATION_REPLACEMENT_REQUIRED",
+  "task_count": 62,
+  "tasks": [
+    {
+      "content_language_scope_passed": true,
+      "index": 1,
+      "repository": "endoftheline818/opensourcesai-cmdcenter",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 2,
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 3,
+      "repository": "QoderAI/better-harness",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 4,
+      "repository": "frappe/draw",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 5,
+      "repository": "didaquis/didibudget-frontend",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 6,
+      "repository": "elkimek/get-based",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 7,
+      "repository": "moshcoder/moshcode",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 8,
+      "repository": "manufosela/karajan-code",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 9,
+      "repository": "KosAlyohyn/vue-route-state",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 10,
+      "repository": "Autodidac/OrphanedMiscProjects",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 11,
+      "repository": "frootai/frootai",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 12,
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 13,
+      "repository": "dknowles2/ha-pitboss",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 14,
+      "repository": "denysdovhan/ha-aerial-danger",
+      "violations": [
+        {
+          "path": "custom_components/aerial_danger/danger/keywords.py",
+          "role": "parent_source",
+          "scripts": {
+            "Cyrillic": {
+              "count": 2302,
+              "sample_codepoints": [
+                "U+0430",
+                "U+0431",
+                "U+0432",
+                "U+0433",
+                "U+0434",
+                "U+0435",
+                "U+0436",
+                "U+0437",
+                "U+0438",
+                "U+0439",
+                "U+043A",
+                "U+043B"
+              ]
+            }
+          },
+          "sha256": "38b11806bd25a782aad769d2d36e22d4cfba3ff6d78eed3686544962cb6a8f68"
+        },
+        {
+          "path": "tests/danger/test_ballistic.py",
+          "role": "parent_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 1482,
+              "sample_codepoints": [
+                "U+0404",
+                "U+0406",
+                "U+0407",
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0414",
+                "U+0415",
+                "U+0416",
+                "U+0417",
+                "U+0418",
+                "U+041A"
+              ]
+            }
+          },
+          "sha256": "67ed1cb4ca2288f2d33efcf7bfb0f6c2896fd9e8669c306c84548207803b8883"
+        },
+        {
+          "path": "tests/danger/test_cruise.py",
+          "role": "parent_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 894,
+              "sample_codepoints": [
+                "U+0406",
+                "U+0407",
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0413",
+                "U+0414",
+                "U+0416",
+                "U+0417",
+                "U+0418",
+                "U+041A",
+                "U+041B"
+              ]
+            }
+          },
+          "sha256": "e7b22e7eefc4185395b246d153fc47552a2def70e7edb13c65f632daa45d8d06"
+        },
+        {
+          "path": "tests/danger/test_drone.py",
+          "role": "parent_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 1503,
+              "sample_codepoints": [
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0413",
+                "U+0414",
+                "U+0416",
+                "U+0417",
+                "U+041A",
+                "U+041B",
+                "U+041D",
+                "U+041E",
+                "U+041F"
+              ]
+            }
+          },
+          "sha256": "7f787eca0f817a600995ce6a1be885c2d08134e576e7d2db54870d3d1fb4a977"
+        },
+        {
+          "path": "tests/danger/test_generic.py",
+          "role": "parent_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 846,
+              "sample_codepoints": [
+                "U+0404",
+                "U+0406",
+                "U+0407",
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0413",
+                "U+0414",
+                "U+0415",
+                "U+0417",
+                "U+0418",
+                "U+041A"
+              ]
+            }
+          },
+          "sha256": "fd150f4cd60764992c8716a3536cf78bf7e9e46b839184b5523ee962f449d709"
+        },
+        {
+          "path": "custom_components/aerial_danger/danger/keywords.py",
+          "role": "target_source",
+          "scripts": {
+            "Cyrillic": {
+              "count": 2323,
+              "sample_codepoints": [
+                "U+0430",
+                "U+0431",
+                "U+0432",
+                "U+0433",
+                "U+0434",
+                "U+0435",
+                "U+0436",
+                "U+0437",
+                "U+0438",
+                "U+0439",
+                "U+043A",
+                "U+043B"
+              ]
+            }
+          },
+          "sha256": "d9738b3a9b17e7c9c601b73a196759ef9999308b9549d15f1f062e2d6b0d4c95"
+        },
+        {
+          "path": "tests/danger/test_ballistic.py",
+          "role": "target_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 1582,
+              "sample_codepoints": [
+                "U+0404",
+                "U+0406",
+                "U+0407",
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0414",
+                "U+0415",
+                "U+0416",
+                "U+0417",
+                "U+0418",
+                "U+041A"
+              ]
+            }
+          },
+          "sha256": "71e5487d462609abd96aaa5e21af0e9a21a259e210746c071d430092d1f4ec0f"
+        },
+        {
+          "path": "tests/danger/test_cruise.py",
+          "role": "target_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 920,
+              "sample_codepoints": [
+                "U+0406",
+                "U+0407",
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0413",
+                "U+0414",
+                "U+0416",
+                "U+0417",
+                "U+0418",
+                "U+041A",
+                "U+041B"
+              ]
+            }
+          },
+          "sha256": "aa836c7d11c30b6ac498c352448dca3c6e04ff650a647f9c8d6a4e046193e1b5"
+        },
+        {
+          "path": "tests/danger/test_drone.py",
+          "role": "target_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 1737,
+              "sample_codepoints": [
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0413",
+                "U+0414",
+                "U+0416",
+                "U+0417",
+                "U+041A",
+                "U+041B",
+                "U+041D",
+                "U+041E",
+                "U+041F"
+              ]
+            }
+          },
+          "sha256": "a72f0a921b3594b6fa7585311dd37cae6f68c19cb30c630af16fa816c2c43a67"
+        },
+        {
+          "path": "tests/danger/test_generic.py",
+          "role": "target_verifier",
+          "scripts": {
+            "Cyrillic": {
+              "count": 890,
+              "sample_codepoints": [
+                "U+0404",
+                "U+0406",
+                "U+0407",
+                "U+0410",
+                "U+0411",
+                "U+0412",
+                "U+0413",
+                "U+0414",
+                "U+0415",
+                "U+0417",
+                "U+0418",
+                "U+041A"
+              ]
+            }
+          },
+          "sha256": "18596ad9d2988ef10af90b4a2cccd09d9964c30386429e381bc33436832da256"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 15,
+      "repository": "ray-manaloto/macos-development-environment",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 16,
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 17,
+      "repository": "presidio-v/presidio-hardened-x402",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 18,
+      "repository": "NousResearch/hermes-agent",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 19,
+      "repository": "Ganesh-403/semantic-plagiarism-detector",
+      "violations": [
+        {
+          "path": "tests/core/test_text_chunking.py",
+          "role": "parent_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 20,
+              "sample_codepoints": [
+                "U+4E00",
+                "U+4E2A",
+                "U+4E8E",
+                "U+4EBA",
+                "U+5173",
+                "U+548C",
+                "U+5DE5",
+                "U+6587",
+                "U+662F",
+                "U+667A",
+                "U+672C",
+                "U+6D4B"
+              ]
+            }
+          },
+          "sha256": "20b681d0866a9e34e9c5e0a4b9af3e2ab179ef4b2c23fd9b17cb2f795b8505d1"
+        },
+        {
+          "path": "tests/core/test_text_chunking.py",
+          "role": "target_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 20,
+              "sample_codepoints": [
+                "U+4E00",
+                "U+4E2A",
+                "U+4E8E",
+                "U+4EBA",
+                "U+5173",
+                "U+548C",
+                "U+5DE5",
+                "U+6587",
+                "U+662F",
+                "U+667A",
+                "U+672C",
+                "U+6D4B"
+              ]
+            }
+          },
+          "sha256": "c52dfa056792e626b121b22a682dc1dc2b9ff89d0dd413d60dedf1ee3d0dd72e"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 20,
+      "repository": "bnet47/codexicon",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 21,
+      "repository": "mfat/sshpilot",
+      "violations": [
+        {
+          "path": "tests/test_pyxterm_flow_control.py",
+          "role": "parent_verifier",
+          "scripts": {
+            "Arabic": {
+              "count": 8,
+              "sample_codepoints": [
+                "U+0627",
+                "U+0633",
+                "U+0644",
+                "U+0645"
+              ]
+            }
+          },
+          "sha256": "e2dd4cef33669ccb4112d22da9c690d510fef0c2cc740e14ac7cccd21ec5d746"
+        },
+        {
+          "path": "tests/test_pyxterm_flow_control.py",
+          "role": "target_verifier",
+          "scripts": {
+            "Arabic": {
+              "count": 8,
+              "sample_codepoints": [
+                "U+0627",
+                "U+0633",
+                "U+0644",
+                "U+0645"
+              ]
+            }
+          },
+          "sha256": "0aa24a0d75a367fc6d73a66f5746b1dcc7f4db433398032439a1c0129d243718"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 22,
+      "repository": "TejashPrakash/student-management-system",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 23,
+      "repository": "pullboxapp/pullbox-direct-providers",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 24,
+      "repository": "openonion/connectonion",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 25,
+      "repository": "fibsem-os/fibsem-os",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 26,
+      "repository": "quodeq/quodeq",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 27,
+      "repository": "malkreide/mcp-audit-skill",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 28,
+      "repository": "moritan777/chat-trpg-gm-mvp",
+      "violations": [
+        {
+          "path": "fixed_truth_ai_gm_mvp.py",
+          "role": "parent_source",
+          "scripts": {
+            "CJK": {
+              "count": 3215,
+              "sample_codepoints": [
+                "U+4E00",
+                "U+4E01",
+                "U+4E08",
+                "U+4E0A",
+                "U+4E0D",
+                "U+4E16",
+                "U+4E2D",
+                "U+4E57",
+                "U+4E86",
+                "U+4E8B",
+                "U+4E9B",
+                "U+4EBA"
+              ]
+            },
+            "Hiragana": {
+              "count": 3111,
+              "sample_codepoints": [
+                "U+3041",
+                "U+3042",
+                "U+3044",
+                "U+3046",
+                "U+3048",
+                "U+304B",
+                "U+304C",
+                "U+304D",
+                "U+304E",
+                "U+304F",
+                "U+3050",
+                "U+3051"
+              ]
+            },
+            "Katakana": {
+              "count": 381,
+              "sample_codepoints": [
+                "U+30A1",
+                "U+30A4",
+                "U+30A7",
+                "U+30A9",
+                "U+30AA",
+                "U+30AB",
+                "U+30AC",
+                "U+30AD",
+                "U+30AF",
+                "U+30B0",
+                "U+30B3",
+                "U+30B7"
+              ]
+            }
+          },
+          "sha256": "dcf4d2a19a9a213f92b0ff46298c6318fe96afd6e8d3e2d798e35d898df01d0d"
+        },
+        {
+          "path": "fixed_truth_ai_gm_mvp.py",
+          "role": "target_source",
+          "scripts": {
+            "CJK": {
+              "count": 3452,
+              "sample_codepoints": [
+                "U+4E00",
+                "U+4E01",
+                "U+4E08",
+                "U+4E0A",
+                "U+4E0D",
+                "U+4E16",
+                "U+4E2D",
+                "U+4E57",
+                "U+4E86",
+                "U+4E8B",
+                "U+4E9B",
+                "U+4EBA"
+              ]
+            },
+            "Hiragana": {
+              "count": 3237,
+              "sample_codepoints": [
+                "U+3041",
+                "U+3042",
+                "U+3044",
+                "U+3046",
+                "U+3048",
+                "U+304B",
+                "U+304C",
+                "U+304D",
+                "U+304E",
+                "U+304F",
+                "U+3050",
+                "U+3051"
+              ]
+            },
+            "Katakana": {
+              "count": 415,
+              "sample_codepoints": [
+                "U+30A1",
+                "U+30A4",
+                "U+30A7",
+                "U+30A9",
+                "U+30AA",
+                "U+30AB",
+                "U+30AC",
+                "U+30AD",
+                "U+30AF",
+                "U+30B0",
+                "U+30B3",
+                "U+30B7"
+              ]
+            }
+          },
+          "sha256": "1c214aae7b9eccd8363d6055f8013b42f0888fef93b5aac87c0d015614fd124f"
+        },
+        {
+          "path": "tests/test_opening_geography.py",
+          "role": "target_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 45,
+              "sample_codepoints": [
+                "U+4E2D",
+                "U+4E3B",
+                "U+5009",
+                "U+5148",
+                "U+53F0",
+                "U+5831",
+                "U+5834",
+                "U+5CA9",
+                "U+5CAC",
+                "U+5CB8",
+                "U+5E72",
+                "U+5EAB"
+              ]
+            },
+            "Hiragana": {
+              "count": 46,
+              "sample_codepoints": [
+                "U+3042",
+                "U+3044",
+                "U+3046",
+                "U+304B",
+                "U+304C",
+                "U+3053",
+                "U+3057",
+                "U+3059",
+                "U+305B",
+                "U+3063",
+                "U+3064",
+                "U+3066"
+              ]
+            },
+            "Katakana": {
+              "count": 3,
+              "sample_codepoints": [
+                "U+30C8",
+                "U+30EB",
+                "U+30FC"
+              ]
+            }
+          },
+          "sha256": "f1f5e1d0b1aeec92cc749c74da204d27cec27a039464af6db79dd4177ef7e007"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 29,
+      "repository": "TAJD/cofferdam",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 30,
+      "repository": "kanso-lang/kanso",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 31,
+      "repository": "matssun/mcp-re",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 32,
+      "repository": "maelguimet/catomic",
+      "violations": [
+        {
+          "path": "tests/pty_smoke.rs",
+          "role": "parent_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 11,
+              "sample_codepoints": [
+                "U+732B"
+              ]
+            }
+          },
+          "sha256": "81575dec13a500a1bcf7543d814c9942ab8b4ff3e4afb5af3dba8493f0996113"
+        },
+        {
+          "path": "tests/pty_smoke.rs",
+          "role": "target_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 11,
+              "sample_codepoints": [
+                "U+732B"
+              ]
+            }
+          },
+          "sha256": "15981f6e0a095a6649202fd549b7c3044ee5d4230110e68ee5e1235eff154d3e"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 33,
+      "repository": "elan8/sysml-v2-parser",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 34,
+      "repository": "elan8/spec42",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 35,
+      "repository": "Stranger6667/jsonschema",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 36,
+      "repository": "tomerwave/godlint",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 37,
+      "repository": "BrokkAi/bifrost",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 38,
+      "repository": "surrealdb/surrealkv",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 39,
+      "repository": "Syynth/brink",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 40,
+      "repository": "ainetus/Co-Study4Grid",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 41,
+      "repository": "positonic/exponential",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 42,
+      "repository": "constructive-io/constructive",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 43,
+      "repository": "cwh555/AnimeList",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 44,
+      "repository": "Gigadrive/sdk",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 45,
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 46,
+      "repository": "celados/gkit",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 47,
+      "repository": "handsontable/examples",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 48,
+      "repository": "pokle/glidecomp",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 49,
+      "repository": "AKogut/flakemetry",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 50,
+      "repository": "tutur3u/platform",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 51,
+      "repository": "inkeep/open-knowledge",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 52,
+      "repository": "masumi-network/sokosumi",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 53,
+      "repository": "omnist-dev/omnist-ts",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 54,
+      "repository": "bd-makers/team-harness",
+      "violations": [
+        {
+          "path": "src/commands/doctor.mjs",
+          "role": "parent_source",
+          "scripts": {
+            "Hangul": {
+              "count": 165,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+AC10",
+                "U+AC1C",
+                "U+AC70",
+                "U+AC80",
+                "U+AC8C",
+                "U+AD6C",
+                "U+AE30",
+                "U+AECD",
+                "U+B204",
+                "U+B294",
+                "U+B2E8"
+              ]
+            }
+          },
+          "sha256": "265f405a29b18c220a8ab62710191cb3499528192612903f2f1db83a9d95fc2a"
+        },
+        {
+          "path": "src/commands/migrate.mjs",
+          "role": "parent_source",
+          "scripts": {
+            "Hangul": {
+              "count": 169,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+AC31",
+                "U+AC70",
+                "U+AC74",
+                "U+ACF5",
+                "U+ACFC",
+                "U+AD50",
+                "U+B0B4",
+                "U+B108",
+                "U+B294",
+                "U+B2C8",
+                "U+B2E4"
+              ]
+            }
+          },
+          "sha256": "aa4d7af11b3b4bde1f97a94140899d9877981ab60ae4e33b0f4988ab43e8f154"
+        },
+        {
+          "path": "src/harness.mjs",
+          "role": "parent_source",
+          "scripts": {
+            "Hangul": {
+              "count": 46,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+ACBD",
+                "U+AD8C",
+                "U+AE30",
+                "U+AE68",
+                "U+B2C8",
+                "U+B2E4",
+                "U+B354",
+                "U+B3D9",
+                "U+B4DC",
+                "U+B77C",
+                "U+B85C"
+              ]
+            }
+          },
+          "sha256": "c316d726754ff2edf48d568dbe9a4ddd502f0ac05e843b6fc9b715a839d98799"
+        },
+        {
+          "path": "tests/migrate-session-hook.test.mjs",
+          "role": "parent_verifier",
+          "scripts": {
+            "Hangul": {
+              "count": 51,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+ACBD",
+                "U+ADF8",
+                "U+AE30",
+                "U+B294",
+                "U+B4F1",
+                "U+B808",
+                "U+B9C8",
+                "U+BA71",
+                "U+BA74",
+                "U+BBF8",
+                "U+BC30"
+              ]
+            }
+          },
+          "sha256": "4d4d84e6bd5725247a4f9e8bb9d823ad59c89355466b78923c69efdb1854c735"
+        },
+        {
+          "path": "src/commands/doctor.mjs",
+          "role": "target_source",
+          "scripts": {
+            "Hangul": {
+              "count": 165,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+AC10",
+                "U+AC1C",
+                "U+AC70",
+                "U+AC80",
+                "U+AC8C",
+                "U+AD6C",
+                "U+AE30",
+                "U+AECD",
+                "U+B204",
+                "U+B294",
+                "U+B2E8"
+              ]
+            }
+          },
+          "sha256": "0633f23027e0c0c9e8dce806df6922d26bbc42c72fb473df4c8532a8ca352473"
+        },
+        {
+          "path": "src/commands/migrate.mjs",
+          "role": "target_source",
+          "scripts": {
+            "Hangul": {
+              "count": 222,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+AC31",
+                "U+AC70",
+                "U+AC74",
+                "U+ACBD",
+                "U+ACF5",
+                "U+ACFC",
+                "U+AD50",
+                "U+B0B4",
+                "U+B108",
+                "U+B294",
+                "U+B2A5"
+              ]
+            }
+          },
+          "sha256": "35020a5f0e21546649a24ef66cac3f56512927c1d6799e5973556143a747eee4"
+        },
+        {
+          "path": "src/harness.mjs",
+          "role": "target_source",
+          "scripts": {
+            "Hangul": {
+              "count": 46,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+ACBD",
+                "U+AD8C",
+                "U+AE30",
+                "U+AE68",
+                "U+B2C8",
+                "U+B2E4",
+                "U+B354",
+                "U+B3D9",
+                "U+B4DC",
+                "U+B77C",
+                "U+B85C"
+              ]
+            }
+          },
+          "sha256": "391320e31933adf4d13bdd4ca638629cc2d760ab1989bfd14e73c592bad9384b"
+        },
+        {
+          "path": "tests/migrate-session-hook.test.mjs",
+          "role": "target_verifier",
+          "scripts": {
+            "Hangul": {
+              "count": 179,
+              "sample_codepoints": [
+                "U+AC00",
+                "U+ACBD",
+                "U+ACE0",
+                "U+ACFC",
+                "U+AD34",
+                "U+AD8C",
+                "U+ADF8",
+                "U+AE30",
+                "U+AE68",
+                "U+B294",
+                "U+B2E4",
+                "U+B36E"
+              ]
+            }
+          },
+          "sha256": "98e353f5fec048cec1eb48c4b44ce4ad5814ed847ffe8083df11c8d6fbcd73ed"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 55,
+      "repository": "rickfelix/EHG_Engineer",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 56,
+      "repository": "AbsoluteMode/session-recall",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 57,
+      "repository": "matt82198/aesop",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 58,
+      "repository": "ShadowEnemyx/serien-sammler",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 59,
+      "repository": "dcdpr/jp",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": false,
+      "index": 60,
+      "repository": "breferrari/vigia",
+      "violations": [
+        {
+          "path": "crates/vigia/tests/render.rs",
+          "role": "parent_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 11,
+              "sample_codepoints": [
+                "U+51FA",
+                "U+65B9",
+                "U+65E5",
+                "U+672C",
+                "U+898B",
+                "U+8A9E",
+                "U+8AAD"
+              ]
+            },
+            "Hiragana": {
+              "count": 4,
+              "sample_codepoints": [
+                "U+3057",
+                "U+307F"
+              ]
+            },
+            "Katakana": {
+              "count": 3,
+              "sample_codepoints": [
+                "U+30B9",
+                "U+30C6",
+                "U+30C8"
+              ]
+            }
+          },
+          "sha256": "d19dac7ebe7b6378b2686b7487e061cf87c0e886d0e937395af4bfd7184b4254"
+        },
+        {
+          "path": "crates/vigia/tests/render.rs",
+          "role": "target_verifier",
+          "scripts": {
+            "CJK": {
+              "count": 11,
+              "sample_codepoints": [
+                "U+51FA",
+                "U+65B9",
+                "U+65E5",
+                "U+672C",
+                "U+898B",
+                "U+8A9E",
+                "U+8AAD"
+              ]
+            },
+            "Hiragana": {
+              "count": 4,
+              "sample_codepoints": [
+                "U+3057",
+                "U+307F"
+              ]
+            },
+            "Katakana": {
+              "count": 3,
+              "sample_codepoints": [
+                "U+30B9",
+                "U+30C6",
+                "U+30C8"
+              ]
+            }
+          },
+          "sha256": "01825c41c1e468ee16365b784f1e6146637d8a152f85568bcb376f29ec371a46"
+        }
+      ]
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 61,
+      "repository": "pocket-stack/pocketjs",
+      "violations": []
+    },
+    {
+      "content_language_scope_passed": true,
+      "index": 62,
+      "repository": "conorbronsdon/substack-mcp",
+      "violations": []
+    }
+  ],
+  "trigger_state": "RED",
+  "violation_indices": [
+    14,
+    19,
+    21,
+    28,
+    32,
+    54,
+    60
+  ],
+  "violation_task_count": 7
+}

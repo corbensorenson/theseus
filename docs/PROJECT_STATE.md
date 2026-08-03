@@ -334,6 +334,15 @@ upstream archives. The `LICENSE-APACHE` failure was a root-license filename
 assumption in the reused D1 helper, repaired by auditing every artifact against
 its exact panel-bound license path. Zero untrusted executions occurred.
 
+Static inventory then found 58/62 root manifests, 44/62 root locks, and 57/62
+independently declared runner candidates. A deeper selected-byte audit revoked
+panel admission: slots 14, 19, 21, 28, 32, 54, and 60 contain non-English
+natural-language scripts in selected text files. This includes multilingual
+robustness fixtures as well as non-English product behavior; both are outside
+the English-only seed unless quarantined. The closures remain valid evidence of
+what was fetched, but no evaluator or model may consume this panel. Replace only
+those seven slots under the same quotas and re-audit content before proceeding.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

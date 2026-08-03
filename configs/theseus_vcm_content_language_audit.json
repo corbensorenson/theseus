@@ -1,0 +1,36 @@
+{
+  "policy": "project_theseus_vcm_content_language_audit_v1",
+  "state": "INDEPENDENT_SELECTED_BYTE_LANGUAGE_SCOPE_AUDIT_BEFORE_EVALUATOR_EXECUTION",
+  "source_panel": "reports/theseus_vcm_source_panel_audit_v2.json",
+  "source_panel_sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7",
+  "report": "reports/theseus_vcm_content_language_audit.json",
+  "expected_violation_indices": [14, 19, 21, 28, 32, 54, 60],
+  "forbidden_unicode_scripts": [
+    {"name":"Cyrillic","start":"0400","end":"052F"},
+    {"name":"Hebrew","start":"0590","end":"05FF"},
+    {"name":"Arabic","start":"0600","end":"06FF"},
+    {"name":"Devanagari","start":"0900","end":"097F"},
+    {"name":"Thai","start":"0E00","end":"0E7F"},
+    {"name":"Hiragana","start":"3040","end":"309F"},
+    {"name":"Katakana","start":"30A0","end":"30FF"},
+    {"name":"CJK","start":"3400","end":"9FFF"},
+    {"name":"Hangul","start":"AC00","end":"D7AF"}
+  ],
+  "binary_extensions": [".png", ".jpg", ".jpeg", ".gif", ".webp", ".ico", ".pdf", ".zip", ".gz", ".wasm", ".bin"],
+  "authority": {
+    "selected_archive_static_text_read_authorized": true,
+    "repository_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A RED result proves only that selected source or verifier bytes contain natural-language scripts outside the English seed scope. It invalidates panel admission until exact slots are replaced and re-audited. It is not evidence against a repository, task quality, model, VCM, mechanism, multilingual capability, or ASI Stack claim. Binary files are skipped rather than decoded as text."
+}
