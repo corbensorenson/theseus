@@ -127,8 +127,11 @@ setup guard before client construction. The unchanged 18-task registry passes
 zero-call preflight and full independent metadata replay for all 18 rows in 90
 public calls. The initial sandbox transport pause is preserved with zero admitted
 rows. A new hash-bound source contract preserves the v3 archives, targets a
-separate v4 directory, and passes zero-call preflight. Source replay remains
-required before the panel can seal, and no adequacy observation is yet authorized.
+separate v4 directory, and passes zero-call preflight. Its source replay is now
+GREEN for 18/18 pairs and 36 archives; an explicit-hash network-free audit
+verified all receipts and selected-source differences. Renewed construct review
+names one causal slice per task and opens evaluator qualification only. The pool
+is not sealed and no adequacy observation is yet authorized.
 
 ## Repository Map
 

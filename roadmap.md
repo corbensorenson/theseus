@@ -238,7 +238,13 @@ replay is now GREEN for 18/18 rows in 90 public calls; its initial zero-row
 sandbox transport pause is retained. Source-byte replay and independent archive
 and construct audits are the active boundary. The amended source contract is now
 hash-bound, preserves the prior v3 archive set, targets a separate v4 directory,
-and passes zero-call preflight before retrieval.
+and passes zero-call preflight before retrieval. The v4 replay is GREEN for
+18/18 pairs and 36 archives; an explicit-hash network-free audit verified 36
+archive receipts, 76 members, exact safe membership, and 18 selected-source
+differences. All 17 unreplaced archive pairs are byte-identical to v3. Renewed
+construct review names one causal slice and evaluator obligation per task, so
+parent-negative/target-positive evaluator qualification is active. The pool is
+not sealed and model or reference execution remains closed.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

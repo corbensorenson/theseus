@@ -14,6 +14,7 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_REPORT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_materialization_v3.json"
 DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_materialization_v3_audit.json"
+DEFAULT_OUTPUT_DIRECTORY = ROOT / "tests" / "fixtures" / "theseus_semantic_ir_production_adequacy"
 EXPECTED_REPORT_SHA256 = "2aaf9eb8fe85256d45786f9def49828233956a239e7f998f0b9f4aaf0f7bfa24"
 POLICY = "project_theseus_semantic_ir_production_adequacy_materialization_audit_v1"
 
@@ -22,16 +23,39 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--report", default=relative(DEFAULT_REPORT))
     parser.add_argument("--out", default=relative(DEFAULT_OUT))
+    parser.add_argument("--expected-report-sha256", default=EXPECTED_REPORT_SHA256)
+    parser.add_argument("--expected-output-directory", default=relative(DEFAULT_OUTPUT_DIRECTORY))
+    parser.add_argument("--expected-network-source-calls", type=int, default=78)
+    parser.add_argument("--expected-archive-count", type=int, default=36)
+    parser.add_argument("--expected-member-count", type=int, default=76)
+    parser.add_argument("--expected-source-difference-count", type=int, default=18)
     args = parser.parse_args()
-    result = audit(resolve(args.report))
+    result = audit(
+        resolve(args.report),
+        expected_report_sha256=args.expected_report_sha256,
+        expected_output_directory=resolve(args.expected_output_directory),
+        expected_network_source_calls=args.expected_network_source_calls,
+        expected_archive_count=args.expected_archive_count,
+        expected_member_count=args.expected_member_count,
+        expected_source_difference_count=args.expected_source_difference_count,
+    )
     write_json(resolve(args.out), result)
     print(json.dumps(summary(result), indent=2, sort_keys=True))
     return 0 if result["trigger_state"] == "GREEN" else 2
 
 
-def audit(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
+def audit(
+    report_path: Path = DEFAULT_REPORT,
+    *,
+    expected_report_sha256: str = EXPECTED_REPORT_SHA256,
+    expected_output_directory: Path = DEFAULT_OUTPUT_DIRECTORY,
+    expected_network_source_calls: int = 78,
+    expected_archive_count: int = 36,
+    expected_member_count: int = 76,
+    expected_source_difference_count: int = 18,
+) -> dict[str, Any]:
     faults: list[str] = []
-    if not report_path.is_file() or sha256_file(report_path) != EXPECTED_REPORT_SHA256:
+    if not report_path.is_file() or sha256_file(report_path) != expected_report_sha256:
         faults.append("materialization_report_binding_invalid")
         report: dict[str, Any] = {}
     else:
@@ -41,7 +65,10 @@ def audit(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
     if report.get("faults") != [] or report.get("stage") != "source_materialization_complete":
         faults.append("materialization_state_invalid")
     counters = mapping(report.get("counters"))
-    expected_activity = {"network_source_calls": 78, "source_archives_materialized": 36}
+    expected_activity = {
+        "network_source_calls": expected_network_source_calls,
+        "source_archives_materialized": expected_archive_count,
+    }
     for key, value in counters.items():
         expected = expected_activity.get(key, 0)
         if integer(value) != expected:
@@ -75,21 +102,29 @@ def audit(report_path: Path = DEFAULT_REPORT) -> dict[str, Any]:
             faults.append(f"task_{row.get('index')}:selected_source_bytes_unchanged")
     expected_paths = sorted(
         relative(path)
-        for path in (ROOT / "tests" / "fixtures" / "theseus_semantic_ir_production_adequacy").glob("*.tar.gz")
+        for path in expected_output_directory.glob("*.tar.gz")
     )
-    if len(archive_paths) != 36 or len(set(archive_paths)) != 36:
+    if len(archive_paths) != expected_archive_count or len(set(archive_paths)) != expected_archive_count:
         faults.append("archive_path_cardinality_invalid")
     if sorted(archive_paths) != expected_paths:
         faults.append("archive_directory_membership_invalid")
-    if member_count != 76:
+    if member_count != expected_member_count:
         faults.append("member_receipt_count_invalid")
-    if source_difference_count != 18:
+    if source_difference_count != expected_source_difference_count:
         faults.append("source_difference_count_invalid")
     return {
         "policy": POLICY,
         "trigger_state": "GREEN" if not faults else "RED",
         "faults": sorted(set(faults)),
         "materialization_report": artifact(report_path),
+        "audit_contract": {
+            "expected_report_sha256": expected_report_sha256,
+            "expected_output_directory": relative(expected_output_directory),
+            "expected_network_source_calls": expected_network_source_calls,
+            "expected_archive_count": expected_archive_count,
+            "expected_member_count": expected_member_count,
+            "expected_source_difference_count": expected_source_difference_count,
+        },
         "archive_receipt_count": len(archive_paths),
         "member_receipt_count": member_count,
         "selected_source_difference_count": source_difference_count,

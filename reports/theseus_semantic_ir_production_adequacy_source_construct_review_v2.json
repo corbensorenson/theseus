@@ -1,0 +1,174 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_source_construct_review_v2",
+  "trigger_state": "GREEN",
+  "panel_admitted_for_evaluator_qualification": true,
+  "candidate_or_model_exposure_authorized": false,
+  "materialization_report": "reports/theseus_semantic_ir_production_adequacy_materialization_v4.json",
+  "materialization_report_sha256": "7572e6ebb82ae6b16575298c42450a31d7c50ce2823fd5fc6346b12d6216f122",
+  "materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v4_audit.json",
+  "materialization_audit_sha256": "f28b54e3e2871a8cffeb77bff953df425a134d4f1eb5c21a8c42a9acfcb624c1",
+  "predecessor_red_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review.json",
+  "predecessor_red_review_sha256": "4f3e6023d5ec55ea47c44d89dc0810675de7f7abf53e74e85abfe9bef40aa11c",
+  "replacement_selection": "reports/theseus_semantic_ir_production_adequacy_task11_replacement_selection.json",
+  "replacement_selection_sha256": "7f3de66c6b9390b4fedb622ee74a18b13070ab745da1ac1dfe4245fca1911004",
+  "review_method": "Evaluator-custody review of every selected-source parent/target diff. Admission requires an observable causal repair slice matching the frozen edit stratum. A broad public PR may supply context, but only the named slice may define the natural request and evaluator; unrelated target changes cannot become answer templates, hidden requirements, or acceptance conditions.",
+  "reviewed_task_count": 18,
+  "construct_valid_task_count": 18,
+  "predecessor_pair_identity": {
+    "unchanged_task_indices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "unchanged_parent_and_target_archive_pair_count": 17,
+    "replacement_task_index": 11
+  },
+  "causal_slices": [
+    {
+      "index": 1,
+      "stratum": "single_expression_replacement",
+      "mechanism": "Read a legacy manifest size through a missing-key fallback rather than unconditional indexing.",
+      "evaluator_obligation": "A legacy row without size_bytes must be handled while an explicit size_bytes value remains unchanged."
+    },
+    {
+      "index": 2,
+      "stratum": "single_expression_replacement",
+      "mechanism": "Preserve requested feature-column ordering through name-based selection and stable duplicate removal.",
+      "evaluator_obligation": "Reordered and duplicated feature requests must produce the requested stable column order without changing distinct values."
+    },
+    {
+      "index": 3,
+      "stratum": "single_expression_replacement",
+      "mechanism": "Replace nested parameter indexing with a chained mapping fallback for devices lacking a parameter definition.",
+      "evaluator_obligation": "A missing device mapping must fall back to the parameter code while a present mapping retains its exact code."
+    },
+    {
+      "index": 4,
+      "stratum": "branch_or_predicate_replacement",
+      "mechanism": "Distinguish an omitted path from an explicitly supplied empty path with an identity predicate.",
+      "evaluator_obligation": "None and an empty path-like value must take different declared branches without truthiness laundering."
+    },
+    {
+      "index": 5,
+      "stratum": "branch_or_predicate_replacement",
+      "mechanism": "Enforce fill-color and fill-pattern mutual exclusion in both update directions.",
+      "evaluator_obligation": "Setting either fill mode must remove the conflicting mode while unrelated style fields remain stable."
+    },
+    {
+      "index": 6,
+      "stratum": "branch_or_predicate_replacement",
+      "mechanism": "Resolve F2Py kind requirements through corrected predicate and kind-mapping logic.",
+      "evaluator_obligation": "Mapped and unmapped kind requirements must take the correct branch without accepting a mismatched typedef."
+    },
+    {
+      "index": 7,
+      "stratum": "collection_or_data_shape_change",
+      "mechanism": "Apply the repaired genomic range ordering rule to the collection while preserving associated row data.",
+      "evaluator_obligation": "Adversarial chromosome/strand ordering must be correct and every non-key value must remain attached to its original row."
+    },
+    {
+      "index": 8,
+      "stratum": "collection_or_data_shape_change",
+      "mechanism": "Detect serpentine sweeps using offset-invariant deltas rather than absolute high-offset values.",
+      "evaluator_obligation": "Equivalent low- and high-offset sweeps must yield the same orientation and non-serpentine data must remain unchanged."
+    },
+    {
+      "index": 9,
+      "stratum": "collection_or_data_shape_change",
+      "mechanism": "Split ingest output so every emitted chunk respects the configured maximum size.",
+      "evaluator_obligation": "Oversized boundary cases must be fully covered by bounded chunks with no loss, duplication, or empty trailing fragment."
+    },
+    {
+      "index": 10,
+      "stratum": "insert_guard_or_setup_before",
+      "mechanism": "Honor an active forced-offline window before ordinary environment checks and network reachability work.",
+      "evaluator_obligation": "An active force-offline state must return offline without a reachability call; inactive state must preserve normal environment behavior."
+    },
+    {
+      "index": 11,
+      "stratum": "insert_guard_or_setup_before",
+      "mechanism": "Move the optional Tavily import into the fallback call and guard ImportError before client construction.",
+      "evaluator_obligation": "Module import must succeed without Tavily, fallback use must raise the declared local error, and installed Tavily behavior must remain callable.",
+      "parent_selected_source_sha256": "388d08746e765a9e5a37ace1429a130331d115af5d71900e2962aeb74201c0f0",
+      "target_selected_source_sha256": "5e49e825e23bae65609181ce7147d65dcac7414188f00a913192c2da8912d9e3"
+    },
+    {
+      "index": 12,
+      "stratum": "insert_guard_or_setup_before",
+      "mechanism": "Remove a leading duplicate H1 before downstream challenge-description conversion.",
+      "evaluator_obligation": "A duplicated leading title must collapse once while distinct headings and title-free content remain unchanged."
+    },
+    {
+      "index": 13,
+      "stratum": "insert_action_or_cleanup_after",
+      "mechanism": "Convert a message-not-found management response into an empty session collection after the request completes.",
+      "evaluator_obligation": "The exact not-found response must return an empty list while success and unrelated error responses retain their prior behavior."
+    },
+    {
+      "index": 14,
+      "stratum": "insert_action_or_cleanup_after",
+      "mechanism": "Inspect noninteractive clone completion and return a bounded failure after a nonzero result.",
+      "evaluator_obligation": "A failed clone must not yield a source reference or hang for credentials; a successful clone must preserve the existing return path."
+    },
+    {
+      "index": 15,
+      "stratum": "insert_action_or_cleanup_after",
+      "mechanism": "Insert refreshed S3 Express credentials into a bounded ordered cache and evict the oldest entry after overflow.",
+      "evaluator_obligation": "Concurrent same-bucket refresh must deduplicate, cache hits must move to the end, overflow must evict exactly the oldest entry, and failures must not poison the cache."
+    },
+    {
+      "index": 16,
+      "stratum": "multi_unit_dependency_local_repair",
+      "mechanism": "Add a coordinate-normalization unit and route locator consumers through it so logical and physical display spaces agree.",
+      "evaluator_obligation": "The helper and consumer must agree under non-unit scaling, round-trip coordinates within tolerance, and preserve unit-scale behavior."
+    },
+    {
+      "index": 17,
+      "stratum": "multi_unit_dependency_local_repair",
+      "mechanism": "Add dependency-aware definition ordering and integrate it into the sorter without moving a definition below import-time reads.",
+      "evaluator_obligation": "A dependency chain and cycle control must preserve import-time availability, deterministic ordering, and source content."
+    },
+    {
+      "index": 18,
+      "stratum": "multi_unit_dependency_local_repair",
+      "mechanism": "Centralize the instrument-type allowlist and consume it at database-write validation sites.",
+      "evaluator_obligation": "Both configuration and writer paths must accept the same allowed set, reject an unknown type, and avoid divergent duplicate constants."
+    }
+  ],
+  "evaluator_qualification_constraints": {
+    "natural_request_derived_from_causal_slice_only": true,
+    "target_patch_or_exact_target_bytes_visible_to_candidate": false,
+    "unrelated_target_changes_are_acceptance_conditions": false,
+    "parent_negative_and_target_positive_required": true,
+    "task_specific_mutation_or_corruption_control_required": true,
+    "unrelated_behavior_stability_required": true,
+    "safe_no_effect_or_bounded_failure_required": true,
+    "source_disjoint_evaluator_logic_required": true,
+    "all_eighteen_packets_must_qualify_before_pool_seal": true
+  },
+  "prohibited_counters": {
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "maximum_inference": "All 18 selected-source pairs contain a scopeable causal repair matching the frozen edit stratum, so evaluator construction and independent parent-negative/target-positive qualification may begin. This does not establish that any evaluator is adequate, that the implementation or model can solve a task, that Semantic-IR has a treatment effect, or that D1, D2, training, serving, or book support may open."
+}
