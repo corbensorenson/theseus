@@ -1,0 +1,38 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_materialization_v1",
+  "state": "FIXED_BEFORE_SOURCE_BYTE_RETRIEVAL",
+  "source_commit": "374844c5",
+  "adequacy_preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
+  "adequacy_preregistration_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
+  "source_candidates": "configs/theseus_semantic_ir_production_adequacy_source_candidates.json",
+  "source_candidates_sha256": "31183fe270ef012c96c7519308413f2c83321148614d646203d6058894f0b4c1",
+  "metadata_report": "reports/theseus_semantic_ir_production_adequacy_metadata.json",
+  "metadata_report_sha256": "043b42e57493ce7f6b81b47a6da925372487699d30fa6c5a12dd40c1012412ca",
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy",
+  "archive_policy": {
+    "selected_source_and_license_files_only": true,
+    "deterministic_tar_gzip": true,
+    "mtime": 0,
+    "uid": 0,
+    "gid": 0,
+    "mode": "0644",
+    "symlinks_allowed": false,
+    "parent_missing_target_added_selected_path_allowed": true,
+    "target_missing_selected_path_allowed": false
+  },
+  "authority": {
+    "public_source_file_retrieval_authorized": true,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_or_control_calls_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "serving_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN materialization proves only that exact selected public source and license bytes at the frozen parent and target revisions were content-bound into deterministic minimal archives. It does not establish parent failure, target success, evaluator adequacy, production mechanics, a subsystem effect, D1, D2, or book support."
+}

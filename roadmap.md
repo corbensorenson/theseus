@@ -392,8 +392,11 @@ Use existing owners; create no new cleanup or report family.
    evaluator interface, and campaign-derived cost authority with zero calls.
 3. **Complete:** repair the exact Semantic-IR identity/coverage/target/unit
    mechanics on bounded non-claim evidence through the production path.
-4. **Active:** run an independent adequacy audit. If it fails, freeze the implementation
-   and select the next architecture-shaping residual; do not open fresh tasks.
+4. **Active:** complete the prospectively frozen selected-file source
+   materialization and independent parent-negative/target-positive evaluator
+   qualification, then run the independent adequacy audit. If it fails, freeze
+   the implementation and select the next architecture-shaping residual; do not
+   open fresh claim tasks.
 5. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
    sealed before the first arm opened.

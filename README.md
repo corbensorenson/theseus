@@ -106,9 +106,11 @@ edit strata. One easy project-authored canary is not task-distribution
 competence, a subsystem effect, or authority to open D1.
 
 The 18 exact public PR identities and license files have now passed independent
-metadata recomputation with zero model calls. Source materialization and
-parent-negative/target-positive evaluator qualification are active; the panel
-is not sealed and no adequacy observation is yet authorized.
+metadata recomputation with zero model calls. A selected-file-only,
+deterministic source materializer is prospectively frozen and preflight-GREEN
+with zero network source calls. Source-byte materialization and
+parent-negative/target-positive evaluator qualification remain active; the
+panel is not sealed and no adequacy observation is yet authorized.
 
 ## Repository Map
 

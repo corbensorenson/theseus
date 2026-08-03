@@ -5436,7 +5436,7 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "active_preregistration_green_source_acquisition_open",
+        "status": "active_materialization_preregistered_zero_source_calls",
         "source_bindings": {
           "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
           "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
@@ -5445,9 +5445,13 @@
           "source_candidates": "configs/theseus_semantic_ir_production_adequacy_source_candidates.json",
           "metadata_acquisition_owner": "scripts/theseus_semantic_ir_production_adequacy_acquisition.py",
           "metadata_acquisition_report": "reports/theseus_semantic_ir_production_adequacy_metadata.json",
-          "failed_metadata_transport_receipt": "reports/theseus_semantic_ir_production_adequacy_metadata_urllib_failure.json"
+          "failed_metadata_transport_receipt": "reports/theseus_semantic_ir_production_adequacy_metadata_urllib_failure.json",
+          "materialization_contract": "configs/theseus_semantic_ir_production_adequacy_materialization.json",
+          "materialization_owner": "scripts/theseus_semantic_ir_production_adequacy_materialization.py",
+          "materialization_test": "tests/test_theseus_semantic_ir_production_adequacy_materialization.py",
+          "materialization_preflight": "reports/theseus_semantic_ir_production_adequacy_materialization_preflight.json"
         },
-        "current_boundary": "Metadata selection is GREEN for 18/18 distinct post-snapshot repositories with independently recomputed PR, merge, first-parent, changed-file, and license identities. Source archives and evaluators remain unopened; all model, reference, training, D1, and D2 counters remain zero.",
+        "current_boundary": "Metadata selection is GREEN for 18/18 distinct post-snapshot repositories with independently recomputed PR, merge, first-parent, changed-file, and license identities. The selected-file-only deterministic materialization contract is prospectively frozen and preflight-GREEN with zero network source calls. Source bytes, archives, and evaluators remain unopened; all model, reference, training, D1, and D2 counters remain zero.",
         "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },
