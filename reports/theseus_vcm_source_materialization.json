@@ -3,7 +3,7 @@
   "candidate_packet_materialization_opened": false,
   "config": {
     "path": "configs/theseus_vcm_source_materialization.json",
-    "sha256": "44abb155aeb4eea422f6a3e936a7d0d9a10a30481d6ecc05d66fe659817f4034"
+    "sha256": "134fd3f3d7765d32657d1062a9f767cdfe2300f64f6aaffa4fc0679a87023b7d"
   },
   "counters": {
     "D1_cases_consumed": 0,
@@ -19,7 +19,7 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T11:14:38.358714Z",
+  "created_utc": "2026-08-03T11:15:52.851851Z",
   "faults": [],
   "hidden_evaluation_opened": false,
   "maximum_inference": "A GREEN materialization proves only that the exact frozen v7 changed source paths, changed verifier paths, PR titles, and repository licenses were content-bound at exact base/head revisions into deterministic archives without untrusted execution. It does not establish parent failure, target success, evaluator independence or adequacy, candidate-visible packet integrity, VCM usefulness, local or Luna competence, training value, D1, D2, serving, or ASI Stack support.",

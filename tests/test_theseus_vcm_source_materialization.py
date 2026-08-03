@@ -109,11 +109,13 @@ def test_source_checkpoint_is_finalized_before_report_hash(tmp_path: Path) -> No
         "counters": materialize.zero_counters(),
     }
     finalized = materialize.finalize_receipt(
-        report, ledger, SimpleNamespace(title_requests=0, source_requests=0)
+        report, ledger, SimpleNamespace(title_requests=2, source_requests=3)
     )
     assert finalized["checkpoint_artifact_hash_verified_final"] is True
     assert finalized["checkpoint"]["sha256"] == p2a.sha256_file(ledger.path)
     assert p2a.read_json(ledger.path)["state"] == "FIXTURE_TERMINAL"
+    assert finalized["counters"]["public_metadata_title_requests"] == 2
+    assert finalized["counters"]["public_source_content_requests"] == 3
 
 
 def test_source_authority_opens_retrieval_only() -> None:

@@ -402,6 +402,10 @@ def finalize_receipt(
         str(report.get("state") or "UNKNOWN"),
         int(report.get("selected_repository_count") or 0),
     )
+    counters = dict(p2a.mapping(report.get("counters")))
+    counters["public_metadata_title_requests"] = client.title_requests
+    counters["public_source_content_requests"] = client.source_requests
+    report["counters"] = counters
     report["transport_retry_accounting"] = ledger.summary()
     report["transport"] = {
         "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
