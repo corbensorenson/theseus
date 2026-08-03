@@ -328,6 +328,12 @@ upstream archive, preserving the deterministic derivative and restartability.
 The zero-download TLS verification pause is preserved. The active successor pins
 the installed certifi CA bundle by exact hash and is back to GREEN preflight.
 
+All 124 exact parent/head repository closures are now GREEN and independently
+hash-verified. The retained normalized set is about 1.5 GiB with no duplicate
+upstream archives. The `LICENSE-APACHE` failure was a root-license filename
+assumption in the reused D1 helper, repaired by auditing every artifact against
+its exact panel-bound license path. Zero untrusted executions occurred.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

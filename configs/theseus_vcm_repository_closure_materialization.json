@@ -3,7 +3,7 @@
   "state": "PROSPECTIVE_EXACT_REPOSITORY_CLOSURE_BEFORE_UNTRUSTED_EXECUTION",
   "source_panel": "reports/theseus_vcm_source_panel_audit_v2.json",
   "bindings": [
-    {"id": "closure_owner", "path": "scripts/theseus_vcm_repository_closure_materialization.py", "sha256": "9fa075c5e41d8429f9a51b7e815777acd711da7cb7e83d3bf8c1869d2cb4b5e7"},
+    {"id": "closure_owner", "path": "scripts/theseus_vcm_repository_closure_materialization.py", "sha256": "9fc0aca0f03a2bd9f638a2e79a6fcf3879245f057da59b8d54e15d215bcb8d8f"},
     {"id": "source_panel", "path": "reports/theseus_vcm_source_panel_audit_v2.json", "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
     {"id": "materialization_owner", "path": "scripts/theseus_d1_source_materialization.py", "sha256": "8816d4c6758c0a18771997948249cb17b556c46015e1bfa084d7bfd3ac1b4be0"},
     {"id": "archive_sanitizer", "path": "scripts/theseus_p2b_sanitize_archive.py", "sha256": "492aade0141d9f3bec3a0e9871a413ff9cf2fae4d540bc231e62c7ded04b9816"}

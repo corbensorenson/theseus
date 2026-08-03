@@ -15,6 +15,8 @@ def test_panel_transforms_to_exact_62_task_registry():
     assert len({row["repository"] for row in registry["tasks"]}) == 62
     assert registry["tasks"][0]["parent_revision"] == panel["assembled_rows"][0]["base_revision"]
     assert registry["tasks"][0]["target_revision"] == panel["assembled_rows"][0]["head_revision"]
+    assert registry["tasks"][31]["parent_license_path"] == "LICENSE-APACHE"
+    assert registry["tasks"][31]["target_license_path"] == "LICENSE-APACHE"
 
 
 def test_changed_status_is_derived_from_bound_parent_and_target_members():

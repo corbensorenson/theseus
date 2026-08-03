@@ -3,17 +3,15 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_repository_closure_materialization.json",
-    "sha256": "958b0a0dcfe24d5f3d130ffbb0454cfa79e5de7d493ab8d641f42e86b6f793a6"
+    "sha256": "015399373902e4eea4064bfb0d51e7c54145d8b8dce7f60a51d6daef3f1ed132"
   },
-  "created_utc": "2026-08-03T15:59:55.687045Z",
-  "downloaded_bytes": 1456350554,
+  "created_utc": "2026-08-03T16:01:41.176723Z",
+  "downloaded_bytes": 0,
   "execution_authorized": false,
   "external_reference_calls": 0,
-  "faults": [
-    "root_license_file_missing"
-  ],
+  "faults": [],
   "maximum_inference": "A GREEN report proves only that exact admitted parent/head repository archives were fetched, byte-bound, normalized to deterministic regular-file-only archives, and contain the selected changed members and a root license. Storage limits are physical host-safety boundaries; touching one invalidates closure materialization for this host and is never a task, VCM, model, mechanism, or book negative. No repository code, dependency installer, evaluator, candidate, model, D1, or D2 execution is authorized.",
-  "network_fetches": 124,
+  "network_fetches": 0,
   "parent_target_or_evaluator_executions": 0,
   "physical_boundary_hit": false,
   "planned_archive_count": 124,
@@ -22,9 +20,9 @@
     "path": "reports/theseus_vcm_source_panel_audit_v2.json",
     "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"
   },
-  "state": "REPOSITORY_CLOSURE_MATERIALIZATION_INVALID",
+  "state": "EXACT_PARENT_HEAD_REPOSITORY_CLOSURES_MATERIALIZED",
   "storage": {
-    "available_bytes": 39226417152,
+    "available_bytes": 37754580992,
     "maximum_upstream_archive_bytes": 2147483648,
     "minimum_free_bytes_after_download": 10737418240,
     "total_bytes": 994662584320
@@ -1550,9 +1548,7 @@
     {
       "artifacts": [
         {
-          "faults": [
-            "root_license_file_missing"
-          ],
+          "faults": [],
           "label": "parent",
           "normalized": "runtime/vcm_evaluator/source_archives/32_maelguimet-catomic_parent.tar.gz",
           "normalized_name": "32_maelguimet-catomic_parent.tar.gz",
@@ -1569,14 +1565,12 @@
           "sanitization_report_sha256": "110892604756b9ff7211bfc9157ba51738d55ef8d120080607301791675097e1",
           "source_archive_root": "catomic-01d4a84d7a0b4100832f8a23b358f39627595eef",
           "upstream_name": "32_maelguimet-catomic_parent_upstream.tar.gz",
-          "upstream_retained": true,
+          "upstream_retained": false,
           "upstream_sha256": "03ac62c421ab0b7e425140044c6f33c4fb0bb151f7b7fe57d0b568461d4a27b8",
           "url": "https://codeload.github.com/maelguimet/catomic/tar.gz/01d4a84d7a0b4100832f8a23b358f39627595eef"
         },
         {
-          "faults": [
-            "root_license_file_missing"
-          ],
+          "faults": [],
           "label": "target",
           "normalized": "runtime/vcm_evaluator/source_archives/32_maelguimet-catomic_target.tar.gz",
           "normalized_name": "32_maelguimet-catomic_target.tar.gz",
@@ -1593,7 +1587,7 @@
           "sanitization_report_sha256": "bb92a72778592ecef79592734afa2ee8404a97de2f217c12727517ed2b9c1ea4",
           "source_archive_root": "catomic-3084108dc0cbc3d0b96bcbac537afc811e433f86",
           "upstream_name": "32_maelguimet-catomic_target_upstream.tar.gz",
-          "upstream_retained": true,
+          "upstream_retained": false,
           "upstream_sha256": "282024e9beecbd87a0f14e4da3d2fca3daa07ca1d9b89233fa109a033b3cea31",
           "url": "https://codeload.github.com/maelguimet/catomic/tar.gz/3084108dc0cbc3d0b96bcbac537afc811e433f86"
         }
@@ -3133,6 +3127,6 @@
       "selection_digest": "8940329a56cf2eda5c655e6ccee88612d08d36422dcae7fe9211f47c8283f88d"
     }
   ],
-  "transformed_registry_sha256": "f74c3fd0966135a627f1632f6a4d298a604186c59428fbff3c58f6af13ebafc1",
-  "trigger_state": "RED"
+  "transformed_registry_sha256": "581a8c71a826e2b260b23522d3a80daf0ab3341034979bc1221df66d1928d1fd",
+  "trigger_state": "GREEN"
 }

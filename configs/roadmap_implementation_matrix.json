@@ -533,10 +533,14 @@
         "owner": "scripts/theseus_vcm_repository_closure_materialization.py",
         "test": "tests/test_theseus_vcm_repository_closure_materialization.py",
         "report": "reports/theseus_vcm_repository_closure_materialization.json",
-        "owner_sha256": "9fa075c5e41d8429f9a51b7e815777acd711da7cb7e83d3bf8c1869d2cb4b5e7",
-        "config_sha256": "958b0a0dcfe24d5f3d130ffbb0454cfa79e5de7d493ab8d641f42e86b6f793a6",
-        "report_sha256": "7acd30d805baf2e6bdf7d9191d6a02b3925f858ee44b58a8dd6e9b71490f91e3",
-        "state": "GREEN_PREFLIGHT_EXACT_62_TASK_124_ARCHIVE_FETCH_READY_ZERO_NETWORK_FETCHES",
+        "owner_sha256": "9fc0aca0f03a2bd9f638a2e79a6fcf3879245f057da59b8d54e15d215bcb8d8f",
+        "config_sha256": "015399373902e4eea4064bfb0d51e7c54145d8b8dce7f60a51d6daef3f1ed132",
+        "report_sha256": "39a38caf836c9a1e310ad50a73c81b36b703ff50d9a361edf9cf6a500d050dd9",
+        "state": "GREEN_EXACT_62_TASK_124_PARENT_HEAD_REPOSITORY_CLOSURES_MATERIALIZED",
+        "archive_artifacts": 124,
+        "retained_normalized_bytes": 1458287679,
+        "upstream_archive_count_retained": 0,
+        "independent_hash_and_receipt_fault_count": 0,
         "minimum_free_bytes_after_download": 10737418240,
         "maximum_upstream_archive_bytes": 2147483648,
         "upstream_bytes_retained_after_normalization": false,
@@ -546,7 +550,7 @@
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "transport and physical storage readiness only; no repository task model VCM mechanism or book claim",
-        "next_boundary": "execute exact codeload parent and head archive acquisition under the physical reserve then audit manifests locks closure and runner evidence without executing repository code"
+        "next_boundary": "inventory exact manifests locks CI and package runner declarations from the admitted closures then derive independent offline runner receipts without executing repository code"
       }
     },
     "claim_selection_policy": {

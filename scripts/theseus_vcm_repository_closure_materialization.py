@@ -152,7 +152,7 @@ def materialize_closures(config: dict[str, Any], registry: dict[str, Any], downl
             sanitation_path = report_root / plan["sanitization_name"]
             if normalized.is_file() and sanitation_path.is_file():
                 sanitation = read_json(sanitation_path)
-                artifact_faults = d1.audit_materialized_artifact(task, plan, normalized, sanitation)
+                artifact_faults = audit_closure_artifact(task, plan, normalized, sanitation)
                 upstream_sha = str(sanitation.get("input", {}).get("sha256") or "")
             else:
                 if not upstream.is_file():
@@ -162,11 +162,13 @@ def materialize_closures(config: dict[str, Any], registry: dict[str, Any], downl
                     raise HostStorageBoundary("normalization_free_space_reserve_boundary_hit")
                 sanitation = d1.sanitizer.sanitize(upstream, normalized)
                 write_json(sanitation_path, sanitation)
-                artifact_faults = d1.audit_materialized_artifact(task, plan, normalized, sanitation)
+                artifact_faults = audit_closure_artifact(task, plan, normalized, sanitation)
                 if artifact_faults:
                     faults.extend(artifact_faults)
                 else:
                     upstream.unlink(missing_ok=True)
+            if not artifact_faults:
+                upstream.unlink(missing_ok=True)
             task_row["artifacts"].append({
                 **plan,
                 "upstream_retained": upstream.is_file(),
@@ -204,6 +206,8 @@ def transform_panel(panel: dict[str, Any]) -> dict[str, Any]:
             "selection_digest": row.get("opaque_source_id"),
             "changed_paths": selected,
             "changed_files": changed,
+            "parent_license_path": row.get("parent_license_path"),
+            "target_license_path": row.get("target_license_path"),
         })
     return {
         "policy": "project_theseus_d1_online_source_registry_v1",
@@ -219,6 +223,15 @@ def transform_panel(panel: dict[str, Any]) -> dict[str, Any]:
 
 def member_paths(archives: dict[str, Any], role: str) -> set[str]:
     return {str(row.get("path") or "") for row in archives.get(role, {}).get("members", []) if str(row.get("path") or "").lower() not in d1.LICENSE_NAMES}
+
+
+def audit_closure_artifact(task: dict[str, Any], plan: dict[str, Any], archive: Path, sanitation: dict[str, Any]) -> list[str]:
+    faults = [fault for fault in d1.audit_materialized_artifact(task, plan, archive, sanitation) if fault != "root_license_file_missing"]
+    root = str(sanitation.get("source_archive_root") or "")
+    license_path = str(task.get(f"{plan['label']}_license_path") or "")
+    if not license_path or f"{root}/{license_path}" not in d1.archive_names(archive):
+        faults.append("exact_bound_root_license_missing")
+    return sorted(set(faults))
 
 
 class StorageSafeDownloader:

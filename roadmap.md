@@ -672,6 +672,13 @@ chain could not verify codeload. That receipt is preserved. The successor binds
 the exact installed certifi CA bundle by SHA-256; it changes only TLS trust
 transport and does not widen source, execution, or model authority.
 
+Closure acquisition is now GREEN: 124/124 exact parent/head normalized archives
+for 62/62 tasks, about 1.5 GiB retained, zero upstream duplicates, zero independent
+hash or sanitization-receipt faults, and roughly 35 GiB still free. The only
+intermediate RED was the generic D1 license-name assumption; task 32's exact
+panel-bound root `LICENSE-APACHE` receipts repaired that helper assumption without
+changing source membership. No repository, dependency, evaluator, or model ran.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
