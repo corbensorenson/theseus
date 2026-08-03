@@ -1,0 +1,88 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_host_protection_interruption_v1",
+  "created_utc": "2026-08-03T03:38:54Z",
+  "trigger_state": "RED",
+  "scientific_status": "INVALID_INFRASTRUCTURE_INCOMPLETE_DENOMINATOR",
+  "state": "CAMPAIGN_PAUSED_REPLACEMENT_SURFACE_AND_WATCHDOG_REPAIR_REQUIRED",
+  "prospective_seal_commit": "76a13247",
+  "campaign_config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_campaign.json",
+    "sha256": "04cb42452899b1711d1d3283e20ef5152d9b34adee9d863da9d0ecae56cf10eb"
+  },
+  "preserved_partial_candidate_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_candidates.json",
+    "sha256": "2e47e251afca4c592578e0469c2fff3fbf850aa6c22d699f5537c32e2d75e7bc",
+    "completed_candidate_count": 1,
+    "completed_candidate_indices": [
+      1
+    ]
+  },
+  "completed_backend_receipts": [
+    {
+      "task_index": 1,
+      "call_number": 1,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_01_direct_local_model_1_cbd79441b5e57cb5.json",
+      "sha256": "81cd359745e78fcaad5200b69d3173668dfa3214300293ccb9fe28b8d533157d",
+      "prompt_tokens": 6494,
+      "generated_tokens": 511,
+      "termination_reason": "parser_complete",
+      "physical_context_boundary_hit": false
+    },
+    {
+      "task_index": 1,
+      "call_number": 2,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_01_direct_local_model_2_022f6a554dcfd934.json",
+      "sha256": "e64750136b5c44414f45e81d494f7a2f83c49cf2d6c991d65f9dbae1aeb46830",
+      "prompt_tokens": 7231,
+      "generated_tokens": 511,
+      "termination_reason": "parser_complete",
+      "physical_context_boundary_hit": false
+    },
+    {
+      "task_index": 2,
+      "call_number": 1,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_02_direct_local_model_1_73c09688dd979793.json",
+      "sha256": "39de2dc6f9fdd266ce1ee5eb9421d1a0714484149e8dfa5cdef38428eae11c00",
+      "prompt_tokens": 9840,
+      "generated_tokens": 496,
+      "termination_reason": "parser_complete",
+      "physical_context_boundary_hit": false
+    }
+  ],
+  "interrupted_call": {
+    "task_index": 2,
+    "call_number": 2,
+    "entered_local_stream_generate": true,
+    "terminal_backend_receipt_written": false,
+    "candidate_written": false,
+    "host_protection_elapsed_lower_bound_seconds": 1228,
+    "termination": "operator_keyboard_interrupt_for_host_protection",
+    "capability_failure": false,
+    "mechanism_failure": false
+  },
+  "faults": [
+    "prospective_host_wall_time_interlock_missing",
+    "task_02_repair_did_not_reach_parser_complete_or_model_eos_before_host_protection",
+    "candidate_denominator_incomplete",
+    "task_02_surface_exposed_and_ineligible_for_rerun"
+  ],
+  "required_repairs": [
+    "add a prospectively declared host wall-time watchdog that records activation as infrastructure-invalid rather than capability failure",
+    "resume from the sealed task-01 candidate without regenerating it",
+    "replace exposed task 02 with a fresh license-compatible source-disjoint task before any new model exposure",
+    "bind resumability, replacement identity, watchdog value, and scorer denominator prospectively"
+  ],
+  "counters": {
+    "candidate_or_control_calls_attempted": 4,
+    "completed_local_model_calls": 3,
+    "interrupted_local_model_calls": 1,
+    "sealed_candidates": 1,
+    "hidden_evaluator_executions": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "maximum_inference": "This event establishes a missing host-safety/resumability requirement in the exact adequacy harness. It does not establish Semantic-IR implementation inadequacy, model failure, a subsystem effect, D1, D2, training value, serving value, or ASI Stack support. Task 02 is consumed for candidate generation and may not be rerun."
+}

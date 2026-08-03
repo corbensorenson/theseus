@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
-    "state": "PRODUCTION_MECHANICS_REPAIRED_ADEQUACY_CAMPAIGN_AUDIT_GREEN",
+    "state": "PRODUCTION_MECHANICS_REPAIRED_ADEQUACY_INFRASTRUCTURE_REPAIR_ACTIVE",
       "observed_residual": "implementation_adequacy_power_diversity_independence",
       "next_evidence_class": "INDEPENDENT_SOURCE_DISJOINT_NON_CLAIM_ADEQUACY",
       "fresh_claim_pool_authorized": false,
@@ -23,12 +23,20 @@
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit.json",
       "candidate_runner": "scripts/theseus_semantic_ir_production_adequacy_campaign.py",
       "independent_scorer": "scripts/theseus_semantic_ir_production_adequacy_scorer.py",
-      "state": "GREEN_CALL_FREE_PROSPECTIVE_BINDING_LOCAL_RUN_AUTHORIZED",
+      "state": "PAUSED_INVALID_INFRASTRUCTURE_REPLACEMENT_AND_WATCHDOG_REBIND_REQUIRED",
       "task_count": 18,
       "local_model_calls_authorized": 36,
       "external_reference_calls_authorized": 0,
       "hidden_evaluation_before_candidate_seal_authorized": false,
-      "project_selected_quality_token_cap": null
+      "project_selected_quality_token_cap": null,
+      "interruption_receipt": "reports/theseus_semantic_ir_production_adequacy_campaign_host_protection_interruption.json",
+      "preserved_completed_candidate_count": 1,
+      "consumed_replacement_required_indices": [
+        2
+      ],
+      "isolated_host_watchdog_owner": "scripts/theseus_semantic_ir_production_adequacy_backend.py",
+      "host_watchdog_seconds": 600,
+      "watchdog_activation_scored_as_capability_failure": false
     }
     },
     "claim_selection_policy": {
@@ -106,7 +114,8 @@
       "complete_luna_transport_offline_qualification_with_zero_calls",
       "complete_semantic_ir_production_path_mechanics_repair_on_bounded_non_claim_evidence",
     "complete_independent_mechanics_adequacy_campaign_binding_and_call_free_audit",
-    "active_run_and_independently_score_18_task_frozen_local_adequacy_campaign",
+    "active_replace_consumed_task_02_and_bind_resume_plus_host_watchdog",
+    "pending_complete_and_independently_score_18_task_frozen_local_adequacy_campaign",
       "open_at_most_one_fresh_source_disjoint_claim_campaign_only_after_adequacy",
       "qualify_a_development_survivor_once_on_fresh_D1",
       "return_claim_packet_to_book_review_without_support_movement",

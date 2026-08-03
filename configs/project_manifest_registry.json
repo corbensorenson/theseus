@@ -6806,6 +6806,7 @@
         "scripts/theseus_semantic_ir_production_adequacy_task_pool.py",
         "scripts/theseus_semantic_ir_production_adequacy_campaign.py",
         "scripts/theseus_semantic_ir_production_adequacy_scorer.py",
+        "scripts/theseus_semantic_ir_production_adequacy_backend.py",
         "scripts/theseus_openai_reference_adapter.py",
         "configs/theseus_assistant_p2a_instrument.json",
         "configs/theseus_assistant_p2b_instrument.json",
@@ -6846,6 +6847,7 @@
         "tests/test_theseus_semantic_ir_production_adequacy_runtime.py",
         "tests/test_theseus_semantic_ir_production_adequacy_task_pool.py",
         "tests/test_theseus_semantic_ir_production_adequacy_campaign.py",
+        "tests/test_theseus_semantic_ir_production_adequacy_backend.py",
         "configs/theseus_assistant_runtime_p2b_qwen35.json",
         "configs/theseus_p2b_task_pool.json",
         "configs/theseus_p2b_task_requests_7502.json",
@@ -6931,8 +6933,6 @@
         "reports/theseus_semantic_ir_production_adequacy_task_pool_repaired_preflight.json",
         "reports/theseus_semantic_ir_production_adequacy_task_pool.json",
         "reports/theseus_semantic_ir_production_adequacy_campaign_audit.json",
-        "reports/theseus_semantic_ir_production_adequacy_candidates.json",
-        "reports/theseus_semantic_ir_production_adequacy_evaluation.json",
         "reports/theseus_semantic_ir_production_adequacy_task11_replacement_selection.json",
         "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure.json",
         "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure_audit.json",
@@ -6940,6 +6940,28 @@
         "reports/theseus_assistant_checkpoint_chat_p2a_semantic_production_non_claim_01_attempt1_direct_local_model_2_a3905953d0787210.json",
         "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_1.json",
         "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_2.json"
+      ],
+      "retained_evidence_outputs": [
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_candidates.json",
+          "reason": "partial candidate custody from the infrastructure-invalid interrupted adequacy campaign; not current route health"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_host_protection_interruption.json",
+          "reason": "terminal invalid-infrastructure evidence retained without route authority"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_system_python_failure.json",
+          "reason": "zero-call environment-selection failure retained without route authority"
+        },
+        {
+          "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_*.json",
+          "reason": "completed local backend receipts supporting the interrupted experiment only"
+        },
+        {
+          "path": "runtime/p2a/p2a_semantic_ir_adequacy_*_direct_local_model_*.json",
+          "reason": "runtime receipts supporting candidate replay and interruption custody only"
+        }
       ],
       "attd_hooks": {
         "component": "project_registry",
@@ -9623,6 +9645,7 @@
         "scripts/theseus_semantic_ir_production_adequacy_task_pool.py",
         "scripts/theseus_semantic_ir_production_adequacy_campaign.py",
         "scripts/theseus_semantic_ir_production_adequacy_scorer.py",
+        "scripts/theseus_semantic_ir_production_adequacy_backend.py",
         "scripts/theseus_p2c_disposition.py",
         "scripts/theseus_p3_local_model_freeze.py",
         "scripts/theseus_p3_task_pool.py",
@@ -9719,6 +9742,7 @@
         "tests/test_theseus_semantic_ir_production_adequacy_runtime.py",
         "tests/test_theseus_semantic_ir_production_adequacy_task_pool.py",
         "tests/test_theseus_semantic_ir_production_adequacy_campaign.py",
+        "tests/test_theseus_semantic_ir_production_adequacy_backend.py",
         "tests/test_theseus_p2a_online_task_pool.py",
         "tests/test_theseus_p2b_model_selection.py",
         "tests/test_theseus_p2b_sanitize_archive.py",
@@ -9807,8 +9831,6 @@
         "reports/theseus_semantic_ir_production_adequacy_task_pool_repaired_preflight.json",
         "reports/theseus_semantic_ir_production_adequacy_task_pool.json",
         "reports/theseus_semantic_ir_production_adequacy_campaign_audit.json",
-        "reports/theseus_semantic_ir_production_adequacy_candidates.json",
-        "reports/theseus_semantic_ir_production_adequacy_evaluation.json",
         "reports/theseus_semantic_ir_production_adequacy_task11_replacement_selection.json",
         "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure.json",
         "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure_audit.json",
@@ -9866,6 +9888,28 @@
         "reports/core_evidence_local_model_bakeoff_*.json",
         "docs/CORE_EVIDENCE_BRIEF.md",
         "docs/assets/core-evidence-useful-safe-frontier.svg"
+      ],
+      "retained_report_outputs": [
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_candidates.json",
+          "reason": "partial interrupted experimental custody, not live product-route health"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_host_protection_interruption.json",
+          "reason": "invalid-infrastructure evidence retained without product-route authority"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_system_python_failure.json",
+          "reason": "zero-call environment-selection failure retained without product-route authority"
+        },
+        {
+          "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_*.json",
+          "reason": "backend receipts for the interrupted experiment only"
+        },
+        {
+          "path": "runtime/p2a/p2a_semantic_ir_adequacy_*_direct_local_model_*.json",
+          "reason": "runtime receipts for experimental replay only"
+        }
       ],
       "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_core_evidence_campaign.py tests/test_core_evidence_worker_v2.py tests/test_core_evidence_worker_v2_evaluator.py tests/test_core_evidence_worker_v2_qualification.py tests/test_core_evidence_functional_evaluator.py && python3 scripts/core_evidence_campaign.py --gate && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_runtime.py --prompt \"Use Theseus deterministic tools and VCM to summarize the current roadmap integration state and identify the next implementation surface to wire.\" --intent tool --feedback accepted --session-id product_spine_smoke --out reports/theseus_assistant_product_spine_smoke.json --markdown-out reports/theseus_assistant_product_spine_smoke.md --events-out reports/theseus_assistant_product_spine_events.jsonl --viea-trace-out reports/theseus_assistant_product_spine_trace.jsonl && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "cleanup_policy": "canonical user-facing assistant loop; the frozen local model, route-integrity gate, VCM, dogfood feedback, deterministic tools, planning, and practical code routing must remain behind this one runtime rather than becoming parallel chat lanes",
