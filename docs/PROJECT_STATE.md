@@ -256,6 +256,13 @@ Preserve it. The next owner may reduce only GraphQL node batches from 40 to 20
 and repair checkpoint-derived terminal counter reporting; all scientific rules
 and authority remain frozen.
 
+The v2 successor is prospectively GREEN and call-free. It changes only GraphQL
+node batches from 40 to 20 and adds attempted-role accounting whose metadata,
+title, and source counts must sum to checkpoint logical requests. A replay test
+proves the remaining scientific replacement contract is unchanged. All model,
+execution, packet, evaluator, training, serving, D1/D2, and book authority stays
+closed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

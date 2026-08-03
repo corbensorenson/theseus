@@ -414,6 +414,28 @@
         "external_reference_calls_authorized": false,
         "user_or_operator_gate": false,
         "next_transport_repair_boundary": "preserve scientific selection and reduce only GraphQL node batch size from 40 to 20 with corrected terminal metadata accounting"
+      },
+      "vcm_language_replacements_v2": {
+        "config": "configs/theseus_vcm_language_replacements_v2.json",
+        "preflight": "reports/theseus_vcm_language_replacements_v2.json",
+        "checkpoint": "reports/theseus_vcm_language_replacements_v2_checkpoint.json",
+        "owner": "scripts/theseus_vcm_language_replacements_v2.py",
+        "owner_sha256": "720b0e95ea796c3b330159ee6012b20d779a6823e03222640a14e510654053cb",
+        "config_sha256": "cfbc930cbdbba06932520ea4c39c70def845fe38ec83e2bc1d01ef03bf8fc370",
+        "preflight_sha256": "a2c29d63e0397f758e073b116a9fe8f4ea73fda4489f1c3ecaac54e4f72ce902",
+        "state": "GREEN_PREFLIGHT_GRAPHQL_BATCH20_SCIENCE_UNCHANGED",
+        "predecessor_graphql_node_batch_size": 40,
+        "successor_graphql_node_batch_size": 20,
+        "scientific_selection_rules_changed": false,
+        "attempted_role_accounting_required": true,
+        "replacement_set_admitted": false,
+        "metadata_queries_executed": 0,
+        "source_requests_executed": 0,
+        "language_classification_calls_executed": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls_authorized": false,
+        "external_reference_calls_authorized": false,
+        "user_or_operator_gate": false
       }
     },
     "claim_selection_policy": {

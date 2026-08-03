@@ -582,6 +582,14 @@ correct the terminal report's metadata counter from its checkpoint; do not
 change search population, rank, eligibility, slots, language policy, content
 gates, or downstream authority.
 
+The v2 transport successor is now prospectively GREEN at zero calls. A replay
+test proves its effective transaction differs only in GraphQL node batch size
+(20 instead of 40); the scientific replacement view is byte-equivalent after
+accounting for the temporary transport-config path. It separately counts every
+attempted metadata, title, and source logical request and requires their sum to
+equal the final checkpoint. Retry horizon, search/rank/eligibility, language
+scope, six slots, all-or-none staging, content gates, and authority are unchanged.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
