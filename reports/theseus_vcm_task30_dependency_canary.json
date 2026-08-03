@@ -1,0 +1,49 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_task30_dependency_canary.json",
+    "sha256": "d9a265715feac13cda0c04d78dc91157afebe5d84ed6ca6e1695ea484dc70144"
+  },
+  "created_utc": "2026-08-03T19:38:40.564834Z",
+  "dependency_installations": 0,
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "lock_checksum_identity_sha256": "3b813e7ea58818aa787d322cbcc32b3bde495da25b1a32f8fa92fd36783b4dc2",
+  "lock_checksum_package_count": 50,
+  "maximum_inference": "A GREEN canary proves only that task 30's identical parent/target Cargo lock can fetch all 50 checksum-bearing crates once, replay with network denied, preserve source identity, and retain the bounded Cargo home. It does not compile crates, run build scripts, execute or qualify the repository runner, evaluator, task, VCM mechanism, model, D1, D2, or book claim.",
+  "network_denied_offline_replays": 0,
+  "network_enabled_dependency_fetches": 0,
+  "observed_parent_target_dependency_identities": {
+    "parent": {
+      "lock": {
+        "bytes": 11334,
+        "path": "Cargo.lock",
+        "sha256": "674d54461401ec1680d22001b7411e505ee026c1d6c0796038ced82765ea23c8"
+      },
+      "manifest": {
+        "bytes": 935,
+        "path": "Cargo.toml",
+        "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+      }
+    },
+    "target": {
+      "lock": {
+        "bytes": 11334,
+        "path": "Cargo.lock",
+        "sha256": "674d54461401ec1680d22001b7411e505ee026c1d6c0796038ced82765ea23c8"
+      },
+      "manifest": {
+        "bytes": 935,
+        "path": "Cargo.toml",
+        "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+      }
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task30_dependency_canary_v1",
+  "repository_build_executions": 0,
+  "repository_runner_executions": 0,
+  "state": "READY_FOR_TASK_30_EXACT_CARGO_DEPENDENCY_CANARY",
+  "trigger_state": "PAUSED"
+}
