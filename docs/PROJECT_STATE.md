@@ -175,6 +175,16 @@ rejects a commit identity that does not match the PR head. The full run may not
 start before `2026-08-03T10:43:25Z`; pacing is transport-only and every
 downstream authority remains closed.
 
+V6 then paused after 58 logical requests and 62 attempts. It completed 57
+requests, recovered one HTTP 502, and exhausted four unknown-network attempts
+inside the inherited 1.75-second retry horizon. Live quota inspection
+immediately afterward showed search 30/30 and GraphQL 4,956/5,000, excluding
+quota exhaustion. No identities, source content, evaluator/model calls, or
+downstream authority sealed. Its terminal audit also exposed an inherited
+receipt-ordering bug: the report embedded a checkpoint hash computed before
+checkpoint finalization. Preserve both actual artifacts. The next owner may
+only lengthen bounded transport backoff and finalize before hashing.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -357,9 +367,11 @@ authorize regenerating historical reports or reopening neural work.
    bug before any identity sealed. It is preserved and v4's owner-only repair is
    preserved; v4 then paused on transient transport with zero identities sealed.
    V5's retry owner paused on secondary throttling with exact accounting and
-   zero identities. V6's single-request GraphQL node batches now pass live
-   schema and consumed-PR query-shape qualification with zero fresh candidates;
-   execute the reset-bound metadata run. Then
+   zero identities. V6's single-request GraphQL node batches passed live schema,
+   node-bridge, pacing, and full-selector rehearsal, then paused on a rapid
+   unknown-network exhaustion after 57 successes. Preserve it; repair only the
+   bounded retry horizon and final checkpoint hash ordering, rerun the unchanged
+   metadata selector, and then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

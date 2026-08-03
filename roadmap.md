@@ -485,6 +485,17 @@ start before `2026-08-03T10:43:25Z`; source retrieval, evaluators, local and
 Luna inference, training, D1/D2, serving, and book promotion remain closed. The
 search pacing is a host-transport condition, never a task or mechanism outcome.
 
+The v6 run then failed closed after 58 logical requests and 62 physical
+attempts: 57 requests succeeded, one HTTP 502 recovered, and four rapid
+unknown-network attempts exhausted the inherited 1.75-second backoff horizon.
+GitHub immediately reported search 30/30 and GraphQL 4,956/5,000, so quota
+exhaustion is excluded. Zero identities, source bytes, evaluator calls, model
+calls, or downstream authority sealed. The terminal audit also found that the
+inherited owner hashed its checkpoint before finalization, leaving a stale
+embedded checkpoint hash. The next repair may change only the bounded transport
+backoff and finalize the checkpoint before report hashing; selection science
+and every downstream closure remain frozen.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -673,10 +684,12 @@ Use existing owners; create no new cleanup or report family.
    v2 improved eligibility but still failed closed. Preserve both; seal and run
    the pool-expansion v3 exposed a fork-head transport bug. Preserve it, repair
    only that owner; v4 then paused on transient transport with zero identities.
-   V5 paused on secondary throttling with exact checkpoint accounting. V6 now
-   has live schema and consumed-PR query-shape qualification at zero fresh
-   candidate queries; execute its rate-window-bound batched metadata run, then
-   bind exact sources and
+   V5 paused on secondary throttling with exact checkpoint accounting. V6
+   passed live schema, node-bridge, quota pacing, and full selector rehearsal,
+   then failed closed on a rapid unknown-network exhaustion after 57 successful
+   requests. Preserve it; extend only bounded backoff and repair final
+   checkpoint hashing, then rerun the unchanged batched metadata selector. If
+   it seals, bind exact sources and
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
