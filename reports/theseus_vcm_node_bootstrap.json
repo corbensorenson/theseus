@@ -1,20 +1,70 @@
 {
-  "acquisition_executed": false,
+  "acquisition_executed": true,
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_node_bootstrap.json",
     "sha256": "3dcca33bd0a18957121cbeba8504096ad3b456abc80741af727a56f9dea721c7"
   },
-  "created_utc": "2026-08-03T18:04:09.187148Z",
+  "created_utc": "2026-08-03T18:06:53.650989Z",
   "dependency_installations": 0,
+  "existing_target_reused": false,
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN report proves only that the official checksum-bound Node 22.20.0 Darwin arm64 runtime, including npm 10.9.3, was safely materialized and version-probed for VCM task 3's dependency canary. It does not qualify dependency acquisition, repository execution, evaluators, task validity, VCM, models, D1, D2, or book support.",
-  "network_requests": 0,
+  "network_requests": 1,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_node_bootstrap_v1",
+  "receipt": {
+    "archive_bytes": 49838299,
+    "archive_sha256": "cc04a76a09f79290194c0646f48fec40354d88969bec467789a5d55dd097f949",
+    "free_bytes_after": 36992282624,
+    "free_bytes_before": 37202415616,
+    "member_count": 5034,
+    "member_receipts_sha256": "3897cbe8b75456294611a28183ceebc882a2799c06fda964a6c4fcead8b749d8",
+    "target": {
+      "bytes": 185570778,
+      "file_count": 5031,
+      "files_identity_sha256": "374ac3f4187e11084902257d669844a65c718391f9e3692cef08df36ba3a29b5",
+      "node": {
+        "path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+        "sha256": "49161ba4e67afda85c25b2daa1f0e91d1bffc023d2dbc4886eda7a9ba38bca62"
+      },
+      "npm_cli": {
+        "path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js",
+        "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7"
+      },
+      "npm_version": "10.9.3",
+      "path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64",
+      "symlink_count": 3,
+      "symlinks_identity_sha256": "1b651e3b69aac1eb29a1d07fb7fa8e1022ae205fa412685dba2b6386487e3710",
+      "version_probes": {
+        "node": {
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+            "--version"
+          ],
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "v22.20.0",
+          "stdout_sha256": "1506cdf8613ebb6c1198a9587c5e1b708b3e779b139a0b59f937efa199e2ecae"
+        },
+        "npm": {
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js",
+            "--version"
+          ],
+          "returncode": 0,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "10.9.3",
+          "stdout_sha256": "d4f77e92e0e96c2e3d354af321e208badc2c0ee0d5d33087659b027af2c9466e"
+        }
+      }
+    },
+    "url": "https://nodejs.org/dist/v22.20.0/node-v22.20.0-darwin-arm64.tar.gz"
+  },
   "repository_executions": 0,
-  "state": "READY_FOR_EXACT_NODE_RUNTIME_ACQUISITION",
-  "tool_version_probes": 0,
-  "trigger_state": "PAUSED"
+  "state": "EXACT_NODE_RUNTIME_MATERIALIZED_AND_VERSION_QUALIFIED",
+  "tool_version_probes": 2,
+  "trigger_state": "GREEN"
 }

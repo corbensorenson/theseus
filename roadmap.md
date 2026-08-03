@@ -789,6 +789,13 @@ Node.js `SHASUMS256.txt` digest and may be safely materialized and version-
 probed. That bootstrap opens no dependency, repository, evaluator, or model
 authority. Only after it is GREEN may the task-3 dependency canary be sealed.
 
+That exact runtime bootstrap is now GREEN. One 49,838,299-byte official archive
+matched the prospectively bound SHA-256; safe extraction retained 5,031 regular
+files plus three contained symlinks, and independent probes returned Node
+22.20.0 and npm 10.9.3. No dependency was installed and no repository or model
+ran. Task 3's dependency acquisition plus network-denied offline replay may now
+be sealed against this exact runtime.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
