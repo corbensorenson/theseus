@@ -122,6 +122,12 @@ model path. The remaining diagnosed defect is the 300-result-per-language pool,
 not the integrity filters. V3 may expand only to GitHub's 1,000-result search
 boundary and batch the same metadata fields; it may not relax eligibility.
 
+The v3 pool/transport repair is now prospectively sealed and GREEN at zero new
+queries. It expands each fixed created-desc language head to GitHub's 1,000-row
+boundary and checks candidates in bounded eight-worker batches while consuming
+results in the original hash order. Eligibility, chronology, randomization,
+panels, and authority are unchanged. One v3 metadata run is active.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -299,7 +305,8 @@ authorize regenerating historical reports or reopening neural work.
    licensed panels. The metadata-only selection rule is prospectively sealed
    but attempt 1 failed closed on an inadequate Python pool. It is preserved;
    the v2 repair improved eligibility but still failed closed. Preserve it; V3
-   may expand only the deterministic search pool and batch transport. Then
+   now has a green zero-query preflight that expands only the deterministic
+   search pool and batches transport. Run it once. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

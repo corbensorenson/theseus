@@ -432,6 +432,12 @@ downstream calls. V3 may expand only the deterministic candidate head from 300
 to the GitHub 1,000-result boundary per language and batch the same metadata
 fields; eligibility may not be relaxed.
 
+V3 is now prospectively sealed and GREEN at zero queries. It expands each fixed
+language head to the GitHub 1,000-result boundary and evaluates bounded batches
+concurrently while consuming results in the original hash rank. This is a
+transport and pool-size repair only: every eligibility, chronology,
+randomization, panel, and authority rule is unchanged. One v3 run is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -618,7 +624,7 @@ Use existing owners; create no new cleanup or report family.
    licensed repositories split into source-disjoint 9-task control and 53-task
    claim panels. Attempt 1 failed closed with an insufficient Python pool;
    v2 improved eligibility but still failed closed. Preserve both; seal and run
-   one pool-expansion/batched-transport v3, then bind exact sources, packets,
+   the now-green pool-expansion/batched-transport v3 once, then bind exact sources, packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim

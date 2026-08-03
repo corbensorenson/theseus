@@ -9,6 +9,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_source_acquisition as acquisition  # noqa: E402
+import theseus_vcm_source_acquisition_v3 as acquisition_v3  # noqa: E402
 
 
 def test_vcm_source_acquisition_preflight_is_green_and_call_free() -> None:
@@ -31,6 +32,21 @@ def test_vcm_source_acquisition_v2_repairs_only_policy_defects() -> None:
     assert "GPL-3.0" in config["selection"]["license_spdx_allowlist"]
     assert config["repair"]["predecessor_state"] == "METADATA_SELECTION_INCOMPLETE"
     assert config["repair"]["predecessor_public_metadata_requests"] == 1212
+    assert report["metadata_selection_opened"] is False
+    assert all(value == 0 for value in report["counters"].values())
+
+
+def test_vcm_source_acquisition_v3_expands_pool_without_relaxing_filters() -> None:
+    report = acquisition_v3.preflight()
+    v2 = p2a.read_json(ROOT / "configs" / "theseus_vcm_source_acquisition_v2.json")
+    v3 = p2a.read_json(acquisition_v3.DEFAULT_CONFIG)
+    assert report["trigger_state"] == "GREEN"
+    assert v3["search"]["pages_per_language"] == 10
+    assert v3["search"]["maximum_search_metadata_rows"] == 4000
+    assert v3["selection"] == v2["selection"]
+    assert v3["panels"] == v2["panels"]
+    assert v3["chronology"] == v2["chronology"]
+    assert v3["authority"] == v2["authority"]
     assert report["metadata_selection_opened"] is False
     assert all(value == 0 for value in report["counters"].values())
 
