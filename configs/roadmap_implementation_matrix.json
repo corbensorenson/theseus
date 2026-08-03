@@ -144,10 +144,12 @@
         "project_selected_quality_token_cap": null
       },
       "vcm_source_acquisition": {
-        "config": "configs/theseus_vcm_source_acquisition.json",
-        "preflight": "reports/theseus_vcm_source_acquisition.json",
+        "config": "configs/theseus_vcm_source_acquisition_v2.json",
+        "preflight": "reports/theseus_vcm_source_acquisition_v2.json",
+        "predecessor_config": "configs/theseus_vcm_source_acquisition.json",
+        "predecessor_report": "reports/theseus_vcm_source_acquisition.json",
         "owner": "scripts/theseus_vcm_source_acquisition.py",
-        "state": "ATTEMPT1_RED_INSUFFICIENT_PYTHON_POOL_POLICY_REPAIR_REQUIRED",
+        "state": "V2_POLICY_REPAIR_PREFLIGHT_GREEN_ZERO_QUERIES",
         "control_qualification_repository_count": 9,
         "claim_repository_count": 53,
         "total_repository_count": 62,
@@ -162,6 +164,9 @@
           "arbitrary_50_star_popularity_floor",
           "needlessly_narrow_license_metadata_allowlist"
         ],
+        "v2_minimum_repository_stars": 1,
+        "v2_common_osi_license_allowlist_bound": true,
+        "v2_freshness_structure_disjointness_and_authority_unchanged": true,
         "ranking_and_panel_assignment_hash_bound": true,
         "public_metadata_queries_authorized_after_green_preflight": true,
         "public_source_content_retrieval_authorized": false,

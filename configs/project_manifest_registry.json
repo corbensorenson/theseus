@@ -819,6 +819,15 @@
   },
   "duplicate_family_classifications": [
     {
+      "root": "configs",
+      "family": "theseus",
+      "classification": "canonical_vcm_claim_instrument_with_immutable_failed_acquisition_and_single_policy_repair",
+      "canonical_surface": "theseus_assistant_runtime",
+      "canonical_path": "configs/theseus_vcm_claim_instrument.json",
+      "promotion_role": "prospective_vcm_claim_design_and_bounded_source_metadata_selection",
+      "successor_policy": "The claim instrument remains canonical. The original source-acquisition config is immutable evidence for the failed-closed 1,212-request attempt. V2 is its single prospectively sealed policy repair, removing only an arbitrary popularity proxy and extending common OSI license metadata while preserving search, chronology, structure, randomization, quotas, disjointness, and zero-inference authority."
+    },
+    {
       "root": "scripts",
       "family": "theseus",
       "classification": "canonical_runtime_with_distinct_vcm_claim_and_source_acquisition_owners",
@@ -6952,6 +6961,7 @@
         "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
         "configs/theseus_vcm_claim_instrument.json",
         "configs/theseus_vcm_source_acquisition.json",
+        "configs/theseus_vcm_source_acquisition_v2.json",
         "tests/fixtures/theseus_semantic_ir_production_non_claim/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/**/*",
@@ -7105,6 +7115,7 @@
         "reports/theseus_semantic_ir_production_adequacy_v6_terminal_disposition.json",
         "reports/theseus_vcm_claim_instrument_audit.json",
         "reports/theseus_vcm_source_acquisition.json",
+        "reports/theseus_vcm_source_acquisition_v2.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.json",
@@ -9915,6 +9926,7 @@
         "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
         "configs/theseus_vcm_claim_instrument.json",
         "configs/theseus_vcm_source_acquisition.json",
+        "configs/theseus_vcm_source_acquisition_v2.json",
         "configs/theseus_assistant_p3_instrument.json",
         "configs/theseus_p3_task_sources.json",
         "configs/theseus_p3_task_pool.json",

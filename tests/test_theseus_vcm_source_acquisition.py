@@ -22,6 +22,19 @@ def test_vcm_source_acquisition_preflight_is_green_and_call_free() -> None:
     assert all(value == 0 for value in report["counters"].values())
 
 
+def test_vcm_source_acquisition_v2_repairs_only_policy_defects() -> None:
+    path = ROOT / "configs" / "theseus_vcm_source_acquisition_v2.json"
+    report = acquisition.preflight(path)
+    config = p2a.read_json(path)
+    assert report["trigger_state"] == "GREEN"
+    assert config["selection"]["minimum_repository_stars"] == 1
+    assert "GPL-3.0" in config["selection"]["license_spdx_allowlist"]
+    assert config["repair"]["predecessor_state"] == "METADATA_SELECTION_INCOMPLETE"
+    assert config["repair"]["predecessor_public_metadata_requests"] == 1212
+    assert report["metadata_selection_opened"] is False
+    assert all(value == 0 for value in report["counters"].values())
+
+
 def test_panel_quotas_are_exact_and_source_disjoint_by_construction() -> None:
     config = p2a.read_json(acquisition.DEFAULT_CONFIG)
     panels = config["panels"]

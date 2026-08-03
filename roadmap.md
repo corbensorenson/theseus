@@ -422,6 +422,12 @@ license allowlist as needlessly narrow relative to the charter. Preserve this
 attempt and prospectively repair those policy defects without weakening
 freshness, source-plus-test structure, source disjointness, or inference closure.
 
+The v2 repair is prospectively sealed and GREEN before its first query. It uses
+a one-star existence check rather than a popularity proxy and recognizes common
+OSI licenses. The query window, hash ranking, quotas, freshness rules,
+source-plus-test requirement, source disjointness, and every downstream closure
+are unchanged. Exactly one v2 metadata rerun is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -607,8 +613,8 @@ Use existing owners; create no new cleanup or report family.
 6. **Active:** autonomously acquire and independently evaluator-qualify 62
    licensed repositories split into source-disjoint 9-task control and 53-task
    claim panels. Attempt 1 failed closed with an insufficient Python pool;
-   prospectively repair its irrelevant popularity and license-policy filters,
-   rerun once, then bind exact sources, packets, host-operability canaries,
+   its prospective v2 repair is green at zero queries. Rerun once, then bind
+   exact sources, packets, host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not

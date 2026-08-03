@@ -108,6 +108,13 @@ and an unnecessarily narrow license metadata allowlist as acquisition-policy
 defects. Their repair must be prospectively bound; freshness, source-plus-test
 structure, source disjointness, and all inference closures remain unchanged.
 
+The v2 repair is now prospectively sealed and GREEN at zero new queries. It
+replaces the popularity threshold with a one-star public-repository existence
+check and admits common OSI licenses, while hash ranking, search window,
+chronology, structure, panel quotas, and every source-content/model/evaluator
+closure remain byte-for-byte or semantically unchanged. One v2 metadata rerun
+is the active action.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -283,8 +290,8 @@ authorize regenerating historical reports or reopening neural work.
    separate Luna denominator, and zero-call authority.
 10. **Active:** acquire and independently qualify the two source-disjoint
    licensed panels. The metadata-only selection rule is prospectively sealed
-   but attempt 1 failed closed on an inadequate Python pool. Preserve it, repair
-   the irrelevant popularity floor and narrow license policy prospectively, then
+   but attempt 1 failed closed on an inadequate Python pool. It is preserved;
+   the v2 popularity and license repair is green at zero queries. Run it once, then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

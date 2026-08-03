@@ -1,0 +1,109 @@
+{
+  "policy": "project_theseus_vcm_source_acquisition_v1",
+  "state": "PROSPECTIVE_METADATA_SELECTION_ZERO_CANDIDATE_CONTENT",
+  "purpose": "Repair attempt 1's irrelevant popularity and license-metadata exclusions while selecting exactly 62 fresh, licensed, machine-verifiable repository maintenance surfaces without model calls, target-content retrieval, hidden evaluation, or user selection.",
+  "repair": {
+    "predecessor_config": "configs/theseus_vcm_source_acquisition.json",
+    "predecessor_config_sha256": "94179903e5fd3d22428a5559ac4a97aebbd13d57cf9c94f3538bf10644c622e9",
+    "predecessor_report": "reports/theseus_vcm_source_acquisition.json",
+    "predecessor_report_sha256": "1bf049acb30be6ab00ab1f6209c2d6aee20d5faee8d17ad87a13275b5928fd16",
+    "predecessor_state": "METADATA_SELECTION_INCOMPLETE",
+    "predecessor_public_metadata_requests": 1212,
+    "predecessor_python_eligible": 4,
+    "predecessor_python_required": 20,
+    "changes": [
+      "replace the arbitrary 50-star popularity floor with a nonzero-public-repository existence floor of one star",
+      "extend metadata license eligibility to common OSI-approved licenses permitted by the project charter"
+    ],
+    "unchanged": [
+      "search window and pages",
+      "post-snapshot PR creation merge and head chronology",
+      "one pull request per source-disjoint repository",
+      "non-test source change and machine-verifier change",
+      "file and changed-line bounds",
+      "hash ranking and panel assignment",
+      "all source-content candidate evaluator model training serving D1 D2 and book closures"
+    ]
+  },
+  "source_bindings": [
+    {"id": "acquisition_owner", "path": "scripts/theseus_vcm_source_acquisition.py", "sha256": "8754306311cd5b064ba7896705b51ed22edcd3319c79372cdc8f46e51a7f1ca9"},
+    {"id": "vcm_claim_instrument", "path": "configs/theseus_vcm_claim_instrument.json", "sha256": "b991705c9d41c9660810dc7a877d0e33e55810eb3dec1e0a1f1d711569a52947"},
+    {"id": "vcm_claim_instrument_audit", "path": "reports/theseus_vcm_claim_instrument_audit.json", "sha256": "dbb47e3eda37491513e6f0f07d3310b55f2b393297e02656f28eaa4574d172dc"},
+    {"id": "predecessor_config", "path": "configs/theseus_vcm_source_acquisition.json", "sha256": "94179903e5fd3d22428a5559ac4a97aebbd13d57cf9c94f3538bf10644c622e9"},
+    {"id": "predecessor_report", "path": "reports/theseus_vcm_source_acquisition.json", "sha256": "1bf049acb30be6ab00ab1f6209c2d6aee20d5faee8d17ad87a13275b5928fd16"}
+  ],
+  "chronology": {
+    "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+    "search_window_start_utc": "2026-07-30T12:35:42Z",
+    "search_window_end_utc": "2026-08-03T08:54:12Z",
+    "pr_created_after_snapshot_required": true,
+    "pr_merged_in_window_required": true,
+    "head_commit_after_snapshot_required": true
+  },
+  "search": {
+    "provider": "GitHub public REST API via authenticated gh CLI",
+    "resource": "search/issues",
+    "qualifiers": ["is:pr", "is:merged", "archived:false"],
+    "languages": ["Python", "TypeScript", "JavaScript", "Rust"],
+    "sort": "created",
+    "order": "desc",
+    "pages_per_language": 3,
+    "items_per_page": 100,
+    "maximum_search_metadata_rows": 1200,
+    "raw_response_bodies_retained": false,
+    "response_digest_chain_required": true
+  },
+  "selection": {
+    "ranking": "ascending sha256(selection_seed + normalized_repository + '#' + pull_request_number)",
+    "selection_seed": "theseus-vcm-source-selection-v1-2026-08-03",
+    "one_pull_request_per_repository": true,
+    "prior_repository_denylist_source": "all tracked configs/*.json repository fields matching owner/name before this config was created",
+    "prior_repository_denylist_count": 87,
+    "prior_repository_denylist_sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774",
+    "minimum_repository_stars": 1,
+    "repository_must_not_be_fork_archived_or_disabled": true,
+    "draft_pull_requests_forbidden": true,
+    "bot_authors_forbidden": true,
+    "changed_file_count_min": 2,
+    "changed_file_count_max": 12,
+    "changed_line_count_min": 2,
+    "changed_line_count_max": 800,
+    "require_non_test_source_change": true,
+    "require_machine_verifier_change": true,
+    "deleted_only_source_changes_forbidden": true,
+    "lockfile_generated_vendor_only_changes_forbidden": true,
+    "license_spdx_allowlist": [
+      "0BSD", "AGPL-3.0", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause",
+      "BSL-1.0", "EPL-2.0", "EUPL-1.2", "GPL-2.0", "GPL-3.0", "ISC",
+      "LGPL-2.1", "LGPL-3.0", "MIT", "MPL-2.0", "PSF-2.0", "Unlicense", "Zlib"
+    ],
+    "eligibility_is_computed_without_model_outputs": true,
+    "candidate_visible_packet_materialization_authorized": false,
+    "target_source_content_retrieval_authorized": false
+  },
+  "panels": {
+    "control_qualification": {"task_count": 9, "language_quotas": {"Python": 3, "TypeScript": 2, "JavaScript": 2, "Rust": 2}},
+    "claim": {"task_count": 53, "language_quotas": {"Python": 17, "TypeScript": 14, "JavaScript": 11, "Rust": 11}},
+    "total_task_count": 62,
+    "source_disjoint": true,
+    "assignment": "Within each language, take the prospectively ranked eligible total, then assign the lowest independent panel hashes to the control quota and the remainder to claim.",
+    "assignment_seed": "theseus-vcm-panel-assignment-v1-2026-08-03",
+    "reference_outputs_may_select_or_assign_tasks": false
+  },
+  "authority": {
+    "public_metadata_queries_authorized_after_green_preflight": true,
+    "public_source_content_retrieval_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": 0,
+    "external_reference_calls_authorized": 0,
+    "hidden_evaluation_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output": "reports/theseus_vcm_source_acquisition_v2.json",
+  "maximum_inference": "A GREEN v2 preflight authorizes one bounded public metadata rerun only. A GREEN acquisition report proves only that 62 fresh, licensed, structurally machine-verifiable, mutually source-disjoint repository/PR identities were selected by the frozen repaired rule. It does not authorize source-content retrieval, task packets, candidate generation, local or Luna calls, hidden evaluation, D1, D2, training, serving, book support movement, or a VCM usefulness claim."
+}
