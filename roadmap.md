@@ -267,11 +267,13 @@ source-disjoint `branch_or_predicate_replacement` from `scikit-bio/scikit-bio`
 is metadata-checked and frozen as exact parent/target source and license bytes.
 Its independent AST evaluator now qualifies parent-negative,
 target/benign-positive, truthiness, default, dtype-dataflow, ordering,
-missing-path, and unauthorized-path controls before candidate exposure. The
-active boundary is the parent-only packet and a prospective v3 resume that
-classifies backend watchdog telemetry before downstream route consequences. New
-local calls, Luna calls, hidden evaluation, training, D1, and D2 remain closed
-until that binding passes.
+missing-path, and unauthorized-path controls before candidate exposure. A
+52,409-byte parent-only packet is sealed with at least 209,735 conservative
+residual context tokens and no project-selected quality cap. The active boundary
+is a prospective v3 denominator, runner, and scorer that preserve candidates
+1–3 and classify backend watchdog telemetry before downstream route
+consequences. New local calls, Luna calls, hidden evaluation, training, D1, and
+D2 remain closed until that binding passes.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

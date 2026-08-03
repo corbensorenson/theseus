@@ -1,0 +1,58 @@
+{
+  "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_replacement_04_candidate_packet.json",
+  "candidate_packet_sha256": "62b9f0b09ab7bec662ab531b1fc6234b0b06451cbd9fe8ae2c8e500506bd7f08",
+  "completion_boundary": {
+    "host_watchdog_activation_invalidates_observation": true,
+    "model_declared_context_window_tokens": 262144,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "physical_context_boundary_hit_invalidates_observation": true,
+    "project_selected_quality_token_cap": null
+  },
+  "conservative_minimum_residual_tokens": 209735,
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T04:59:11.937586Z",
+  "evaluator_identity_or_output_visible": false,
+  "evaluator_qualification": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.json",
+    "sha256": "aa1a4dce43d1a624dd4bab269732ec7c1b8240fdbf34f5303bbaf0a7315864b5"
+  },
+  "faults": [],
+  "information_flow": {
+    "actual_serialized_prompt_audited": true,
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_receives_exact_serialized_packet_only": true,
+    "recursive_forbidden_key_audit_required": true,
+    "repository_pr_target_revision_target_archive_evaluator_or_oracle_candidate_visible": false
+  },
+  "maximum_inference": "A GREEN seal establishes only that the independently qualified fresh replacement has a production-representable, parent-source-only prompt with recursive anti-cheating checks and physical context headroom. It does not establish model competence, Semantic-IR adequacy or effect, D1, D2, training value, serving, or book support.",
+  "opaque_task_id": "semantic-ir-adequacy-04r1",
+  "policy": "project_theseus_semantic_ir_production_adequacy_replacement_04_task_pool_v1",
+  "replacement_index": 4,
+  "semantic_scope_node_count": 21,
+  "serialized_prompt_sha256": "f93f65c7f6974c044a6f3f8df0ecf71298bf92a6d1e7e8c8c3b4272e2c6ab9c0",
+  "serialized_prompt_utf8_bytes": 52409,
+  "source_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
+    "sha256": "579bb48e49e1ce2c777d97a3e87e2a029fcd51b668e6aee49d26423bfd6a91a4"
+  },
+  "state": "SEALED_BEFORE_REPLACEMENT_CANDIDATE_GENERATION",
+  "target_archive_or_source_visible": false,
+  "task_manifest": "configs/theseus_semantic_ir_production_adequacy_replacement_04_task.json",
+  "task_manifest_sha256": "c52a791e8537cd7395941d2ef4bd14fe9f70b613a4611e9e0564c327903603bd",
+  "task_pool_owner": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_replacement_04_task_pool.py",
+    "sha256": "4dbfdd2bb6b5d11ec51ea0c99a574db4d3d8105247073ccff046f2209bf8e31c"
+  },
+  "trigger_state": "GREEN"
+}
