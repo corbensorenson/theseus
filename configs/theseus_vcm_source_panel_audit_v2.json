@@ -1,0 +1,48 @@
+{
+  "policy": "project_theseus_vcm_source_panel_audit_v2",
+  "state": "PROSPECTIVE_EXECUTION_FREE_REPAIRED_SOURCE_PANEL_AUDIT",
+  "purpose": "Independently assemble exactly 62 English source tasks by substituting only Task 28 and the six language-scope slots, while preserving superseded evidence and all downstream authority closures.",
+  "reports": {
+    "metadata_selection": {"path": "reports/theseus_vcm_source_acquisition_v7.json", "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"},
+    "failed_materialization": {"path": "reports/theseus_vcm_source_materialization.json", "sha256": "d38e58eccf4fd9a103a921018a9f7c6b20f460f71011d2fe36771f8af6206f18"},
+    "replacement_28": {"path": "reports/theseus_vcm_source_replacement_28.json", "sha256": "50136db23d4ead52a9c897f4d923880830eca368be6b70c6ad2c9f86e2e36976"},
+    "prior_panel_audit": {"path": "reports/theseus_vcm_source_panel_audit.json", "sha256": "64c2f667f6542a950315f4a92154cb6c2c27caa0af20a88a9649161345a34f83"},
+    "language_replacements_v2": {"path": "reports/theseus_vcm_language_replacements_v2.json", "sha256": "8622f79441c3467f965288235b8eb533af377862678724549f2f34c5396d7a3b"}
+  },
+  "expected_panel": {
+    "task_count": 62,
+    "archive_count": 248,
+    "member_receipt_count": 681,
+    "total_member_bytes": 13637118,
+    "superseded_archive_count": 24,
+    "title_set_sha256": "dfcf15049ad4df6d0fc8c282a9c47ba3bf8cde414dac397fa23a2e780903c56d",
+    "quotas": [
+      {"panel": "claim", "query_language": "JavaScript", "count": 11},
+      {"panel": "claim", "query_language": "Python", "count": 17},
+      {"panel": "claim", "query_language": "Rust", "count": 11},
+      {"panel": "claim", "query_language": "TypeScript", "count": 14},
+      {"panel": "control_qualification", "query_language": "JavaScript", "count": 2},
+      {"panel": "control_qualification", "query_language": "Python", "count": 3},
+      {"panel": "control_qualification", "query_language": "Rust", "count": 2},
+      {"panel": "control_qualification", "query_language": "TypeScript", "count": 2}
+    ]
+  },
+  "authority": {
+    "network_calls_authorized": false,
+    "untrusted_code_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output": "reports/theseus_vcm_source_panel_audit_v2.json",
+  "maximum_inference": "A GREEN report proves only that exactly 62 unique, prior-disjoint, license-bound, English-request source tasks have complete normalized parent/target source and verifier archives with changed selected bytes and preserved 9/53 quotas. It authorizes the next evaluator-design transaction only. It does not prove parent failure, target success, evaluator independence or adequacy, candidate competence, a VCM effect, D1, D2, serving, training value, or ASI Stack support."
+}

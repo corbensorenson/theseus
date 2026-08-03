@@ -454,6 +454,32 @@
         "external_reference_calls_authorized": false,
         "user_or_operator_gate": false,
         "next_boundary": "independently assemble and audit the exact 62-task panel with only slots 1, 12, 19, 28, 48, 51, and 56 substituted"
+      },
+      "vcm_source_panel_audit_v2": {
+        "config": "configs/theseus_vcm_source_panel_audit_v2.json",
+        "report": "reports/theseus_vcm_source_panel_audit_v2.json",
+        "owner": "scripts/theseus_vcm_source_panel_audit_v2.py",
+        "owner_sha256": "587ff0ce8cabf206a899dd1eafd0aaf2b2db96a2a6e37fef74613b438ddc0cf8",
+        "config_sha256": "028969d19c6e859a09f44a1a02157ba96cf7e9bfc8cfc1da799de165d5f6dc23",
+        "report_sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7",
+        "state": "GREEN_SIXTY_TWO_ENGLISH_SOURCE_TASKS_ADMITTED_BEFORE_EVALUATOR_EXECUTION",
+        "source_panel_admitted": true,
+        "assembled_task_count": 62,
+        "unique_repository_count": 62,
+        "english_eligible_task_count": 62,
+        "control_qualification_task_count": 9,
+        "claim_task_count": 53,
+        "archive_receipt_count": 248,
+        "member_receipt_count": 681,
+        "selected_source_difference_count": 62,
+        "selected_verifier_difference_count": 62,
+        "superseded_non_english_archives_preserved_but_ignored": 24,
+        "parent_target_or_evaluator_executions": 0,
+        "candidate_packet_materialization_authorized": false,
+        "local_model_calls_authorized": false,
+        "external_reference_calls_authorized": false,
+        "user_or_operator_gate": false,
+        "next_boundary": "design and independently qualify language-appropriate network-denied parent-fail target-pass evaluator execution without treating inadequate repository harnesses as mechanism negatives"
       }
     },
     "claim_selection_policy": {

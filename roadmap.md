@@ -602,6 +602,17 @@ matches. Repository execution, candidate/model calls, training, D1, and D2 all
 remain zero. The next owner must independently reassemble the 62-task panel,
 substituting only slots 1, 12, 19, 28, 48, 51, and 56, before evaluator work.
 
+That independent v2 panel audit is GREEN. The canonical source panel now has
+exactly 62 English requests and 62 unique repositories, preserves every 9/53
+and programming-language quota, binds 248 selected archives and 681 normalized
+member receipts, and proves selected source and verifier bytes change in every
+slot. The 24 superseded non-English archives remain committed evidence but are
+not part of the admitted panel. This opens evaluator design only. Parent failure,
+target success, dependency completeness, harness independence, and evaluator
+construct validity remain unproven; repository execution and both models stay
+closed until a language-appropriate network-denied evaluator instrument passes
+its own adequacy and host-safety qualification.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

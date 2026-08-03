@@ -273,6 +273,15 @@ and no retry or terminal transport failure occurred. The final report/checkpoint
 and every archive passed independent hash and safety audit. No repository,
 evaluator, candidate, local/Luna, teacher, D1, or D2 execution occurred.
 
+The independent repaired-panel audit is GREEN. It assembles exactly 62 English
+tasks across 62 unique repositories; preserves the 9 control/53 claim and all
+programming-language quotas; verifies 248 selected archives, 681 normalized
+member receipts, and changed selected source/verifier bytes in every slot; and
+keeps 24 superseded non-English archives as excluded evidence. Source admission
+is complete. Evaluator design is now active, but parent-fail/target-pass behavior,
+dependency sufficiency, evaluator independence, and construct validity remain
+unproven. No repository or model execution is authorized by this result.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
