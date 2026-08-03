@@ -210,6 +210,16 @@ separate. It cannot execute untrusted code, install dependencies, build packets,
 evaluate candidates, or call local/Luna. Physical byte boundaries invalidate
 host operability only. One source-only run is active.
 
+The source run failed closed on one content-level false positive. It wrote 244
+deterministic archives for 61 tasks, but Python claim Task 28
+(`salihyesil59/CosmoFit#2`) had identical base/head bytes for its only selected
+verifier notebook. Partial admission remains false. The run made 62 title and
+626 source requests: 640 successes, 48 stable added/deleted-path 404s, zero
+retries, zero transport failures, and zero executions/model calls. Its final
+checkpoint hash is valid. Preserve the 61 rows and replace only this Python-
+claim slot under the same rank/eligibility rules plus a changed-verifier-byte
+gate; do not relax the requirement.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -397,8 +407,9 @@ authorize regenerating historical reports or reopening neural work.
    unknown-network exhaustion after 57 successes. Preserve it; repair only the
    bounded retry horizon and final checkpoint hash ordering. V7 completed GREEN
    with all 62 exact-panel identities and a verified final checkpoint hash.
-   The execution-free source materializer is sealed GREEN at zero requests; run
-   and audit it, then separately qualify evaluators before
+   The execution-free materializer preserved 61 source pairs but rejected the
+   Python claim Task 28 verifier as byte-identical. Select and materialize one
+   prospectively ranked Python-claim replacement, then qualify evaluators before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.
 11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit

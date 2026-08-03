@@ -526,6 +526,18 @@ untrusted code, install dependencies, build candidate packets, evaluate, or
 call either model. Physical file/aggregate byte boundaries are host-safety
 invalidations, not task or mechanism failures. One source-only run is active.
 
+That run failed closed on exactly one content-level false positive. Sixty-one
+tasks produced 244 deterministic archives, but Python claim Task 28
+(`salihyesil59/CosmoFit#2`) had identical base/head bytes for its only selected
+verifier notebook. The materializer therefore refused all partial admission.
+It made 62 title and 626 source-content requests with 640 successes, 48 stable
+added/deleted-path 404s, zero retries, zero transport failures, and zero
+executions or model calls. The checkpoint's final hash matches the report. Keep
+the 61 source-bound rows as non-admitted evidence; replace only the failed
+Python-claim slot using the same frozen rank/eligibility rules plus the now-
+required changed-verifier-byte gate. Do not weaken the verifier requirement or
+rerun the accepted 61 as if the failure did not occur.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -720,9 +732,11 @@ Use existing owners; create no new cleanup or report family.
    requests. Preserve it. V7's bounded recovery succeeded and froze all 62
    unique repositories with exact 9/53 source-disjoint panels and a verified
    final checkpoint hash. Bind immutable source retrieval and independent
-   evaluator qualification to that exact report. The execution-free source
-   materializer is sealed GREEN at zero requests; run it, audit all archives,
-   then separately qualify evaluators and bind
+   evaluator qualification to that exact report. The execution-free materializer
+   preserved 61 source pairs but rejected Python claim Task 28 because its only
+   verifier path was byte-identical across revisions. Preserve those 61 rows and
+   select/materialize one prospectively ranked Python-claim replacement with
+   changed source and verifier bytes. Then qualify evaluators and bind
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
