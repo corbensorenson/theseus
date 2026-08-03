@@ -864,8 +864,11 @@ the 244 source files stayed immutable, and the bounded store retained 9 files /
 56,759 bytes. The independent static audit is GREEN: all 8 pnpm-index files,
 store/source identity, dependency parity, commands, deny-network evidence, and
 storage reserve rederive without execution. Frozen schedule ordinal 3, task 36,
-requires Rust 1.97 while the bound profile is 1.90; bind that exact toolchain
-before any third dependency acquisition or repository runner.
+requires Rust 1.97 while the bound profile is 1.90. Exact Rust 1.97.1 is now
+prospectively sealed because it satisfies the minimum and fixes the 1.97.0
+miscompilation. The official manifest plus minimal Apple ARM64 `rustc`, `cargo`,
+and `rust-std` hashes are bound before acquisition. No Cargo dependency fetch or
+repository runner is authorized.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

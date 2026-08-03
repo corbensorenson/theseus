@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_7_CLOSURE_AUDIT_GREEN_TASK_36_RUST_1_97_BOOTSTRAP_NEXT",
+      "state": "VCM_V3_TASK_36_RUST_1_97_1_BOOTSTRAP_PROSPECTIVELY_SEALED",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1079,6 +1079,12 @@
         "external_reference_calls": 0,
         "maximum_inference": "independent static qualification of task-7 pnpm dependency acquisition and offline-store mechanics only; no repository runner evaluator task VCM model or mechanism result",
         "next_boundary": "bind an exact Rust 1.97-compatible toolchain for frozen schedule ordinal 3 task 36 before any third dependency acquisition"
+      },
+      "vcm_rust_toolchain_bootstrap": {
+        "config":"configs/theseus_vcm_rust_toolchain_bootstrap.json","owner":"scripts/theseus_vcm_rust_toolchain_bootstrap.py","test":"tests/test_theseus_vcm_rust_toolchain_bootstrap.py","report":"reports/theseus_vcm_rust_toolchain_bootstrap.json",
+        "owner_sha256":"1c0ddf763b74c41233d9ed63f827df5a30f10955150545ac78b51868497c536e","config_sha256":"32cc6239883f581a7e9326f68751fc0b7c8fe4e23079ba8b9c5b6b77ff4863aa","test_sha256":"b80330c3734ed506d047b7485d3273ff54df7b312b7d2a7f89efc065a83ce34d","report_sha256":"eb3edaac1502e84d58c2120d655587a3817e8eebb935ea66be359ebe87b51c4d",
+        "state":"PAUSED_READY_FOR_EXACT_RUST_1_97_1_ACQUISITION","task_index":36,"schedule_ordinal":3,"official_manifest_sha256":"03569b1886ceb5c05276b50c8431ab111de944cd6140fe1fa7d821dd8e0f29cf","metadata_requests_before_contract":2,"toolchain_acquisition_executions":0,"cargo_dependency_fetches":0,"repository_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"prospective exact minimal Rust 1.97.1 Apple ARM64 toolchain seal only; no Cargo dependency repository evaluator task VCM or model result is established","next_boundary":"acquire only the official-manifest-bound rustc cargo and rust-std minimal components into the isolated task-36 rustup home"
       },
       "vcm_pnpm_bootstrap": {
         "config": "configs/theseus_vcm_pnpm_bootstrap.json",
