@@ -282,6 +282,13 @@ is complete. Evaluator design is now active, but parent-fail/target-pass behavio
 dependency sufficiency, evaluator independence, and construct validity remain
 unproven. No repository or model execution is authorized by this result.
 
+The existing D1 sandbox's current qualification is RED, not reusable GREEN
+evidence: its trusted Python canary stopped in 4 ms because the parent RSS
+monitor could not invoke `/bin/ps`, so no denial canary result was produced.
+Zero repository/model executions occurred. Preserve the host-instrument failure
+and retry only with telemetry permission; JavaScript/TypeScript and Rust still
+need separate sandbox qualification regardless of the Python result.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

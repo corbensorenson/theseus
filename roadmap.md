@@ -613,6 +613,14 @@ construct validity remain unproven; repository execution and both models stay
 closed until a language-appropriate network-denied evaluator instrument passes
 its own adequacy and host-safety qualification.
 
+The existing D1 sandbox cannot be treated as that instrument. Its current
+trusted Python canary failed closed before the canary process produced output
+because the parent RSS monitor lacked permission to invoke `/bin/ps`. The
+receipt records a 4 ms `rss_telemetry_unavailable` physical boundary, zero
+repository executions, and zero model calls. Preserve it and retry the trusted
+canary only with host telemetry permission. Even a GREEN retry would qualify
+the pinned Python path only, not Node/TypeScript or Rust.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

@@ -1,31 +1,21 @@
 {
-  "activation_state": "D1_UNTRUSTED_EVALUATOR_SANDBOX_QUALIFIED",
+  "activation_state": "D1_UNTRUSTED_EVALUATOR_SANDBOX_NOT_QUALIFIED",
   "backend": {
     "path": "/usr/bin/sandbox-exec",
     "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"
   },
-  "canary": {
-    "child_python_cannot_escape_read_denial": true,
-    "cpu_limit_present": true,
-    "environment_minimized": true,
-    "file_size_limit_present": true,
-    "host_read_denied": true,
-    "inside_write_allowed": true,
-    "network_denied": true,
-    "open_file_limit_present": true,
-    "outside_write_denied": true,
-    "process_limit_present": true,
-    "shell_exec_denied": true,
-    "symlink_host_read_denied": true
-  },
+  "canary": {},
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_d1_evaluator_sandbox.json",
     "sha256": "f585d9ca048285919d7f17d40801f2c2a1d4e205a5dead1a5cf0cab33ec1a78a"
   },
-  "created_utc": "2026-08-02T05:48:06.557561Z",
+  "created_utc": "2026-08-03T15:26:53.397332Z",
   "external_inference_calls": 0,
-  "faults": [],
+  "faults": [
+    "qualification_physical_boundary_hit",
+    "sandbox_canary_result_missing_or_duplicated"
+  ],
   "maximum_inference": "A GREEN qualification proves only that the exact local macOS/Python sandbox implementation rejects the declared confidentiality, network, filesystem, executable, environment, output, process, and wall-boundary canaries. It does not make arbitrary untrusted code safe in general, install dependencies, execute a D1 repository, prove evaluator adequacy, authorize candidate calls, qualify D1, or move ASI Stack support. Every later evaluator run must retain its complete verifier streams whenever the physical output-file boundary is untouched and retain its own sandbox and host-resource receipt; a physical boundary hit invalidates the observation rather than failing a model or mechanism.",
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_d1_untrusted_evaluator_sandbox_v1",
@@ -35,9 +25,9 @@
   },
   "qualification_executed": true,
   "run_receipt": {
-    "boundary_hit": false,
-    "boundary_reason": "",
-    "duration_ms": 68.934,
+    "boundary_hit": true,
+    "boundary_reason": "rss_telemetry_unavailable",
+    "duration_ms": 4.01,
     "environment_keys": [
       "HOME",
       "LC_CTYPE",
@@ -56,19 +46,19 @@
       "wall_seconds": 20
     },
     "max_process_group_rss_mib": 1024.0,
-    "maximum_process_group_rss_mib": 3.891,
-    "profile_sha256": "8f9a6118c0644b17599dde8ba6391de50a2e1f6b54c963f05d030a61b65646c8",
+    "maximum_process_group_rss_mib": 0.0,
+    "profile_sha256": "00ecb6b3b8976cbe7c1872344d49fadbf2f87d8176a465211d2cba0a3f5110d8",
     "project_selected_character_cap": null,
-    "returncode": 0,
-    "rss_telemetry_fault": "",
+    "returncode": -15,
+    "rss_telemetry_fault": "PermissionError:[Errno 1] Operation not permitted: '/bin/ps'",
     "stderr_bytes": 0,
     "stderr_complete": true,
     "stderr_tail": "",
-    "stdout_bytes": 404,
+    "stdout_bytes": 0,
     "stdout_complete": true,
-    "stdout_tail": "__THESEUS_D1_SANDBOX_RESULT__{\"child_python_cannot_escape_read_denial\": true, \"cpu_limit_present\": true, \"environment_minimized\": true, \"file_size_limit_present\": true, \"host_read_denied\": true, \"inside_write_allowed\": true, \"network_denied\": true, \"open_file_limit_present\": true, \"outside_write_denied\": true, \"process_limit_present\": true, \"shell_exec_denied\": true, \"symlink_host_read_denied\": true}\n"
+    "stdout_tail": ""
   },
   "sandbox_profile_sha256": "0b76cfde8a9c90f5192d05c6dc61f6ddf7944f9c7b48de0c239e7a904b7fc819",
-  "trigger_state": "GREEN",
-  "untrusted_execution_authorized": true
+  "trigger_state": "RED",
+  "untrusted_execution_authorized": false
 }

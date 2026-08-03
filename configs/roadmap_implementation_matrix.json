@@ -4713,7 +4713,13 @@
         "evaluator_sandbox": "scripts/theseus_d1_evaluator_sandbox.py",
         "evaluator_sandbox_test": "tests/test_theseus_d1_evaluator_sandbox.py",
         "evaluator_sandbox_qualification": "reports/theseus_d1_evaluator_sandbox_qualification.json",
-        "evaluator_sandbox_qualification_state": "green_exact_local_denial_canaries",
+        "evaluator_sandbox_qualification_state": "red_current_host_rss_telemetry_unavailable_before_canary_zero_repository_executions",
+        "evaluator_sandbox_current_faults": [
+          "qualification_physical_boundary_hit",
+          "sandbox_canary_result_missing_or_duplicated",
+          "rss_telemetry_unavailable_permission_denied_bin_ps"
+        ],
+        "evaluator_sandbox_current_scope": "pinned_python_only_not_javascript_typescript_or_rust",
         "evaluator_seal_config": "configs/theseus_d1_evaluator_seal.json",
         "evaluator_seal": "scripts/theseus_d1_evaluator_seal.py",
         "evaluator_seal_test": "tests/test_theseus_d1_evaluator_seal.py",
