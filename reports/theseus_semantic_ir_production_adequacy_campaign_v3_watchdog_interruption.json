@@ -1,0 +1,114 @@
+{
+  "campaign_config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_campaign_v3.json",
+    "sha256": "1f878652eec04abd9632ada97de0080c7d7aa01c0fa01f954c2095c89abc4f90"
+  },
+  "candidate_report": {
+    "completed_candidate_count": 3,
+    "completed_candidate_indices": [
+      1,
+      2,
+      3
+    ],
+    "path": "reports/theseus_semantic_ir_production_adequacy_candidates_v3.json",
+    "sha256": "91cb6cdccf581732bcc6c9cde8b4ccc7658ca39199f1f8502f7adf78219bbe3f"
+  },
+  "classification": {
+    "capability_failure": false,
+    "campaign_fault": "host_watchdog_infrastructure_invalid:task_04:call_1",
+    "hidden_evaluation_opened": false,
+    "mechanism_failure": false,
+    "scientific_status": "INVALID_INFRASTRUCTURE_INCOMPLETE_DENOMINATOR"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "attempted_local_model_calls_in_v3": 1,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "preserved_candidate_calls": 6,
+    "preserved_candidates": 3,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "watchdog_invalid_local_model_calls_in_v3": 1
+  },
+  "created_utc": "2026-08-03T05:26:54Z",
+  "diagnosis": {
+    "candidate_visible_function_end_line": 467,
+    "candidate_visible_function_line_count": 433,
+    "candidate_visible_function_node_id": "N-DDCFBC505091A549",
+    "candidate_visible_function_start_line": 35,
+    "candidate_visible_semantic_scope_node_count": 21,
+    "full_parent_file_line_count": 1388,
+    "generated_tokens_before_watchdog": 1949,
+    "generation_tokens_per_second": 5.14,
+    "host_safety_wall_seconds": 600.0,
+    "model_prompt_tokens": 15943,
+    "natural_request_requires_change_inside_large_function": true,
+    "nearest_candidate_visible_mutation_node_is_whole_function": true,
+    "output_amplification_risk": "A local insertion inside pair_align can be represented only by reproducing the complete 433-line function because the sealed symbol table exposes module-body nodes but no nested statement target.",
+    "parser_completion_observed": false,
+    "partial_candidate_text_retained": false,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "serialized_prompt_utf8_bytes": 52409,
+    "source_of_diagnosis": "candidate-visible packet structure and backend telemetry only; hidden evaluator and target revision were not opened"
+  },
+  "faults": [
+    "task_04r1_call_1_host_watchdog_hit",
+    "task_04r1_surface_exposed_and_ineligible_for_rerun",
+    "candidate_denominator_incomplete",
+    "semantic_scope_granularity_can_force_whole_function_output_for_local_edits",
+    "invalid_partial_text_not_retained_for_instrument_diagnosis"
+  ],
+  "journal": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v3_journal.json",
+    "sha256": "1ddb3bde9f927ce42e9ad0e87fdc59285d5ae925f83ab5c6b97d51dda1eeea27"
+  },
+  "maximum_inference": "This event establishes that the prospectively bound classifier correctly attributed the interruption to the host watchdog and that the current candidate-visible Semantic-IR scope can impose severe output amplification on a local edit. It does not establish local-model failure, full Semantic-IR mechanism failure, a subsystem effect, D1, D2, training value, serving value, or ASI Stack support. The exact Task 04r1 surface is consumed and may not be rerun.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_watchdog_interruption_v3",
+  "required_repairs": [
+    "preserve candidates 01 through 03 without regeneration",
+    "retain invalid partial output under a non-candidate diagnostic namespace on future infrastructure interruptions",
+    "expose exact nested statement targets so a local insertion does not require whole-function reproduction",
+    "measure prompt and output amplification prospectively for every remaining task",
+    "replace exposed Task 04r1 with a fresh licensed source-disjoint same-stratum task after the instrument repair",
+    "bind a new denominator, runner, scorer, task surfaces, and call authority before further model exposure"
+  ],
+  "state": "CAMPAIGN_PAUSED_INSTRUMENT_REPAIR_AND_FRESH_SURFACE_REQUIRED",
+  "task_surface": {
+    "candidate_packet": {
+      "path": "configs/theseus_semantic_ir_production_adequacy_replacement_04_candidate_packet.json",
+      "sha256": "62b9f0b09ab7bec662ab531b1fc6234b0b06451cbd9fe8ae2c8e500506bd7f08"
+    },
+    "sealed_pool": {
+      "path": "reports/theseus_semantic_ir_production_adequacy_task_pool_v3.json",
+      "sha256": "48500189dcca95f177f5e04778fdaa7718df3f9f2aec1c286c9e2082a49d1cdd"
+    },
+    "task_index": 4,
+    "task_manifest": {
+      "path": "configs/theseus_semantic_ir_production_adequacy_replacement_04_task.json",
+      "sha256": "c52a791e8537cd7395941d2ef4bd14fe9f70b613a4611e9e0564c327903603bd"
+    }
+  },
+  "trigger_state": "RED",
+  "watchdog_backend_receipt": {
+    "call_number": 1,
+    "generated_tokens": 1949,
+    "generation_wall_ms": 601059.854,
+    "host_safety_wall_seconds": 600.0,
+    "host_safety_wall_time_hit": true,
+    "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_04r1_direct_local_model_1_a6d73a492dae0f28.json",
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "sha256": "54acf276231831429d58f64f2913a89492ad3b48862ee1434eb3c9da35b76bed",
+    "task_index": 4,
+    "termination_reason": "host_safety_wall_time"
+  },
+  "watchdog_runtime_receipt": {
+    "path": "runtime/p2a/p2a_semantic_ir_adequacy_04r1_direct_local_model_1.json",
+    "route_release_allowed": false,
+    "sha256": "19814fca731482f1b4c2d5fa1b22d89c7c63344fbef576295c3220cc28ee55f0",
+    "trigger_state": "RED"
+  }
+}

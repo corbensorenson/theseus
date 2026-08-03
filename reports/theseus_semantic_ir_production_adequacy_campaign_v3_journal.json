@@ -1,0 +1,15 @@
+{
+  "call_number": 1,
+  "completed_candidate_indices": [
+    1,
+    2,
+    3
+  ],
+  "config_sha256": "1f878652eec04abd9632ada97de0080c7d7aa01c0fa01f954c2095c89abc4f90",
+  "created_utc": "2026-08-03T05:24:00.160789Z",
+  "fault": "host_watchdog_infrastructure_invalid:task_04:call_1",
+  "hidden_evaluation_opened": false,
+  "policy": "project_theseus_semantic_ir_production_adequacy_campaign_journal_v3",
+  "state": "MODEL_CALL_INFRASTRUCTURE_INVALID",
+  "task_index": 4
+}
