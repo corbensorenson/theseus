@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import shutil
+import ssl
 import sys
 import tempfile
 import tarfile
@@ -235,7 +236,9 @@ class StorageSafeDownloader:
             temporary = Path(handle.name)
             size = 0
             try:
-                with urllib.request.urlopen(request, timeout=180) as response:
+                tls = self.config["tls_ca_bundle"]
+                context = ssl.create_default_context(cafile=str(tls["path"]))
+                with urllib.request.urlopen(request, timeout=180, context=context) as response:
                     while chunk := response.read(1024 * 1024):
                         size += len(chunk)
                         if size > maximum:
@@ -262,6 +265,9 @@ def validate_config(config: dict[str, Any]) -> list[str]:
     storage = config.get("physical_storage_policy", {})
     if int(storage.get("minimum_free_bytes_after_download") or 0) < 8 * 1024**3: faults.append("storage_reserve_too_small")
     if int(storage.get("maximum_upstream_archive_bytes") or 0) <= 0: faults.append("archive_boundary_invalid")
+    tls = config.get("tls_ca_bundle", {})
+    tls_path = Path(str(tls.get("path") or ""))
+    if not tls_path.is_file() or sha256_file(tls_path) != tls.get("sha256"): faults.append("tls_ca_bundle_identity_invalid")
     return faults
 
 

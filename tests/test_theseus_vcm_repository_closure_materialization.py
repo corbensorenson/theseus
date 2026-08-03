@@ -44,3 +44,5 @@ def test_storage_policy_is_physical_and_preserves_ten_gib_reserve():
     assert config["authority"]["untrusted_repository_execution_authorized"] is False
     assert config["retention_policy"]["upstream_bytes_retained_after_normalization"] is False
     assert config["retention_policy"]["upstream_sha256_receipt_retained"] is True
+    assert Path(config["tls_ca_bundle"]["path"]).is_file()
+    assert owner.sha256_file(Path(config["tls_ca_bundle"]["path"])) == config["tls_ca_bundle"]["sha256"]

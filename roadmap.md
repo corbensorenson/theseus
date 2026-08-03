@@ -667,6 +667,10 @@ instrument materialization on this host, never a task or mechanism negative.
 To avoid doubling storage, upstream bytes are deleted only after the normalized
 derivative passes the exact-member and safety audit; the upstream SHA-256 and
 sanitization receipt remain durable, and completed derivatives are retryable.
+The first live attempt paused before any download because the Python system CA
+chain could not verify codeload. That receipt is preserved. The successor binds
+the exact installed certifi CA bundle by SHA-256; it changes only TLS trust
+transport and does not widen source, execution, or model authority.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

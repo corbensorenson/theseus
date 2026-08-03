@@ -325,6 +325,8 @@ fetches. The next transaction may acquire archives autonomously; storage-boundar
 activation is an instrument result and cannot be scored against a task or claim.
 Successful normalization retains the upstream byte hash but removes the duplicate
 upstream archive, preserving the deterministic derivative and restartability.
+The zero-download TLS verification pause is preserved. The active successor pins
+the installed certifi CA bundle by exact hash and is back to GREEN preflight.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
