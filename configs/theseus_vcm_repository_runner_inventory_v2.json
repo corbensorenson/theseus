@@ -1,0 +1,9 @@
+{
+  "policy":"project_theseus_vcm_repository_runner_inventory_v1",
+  "state":"STATIC_INVENTORY_AFTER_EXACT_CLOSURE_BEFORE_DEPENDENCY_OR_REPOSITORY_EXECUTION",
+  "closure_report":"reports/theseus_vcm_repository_closure_materialization_v2.json",
+  "closure_report_sha256":"0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df",
+  "report":"reports/theseus_vcm_repository_runner_inventory_v2.json",
+  "authority":{"normalized_archive_static_read_authorized":true,"archive_extraction_authorized":false,"dependency_installation_authorized":false,"repository_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference":"A GREEN v2 inventory proves only which exact manifests, locks, CI test lines, package scripts, Cargo-standard commands, and pytest declarations occur in the repaired v3 panel closures. Runner receipts are prospective command candidates, not dependency-resolution or parent-fail/target-pass evidence."
+}

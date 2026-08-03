@@ -1,0 +1,43 @@
+{
+  "policy": "project_theseus_vcm_repository_runner_inventory_v3",
+  "state": "SELECTED_VERIFIER_RUNNER_BINDING_AFTER_REPAIRED_PANEL_BEFORE_DEPENDENCY_OR_REPOSITORY_EXECUTION",
+  "reports": {
+    "preliminary_inventory": {
+      "path": "reports/theseus_vcm_repository_runner_inventory_v2.json",
+      "sha256": "e94e3e8954f5d1d77bee619612e774dbd6fd5e03669a59d2d207ce73a103b021"
+    },
+    "source_panel": {
+      "path": "reports/theseus_vcm_source_panel_audit_v3.json",
+      "sha256": "867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff"
+    }
+  },
+  "expected_observations": {
+    "task_count": 62,
+    "tasks_with_root_manifest": 59,
+    "tasks_with_root_lock": 48,
+    "tasks_with_inherited_independent_runner_receipt": 58,
+    "tasks_with_any_independent_runner_receipt": 62,
+    "tasks_without_independent_runner_receipt": 0,
+    "dependency_resolutions": 0,
+    "parent_target_or_evaluator_executions": 0
+  },
+  "report": "reports/theseus_vcm_repository_runner_inventory_v3.json",
+  "authority": {
+    "normalized_archive_static_read_authorized": true,
+    "archive_extraction_authorized": false,
+    "dependency_resolution_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN v3 inventory proves only that every repaired-panel task has at least one source-bound independently declared runner or an unambiguous selected-verifier standard-runtime receipt. It does not prove dependency closure, sandbox suitability, parent-fail/target-pass behavior, evaluator validity, task quality, or VCM efficacy."
+}
