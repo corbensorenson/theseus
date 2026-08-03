@@ -1,0 +1,19 @@
+{
+  "policy":"project_theseus_vcm_repository_closure_materialization_v1",
+  "state":"PROSPECTIVE_EXACT_REPOSITORY_CLOSURE_BEFORE_UNTRUSTED_EXECUTION",
+  "source_panel":"reports/theseus_vcm_source_panel_audit_v3.json",
+  "bindings":[
+    {"id":"closure_owner","path":"scripts/theseus_vcm_repository_closure_materialization.py","sha256":"9fc0aca0f03a2bd9f638a2e79a6fcf3879245f057da59b8d54e15d215bcb8d8f"},
+    {"id":"source_panel","path":"reports/theseus_vcm_source_panel_audit_v3.json","sha256":"867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff"},
+    {"id":"materialization_owner","path":"scripts/theseus_d1_source_materialization.py","sha256":"8816d4c6758c0a18771997948249cb17b556c46015e1bfa084d7bfd3ac1b4be0"},
+    {"id":"archive_sanitizer","path":"scripts/theseus_p2b_sanitize_archive.py","sha256":"492aade0141d9f3bec3a0e9871a413ff9cf2fae4d540bc231e62c7ded04b9816"}
+  ],
+  "archive_root":"runtime/vcm_evaluator/source_archives",
+  "sanitization_report_root":"reports/theseus_vcm_repository_closure_sanitization",
+  "report":"reports/theseus_vcm_repository_closure_materialization_v2.json",
+  "tls_ca_bundle":{"path":"/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/certifi/cacert.pem","sha256":"4f3975ff30abbf35443b486064ae8bcb41dff707ffdf576c76d292fb458aa0a9"},
+  "physical_storage_policy":{"minimum_free_bytes_after_download":10737418240,"maximum_upstream_archive_bytes":2147483648},
+  "retention_policy":{"upstream_bytes_retained_after_normalization":false,"upstream_sha256_receipt_retained":true,"normalized_deterministic_derivative_retained":true,"completed_derivatives_reused_after_retry":true,"superseded_v1_derivatives_preserved":true},
+  "authority":{"exact_public_source_archive_retrieval_authorized":true,"untrusted_repository_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference":"A GREEN v2 report proves only that the v3 panel's exact parent/head repository closures were hash-bound and normalized, reusing unchanged derivatives and fetching only missing replacements. It authorizes no repository, dependency, evaluator, model, D1, D2, training, serving, or book effect."
+}

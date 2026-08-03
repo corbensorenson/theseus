@@ -361,6 +361,10 @@ for every slot, and zero forbidden-script hits across selected text. The next
 owner must replace only seven full parent/head closures and then regenerate the
 manifest/lock/runner and feasibility reports; no evaluator execution is open yet.
 
+The v3 incremental closure owner is frozen at GREEN preflight: 110 existing exact
+derivatives are reusable and only 14 replacement parent/head archives require
+network transport. Superseded closures remain preserved.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

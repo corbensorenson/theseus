@@ -715,6 +715,11 @@ differences, and zero selected-content language violations. Only indices 14,
 the seven new full repository closures and downstream inventory still must be
 materialized before evaluator work resumes.
 
+The incremental v3 closure successor is GREEN at preflight. It binds the v3
+panel hash, reuses 110 unchanged exact derivatives, plans only 14 new parent/head
+fetches, preserves all superseded v1 closures, retains the 10 GiB physical
+reserve, and opens no execution or model authority.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
