@@ -510,6 +510,18 @@
         "external_reference_calls": 0,
         "maximum_inference": "instrument gaps only; no task, VCM, mechanism, model, or book negative",
         "next_boundary": "materialize exact repository or transitive source closure plus manifests locks and independently derived runner commands, qualify Python Node TypeScript and Rust network-denied sandboxes, then run parent-fail target-pass and control canaries"
+      },
+      "vcm_multilang_sandbox": {
+        "config": "configs/theseus_vcm_multilang_sandbox.json",
+        "owner": "scripts/theseus_vcm_multilang_sandbox.py",
+        "test": "tests/test_theseus_vcm_multilang_sandbox.py",
+        "report": "reports/theseus_vcm_multilang_sandbox_qualification.json",
+        "state": "RED_FIRST_TRUSTED_CANARY_ATTEMPT_HOST_TELEMETRY_DENIED_AND_RUSTUP_SHIM_COULD_NOT_COMPILE_WITH_MINIMIZED_HOME",
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "host telemetry and trusted canary implementation findings only; no repository task model VCM mechanism or book negative",
+        "next_boundary": "bind the concrete rustc toolchain binary and rerun the same trusted canaries with host RSS telemetry permission"
       }
     },
     "claim_selection_policy": {

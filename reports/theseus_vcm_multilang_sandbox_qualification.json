@@ -1,0 +1,76 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_multilang_sandbox.json",
+    "sha256": "2e62d4a11a6af4c278c58fea4f74c254d9c07a38452a64c3b5bf5770617ecdd0"
+  },
+  "created_utc": "2026-08-03T15:39:15.785733Z",
+  "dependency_installation_authorized": false,
+  "explicitly_unqualified_scopes": [
+    "npm_dependency_installation",
+    "typescript_transpilation",
+    "cargo_dependency_resolution",
+    "rust_untrusted_compilation",
+    "repository_runner_adequacy"
+  ],
+  "external_reference_calls": 0,
+  "faults": [
+    "node:nonzero_returncode",
+    "node:physical_boundary_hit",
+    "node:result_missing_or_duplicated",
+    "python:nonzero_returncode",
+    "python:physical_boundary_hit",
+    "python:result_missing_or_duplicated",
+    "trusted_rust_canary_compile_failed"
+  ],
+  "maximum_inference": "A GREEN report qualifies only the exact pinned Python interpreter, Node runtime, and precompiled trusted Rust binary against the declared local network, filesystem, process, environment, RSS, CPU, output, and wall canaries. It does not qualify npm installation, TypeScript transpilation, Cargo dependency resolution, compilation of untrusted Rust, any repository runner or evaluator, any task, VCM, model, mechanism, D1, D2, training, serving, or ASI Stack claim.",
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_multilang_sandbox_v1",
+  "qualification_executed": true,
+  "qualified_runtime_scopes": [],
+  "repository_execution_authorized": false,
+  "runtime_results": {
+    "node": {
+      "boundary_hit": true,
+      "boundary_reason": "rss_telemetry_unavailable",
+      "canary": {},
+      "duration_ms": 3.698,
+      "maximum_process_group_rss_mib": 0.0,
+      "profile_sha256": "5cf21ab570877e43b106652367a88c92355650ae016eae813cfdf59088419a0a",
+      "project_selected_character_cap": null,
+      "returncode": -15,
+      "rss_telemetry_fault": "PermissionError:[Errno 1] Operation not permitted: '/bin/ps'",
+      "runtime": "node",
+      "stderr": "",
+      "stderr_complete": true,
+      "stdout": "",
+      "stdout_complete": true
+    },
+    "python": {
+      "boundary_hit": true,
+      "boundary_reason": "rss_telemetry_unavailable",
+      "canary": {},
+      "duration_ms": 4.424,
+      "maximum_process_group_rss_mib": 0.0,
+      "profile_sha256": "300c20c9821557b947034395382fe2f4206cc657622d73f09ae55ca9fdba8ea8",
+      "project_selected_character_cap": null,
+      "returncode": -15,
+      "rss_telemetry_fault": "PermissionError:[Errno 1] Operation not permitted: '/bin/ps'",
+      "runtime": "python",
+      "stderr": "",
+      "stderr_complete": true,
+      "stdout": "",
+      "stdout_complete": true
+    },
+    "rust_trusted_compile": {
+      "binary_sha256": "",
+      "returncode": 1,
+      "source_sha256": "cf76a0670be5e9a375967a90774d41902ceeae9a1adaccffa5c9816547375e1e",
+      "stderr_sha256": "6f029f4958a8e536f784f284dab0745f6dae08e84814d3b9397fef375479157b",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "untrusted_source_compiled": false
+    }
+  },
+  "state": "MULTILANG_CONTAINMENT_CANARIES_FAILED",
+  "trigger_state": "RED"
+}

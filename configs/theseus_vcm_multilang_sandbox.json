@@ -1,0 +1,42 @@
+{
+  "policy": "project_theseus_vcm_multilang_sandbox_v1",
+  "state": "PROSPECTIVE_CONTAINMENT_QUALIFICATION_BEFORE_VCM_REPOSITORY_EXECUTION",
+  "owner": "scripts/theseus_vcm_multilang_sandbox.py",
+  "owner_sha256": "937b374c22662993a8f29a7673f1c46a67012fade6b7b40f47461440214d95b8",
+  "report": "reports/theseus_vcm_multilang_sandbox_qualification.json",
+  "required_work_root": "/private/tmp",
+  "denied_read_roots": ["/Users", "/private/var/folders", "/Volumes", "/Network"],
+  "environment_allowlist": ["HOME", "LC_CTYPE", "NO_COLOR", "PATH", "TMPDIR"],
+  "executables": {
+    "backend": {"path": "/usr/bin/sandbox-exec", "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},
+    "python": {"path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3", "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"},
+    "node": {"path": "/opt/homebrew/opt/node@22/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951"},
+    "rustc": {"path": "/Users/corbensorenson/.cargo/bin/rustc", "sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505"}
+  },
+  "limits": {
+    "cpu_seconds": 10,
+    "wall_seconds": 20,
+    "output_file_mib": 8,
+    "open_files": 128,
+    "user_processes": 32,
+    "max_process_group_rss_mib": 1024,
+    "terminate_grace_seconds": 2
+  },
+  "authority": {
+    "trusted_canary_compilation_authorized": true,
+    "trusted_canary_execution_authorized": true,
+    "untrusted_repository_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "network_during_sandbox_execution_authorized": false,
+    "candidate_or_control_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report qualifies only the exact pinned Python interpreter, Node runtime, and precompiled trusted Rust binary against the declared local network, filesystem, process, environment, RSS, CPU, output, and wall canaries. It does not qualify npm installation, TypeScript transpilation, Cargo dependency resolution, compilation of untrusted Rust, any repository runner or evaluator, any task, VCM, model, mechanism, D1, D2, training, serving, or ASI Stack claim."
+}

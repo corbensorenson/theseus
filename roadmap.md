@@ -639,6 +639,14 @@ Next materialize exact base/head repository or transitive closures, bind manifes
 locks, and runners, prefetch dependencies under policy, qualify Node/TypeScript
 and Rust sandboxes alongside Python, and only then execute parent/target canaries.
 
+The first prospective multi-runtime containment attempt is preserved RED without
+repository execution. Python and Node were terminated before canary output when
+the outer host denied RSS telemetry through `/bin/ps`; the trusted Rust canary
+did not compile because the configured `rustc` was a rustup shim under a
+deliberately minimized `HOME`. These are host-instrument and canary-owner faults,
+not task or mechanism evidence. Bind the concrete toolchain binary and repeat
+with telemetry permission; do not weaken the minimized runtime environment.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

@@ -303,6 +303,13 @@ an instrument-materialization gap; the next transaction must bind exact project
 closures, dependencies, runners, and Python/Node/TypeScript/Rust sandboxes before
 any untrusted execution.
 
+The first trusted Python/Node/Rust-binary containment qualification is RED but
+well scoped: outer-host RSS telemetry was denied before Python or Node emitted a
+canary, while the trusted Rust canary exposed a rustup-shim dependency on the
+normal user home. Zero repository, evaluator, or model calls occurred. Preserve
+the attempt, replace the shim with the exact concrete toolchain binary, and retry
+with host telemetry permission without expanding authority.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
