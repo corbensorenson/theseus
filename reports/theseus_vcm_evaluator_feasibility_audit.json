@@ -4,13 +4,12 @@
   "candidate_packet_materialization_opened": false,
   "config": {
     "path": "configs/theseus_vcm_evaluator_feasibility_audit.json",
-    "sha256": "c72052bfb67b8d5052aaf8b9da3f560e4b85ba975b738e996073198bd81bb1c4"
+    "sha256": "bfab7690156f4162264f46efe8e9c22dc6fd343991f2738163ef9cf7cc9fee22"
   },
-  "created_utc": "2026-08-03T15:30:26.437498Z",
+  "created_utc": "2026-08-03T15:42:05.734692Z",
   "evaluator_execution_authorized": false,
   "external_reference_calls": 0,
   "faults": [
-    "python_sandbox_only_node_typescript_rust_unqualified",
     "zero_of_62_tasks_have_independent_runner_command_receipts",
     "zero_of_62_tasks_have_materialized_dependency_locks",
     "zero_of_62_tasks_have_materialized_dependency_manifests",
@@ -25,6 +24,7 @@
   },
   "local_model_calls": 0,
   "maximum_inference": "A RED feasibility result preserves the GREEN source panel and means only that the selected changed-file archives are not yet an adequate executable evaluator instrument. Missing manifests, locks, dependency closure, runner commands, or language sandbox coverage are instrument gaps, never task failures or evidence against VCM. No parent/target/mechanism inference is permitted until the missing evaluator owners are materialized and independently qualified.",
+  "multilang_runtime_containment_qualified": true,
   "observations": {
     "auxiliary_executable_verifier_path_count": 2,
     "evaluator_ready_task_count": 0,
@@ -43,6 +43,10 @@
   "policy": "project_theseus_vcm_evaluator_feasibility_audit_v1",
   "python_sandbox_qualified_for_pinned_python_only": true,
   "reports": {
+    "multilang_sandbox_qualification": {
+      "path": "reports/theseus_vcm_multilang_sandbox_qualification.json",
+      "sha256": "8ab17b4bb5930c9f983e3e93ecdb383a748a1a6b040b1c26e5aae11142d09d78"
+    },
     "python_sandbox_qualification": {
       "path": "reports/theseus_d1_evaluator_sandbox_qualification.json",
       "sha256": "2da0c6d09517858f0f25949ed0deb18547d1ac8f11838e10f2606c59a2d6e798"
@@ -62,7 +66,8 @@
     "known_good_known_bad_and_transplant_controls": true,
     "package_manifest_and_lock_receipts": true,
     "parent_must_fail_and_target_must_pass": true,
-    "python_node_typescript_and_rust_sandbox_canaries": true
+    "python_node_and_precompiled_rust_runtime_containment_canaries": false,
+    "typescript_transpilation_and_rust_untrusted_compilation_qualification": true
   },
   "source_panel_remains_admitted": true,
   "state": "EVALUATOR_INSTRUMENT_MATERIALIZATION_REQUIRED",
@@ -75,8 +80,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 1,
       "lock_members": [],
@@ -97,8 +101,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 2,
       "lock_members": [],
@@ -120,8 +123,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 3,
       "lock_members": [],
@@ -147,8 +149,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 4,
       "lock_members": [],
@@ -170,8 +171,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 5,
       "lock_members": [],
@@ -193,8 +193,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 6,
       "lock_members": [],
@@ -216,8 +215,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 7,
       "lock_members": [],
@@ -238,8 +236,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 8,
       "lock_members": [],
@@ -260,8 +257,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 9,
       "lock_members": [],
@@ -282,8 +278,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 10,
       "lock_members": [],
@@ -304,8 +299,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 11,
       "lock_members": [],
@@ -691,8 +685,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 29,
       "lock_members": [],
@@ -713,8 +706,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 30,
       "lock_members": [],
@@ -740,8 +732,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 31,
       "lock_members": [],
@@ -763,8 +754,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 32,
       "lock_members": [],
@@ -787,8 +777,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 33,
       "lock_members": [],
@@ -809,8 +798,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 34,
       "lock_members": [],
@@ -831,8 +819,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 35,
       "lock_members": [],
@@ -862,8 +849,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 36,
       "lock_members": [],
@@ -884,8 +870,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 37,
       "lock_members": [],
@@ -906,8 +891,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 38,
       "lock_members": [],
@@ -929,8 +913,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 39,
       "lock_members": [],
@@ -953,8 +936,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 40,
       "lock_members": [],
@@ -976,8 +958,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 41,
       "lock_members": [],
@@ -998,8 +979,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 42,
       "lock_members": [],
@@ -1023,8 +1003,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 43,
       "lock_members": [],
@@ -1045,8 +1024,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 44,
       "lock_members": [],
@@ -1067,8 +1045,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 45,
       "lock_members": [],
@@ -1089,8 +1066,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 46,
       "lock_members": [],
@@ -1112,8 +1088,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 47,
       "lock_members": [],
@@ -1134,8 +1109,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 48,
       "lock_members": [],
@@ -1156,8 +1130,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 49,
       "lock_members": [],
@@ -1179,8 +1152,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 50,
       "lock_members": [],
@@ -1201,8 +1173,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 51,
       "lock_members": [],
@@ -1224,8 +1195,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 52,
       "lock_members": [],
@@ -1246,8 +1216,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 53,
       "lock_members": [],
@@ -1268,8 +1237,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 54,
       "lock_members": [],
@@ -1291,8 +1259,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 55,
       "lock_members": [],
@@ -1377,8 +1344,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 59,
       "lock_members": [],
@@ -1399,8 +1365,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 60,
       "lock_members": [],
@@ -1423,8 +1388,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 61,
       "lock_members": [],
@@ -1451,8 +1415,7 @@
         "dependency_lock_receipt_absent",
         "transitive_local_source_closure_absent",
         "independent_runner_command_receipt_absent",
-        "parent_fail_target_pass_not_executed",
-        "language_specific_sandbox_not_qualified"
+        "parent_fail_target_pass_not_executed"
       ],
       "index": 62,
       "lock_members": [],

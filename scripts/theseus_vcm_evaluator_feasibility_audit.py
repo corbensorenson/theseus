@@ -64,10 +64,15 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             reports[name] = p2a.read_json(path)
     panel = reports.get("source_panel", {})
     python_sandbox = reports.get("python_sandbox_qualification", {})
+    multilang_sandbox = reports.get("multilang_sandbox_qualification", {})
     if panel.get("trigger_state") != "GREEN" or panel.get("source_panel_admitted") is not True:
         faults.append("source_panel_not_admitted")
     if python_sandbox.get("trigger_state") != "GREEN" or python_sandbox.get("untrusted_execution_authorized") is not True:
         faults.append("python_sandbox_not_qualified")
+    multilang_scopes = set(p2a.strings(multilang_sandbox.get("qualified_runtime_scopes")))
+    required_multilang_scopes = {"python_interpreter", "node_runtime", "rust_precompiled_binary"}
+    if multilang_sandbox.get("trigger_state") != "GREEN" or multilang_scopes != required_multilang_scopes:
+        faults.append("multilang_runtime_containment_not_qualified")
     authority = p2a.mapping(config.get("authority"))
     if authority.get("trusted_toolchain_identity_queries_authorized") is not True or any(value is not False for key, value in authority.items() if key != "trusted_toolchain_identity_queries_authorized"):
         faults.append("authority_boundary_invalid")
@@ -118,7 +123,7 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             "independent_runner_command_receipt_absent",
             "parent_fail_target_pass_not_executed",
         ))
-        if language != "Python":
+        if multilang_scopes != required_multilang_scopes:
             gaps.append("language_specific_sandbox_not_qualified")
         task_gaps.append({
             "index": index,
@@ -171,7 +176,6 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "zero_of_62_tasks_have_materialized_dependency_locks",
         "zero_of_62_tasks_have_transitive_local_source_closure",
         "zero_of_62_tasks_have_independent_runner_command_receipts",
-        "python_sandbox_only_node_typescript_rust_unqualified",
         "zero_parent_fail_target_pass_receipts",
     ]
     faults.extend(readiness_faults)
@@ -184,6 +188,7 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "source_panel_remains_admitted": panel.get("source_panel_admitted") is True,
         "evaluator_execution_authorized": False,
         "python_sandbox_qualified_for_pinned_python_only": python_sandbox.get("trigger_state") == "GREEN",
+        "multilang_runtime_containment_qualified": multilang_scopes == required_multilang_scopes,
         "language_task_counts": dict(sorted(language_counts.items())),
         "observations": observations,
         "task_gaps": task_gaps,
@@ -194,7 +199,8 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             "independent_runner_command_derivation": True,
             "dependency_prefetch_then_network_denied_execution": True,
             "install_scripts_disabled_or_sandboxed": True,
-            "python_node_typescript_and_rust_sandbox_canaries": True,
+            "python_node_and_precompiled_rust_runtime_containment_canaries": False,
+            "typescript_transpilation_and_rust_untrusted_compilation_qualification": True,
             "complete_output_resource_and_cost_receipts": True,
             "parent_must_fail_and_target_must_pass": True,
             "known_good_known_bad_and_transplant_controls": True,

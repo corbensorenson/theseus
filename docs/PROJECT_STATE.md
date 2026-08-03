@@ -310,6 +310,13 @@ normal user home. Zero repository, evaluator, or model calls occurred. Preserve
 the attempt, replace the shim with the exact concrete toolchain binary, and retry
 with host telemetry permission without expanding authority.
 
+The concrete-toolchain retry is GREEN for the exact Python interpreter, Node
+runtime, and precompiled trusted Rust binary. The evaluator feasibility report
+therefore no longer lists a language-runtime containment fault. Repository
+execution remains forbidden: all 62 tasks still lack materialized manifests,
+locks, transitive closure, independently derived runners, and parent-fail/
+target-pass receipts, and build/install/transpile adequacy is not qualified.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

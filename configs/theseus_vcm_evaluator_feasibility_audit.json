@@ -4,7 +4,8 @@
   "purpose": "Determine whether the admitted changed-file archives contain enough independently bound project context, dependencies, runners, and sandbox coverage to measure parent-fail/target-pass honestly.",
   "reports": {
     "source_panel": {"path": "reports/theseus_vcm_source_panel_audit_v2.json", "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
-    "python_sandbox_qualification": {"path": "reports/theseus_d1_evaluator_sandbox_qualification.json", "sha256": "2da0c6d09517858f0f25949ed0deb18547d1ac8f11838e10f2606c59a2d6e798"}
+    "python_sandbox_qualification": {"path": "reports/theseus_d1_evaluator_sandbox_qualification.json", "sha256": "2da0c6d09517858f0f25949ed0deb18547d1ac8f11838e10f2606c59a2d6e798"},
+    "multilang_sandbox_qualification": {"path": "reports/theseus_vcm_multilang_sandbox_qualification.json", "sha256": "8ab17b4bb5930c9f983e3e93ecdb383a748a1a6b040b1c26e5aae11142d09d78"}
   },
   "expected_observations": {
     "task_count": 62,

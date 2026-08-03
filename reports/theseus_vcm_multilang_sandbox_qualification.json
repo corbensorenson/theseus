@@ -2,9 +2,9 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_multilang_sandbox.json",
-    "sha256": "2e62d4a11a6af4c278c58fea4f74c254d9c07a38452a64c3b5bf5770617ecdd0"
+    "sha256": "d9442cf6781f2b19884b98230b62391d5a20519ac5fda21479a0b22fb60debf4"
   },
-  "created_utc": "2026-08-03T15:39:15.785733Z",
+  "created_utc": "2026-08-03T15:41:19.068470Z",
   "dependency_installation_authorized": false,
   "explicitly_unqualified_scopes": [
     "npm_dependency_installation",
@@ -14,63 +14,99 @@
     "repository_runner_adequacy"
   ],
   "external_reference_calls": 0,
-  "faults": [
-    "node:nonzero_returncode",
-    "node:physical_boundary_hit",
-    "node:result_missing_or_duplicated",
-    "python:nonzero_returncode",
-    "python:physical_boundary_hit",
-    "python:result_missing_or_duplicated",
-    "trusted_rust_canary_compile_failed"
-  ],
+  "faults": [],
   "maximum_inference": "A GREEN report qualifies only the exact pinned Python interpreter, Node runtime, and precompiled trusted Rust binary against the declared local network, filesystem, process, environment, RSS, CPU, output, and wall canaries. It does not qualify npm installation, TypeScript transpilation, Cargo dependency resolution, compilation of untrusted Rust, any repository runner or evaluator, any task, VCM, model, mechanism, D1, D2, training, serving, or ASI Stack claim.",
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_multilang_sandbox_v1",
   "qualification_executed": true,
-  "qualified_runtime_scopes": [],
+  "qualified_runtime_scopes": [
+    "python_interpreter",
+    "node_runtime",
+    "rust_precompiled_binary"
+  ],
   "repository_execution_authorized": false,
   "runtime_results": {
     "node": {
-      "boundary_hit": true,
-      "boundary_reason": "rss_telemetry_unavailable",
-      "canary": {},
-      "duration_ms": 3.698,
-      "maximum_process_group_rss_mib": 0.0,
-      "profile_sha256": "5cf21ab570877e43b106652367a88c92355650ae016eae813cfdf59088419a0a",
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "canary": {
+        "environment_minimized": true,
+        "host_read_denied": true,
+        "inside_write_allowed": true,
+        "network_denied": true,
+        "outside_write_denied": true,
+        "shell_exec_denied": true,
+        "symlink_host_read_denied": true
+      },
+      "duration_ms": 365.384,
+      "maximum_process_group_rss_mib": 30.875,
+      "profile_sha256": "b597ec1a6bbd18f277fe9fad69239434e7f46c1f61c59ca2e663dbc1dbc100d4",
       "project_selected_character_cap": null,
-      "returncode": -15,
-      "rss_telemetry_fault": "PermissionError:[Errno 1] Operation not permitted: '/bin/ps'",
+      "returncode": 0,
+      "rss_telemetry_fault": "",
       "runtime": "node",
       "stderr": "",
       "stderr_complete": true,
-      "stdout": "",
+      "stdout": "__THESEUS_VCM_SANDBOX_RESULT__{\"host_read_denied\":true,\"symlink_host_read_denied\":true,\"outside_write_denied\":true,\"shell_exec_denied\":true,\"inside_write_allowed\":true,\"environment_minimized\":true,\"network_denied\":true}\n",
       "stdout_complete": true
     },
     "python": {
-      "boundary_hit": true,
-      "boundary_reason": "rss_telemetry_unavailable",
-      "canary": {},
-      "duration_ms": 4.424,
-      "maximum_process_group_rss_mib": 0.0,
-      "profile_sha256": "300c20c9821557b947034395382fe2f4206cc657622d73f09ae55ca9fdba8ea8",
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "canary": {
+        "environment_minimized": true,
+        "host_read_denied": true,
+        "inside_write_allowed": true,
+        "network_denied": true,
+        "outside_write_denied": true,
+        "shell_exec_denied": true,
+        "symlink_host_read_denied": true
+      },
+      "duration_ms": 75.116,
+      "maximum_process_group_rss_mib": 3.891,
+      "profile_sha256": "a97a7eb06deb66f38738af17bb60527c2707a2b32298dc804ad3c4805a8ccd7e",
       "project_selected_character_cap": null,
-      "returncode": -15,
-      "rss_telemetry_fault": "PermissionError:[Errno 1] Operation not permitted: '/bin/ps'",
+      "returncode": 0,
+      "rss_telemetry_fault": "",
       "runtime": "python",
       "stderr": "",
       "stderr_complete": true,
-      "stdout": "",
+      "stdout": "__THESEUS_VCM_SANDBOX_RESULT__{\"environment_minimized\": true, \"host_read_denied\": true, \"inside_write_allowed\": true, \"network_denied\": true, \"outside_write_denied\": true, \"shell_exec_denied\": true, \"symlink_host_read_denied\": true}\n",
+      "stdout_complete": true
+    },
+    "rust_binary": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "canary": {
+        "environment_minimized": true,
+        "host_read_denied": true,
+        "inside_write_allowed": true,
+        "network_denied": true,
+        "outside_write_denied": true,
+        "shell_exec_denied": true,
+        "symlink_host_read_denied": true
+      },
+      "duration_ms": 232.552,
+      "maximum_process_group_rss_mib": 3.891,
+      "profile_sha256": "ddb105d11e58b416d2c90728b4c133a6f131d4c8066508cbca653c240dd3af44",
+      "project_selected_character_cap": null,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "runtime": "rust_binary",
+      "stderr": "",
+      "stderr_complete": true,
+      "stdout": "__THESEUS_VCM_SANDBOX_RESULT__{\"host_read_denied\":true,\"symlink_host_read_denied\":true,\"outside_write_denied\":true,\"network_denied\":true,\"shell_exec_denied\":true,\"inside_write_allowed\":true,\"environment_minimized\":true}\n",
       "stdout_complete": true
     },
     "rust_trusted_compile": {
-      "binary_sha256": "",
-      "returncode": 1,
-      "source_sha256": "cf76a0670be5e9a375967a90774d41902ceeae9a1adaccffa5c9816547375e1e",
-      "stderr_sha256": "6f029f4958a8e536f784f284dab0745f6dae08e84814d3b9397fef375479157b",
+      "binary_sha256": "b1a00cf016593df14cf84dd48d7e4cd159e5f108540eec3fec702445615c8fc6",
+      "returncode": 0,
+      "source_sha256": "5136be4aa6f4e39c1c9ae70ca3c4392a73ec26eeeae06e6d3fccf832e1ced263",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "untrusted_source_compiled": false
     }
   },
-  "state": "MULTILANG_CONTAINMENT_CANARIES_FAILED",
-  "trigger_state": "RED"
+  "state": "MULTILANG_CONTAINMENT_CANARIES_QUALIFIED",
+  "trigger_state": "GREEN"
 }

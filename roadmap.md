@@ -647,6 +647,16 @@ deliberately minimized `HOME`. These are host-instrument and canary-owner faults
 not task or mechanism evidence. Bind the concrete toolchain binary and repeat
 with telemetry permission; do not weaken the minimized runtime environment.
 
+That corrected retry is GREEN after binding the exact concrete Rust toolchain
+binary and granting only host RSS telemetry visibility. Python, Node, and a
+precompiled trusted Rust binary passed the network, host-read, symlink, outside-
+write, shell-exec, environment, RSS, CPU, output, and wall controls. The
+feasibility audit now drops the language-runtime fault. It remains RED on the
+five real missing owners: manifests, locks, transitive source closure,
+independent runner receipts, and parent-fail/target-pass evidence. npm installs,
+TypeScript transpilation, Cargo resolution, untrusted Rust compilation, and
+repository-runner adequacy remain explicitly unqualified.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

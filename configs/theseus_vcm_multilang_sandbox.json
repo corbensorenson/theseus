@@ -11,7 +11,7 @@
     "backend": {"path": "/usr/bin/sandbox-exec", "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},
     "python": {"path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3", "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"},
     "node": {"path": "/opt/homebrew/opt/node@22/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951"},
-    "rustc": {"path": "/Users/corbensorenson/.cargo/bin/rustc", "sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505"}
+    "rustc": {"path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc", "sha256": "b2011d06d5c7efff7b48b1e1aec6106989e44f3a5ad1d171e06a41c0fbc3ffea"}
   },
   "limits": {
     "cpu_seconds": 10,
