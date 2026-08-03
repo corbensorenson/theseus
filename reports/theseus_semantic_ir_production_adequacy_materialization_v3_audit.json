@@ -1,0 +1,25 @@
+{
+  "archive_receipt_count": 36,
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "network_source_calls": 78,
+    "parent_target_evaluator_executions": 0,
+    "source_archives_materialized": 36,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "faults": [],
+  "materialization_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_materialization_v3.json",
+    "sha256": "2aaf9eb8fe85256d45786f9def49828233956a239e7f998f0b9f4aaf0f7bfa24"
+  },
+  "maximum_inference": "A GREEN audit establishes only content-bound, normalized, complete parent/target source archives with differing selected source bytes. It does not establish parent failure, target success, evaluator adequacy, mechanics competence, a subsystem effect, D1, D2, or book support.",
+  "member_receipt_count": 76,
+  "policy": "project_theseus_semantic_ir_production_adequacy_materialization_audit_v1",
+  "selected_source_difference_count": 18,
+  "trigger_state": "GREEN"
+}

@@ -220,6 +220,11 @@ any evaluator or model call, the task revision policy is therefore frozen to
 the public PR `base.sha` and `head.sha`; merge commit and first parent remain
 lineage receipts only. Renewed metadata acquisition and source materialization
 must pass under that policy before independent evaluator qualification opens.
+That source boundary is now GREEN: 18/18 task pairs produced 36 deterministic
+minimal archives, and an independent network-free audit verified all archive
+and member receipts, normalization, path safety, exact membership, and selected
+source differences. Parent-negative/target-positive evaluator qualification is
+the active boundary; no model or reference call is yet authorized.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
