@@ -115,6 +115,13 @@ chronology, structure, panel quotas, and every source-content/model/evaluator
 closure remain byte-for-byte or semantically unchanged. One v2 metadata rerun
 is the active action.
 
+That v2 run also failed closed, but improved Python eligibility from 4 to 11 of
+20 with 1,208 requests, confirming that the policy repair was directionally
+correct. It again retained zero identities and opened no source, evaluator, or
+model path. The remaining diagnosed defect is the 300-result-per-language pool,
+not the integrity filters. V3 may expand only to GitHub's 1,000-result search
+boundary and batch the same metadata fields; it may not relax eligibility.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -291,7 +298,8 @@ authorize regenerating historical reports or reopening neural work.
 10. **Active:** acquire and independently qualify the two source-disjoint
    licensed panels. The metadata-only selection rule is prospectively sealed
    but attempt 1 failed closed on an inadequate Python pool. It is preserved;
-   the v2 popularity and license repair is green at zero queries. Run it once, then
+   the v2 repair improved eligibility but still failed closed. Preserve it; V3
+   may expand only the deterministic search pool and batch transport. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

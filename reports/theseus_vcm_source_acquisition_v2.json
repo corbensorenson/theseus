@@ -11,25 +11,50 @@
     "external_inference_calls": 0,
     "hidden_evaluator_executions": 0,
     "local_model_calls": 0,
-    "public_metadata_requests": 0,
+    "public_metadata_requests": 1208,
     "public_metadata_rows_selected": 0,
     "public_source_content_requests": 0,
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T09:21:03.375645Z",
-  "faults": [],
+  "created_utc": "2026-08-03T09:34:44.056265Z",
+  "faults": [
+    "language_quota_unfilled:Python:11/20"
+  ],
   "maximum_inference": "A GREEN v2 preflight authorizes one bounded public metadata rerun only. A GREEN acquisition report proves only that 62 fresh, licensed, structurally machine-verifiable, mutually source-disjoint repository/PR identities were selected by the frozen repaired rule. It does not authorize source-content retrieval, task packets, candidate generation, local or Luna calls, hidden evaluation, D1, D2, training, serving, book support movement, or a VCM usefulness claim.",
-  "metadata_selection_opened": false,
+  "metadata_selection_opened": true,
   "policy": "project_theseus_vcm_source_acquisition_report_v1",
   "prior_repository_denylist": {
     "count": 87,
     "identities_retained": false,
     "sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774"
   },
-  "runtime_ms": 248.477,
+  "rejection_counts": {
+    "bot_author": 74,
+    "changed_file_count": 132,
+    "changed_line_count": 84,
+    "chronology": 1,
+    "generated_vendor_lock_only": 3,
+    "license_not_allowlisted": 167,
+    "no_machine_verifier_change": 160,
+    "no_non_test_source_change": 126,
+    "not_merged_closed_nondraft": 1,
+    "primary_language_mismatch": 1,
+    "prior_or_duplicate_repository": 1,
+    "repository_below_star_floor": 197,
+    "repository_state": 64
+  },
+  "runtime_ms": 80.338,
   "selected_repository_count": 0,
+  "selected_source_identities": [],
   "source_content_retrieval_opened": false,
-  "state": "METADATA_SELECTION_PREFLIGHT_GREEN",
-  "trigger_state": "GREEN"
+  "state": "METADATA_SELECTION_INCOMPLETE",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_REST_API_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "request_count": 1208,
+    "response_digest_chain_sha256": "ecc838daaf7bcfa522b4e7de3bcf96128f1892e4b2add079f28fb0f3e03d18d0"
+  },
+  "trigger_state": "RED"
 }

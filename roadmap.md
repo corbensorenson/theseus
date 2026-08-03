@@ -426,7 +426,11 @@ The v2 repair is prospectively sealed and GREEN before its first query. It uses
 a one-star existence check rather than a popularity proxy and recognizes common
 OSI licenses. The query window, hash ranking, quotas, freshness rules,
 source-plus-test requirement, source disjointness, and every downstream closure
-are unchanged. Exactly one v2 metadata rerun is active.
+are unchanged. Its run improved Python eligibility from 4 to 11 of 20 but still
+failed closed after 1,208 requests with zero retained identities and zero
+downstream calls. V3 may expand only the deterministic candidate head from 300
+to the GitHub 1,000-result boundary per language and batch the same metadata
+fields; eligibility may not be relaxed.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
@@ -613,8 +617,9 @@ Use existing owners; create no new cleanup or report family.
 6. **Active:** autonomously acquire and independently evaluator-qualify 62
    licensed repositories split into source-disjoint 9-task control and 53-task
    claim panels. Attempt 1 failed closed with an insufficient Python pool;
-   its prospective v2 repair is green at zero queries. Rerun once, then bind
-   exact sources, packets, host-operability canaries,
+   v2 improved eligibility but still failed closed. Preserve both; seal and run
+   one pool-expansion/batched-transport v3, then bind exact sources, packets,
+   host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
