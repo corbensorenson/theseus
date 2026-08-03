@@ -1,0 +1,88 @@
+{
+  "allowed_effect_paths": [
+    "src/dd_license_attribution/artifact_management/source_code_manager.py"
+  ],
+  "campaign_index": 14,
+  "candidate_visible_context": {
+    "full_selected_parent_sources": true,
+    "missing_allowed_effect_paths": [],
+    "project_selected_character_or_token_cap": null,
+    "reads": [
+      {
+        "end_line": 475,
+        "path": "src/dd_license_attribution/artifact_management/source_code_manager.py",
+        "start_line": 1
+      }
+    ],
+    "searches": []
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "licensed_source_disjoint_python_causal_repair",
+  "maximum_inference": "One implementation-adequacy observation only; no treatment, D1, D2, serving, training, or book-support claim.",
+  "natural_request": "Make repository cloning noninteractive and bounded, and return a safe failure when the clone command exits nonzero instead of yielding a source reference or waiting for credentials. Preserve the successful clone path. Modify only src/dd_license_attribution/artifact_management/source_code_manager.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "A nonzero clone result returns a bounded failure without producing a source reference or prompting for credentials."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "A successful clone and existing reference-discovery behavior remain unchanged."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Modify only the declared allowed effect paths; do not alter unrelated behavior or files."
+    }
+  ],
+  "opaque_task_id": "semantic-ir-adequacy-14",
+  "partition": "semantic_ir_production_implementation_adequacy",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "create_file_allowed_only_for_declared_missing_effect_paths": true,
+    "inventory_truncation_allowed": false,
+    "maximum_semantic_scope_nodes": 181,
+    "maximum_symbol_nodes": 181,
+    "role_partition_source_target_loss_and_dependency_identity_required": true,
+    "statement_scope_policy": "all_candidate_visible_python_statements_v1",
+    "version": "THESEUS_SEMANTIC_IR_V3"
+  },
+  "source_archive": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-14-parent.tar.gz",
+  "source_archive_root": "semantic-adequacy-14",
+  "source_archive_sha256": "69e00d9b0f139cabf36fc8865e3f4da06cf7d41e08ef915c008d23e04a056a39",
+  "source_provenance": {
+    "license_spdx": "Apache-2.0",
+    "revision": "8fb798d61c06185eb3c2fbcbf7e06e865b436592",
+    "url": "https://github.com/DataDog/dd-license-attribution"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "SyntaxError",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": false,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import ast,sys; [ast.parse(open(p, encoding='utf-8').read(), filename=p) for p in sys.argv[1:]]",
+      "src/dd_license_attribution/artifact_management/source_code_manager.py"
+    ],
+    "timeout_seconds": 60
+  }
+}

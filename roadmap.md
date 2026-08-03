@@ -261,31 +261,42 @@ the prospectively declared 600-second host watchdog after 2,288 generated
 tokens. The downstream route correctly held the partial response, no hidden
 evaluator ran, and no model, mechanism, or claim failure may be inferred.
 
-Candidates 1–3 and all eight attempted-call receipts are now retained. Task 4
-is consumed and may not be rerun. A fresh post-snapshot, BSD-3-Clause,
-source-disjoint `branch_or_predicate_replacement` from `scikit-bio/scikit-bio`
-is metadata-checked and frozen as exact parent/target source and license bytes.
-Its independent AST evaluator now qualifies parent-negative,
-target/benign-positive, truthiness, default, dtype-dataflow, ordering,
-missing-path, and unauthorized-path controls before candidate exposure. A
-52,409-byte parent-only packet is sealed with at least 209,735 conservative
-residual context tokens and no project-selected quality cap. The active boundary
-was the prospective v3 runner and scorer. The v3 denominator is already sealed:
-it preserves candidates 1–3 and their six completed calls, replaces only
-consumed Task 4, leaves Tasks 5–18 unchanged, and retains three tasks in each of
-six strata. The runner must classify backend watchdog telemetry before
-downstream route consequences. That binding is now GREEN and call-free, granting
-exactly 30 new frozen-local calls for Tasks 04r1 and 05–18. Hidden evaluation
-remains closed until all candidates seal; Luna, training, D1, and D2 remain
-closed.
+Candidates 1–3 and every v2 receipt remain immutable. The prospectively bound
+v3 replacement then reached the same 600-second infrastructure wall on Task 4r1
+call 1 after 1,949 generated tokens, without touching the context boundary or
+an answer-length cap. Inspection localized the representation defect: a
+one-line repair was addressable only as a 433-line top-level `FunctionDef`.
+That watchdog observation is retained as invalid infrastructure evidence, not a
+model, mechanism, or claim failure.
+
+The v4 successor exposes every complete candidate-visible Python statement and
+forbids silent address-inventory truncation. It reduces that demonstrated
+433-line mutation span to one line while preserving the exact production
+renderer, transport, parser, lowerer, applier, verifier, and repair route. Four
+licensed repair sources from scikit-learn, Django, NetworkX, and Black were
+merged after the frozen TMax snapshot and were frozen before evaluator
+qualification. Their independent evaluators pass parent-negative,
+target/benign-positive, mechanism-removal, missing-path, and unauthorized-path
+controls. Those four replacements plus fourteen previously unexposed sources
+form a fresh 18-repository, six-stratum denominator.
+
+The fresh pool is sealed and the v4 campaign is GREEN under a call-free audit.
+Exact frozen-tokenizer measurement shows every prompt fits the 262,144-token
+physical context window; the largest prompt is 124,138 tokens and the smallest
+residual is 138,006 tokens. The campaign authorizes exactly 36 local calls,
+normal completion by complete artifact or model EOS, no project-selected
+quality token cap, and no hidden evaluation until all 18 candidates seal. Luna,
+teacher, training, claim-development, D1, and D2 remain closed.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
 
-Exit B: it fails; retain the implementation failure, freeze this candidate,
-leave the book claim unresolved, and activate the next architecture-shaping
-residual. No nearby reseal is allowed.
+Exit B: the exact implementation falls below the preregistered adequacy floor;
+record `INCONCLUSIVE_IMPLEMENTATION`, retain the evidence, leave the book claim
+unresolved, and repair or exclude the implementation owner. Do not translate
+that scoped result into a broad negative for cognitive compilation or the book
+claim, and do not manufacture a nearby green reseal.
 
 ### 3. Freeze one claim-development experiment
 

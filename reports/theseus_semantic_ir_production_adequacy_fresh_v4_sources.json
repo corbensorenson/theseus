@@ -1,0 +1,278 @@
+{
+  "candidate_packet_materialized": false,
+  "config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_fresh_v4_sources.json",
+    "sha256": "978d1bb71be8b9264a6c749796eed4a60f281c6736b7d3e65305cd564aed562f"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "network_source_calls": 28,
+    "parent_target_evaluator_executions": 0,
+    "source_archives_materialized": 8,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T05:55:45.986387Z",
+  "faults": [],
+  "maximum_inference": "A GREEN source seal establishes only four fresh, licensed, post-snapshot, source-disjoint parent/target pairs for replacement indices 1-4. It provides no candidate, hidden-evaluator, implementation-adequacy, subsystem-effect, D1, D2, training, serving, or book-support evidence.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v4_sources_v1",
+  "rows": [
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1532,
+              "path": "COPYING",
+              "sha256": "50d6a9d340f19ab355609917993114daf5f47e3161067bcf34955bbd05cd9cb0"
+            },
+            {
+              "bytes": 112283,
+              "path": "sklearn/utils/validation.py",
+              "sha256": "e5be621e6b009b20af924f7914bc261fed8e6c01f5ab7c190e6ac0d775b204c1"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-01r2-parent.tar.gz",
+          "root": "semantic-adequacy-01r2",
+          "sha256": "2b3c29fc3e553fca3c69f7a2dadbb845dc79bfbfbac0c269415a9c257ea0a172"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1532,
+              "path": "COPYING",
+              "sha256": "50d6a9d340f19ab355609917993114daf5f47e3161067bcf34955bbd05cd9cb0"
+            },
+            {
+              "bytes": 112248,
+              "path": "sklearn/utils/validation.py",
+              "sha256": "d7c9e061aa6b8888e1d2a5027c21d9b76094008564f03a4f1a700daef224287c"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-01r2-target.tar.gz",
+          "root": "semantic-adequacy-01r2",
+          "sha256": "56204bda9dd843e067acdd3355e2e0ae6d9b442bce4f568a7eceef5e139366ec"
+        }
+      },
+      "changed_paths": [
+        "sklearn/model_selection/tests/test_validation.py",
+        "sklearn/utils/tests/test_validation.py",
+        "sklearn/utils/validation.py"
+      ],
+      "faults": [],
+      "index": 1,
+      "license_spdx": "BSD-3-Clause",
+      "merge_first_parent_revision": "63f2abff4003210103a0569664982ce384487dfa",
+      "merge_revision": "4347a16712cb2bfe51c376ff60ad9c033a689abf",
+      "merged_utc": "2026-07-31T13:39:57Z",
+      "opaque_task_id": "semantic-ir-adequacy-01r2",
+      "parent_revision": "63f2abff4003210103a0569664982ce384487dfa",
+      "pull_request": 34605,
+      "pull_request_url": "https://github.com/scikit-learn/scikit-learn/pull/34605",
+      "repository": "scikit-learn/scikit-learn",
+      "selected_source_paths": [
+        "sklearn/utils/validation.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "60769071a563946c5aff9528daa2ba948d056514",
+      "title": "FIX indexable with dataframes",
+      "trigger_state": "GREEN"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1552,
+              "path": "LICENSE",
+              "sha256": "b846415d1b514e9c1dff14a22deb906d794bc546ca6129f950a18cd091e2a669"
+            },
+            {
+              "bytes": 7289,
+              "path": "django/contrib/gis/gdal/field.py",
+              "sha256": "16dda7c558e69160798c8ac6a6dddec907d2ef6781e5b9daca95439aed314851"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-02r2-parent.tar.gz",
+          "root": "semantic-adequacy-02r2",
+          "sha256": "9ab2624238b99b7d61cd9635226f6f005e3dba4f2951fb8c389578c560371d0d"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1552,
+              "path": "LICENSE",
+              "sha256": "b846415d1b514e9c1dff14a22deb906d794bc546ca6129f950a18cd091e2a669"
+            },
+            {
+              "bytes": 7300,
+              "path": "django/contrib/gis/gdal/field.py",
+              "sha256": "54815d18963161f7e71e634074750467ad865cc7426a5e28bc9a849e1d42df0d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-02r2-target.tar.gz",
+          "root": "semantic-adequacy-02r2",
+          "sha256": "4c8e86e51fe0086206d1db00ee26e343ae1a91c83f6a9e0849e896b5f0665c3c"
+        }
+      },
+      "changed_paths": [
+        "django/contrib/gis/gdal/field.py",
+        "tests/gis_tests/data/has_nulls/has_nulls.geojson",
+        "tests/gis_tests/gdal_tests/test_ds.py"
+      ],
+      "faults": [],
+      "index": 2,
+      "license_spdx": "BSD-3-Clause",
+      "merge_first_parent_revision": "60121939f6b225c7a719dd561e372e1d8e5e2c4a",
+      "merge_revision": "2cace96be6d64b7dde7eb66d3ffc2c7f08ef644f",
+      "merged_utc": "2026-08-02T21:50:42Z",
+      "opaque_task_id": "semantic-ir-adequacy-02r2",
+      "parent_revision": "60121939f6b225c7a719dd561e372e1d8e5e2c4a",
+      "pull_request": 21712,
+      "pull_request_url": "https://github.com/django/django/pull/21712",
+      "repository": "django/django",
+      "selected_source_paths": [
+        "django/contrib/gis/gdal/field.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "f616f0d17c544789034607c64ccb5dabc0fc06a7",
+      "title": "Fixed #37242 -- Fixed reading null time fields in LayerMapping.",
+      "trigger_state": "GREEN"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1763,
+              "path": "LICENSE.txt",
+              "sha256": "6025f323ea29dc2f0ee0abd9523bf910186f55b0e148e6ebf646c55566278e2e"
+            },
+            {
+              "bytes": 1795,
+              "path": "networkx/algorithms/operators/unary.py",
+              "sha256": "128db279383e179b8e0c6592591fe29b955a29943decbc804c8b8a65c005411f"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-03r2-parent.tar.gz",
+          "root": "semantic-adequacy-03r2",
+          "sha256": "ec393269db86d482be9b3cf22d2ef70dbde85e5380059bb523a60d5a00cd9c42"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1763,
+              "path": "LICENSE.txt",
+              "sha256": "6025f323ea29dc2f0ee0abd9523bf910186f55b0e148e6ebf646c55566278e2e"
+            },
+            {
+              "bytes": 1820,
+              "path": "networkx/algorithms/operators/unary.py",
+              "sha256": "eb472d58d52b58f6c9fe6a1a0beceb23eea73fabe30f06baac6aba696de58f8d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-03r2-target.tar.gz",
+          "root": "semantic-adequacy-03r2",
+          "sha256": "e8f52396a38a014839d33c7205a91bc7decee7b33a18b9a7f7ecc4a29fe3911d"
+        }
+      },
+      "changed_paths": [
+        "networkx/algorithms/operators/tests/test_unary.py",
+        "networkx/algorithms/operators/unary.py"
+      ],
+      "faults": [],
+      "index": 3,
+      "license_spdx": "BSD-3-Clause",
+      "merge_first_parent_revision": "e1193f66d97d45f814616562c052af36526d97af",
+      "merge_revision": "2ebe5f80a114a181e03e18acc9491e45346598c0",
+      "merged_utc": "2026-07-30T20:51:02Z",
+      "opaque_task_id": "semantic-ir-adequacy-03r2",
+      "parent_revision": "e1193f66d97d45f814616562c052af36526d97af",
+      "pull_request": 8807,
+      "pull_request_url": "https://github.com/networkx/networkx/pull/8807",
+      "repository": "networkx/networkx",
+      "selected_source_paths": [
+        "networkx/algorithms/operators/unary.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "36a8c7255416c82fcc3a0e5f69be2d50bdf2d903",
+      "title": "Fix `reverse` to preserve all attributes in dispatch conversions",
+      "trigger_state": "GREEN"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00"
+            },
+            {
+              "bytes": 33812,
+              "path": "src/black/nodes.py",
+              "sha256": "49a9fc02ac8bc08baf398c54b0a8e76c24813f3c064910ba3214e5f76b27ef74"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-04r2-parent.tar.gz",
+          "root": "semantic-adequacy-04r2",
+          "sha256": "170fa19ffd08dc43ce4dee7dde31e10b5e6a23e16bb71f0da8e174b9768c5c8d"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00"
+            },
+            {
+              "bytes": 33943,
+              "path": "src/black/nodes.py",
+              "sha256": "27f7c45ea5de8ef3a32856b72d569683173c424912d5319470300961a1c31bee"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-04r2-target.tar.gz",
+          "root": "semantic-adequacy-04r2",
+          "sha256": "860fd5ce7b5962d90cc7b83003ac38595215f2d286ef6c46c4fbda87718209f4"
+        }
+      },
+      "changed_paths": [
+        "CHANGES.md",
+        "src/black/nodes.py",
+        "tests/data/cases/t_docstring.py"
+      ],
+      "faults": [],
+      "index": 4,
+      "license_spdx": "MIT",
+      "merge_first_parent_revision": "c7801d9e24fe28b9c85742722cdcb97e1582a94d",
+      "merge_revision": "5706d79984dacb40cc1a3b26c0a987269384f602",
+      "merged_utc": "2026-08-02T15:29:27Z",
+      "opaque_task_id": "semantic-ir-adequacy-04r2",
+      "parent_revision": "c7801d9e24fe28b9c85742722cdcb97e1582a94d",
+      "pull_request": 5287,
+      "pull_request_url": "https://github.com/psf/black/pull/5287",
+      "repository": "psf/black",
+      "selected_source_paths": [
+        "src/black/nodes.py"
+      ],
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "df7827587593988e3f51ee71a6d9926de6730a84",
+      "title": "don't treat a t-string in docstring position as a docstring",
+      "trigger_state": "GREEN"
+    }
+  ],
+  "source_pairs_admitted": true,
+  "state": "FOUR_SOURCE_PAIRS_FROZEN_BEFORE_EVALUATOR_QUALIFICATION",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_API_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "request_count": 28,
+    "response_digest_chain_sha256": "e7f2eceeface40d91151800ff8d558b6b47d03d405cdeee225ed40fd5e41addb"
+  },
+  "trigger_state": "GREEN"
+}

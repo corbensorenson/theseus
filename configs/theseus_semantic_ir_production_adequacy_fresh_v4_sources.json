@@ -1,0 +1,126 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v4_sources_v1",
+  "state": "FIXED_BEFORE_FRESH_SOURCE_RETRIEVAL",
+  "purpose": "Replace all four model-exposed source surfaces with fresh post-snapshot, source-disjoint tasks while preserving the frozen six-stratum 18-task adequacy design.",
+  "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+  "prior_materialization": "reports/theseus_semantic_ir_production_adequacy_materialization_v4.json",
+  "prior_materialization_sha256": "7572e6ebb82ae6b16575298c42450a31d7c50ce2823fd5fc6346b12d6216f122",
+  "consumed_evidence": {
+    "candidate_report": "reports/theseus_semantic_ir_production_adequacy_candidates_v3.json",
+    "candidate_report_sha256": "91cb6cdccf581732bcc6c9cde8b4ccc7658ca39199f1f8502f7adf78219bbe3f",
+    "interruption_receipt": "reports/theseus_semantic_ir_production_adequacy_campaign_v3_watchdog_interruption.json",
+    "interruption_receipt_sha256": "c75151cd752d699df9d315d9a111cfb764f8f67a3ac6de87e721d48f5a59d925",
+    "consumed_indices": [1, 2, 3, 4],
+    "rerun_authorized": false
+  },
+  "statement_granularity_audit": "reports/theseus_semantic_ir_statement_granularity_audit.json",
+  "statement_granularity_audit_sha256": "42f302e9f681d9261ac4e9fb4a55603c80979a4d7760d4b35ad873a039ad6cdb",
+  "authority": {
+    "public_source_file_retrieval_authorized": true,
+    "candidate_or_model_calls_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4",
+  "sources": [
+    {
+      "index": 1,
+      "opaque_task_id": "semantic-ir-adequacy-01r2",
+      "repository": "scikit-learn/scikit-learn",
+      "pull_request": 34605,
+      "title": "FIX indexable with dataframes",
+      "merged_utc": "2026-07-31T13:39:57Z",
+      "base_revision": "63f2abff4003210103a0569664982ce384487dfa",
+      "head_revision": "60769071a563946c5aff9528daa2ba948d056514",
+      "merge_revision": "4347a16712cb2bfe51c376ff60ad9c033a689abf",
+      "stratum": "single_expression_replacement",
+      "selected_source_paths": ["sklearn/utils/validation.py"],
+      "changed_paths": ["sklearn/model_selection/tests/test_validation.py", "sklearn/utils/tests/test_validation.py", "sklearn/utils/validation.py"],
+      "license": {"path": "COPYING", "spdx": "BSD-3-Clause", "required_notice": "Redistribution and use in source and binary forms"},
+      "parent_fragments": ["return nw.from_native(iterable, allow_series=True)"],
+      "target_fragments": ["elif _nw_is_into_df_or_series(iterable):", "return iterable"],
+      "natural_request": "Keep supported dataframe and series inputs in their native container when making inputs indexable, while preserving sparse conversion, ordinary indexable inputs, None, and fallback array conversion. Modify only sklearn/utils/validation.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Supported dataframe and series inputs are returned as their original native object rather than converted through the dataframe interchange wrapper."},
+        {"id": "O2", "kind": "preserve", "text": "Sparse conversion, ordinary indexable inputs, None handling, and fallback array conversion remain unchanged."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    },
+    {
+      "index": 2,
+      "opaque_task_id": "semantic-ir-adequacy-02r2",
+      "repository": "django/django",
+      "pull_request": 21712,
+      "title": "Fixed #37242 -- Fixed reading null time fields in LayerMapping.",
+      "merged_utc": "2026-08-02T21:50:42Z",
+      "base_revision": "60121939f6b225c7a719dd561e372e1d8e5e2c4a",
+      "head_revision": "f616f0d17c544789034607c64ccb5dabc0fc06a7",
+      "merge_revision": "2cace96be6d64b7dde7eb66d3ffc2c7f08ef644f",
+      "stratum": "single_expression_replacement",
+      "selected_source_paths": ["django/contrib/gis/gdal/field.py"],
+      "changed_paths": ["django/contrib/gis/gdal/field.py", "tests/gis_tests/data/has_nulls/has_nulls.geojson", "tests/gis_tests/gdal_tests/test_ds.py"],
+      "license": {"path": "LICENSE", "spdx": "BSD-3-Clause", "required_notice": "Redistribution and use in source and binary forms"},
+      "parent_fragments": ["except (ValueError, GDALException):"],
+      "target_fragments": ["class OFTTime(Field):", "except (TypeError, ValueError, GDALException):"],
+      "natural_request": "Make OFTTime.value treat a null or otherwise unavailable time whose conversion raises TypeError as an absent value, consistently with the existing ValueError and GDALException handling. Preserve valid time conversion and other field classes. Modify only django/contrib/gis/gdal/field.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "OFTTime.value returns None when time conversion raises TypeError, ValueError, or GDALException."},
+        {"id": "O2", "kind": "preserve", "text": "Valid time conversion and all other field subclasses retain their existing behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    },
+    {
+      "index": 3,
+      "opaque_task_id": "semantic-ir-adequacy-03r2",
+      "repository": "networkx/networkx",
+      "pull_request": 8807,
+      "title": "Fix `reverse` to preserve all attributes in dispatch conversions",
+      "merged_utc": "2026-07-30T20:51:02Z",
+      "base_revision": "e1193f66d97d45f814616562c052af36526d97af",
+      "head_revision": "36a8c7255416c82fcc3a0e5f69be2d50bdf2d903",
+      "merge_revision": "2ebe5f80a114a181e03e18acc9491e45346598c0",
+      "stratum": "single_expression_replacement",
+      "selected_source_paths": ["networkx/algorithms/operators/unary.py"],
+      "changed_paths": ["networkx/algorithms/operators/tests/test_unary.py", "networkx/algorithms/operators/unary.py"],
+      "license": {"path": "LICENSE.txt", "spdx": "BSD-3-Clause", "required_notice": "NetworkX is distributed with the 3-clause BSD license."},
+      "parent_fragments": ["@nx._dispatchable(returns_graph=True)"],
+      "target_fragments": ["@nx._dispatchable(preserve_all_attrs=True, returns_graph=True)", "def reverse(G, copy=True):"],
+      "natural_request": "Declare that reverse preserves graph, node, and edge attributes when the dispatch system converts the result. Preserve its graph-return contract and reverse behavior. Modify only networkx/algorithms/operators/unary.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "The reverse dispatch declaration preserves all graph, node, and edge attributes across backend conversion."},
+        {"id": "O2", "kind": "preserve", "text": "The callable remains declared as returning a graph and reverse behavior is otherwise unchanged."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    },
+    {
+      "index": 4,
+      "opaque_task_id": "semantic-ir-adequacy-04r2",
+      "repository": "psf/black",
+      "pull_request": 5287,
+      "title": "don't treat a t-string in docstring position as a docstring",
+      "merged_utc": "2026-08-02T15:29:27Z",
+      "base_revision": "c7801d9e24fe28b9c85742722cdcb97e1582a94d",
+      "head_revision": "df7827587593988e3f51ee71a6d9926de6730a84",
+      "merge_revision": "5706d79984dacb40cc1a3b26c0a987269384f602",
+      "stratum": "branch_or_predicate_replacement",
+      "selected_source_paths": ["src/black/nodes.py"],
+      "changed_paths": ["CHANGES.md", "src/black/nodes.py", "tests/data/cases/t_docstring.py"],
+      "license": {"path": "LICENSE", "spdx": "MIT", "required_notice": "The MIT License (MIT)"},
+      "parent_fragments": ["if set(prefix).intersection(\"bBfF\"):"],
+      "target_fragments": ["if set(prefix).intersection(\"bBfFtT\"):", "def is_docstring(node: NL) -> bool:"],
+      "natural_request": "Do not classify t-string literals as docstrings, including upper-case T prefixes, while preserving the existing exclusion of byte and f-string literals and ordinary string docstring detection. Modify only src/black/nodes.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Lower- and upper-case t-string prefixes are rejected as docstrings."},
+        {"id": "O2", "kind": "preserve", "text": "Byte and f-string exclusions and ordinary string docstring recognition remain unchanged."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    }
+  ],
+  "maximum_inference": "A GREEN source seal establishes only four fresh, licensed, post-snapshot, source-disjoint parent/target pairs for replacement indices 1-4. It provides no candidate, hidden-evaluator, implementation-adequacy, subsystem-effect, D1, D2, training, serving, or book-support evidence."
+}

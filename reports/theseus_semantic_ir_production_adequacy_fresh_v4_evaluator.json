@@ -1,0 +1,210 @@
+{
+  "candidate_or_model_exposure_authorized": false,
+  "candidate_packet_materialized": false,
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "evaluator_control_executions": 16,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "parent_target_evaluator_executions": 8,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T05:58:11.652047Z",
+  "evaluator_owner": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_fresh_v4_evaluator.py",
+    "sha256": "7705ab1fe89a38be752fe8e946724098bc4f7a8ecfb6622561bf14abf86ca2b5"
+  },
+  "faults": [],
+  "green_task_count": 4,
+  "maximum_inference": "A GREEN report establishes only that the four source-disjoint evaluators distinguish parent, target, benign, mechanism-loss, missing-path, and unauthorized-path controls before candidate packet creation. It provides no candidate, implementation-adequacy, subsystem-effect, D1, D2, training, serving, or book-support evidence.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v4_evaluator_v1",
+  "qualification_method": "Independent AST extraction plus dependency-stubbed behavior for each named causal slice; no upstream test, target byte equality, or candidate-visible oracle is used.",
+  "rows": [
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 1,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-01r2",
+      "selected_source_paths": [
+        "sklearn/utils/validation.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "independent_causal_slice_behavior_and_ast"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 2,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": "TypeError:null",
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": "TypeError:null",
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-02r2",
+      "selected_source_paths": [
+        "django/contrib/gis/gdal/field.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "independent_causal_slice_behavior_and_ast"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 3,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-03r2",
+      "selected_source_paths": [
+        "networkx/algorithms/operators/unary.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "independent_causal_slice_behavior_and_ast"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 4,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-04r2",
+      "selected_source_paths": [
+        "src/black/nodes.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "independent_causal_slice_behavior_and_ast"
+    }
+  ],
+  "source_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_fresh_v4_sources.json",
+    "sha256": "fb8bbe4446dec871db53c04aae0e83a53057df39988e102c707dc9ac27496b37"
+  },
+  "state": "QUALIFIED_BEFORE_FRESH_V4_CANDIDATE_PACKET_MATERIALIZATION",
+  "task_count": 4,
+  "trigger_state": "GREEN"
+}
