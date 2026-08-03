@@ -23,7 +23,7 @@
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v2.json",
       "candidate_runner": "scripts/theseus_semantic_ir_production_adequacy_campaign_v2.py",
       "independent_scorer": "scripts/theseus_semantic_ir_production_adequacy_scorer_v2.py",
-      "state": "TASK_04_REPLACEMENT_PACKET_SEALED_V3_BINDING_REQUIRED",
+      "state": "V3_DENOMINATOR_SEALED_RUNNER_SCORER_BINDING_REQUIRED",
       "task_count": 18,
       "preserved_local_model_calls": 6,
       "new_local_model_calls_authorized": 0,
@@ -40,6 +40,8 @@
         4
       ],
       "sealed_resume_pool": "reports/theseus_semantic_ir_production_adequacy_task_pool_v2.json",
+      "sealed_resume_pool_v3": "reports/theseus_semantic_ir_production_adequacy_task_pool_v3.json",
+      "sealed_resume_pool_v3_state": "SEALED_V3_REPLACEMENT_DENOMINATOR_BEFORE_RESUME",
       "replacement_task": "configs/theseus_semantic_ir_production_adequacy_replacement_02_task.json",
       "replacement_candidate_packet": "configs/theseus_semantic_ir_production_adequacy_replacement_02_candidate_packet.json",
       "replacement_source_report": "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
