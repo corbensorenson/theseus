@@ -819,6 +819,15 @@
   },
   "duplicate_family_classifications": [
     {
+      "root": "scripts",
+      "family": "theseus_semantic_ir_production_adequacy",
+      "classification": "historical_preregistration_and_top_level_runtime_with_statement_granular_successor",
+      "canonical_surface": "theseus_assistant_runtime",
+      "canonical_path": "scripts/theseus_semantic_ir_production_adequacy_runtime_v4.py",
+      "promotion_role": "non_claim_statement_granularity_repair_pending_fresh_prospective_denominator",
+      "successor_policy": "The preregistration auditor and consumed top-level runtime remain immutable evidence. The v4 runtime is a bounded successor motivated by the preserved v3 watchdog interruption: it exposes complete candidate-visible Python statement targets, forbids silent node-inventory truncation, retains zero hidden-evaluator authority, and may be used only after fresh task surfaces and a new campaign binding are sealed prospectively."
+    },
+    {
       "root": "configs",
       "family": "theseus_semantic_ir_production_adequacy_campaign",
       "classification": "immutable_consumed_campaign_bindings_with_current_v3_resume",
@@ -6798,7 +6807,7 @@
       "canonical_entrypoint": "scripts/theseus_assistant_runtime.py",
       "swappable_under_contract": true,
       "replacement_policy": "A successor must preserve the exact-model direct/integrated comparison contract, fail-closed route integrity, zero external runtime inference, and dogfood outcome event semantics.",
-      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_theseus_assistant_route_integrity.py tests/test_theseus_assistant_runtime_local_modes.py tests/test_theseus_local_inference_backend.py tests/test_theseus_assistant_p2a.py tests/test_theseus_assistant_p2a_evaluator.py tests/test_theseus_external_reference_control.py tests/test_theseus_openai_reference_adapter.py tests/test_theseus_semantic_ir_production.py tests/test_theseus_semantic_ir_production_conformance.py tests/test_theseus_semantic_ir_production_canary.py tests/test_theseus_semantic_ir_production_adequacy.py tests/test_theseus_semantic_ir_production_adequacy_acquisition.py tests/test_theseus_semantic_ir_production_adequacy_materialization.py tests/test_theseus_semantic_ir_production_adequacy_materialization_audit.py tests/test_theseus_semantic_ir_production_adequacy_evaluator_qualification.py tests/test_theseus_semantic_ir_production_adequacy_runtime.py tests/test_theseus_semantic_ir_production_adequacy_task_pool.py tests/test_theseus_semantic_ir_production_adequacy_campaign.py && python3 scripts/theseus_openai_reference_adapter.py --qualify-only --out reports/theseus_openai_reference_adapter_qualification.json && python3 scripts/theseus_assistant_p2a.py --audit-only --out reports/theseus_assistant_p2a_instrument_audit.json && python3 scripts/theseus_semantic_ir_production_conformance.py --out /tmp/theseus_semantic_ir_production_conformance_replay.json && python3 scripts/theseus_semantic_ir_production_canary.py --audit-only --out /tmp/theseus_semantic_ir_production_config_audit.json && python3 scripts/theseus_semantic_ir_production_adequacy.py --out /tmp/theseus_semantic_ir_production_adequacy_audit.json && python3 scripts/theseus_semantic_ir_production_adequacy_acquisition.py --out /tmp/theseus_semantic_ir_production_adequacy_metadata_preflight.json && python3 scripts/theseus_semantic_ir_production_adequacy_materialization.py --out /tmp/theseus_semantic_ir_production_adequacy_materialization_preflight.json && python3 scripts/theseus_semantic_ir_production_adequacy_materialization_audit.py --out /tmp/theseus_semantic_ir_production_adequacy_materialization_audit.json && python3 scripts/theseus_semantic_ir_production_adequacy_evaluator_qualification.py --out /tmp/theseus_semantic_ir_production_adequacy_evaluator_qualification.json && python3 scripts/theseus_semantic_ir_production_adequacy_task_pool.py --preflight-only --out /tmp/theseus_semantic_ir_production_adequacy_task_pool_preflight.json && python3 scripts/theseus_semantic_ir_production_adequacy_campaign.py --audit-only --out /tmp/theseus_semantic_ir_production_adequacy_campaign_audit.json && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
+      "verification_command": "python3 -m pytest -q tests/test_reflexive_dispatch.py tests/test_assistant_reflexive_dispatch.py tests/test_theseus_assistant_route_integrity.py tests/test_theseus_assistant_runtime_local_modes.py tests/test_theseus_local_inference_backend.py tests/test_theseus_assistant_p2a.py tests/test_theseus_assistant_p2a_evaluator.py tests/test_theseus_external_reference_control.py tests/test_theseus_openai_reference_adapter.py tests/test_theseus_semantic_ir_production.py tests/test_theseus_semantic_ir_production_conformance.py tests/test_theseus_semantic_ir_production_canary.py tests/test_theseus_semantic_ir_production_adequacy.py tests/test_theseus_semantic_ir_production_adequacy_acquisition.py tests/test_theseus_semantic_ir_production_adequacy_materialization.py tests/test_theseus_semantic_ir_production_adequacy_materialization_audit.py tests/test_theseus_semantic_ir_production_adequacy_evaluator_qualification.py tests/test_theseus_semantic_ir_production_adequacy_runtime.py tests/test_theseus_semantic_ir_production_adequacy_runtime_v4.py tests/test_theseus_semantic_ir_production_adequacy_backend_v2.py tests/test_theseus_semantic_ir_statement_granularity_audit.py tests/test_theseus_semantic_ir_production_adequacy_task_pool.py tests/test_theseus_semantic_ir_production_adequacy_campaign.py && python3 scripts/theseus_openai_reference_adapter.py --qualify-only --out reports/theseus_openai_reference_adapter_qualification.json && python3 scripts/theseus_assistant_p2a.py --audit-only --out reports/theseus_assistant_p2a_instrument_audit.json && python3 scripts/theseus_semantic_ir_production_conformance.py --out /tmp/theseus_semantic_ir_production_conformance_replay.json && python3 scripts/theseus_semantic_ir_production_canary.py --audit-only --out /tmp/theseus_semantic_ir_production_config_audit.json && python3 scripts/theseus_semantic_ir_production_adequacy.py --out /tmp/theseus_semantic_ir_production_adequacy_audit.json && python3 scripts/theseus_semantic_ir_production_adequacy_acquisition.py --out /tmp/theseus_semantic_ir_production_adequacy_metadata_preflight.json && python3 scripts/theseus_semantic_ir_production_adequacy_materialization.py --out /tmp/theseus_semantic_ir_production_adequacy_materialization_preflight.json && python3 scripts/theseus_semantic_ir_production_adequacy_materialization_audit.py --out /tmp/theseus_semantic_ir_production_adequacy_materialization_audit.json && python3 scripts/theseus_semantic_ir_production_adequacy_evaluator_qualification.py --out /tmp/theseus_semantic_ir_production_adequacy_evaluator_qualification.json && python3 scripts/theseus_semantic_ir_production_adequacy_task_pool.py --preflight-only --out /tmp/theseus_semantic_ir_production_adequacy_task_pool_preflight.json && python3 scripts/theseus_semantic_ir_production_adequacy_campaign.py --audit-only --out /tmp/theseus_semantic_ir_production_adequacy_campaign_audit.json && python3 scripts/theseus_assistant_e2e.py && python3 scripts/theseus_assistant_product_lane_gate.py --gate",
       "role": "runtime_serving",
       "trust_tier": "local_runtime_only",
       "dependencies": [
@@ -6830,6 +6839,9 @@
         "scripts/theseus_semantic_ir_production_adequacy_materialization_audit.py",
         "scripts/theseus_semantic_ir_production_adequacy_evaluator_qualification.py",
         "scripts/theseus_semantic_ir_production_adequacy_runtime.py",
+        "scripts/theseus_semantic_ir_production_adequacy_runtime_v4.py",
+        "scripts/theseus_semantic_ir_production_adequacy_backend_v2.py",
+        "scripts/theseus_semantic_ir_statement_granularity_audit.py",
         "scripts/theseus_semantic_ir_production_adequacy_task_pool.py",
         "scripts/theseus_semantic_ir_production_adequacy_campaign.py",
         "scripts/theseus_semantic_ir_production_adequacy_scorer.py",
@@ -6894,6 +6906,9 @@
         "tests/test_theseus_semantic_ir_production_adequacy_materialization_audit.py",
         "tests/test_theseus_semantic_ir_production_adequacy_evaluator_qualification.py",
         "tests/test_theseus_semantic_ir_production_adequacy_runtime.py",
+        "tests/test_theseus_semantic_ir_production_adequacy_runtime_v4.py",
+        "tests/test_theseus_semantic_ir_production_adequacy_backend_v2.py",
+        "tests/test_theseus_semantic_ir_statement_granularity_audit.py",
         "tests/test_theseus_semantic_ir_production_adequacy_task_pool.py",
         "tests/test_theseus_semantic_ir_production_adequacy_campaign.py",
         "tests/test_theseus_semantic_ir_production_adequacy_backend.py",

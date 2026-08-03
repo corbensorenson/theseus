@@ -1,0 +1,261 @@
+{
+  "counters": {
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "fallback_return_count": 0,
+    "public_calibration_cases_consumed": 0,
+    "public_training_rows_written": 0,
+    "teacher_calls": 0,
+    "user_facing_effects": 0
+  },
+  "created_utc": "2026-08-03T05:39:23.973169Z",
+  "diagnostic_backend": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_backend_v2.py",
+    "sha256": "ff44f72244f85401a9d25c48bf38f54c4c919e4a1bc9407001cbc443c426f76d"
+  },
+  "faults": [],
+  "fresh_task_requirements": {
+    "candidate_generation_opened": false,
+    "consumed_tasks_01_through_04_may_not_be_rerun": true,
+    "fresh_same_stratum_replacements_required": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "hidden_evaluation_opened": false,
+    "tasks_05_through_18_require_prospective_v4_packet_rebinding": true
+  },
+  "historical_runtime": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_runtime.py",
+    "sha256": "9d9bd856c57623ac6b2653dad2cbfb384fd11812a1838f880c368bb582e47f81"
+  },
+  "maximum_inference": "GREEN establishes that complete statement inventory removes the observed whole-function representation wall while preserving physical context addressability on the audited parent surfaces. It does not establish model completion, candidate correctness, full implementation adequacy, causal subsystem utility, D1, D2, or ASI Stack support.",
+  "policy": "project_theseus_semantic_ir_statement_granularity_audit_v1",
+  "repaired_runtime": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_runtime_v4.py",
+    "sha256": "a3d42c6816fe2964a223d7d1209fa12122c06a4ce0c73bcbb48f11d77936624c"
+  },
+  "scope": "Candidate-visible representation and physical addressability audit only; no model call, hidden evaluation, task correctness, subsystem effect, D1, D2, training, serving, or book-support authority.",
+  "state": "STATEMENT_GRANULARITY_REPRESENTATION_REPAIR_GREEN",
+  "task_04_consumed_surface_mechanics_comparison": {
+    "historical_nearest_container": {
+      "end_col": 57,
+      "end_line": 467,
+      "id": "N-DDCFBC505091A549",
+      "label": "pair_align",
+      "node_type": "FunctionDef",
+      "path": "skbio/alignment/_pair.py",
+      "sha256": "a541cc1ce447519ea654f2312d267433399fe733a4871efa5ea59a7f1be62ea7",
+      "start_col": 0,
+      "start_line": 35
+    },
+    "historical_nearest_container_line_span": 433,
+    "historical_prompt_utf8_bytes": 52409,
+    "historical_scope_node_count": 21,
+    "mutation_span_reduction_factor": 433.0,
+    "repaired_conservative_context_residual_tokens": 150352,
+    "repaired_exact_statement_line_span": 1,
+    "repaired_exact_statement_target": {
+      "end_col": 62,
+      "end_line": 424,
+      "id": "N-ED832B3312E6D21E",
+      "label": "Assign([Tuple([Name('gap_open', Store()), Name('gap_extend', Store())], Store())], Call(Name('prep_g",
+      "node_type": "Assign",
+      "path": "skbio/alignment/_pair.py",
+      "sha256": "6d126e4bdd12a0bb95ef11030ef4aa0dfefee5f0f03aaa570c7aebb34e80ae46",
+      "start_col": 4,
+      "start_line": 424
+    },
+    "repaired_prompt_utf8_bytes": 111792
+  },
+  "trigger_state": "GREEN",
+  "unexposed_and_consumed_parent_surface_addressability": [
+    {
+      "conservative_context_residual_tokens": 150352,
+      "index": 4,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 433,
+      "opaque_task_id": "semantic-ir-adequacy-04r1",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 111792,
+      "single_line_node_count": 187,
+      "statement_node_count": 290
+    },
+    {
+      "conservative_context_residual_tokens": 80965,
+      "index": 5,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 145,
+      "opaque_task_id": "semantic-ir-adequacy-05",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 181179,
+      "single_line_node_count": 285,
+      "statement_node_count": 510
+    },
+    {
+      "conservative_context_residual_tokens": 114621,
+      "index": 6,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 68,
+      "opaque_task_id": "semantic-ir-adequacy-06",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 147523,
+      "single_line_node_count": 293,
+      "statement_node_count": 607
+    },
+    {
+      "conservative_context_residual_tokens": 195285,
+      "index": 7,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 686,
+      "opaque_task_id": "semantic-ir-adequacy-07",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 66859,
+      "single_line_node_count": 97,
+      "statement_node_count": 162
+    },
+    {
+      "conservative_context_residual_tokens": 60896,
+      "index": 8,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 1414,
+      "opaque_task_id": "semantic-ir-adequacy-08",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 201248,
+      "single_line_node_count": 436,
+      "statement_node_count": 672
+    },
+    {
+      "conservative_context_residual_tokens": 172962,
+      "index": 9,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 60,
+      "opaque_task_id": "semantic-ir-adequacy-09",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 89182,
+      "single_line_node_count": 197,
+      "statement_node_count": 320
+    },
+    {
+      "conservative_context_residual_tokens": 210943,
+      "index": 10,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 52,
+      "opaque_task_id": "semantic-ir-adequacy-10",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 51201,
+      "single_line_node_count": 106,
+      "statement_node_count": 175
+    },
+    {
+      "conservative_context_residual_tokens": 249075,
+      "index": 11,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 49,
+      "opaque_task_id": "semantic-ir-adequacy-11",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 13069,
+      "single_line_node_count": 28,
+      "statement_node_count": 40
+    },
+    {
+      "conservative_context_residual_tokens": 183361,
+      "index": 12,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 117,
+      "opaque_task_id": "semantic-ir-adequacy-12",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 78783,
+      "single_line_node_count": 186,
+      "statement_node_count": 277
+    },
+    {
+      "conservative_context_residual_tokens": 242700,
+      "index": 13,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 24,
+      "opaque_task_id": "semantic-ir-adequacy-13",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 19444,
+      "single_line_node_count": 25,
+      "statement_node_count": 51
+    },
+    {
+      "conservative_context_residual_tokens": 194220,
+      "index": 14,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 375,
+      "opaque_task_id": "semantic-ir-adequacy-14",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 67924,
+      "single_line_node_count": 96,
+      "statement_node_count": 181
+    },
+    {
+      "conservative_context_residual_tokens": 159685,
+      "index": 15,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 154,
+      "opaque_task_id": "semantic-ir-adequacy-15",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 102459,
+      "single_line_node_count": 187,
+      "statement_node_count": 353
+    },
+    {
+      "conservative_context_residual_tokens": 243858,
+      "index": 16,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 41,
+      "opaque_task_id": "semantic-ir-adequacy-16",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 18286,
+      "single_line_node_count": 43,
+      "statement_node_count": 61
+    },
+    {
+      "conservative_context_residual_tokens": 206539,
+      "index": 17,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 58,
+      "opaque_task_id": "semantic-ir-adequacy-17",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 55605,
+      "single_line_node_count": 128,
+      "statement_node_count": 197
+    },
+    {
+      "conservative_context_residual_tokens": 61921,
+      "index": 18,
+      "inventory_complete": true,
+      "inventory_truncated": false,
+      "maximum_node_line_span": 289,
+      "opaque_task_id": "semantic-ir-adequacy-18",
+      "project_selected_node_cap_applied": false,
+      "prompt_utf8_bytes": 200223,
+      "single_line_node_count": 308,
+      "statement_node_count": 570
+    }
+  ],
+  "v3_interruption": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v3_watchdog_interruption.json",
+    "project_selected_quality_token_cap": null,
+    "sha256": "c75151cd752d699df9d315d9a111cfb764f8f67a3ac6de87e721d48f5a59d925",
+    "watchdog_generated_tokens": 1949
+  }
+}
