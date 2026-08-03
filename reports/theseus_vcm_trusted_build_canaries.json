@@ -3,9 +3,9 @@
   "command_receipt_count": 16,
   "config": {
     "path": "configs/theseus_vcm_trusted_build_canaries.json",
-    "sha256": "495fbf6d667f07d90fbfd2635a00496708698d79406756d4750b07d1673e4e17"
+    "sha256": "0291898b2e4b4555949e24f131f48c21b12f2f5a9cf6fa5315ac58f22bf96873"
   },
-  "created_utc": "2026-08-03T16:58:59.149112Z",
+  "created_utc": "2026-08-03T17:01:12.437323Z",
   "dependency_prefetch_authorized": false,
   "explicitly_unqualified_scopes": [
     "yarn_runtime",
@@ -17,16 +17,20 @@
     "repository_runner_adequacy"
   ],
   "external_reference_calls": 0,
-  "faults": [
-    "canary_failed:deno_typescript_check",
-    "canary_failed:rust_binary_run",
-    "canary_failed:rust_compile"
-  ],
+  "faults": [],
   "maximum_inference": "A GREEN report qualifies only trusted local offline fixtures for exact pip, npm, pnpm, Bun, Deno/TypeScript, and rustc mechanics under the declared network and write sandbox. It does not qualify Yarn, remote prefetch, real repository locks, untrusted install/build scripts, repository compilation, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_trusted_build_canaries_v1",
   "qualification_executed": true,
-  "qualified_scopes": [],
+  "qualified_scopes": [
+    "network_denial_and_write_confinement",
+    "pip_local_wheel_offline_install",
+    "npm_local_file_offline_install_ignore_scripts",
+    "pnpm_local_file_offline_install_ignore_scripts",
+    "bun_local_file_offline_install_ignore_scripts",
+    "deno_dependency_free_typescript_check_and_run",
+    "rustc_dependency_free_trusted_source_compile_and_run"
+  ],
   "receipts": {
     "bun_lifecycle_script_suppression": {
       "passed": true,
@@ -44,6 +48,7 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 0,
@@ -63,6 +68,7 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 79,
@@ -82,10 +88,11 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 15,
+      "stderr_head": "Saved lockfile\n",
       "stderr_sha256": "47f54b390e29cf9d23c0e13e15bbff6224c42e067872d642b63deb38a8c5152c",
       "stderr_tail": "Saved lockfile\n",
       "stdout_bytes": 67,
-      "stdout_sha256": "b9ea163ae5f1bfd1732fd541017db73a6d6ac0b2399a0bc08d43a98608c437f1"
+      "stdout_sha256": "59eeb95adeefb9f1066540c9b1893c1c35bb474ffe4fe290beba8934aeb5fd12"
     },
     "deno_typescript_check": {
       "boundary_hit": false,
@@ -93,16 +100,16 @@
       "command": [
         "/Users/corbensorenson/miniforge3/bin/deno",
         "check",
-        "--cached-only",
         "--no-config",
-        "/private/tmp/theseus-vcm-build-tmuarf0k/typescript/canary.ts"
+        "/private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts"
       ],
       "cwd_leaf": "typescript",
       "project_selected_quality_token_cap": null,
-      "returncode": 1,
-      "stderr_bytes": 138,
-      "stderr_sha256": "7eab595100a4e2e8fbc95cda77c27338b0ee168657d49a2aa5190f786b8aafa8",
-      "stderr_tail": "error: unexpected argument '--cached-only' found\n\n  tip: a similar argument exists: '--doc-only'\n\nUsage: deno check --doc-only [file]...\n\n",
+      "returncode": 0,
+      "stderr_bytes": 74,
+      "stderr_head": "Check file:///private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts\n",
+      "stderr_sha256": "007f7a99f47b8e762d45a8fc5b033be59c3ac76e4897df4900363ad3138c5f7c",
+      "stderr_tail": "Check file:///private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts\n",
       "stdout_bytes": 0,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -114,12 +121,13 @@
         "run",
         "--cached-only",
         "--no-config",
-        "/private/tmp/theseus-vcm-build-tmuarf0k/typescript/canary.ts"
+        "/private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts"
       ],
       "cwd_leaf": "typescript",
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 0,
@@ -141,6 +149,7 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 0,
@@ -162,10 +171,11 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 26,
-      "stdout_sha256": "24603d8ffa4e9a3453c487a93ee79c232922189532a33a5133869f2bf6e85166"
+      "stdout_sha256": "0b3d25a2ceffca226faa25c54d7c4809bcdc24ede4e32465fd38cf547edfb28f"
     },
     "npm_offline_lock": {
       "boundary_hit": false,
@@ -184,10 +194,11 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 21,
-      "stdout_sha256": "1052e194dd8e3d2edb19ae94a2bd19b6239cac306c36dfa757cfc4b0986df55c"
+      "stdout_sha256": "61f3f5ecf87603955802b8cc3a35d56497bad7a431b3046f3d7c48a9dc87b02d"
     },
     "pip_import": {
       "boundary_hit": false,
@@ -201,6 +212,7 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 0,
@@ -217,19 +229,20 @@
         "--disable-pip-version-check",
         "--no-index",
         "--find-links",
-        "/private/tmp/theseus-vcm-build-tmuarf0k/pip/wheelhouse",
+        "/private/tmp/theseus-vcm-build-uo36hrti/pip/wheelhouse",
         "--target",
-        "/private/tmp/theseus-vcm-build-tmuarf0k/pip/site",
+        "/private/tmp/theseus-vcm-build-uo36hrti/pip/site",
         "trusted-dep==1.0.0"
       ],
       "cwd_leaf": "pip",
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 216,
-      "stdout_sha256": "e89a430fc3a3ec6e64cb04cc36f4407510186c216bb81e32de34177101c94f56"
+      "stdout_sha256": "c071ecea535d8ca192130dc0c000ac2ffe852437d335e5d903d618b9b782c5e4"
     },
     "pnpm_lifecycle_script_suppression": {
       "passed": true,
@@ -247,6 +260,7 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 0,
@@ -267,10 +281,11 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 244,
-      "stdout_sha256": "8d393fc299ff5ef475a580ef1ac1f499577e9d310721cbe917030e525b7765da"
+      "stdout_sha256": "0c4bdf9ae4dcb55b866cb255ba743939b3bf3b01ec6ac0e0d38383cb6b788634"
     },
     "pnpm_offline_lock": {
       "boundary_hit": false,
@@ -287,23 +302,25 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 149,
-      "stdout_sha256": "53dbd61fce324891af75fe2d9f7557c8aefddf2ffdec3860cf59419cbc33abe0"
+      "stdout_sha256": "0afbdcf1fa011331549798c3f9fe422eb605571eca77860e45f9c0d0da40605b"
     },
     "rust_binary_run": {
       "boundary_hit": false,
       "boundary_reason": "",
       "command": [
-        "/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary"
+        "/private/tmp/theseus-vcm-build-uo36hrti/rust/canary"
       ],
       "cwd_leaf": "rust",
       "project_selected_quality_token_cap": null,
-      "returncode": 71,
-      "stderr_bytes": 114,
-      "stderr_sha256": "a73812f573922f7797d54353613a949f7b03e9e51a53eaba0e06c9bb0c38d102",
-      "stderr_tail": "sandbox-exec: execvp() of '/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary' failed: No such file or directory\n",
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
       "stdout_bytes": 0,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -313,16 +330,17 @@
       "command": [
         "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
         "--edition=2021",
-        "/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary.rs",
+        "/private/tmp/theseus-vcm-build-uo36hrti/rust/canary.rs",
         "-o",
-        "/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary"
+        "/private/tmp/theseus-vcm-build-uo36hrti/rust/canary"
       ],
       "cwd_leaf": "rust",
       "project_selected_quality_token_cap": null,
-      "returncode": 1,
-      "stderr_bytes": 3548,
-      "stderr_sha256": "3cd416f86feeb550922607eec523e2adf5702a3893b3730e31fc9c00976d70d8",
-      "stderr_tail": "4-apple-darwin/lib/librustc_demangle-861081a9059d47df.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libstd_detect-4360eaf6e1c31c57.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libhashbrown-89036b6978d8ce69.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_std_workspace_alloc-254a7ed22f26dd9e.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libminiz_oxide-335753488e82bec9.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libadler2-7473a65ef0be1013.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libunwind-752134edb4592c89.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcfg_if-f157901651a0fbf7.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/liblibc-97c97923a97d61ff.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_std_workspace_core-99d3baad06697c99.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/liballoc-0d39bbe8d4a88c82.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcore-fab9fe95ee4975fc.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcompiler_builtins-d4cfd55d1b455f62.rlib\" \"-lSystem\" \"-lc\" \"-lm\" \"-arch\" \"arm64\" \"-mmacosx-version-min=11.0.0\" \"-o\" \"/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary\" \"-Wl,-dead_strip\" \"-nodefaultlibs\"\n\nerror: aborting due to 1 previous error\n\n",
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
       "stdout_bytes": 0,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -334,7 +352,7 @@
         "-c",
         "import json,pathlib,socket\no=pathlib.Path('/Users/corbensorenson/Documents/Theseus-Hive/runtime/control/vcm_trusted_build_escape');r={}\ntry:o.write_text('x');r['outside_write_denied']=False\nexcept OSError:r['outside_write_denied']=True\ns=socket.socket();s.settimeout(.2)\ntry:s.connect(('127.0.0.1',9));r['network_denied']=False\nexcept OSError:r['network_denied']=True\nprint(json.dumps(r,sort_keys=True))\n"
       ],
-      "cwd_leaf": "theseus-vcm-build-tmuarf0k",
+      "cwd_leaf": "theseus-vcm-build-uo36hrti",
       "expected_denials": [
         "network_denied",
         "outside_write_denied"
@@ -343,6 +361,7 @@
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 0,
+      "stderr_head": "",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 55,
@@ -350,10 +369,10 @@
     }
   },
   "repository_execution_authorized": false,
-  "state": "TRUSTED_OFFLINE_BUILD_CANARIES_FAILED",
+  "state": "TRUSTED_OFFLINE_BUILD_CANARIES_QUALIFIED",
   "toolchain_identity_report": {
     "path": "reports/theseus_vcm_toolchain_identity_audit.json",
     "sha256": "76a137b68d047c0bc1c1b2ad4913f8ee622605b5493cf516ef22997e5e624d68"
   },
-  "trigger_state": "RED"
+  "trigger_state": "GREEN"
 }

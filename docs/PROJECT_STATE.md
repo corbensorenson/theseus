@@ -386,6 +386,14 @@ Rust. Forty-eight lock-bearing tasks now have an available exact manager identit
 Only Yarn-locked task 4 has a manager gap. This is inventory evidence only; no
 install, build, repository, evaluator, or model execution occurred.
 
+Trusted offline build canaries subsequently passed for local-wheel pip installs,
+local-file npm/pnpm/Bun installs with lifecycle scripts suppressed, dependency-
+free Deno TypeScript check/run, and concrete rustc compile/run. Network denial,
+write confinement, and resource ceilings were active for all 16 commands. The
+initial outer-sandbox, obsolete Deno flag, and too-low host process ceiling
+failures remain scoped canary-owner evidence. Real locks, Yarn, remote prefetch,
+untrusted build scripts, repositories, evaluators, and models remain closed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

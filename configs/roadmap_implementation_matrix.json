@@ -738,6 +738,30 @@
         "external_reference_calls": 0,
         "maximum_inference": "local tool identity and lock-manager mapping only; no dependency build evaluator task or model qualification",
         "next_boundary": "qualify trusted offline install transpile and compile canaries for the available exact tools, acquire or bind one exact Yarn runtime under bounded policy, then materialize immutable task dependency closures"
+      },
+      "vcm_trusted_build_canaries": {
+        "config": "configs/theseus_vcm_trusted_build_canaries.json",
+        "owner": "scripts/theseus_vcm_trusted_build_canaries.py",
+        "test": "tests/test_theseus_vcm_trusted_build_canaries.py",
+        "report": "reports/theseus_vcm_trusted_build_canaries.json",
+        "owner_sha256": "0ab40300dbcc3bfa29c54b91b59af72ceb3a8e34bea5459631839f3f947c71b5",
+        "config_sha256": "0291898b2e4b4555949e24f131f48c21b12f2f5a9cf6fa5315ac58f22bf96873",
+        "report_sha256": "069cc2e6a220fa2fe260a9b9c675cb1f7df6b35b23b11befea6b93e2ce91b4f4",
+        "state": "GREEN_TRUSTED_OFFLINE_BUILD_CANARIES_QUALIFIED",
+        "qualified_scope_count": 7,
+        "command_receipt_count": 16,
+        "pip_npm_pnpm_bun_offline_fixture_installs_green": true,
+        "node_lifecycle_scripts_suppressed": true,
+        "deno_typescript_check_and_run_green": true,
+        "rustc_compile_and_run_green": true,
+        "network_denial_and_write_confinement_green": true,
+        "repository_execution_authorized": false,
+        "remote_dependency_prefetch_authorized": false,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "trusted dependency-free or local-file fixture build mechanics only; no real lock untrusted repository evaluator task or model qualification",
+        "next_boundary": "bind Yarn then prefetch exact real lock artifacts into a content-addressed offline store with install scripts disabled and a physical storage reserve"
       }
     },
     "claim_selection_policy": {

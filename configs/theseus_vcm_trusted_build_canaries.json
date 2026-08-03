@@ -2,7 +2,7 @@
   "policy": "project_theseus_vcm_trusted_build_canaries_v1",
   "state": "PROSPECTIVE_TRUSTED_OFFLINE_BUILD_CANARIES_BEFORE_REPOSITORY_OR_DEPENDENCY_EXECUTION",
   "owner": "scripts/theseus_vcm_trusted_build_canaries.py",
-  "owner_sha256": "e174043068d3181fe653206e6fd27d6c355fc9c43689a65cf404b618ff7de0eb",
+  "owner_sha256": "0ab40300dbcc3bfa29c54b91b59af72ceb3a8e34bea5459631839f3f947c71b5",
   "toolchain_identity_report": {
     "path": "reports/theseus_vcm_toolchain_identity_audit.json",
     "sha256": "76a137b68d047c0bc1c1b2ad4913f8ee622605b5493cf516ef22997e5e624d68"
@@ -18,7 +18,7 @@
     "deno": {"path": "/Users/corbensorenson/miniforge3/bin/deno", "sha256": "d224f15938109fe892a5637a6fbe6c5c4e98cbd1b07fdf56682e8915430e5fd0"},
     "rustc": {"path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc", "sha256": "b2011d06d5c7efff7b48b1e1aec6106989e44f3a5ad1d171e06a41c0fbc3ffea"}
   },
-  "limits": {"cpu_seconds": 30, "wall_seconds": 60, "output_mib": 8, "open_files": 256, "user_processes": 64},
+  "limits": {"cpu_seconds": 30, "wall_seconds": 60, "output_mib": 8, "open_files": 256, "user_processes": 384},
   "authority": {
     "trusted_fixture_materialization_authorized": true,
     "trusted_build_canary_execution_authorized": true,

@@ -146,7 +146,7 @@ def qualify(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         ts_root.mkdir()
         (ts_root / "canary.ts").write_text("const value: number = 7; if (value !== 7) throw new Error('bad');\n", encoding="utf-8")
         receipts["deno_typescript_check"] = run(
-            [tools["deno"], "check", "--cached-only", "--no-config", str(ts_root / "canary.ts")],
+            [tools["deno"], "check", "--no-config", str(ts_root / "canary.ts")],
             ts_root, profile, env, config,
         )
         receipts["deno_typescript_run"] = run(
@@ -240,6 +240,7 @@ def run(command: list[str], cwd: Path, profile: str, env: dict[str, str], config
         "stderr_bytes": len(stderr),
         "stdout_sha256": hashlib.sha256(stdout).hexdigest(),
         "stderr_sha256": hashlib.sha256(stderr).hexdigest(),
+        "stderr_head": stderr.decode("utf-8", "replace")[:4000],
         "stderr_tail": stderr.decode("utf-8", "replace")[-2000:],
         "project_selected_quality_token_cap": None,
     }
