@@ -796,6 +796,15 @@ files plus three contained symlinks, and independent probes returned Node
 ran. Task 3's dependency acquisition plus network-denied offline replay may now
 be sealed against this exact runtime.
 
+The task-3 dependency canary is now prospectively sealed. Parent and target bind
+the same exact manifest and lock, whose only two dependency artifacts have
+SHA-512 integrity receipts. The run may perform one lifecycle-disabled network
+`npm ci`, delete only its temporary `node_modules`, then require a second
+network-denied `npm ci --offline` from the isolated cache. It retains only the
+cache after independent content-integrity and storage checks. `npm test`, every
+repository entrypoint, evaluators, candidates, local models, and Luna remain
+zero-authority.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

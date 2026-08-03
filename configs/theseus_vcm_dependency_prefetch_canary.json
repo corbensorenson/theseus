@@ -1,0 +1,117 @@
+{
+  "policy": "project_theseus_vcm_dependency_prefetch_canary_v1",
+  "state": "PROSPECTIVE_SINGLE_TASK_3_DEPENDENCY_ACQUISITION_AND_OFFLINE_REPLAY",
+  "owner": "scripts/theseus_vcm_dependency_prefetch_canary.py",
+  "owner_sha256": "6a7971351c84f27eeec552527ebd9acd8334a98c3c1e2a73c59fe57931d16125",
+  "reports": {
+    "prefetch_plan": {
+      "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
+      "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
+    },
+    "node_runtime": {
+      "path": "reports/theseus_vcm_node_bootstrap.json",
+      "sha256": "fd434ecc416966898eaf1c0ed70e3aafb499514cfc7d36f73a58f77436340937"
+    }
+  },
+  "task": {
+    "index": 3,
+    "schedule_ordinal": 1,
+    "repository": "QoderAI/better-harness",
+    "manager": "npm",
+    "working_directory": ".",
+    "estimated_locked_package_count": 2,
+    "required_files": {
+      "manifest": {
+        "path": "package.json",
+        "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+      },
+      "lock": {
+        "path": "package-lock.json",
+        "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+      }
+    },
+    "expected_dependencies": {
+      "@vscode/tree-sitter-wasm": "0.3.1",
+      "esbuild-wasm": "0.28.1"
+    }
+  },
+  "archives": {
+    "parent": {
+      "path": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_parent.tar.gz",
+      "sha256": "3368e4e6ec82bdfc671040a82544644caeb40acc197cd99f01175ad54d75cf7d",
+      "archive_root": "better-harness-6ba2ed637894d2cae4c4b14863a7018e4fd5703d"
+    },
+    "target": {
+      "path": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_target.tar.gz",
+      "sha256": "8859614e83d8edb9aefe3affd77140229419892e39c9457c1635a3412296d64b",
+      "archive_root": "better-harness-e7f26542eb2e60639b472d6cf852e53fda52b1de"
+    }
+  },
+  "tools": {
+    "sandbox_exec": {
+      "path": "/usr/bin/sandbox-exec",
+      "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"
+    },
+    "node": {
+      "path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+      "sha256": "49161ba4e67afda85c25b2daa1f0e91d1bffc023d2dbc4886eda7a9ba38bca62",
+      "version": "22.20.0"
+    },
+    "npm_cli": {
+      "path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js",
+      "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7",
+      "version": "10.9.3"
+    }
+  },
+  "commands": {
+    "online_acquisition_args": [
+      "ci",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund"
+    ],
+    "offline_replay_args": [
+      "ci",
+      "--ignore-scripts",
+      "--no-audit",
+      "--no-fund",
+      "--offline"
+    ]
+  },
+  "retained_store": "runtime/vcm_evaluator/dependency_store/npm/task-03",
+  "limits": {
+    "minimum_free_bytes_after_execution": 10737418240,
+    "maximum_retained_bytes": 4294967296,
+    "wall_seconds_per_command": 600,
+    "cpu_seconds_per_command": 300,
+    "output_mib": 8,
+    "open_files": 512,
+    "user_processes": 384,
+    "max_process_group_rss_mib": 4096,
+    "terminate_grace_seconds": 5,
+    "boundary_activation_disposition": "INCONCLUSIVE_INSTRUMENT_NOT_TASK_OR_MECHANISM_FAILURE"
+  },
+  "report": "reports/theseus_vcm_dependency_prefetch_canary.json",
+  "authority": {
+    "temporary_normalized_archive_extraction_authorized": true,
+    "single_network_dependency_acquisition_authorized": true,
+    "untrusted_dependency_archive_extraction_authorized": true,
+    "lifecycle_script_disabled_dependency_installation_authorized": true,
+    "network_denied_offline_replay_authorized": true,
+    "content_addressed_cache_retention_authorized": true,
+    "untrusted_lifecycle_script_execution_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN canary proves only that task 3's identical parent/target npm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a cache whose SHA-512 content includes both exact lock artifacts under the declared host boundaries. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim."
+}

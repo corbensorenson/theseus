@@ -1,0 +1,47 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_dependency_prefetch_canary.json",
+    "sha256": "8cf89880766a890be431259a4d9ccf6699244b29cbfbcc44348e41b9ebfbf592"
+  },
+  "created_utc": "2026-08-03T18:13:28.638006Z",
+  "dependency_installations": 0,
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN canary proves only that task 3's identical parent/target npm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a cache whose SHA-512 content includes both exact lock artifacts under the declared host boundaries. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim.",
+  "network_denied_dependency_installations": 0,
+  "network_enabled_dependency_installations": 0,
+  "network_request_count_exact": null,
+  "observed_parent_target_dependency_identities": {
+    "parent": {
+      "lock": {
+        "bytes": 1250,
+        "path": "package-lock.json",
+        "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+      },
+      "manifest": {
+        "bytes": 2461,
+        "path": "package.json",
+        "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+      }
+    },
+    "target": {
+      "lock": {
+        "bytes": 1250,
+        "path": "package-lock.json",
+        "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+      },
+      "manifest": {
+        "bytes": 2461,
+        "path": "package.json",
+        "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+      }
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_dependency_prefetch_canary_v1",
+  "repository_runner_executions": 0,
+  "state": "READY_FOR_SINGLE_TASK_3_DEPENDENCY_CANARY",
+  "trigger_state": "PAUSED"
+}

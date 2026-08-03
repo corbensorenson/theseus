@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_NODE_BOOTSTRAP_GREEN_TASK_3_DEPENDENCY_CANARY_SEALING",
+      "state": "VCM_V3_TASK_3_DEPENDENCY_CANARY_PROSPECTIVELY_SEALED",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -878,7 +878,30 @@
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "official checksum-bound Node 22.20.0/npm 10.9.3 materialization and version identity only; no dependency repository evaluator task or model qualification",
-        "next_boundary": "prospectively seal task 3's exact dependency acquisition and offline-replay canary against this runtime, without repository-runner execution"
+        "next_boundary": "execute the prospectively sealed task-3 dependency acquisition and network-denied offline replay without repository-runner execution"
+      },
+      "vcm_dependency_prefetch_canary": {
+        "config": "configs/theseus_vcm_dependency_prefetch_canary.json",
+        "owner": "scripts/theseus_vcm_dependency_prefetch_canary.py",
+        "test": "tests/test_theseus_vcm_dependency_prefetch_canary.py",
+        "report": "reports/theseus_vcm_dependency_prefetch_canary.json",
+        "owner_sha256": "6a7971351c84f27eeec552527ebd9acd8334a98c3c1e2a73c59fe57931d16125",
+        "config_sha256": "8cf89880766a890be431259a4d9ccf6699244b29cbfbcc44348e41b9ebfbf592",
+        "report_sha256": "fc0a1f443ecb01dbe8e41d9c7ccd44f6ab8432e8b8ea6a07e35fb085b07e347a",
+        "state": "PAUSED_READY_FOR_SINGLE_TASK_3_DEPENDENCY_CANARY",
+        "task_index": 3,
+        "repository": "QoderAI/better-harness",
+        "manager": "npm",
+        "parent_target_manifest_and_lock_identical": true,
+        "expected_locked_package_count": 2,
+        "online_installations": 0,
+        "network_denied_offline_installations": 0,
+        "repository_runner_executions": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "prospective single-lock dependency acquisition and offline-replay contract only; no dependency repository evaluator task or model result",
+        "next_boundary": "run exactly one network-enabled lifecycle-disabled npm acquisition, delete the install tree, replay from the retained cache with network denied, and require both exact lock integrity artifacts"
       }
     },
     "claim_selection_policy": {
