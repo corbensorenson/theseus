@@ -251,6 +251,24 @@ missing-path, and unauthorized-path controls pass. Candidate-visible task packet
 materialization and a recursive anti-cheating audit are the remaining pre-model
 boundary.
 
+Those boundaries subsequently closed and the balanced 18-task pool was sealed.
+The first execution attempt preserved Task 1 but consumed Task 2 through an
+abnormally long unbounded generation, so Task 2 was replaced—never rerun—with a
+fresh post-snapshot task from a different licensed repository. The call-free v2
+resume audit then passed. During that sealed resume, replacement Task 2 and Task
+3 completed normally; Task 4 call 1 completed normally; and Task 4 call 2 reached
+the prospectively declared 600-second host watchdog after 2,288 generated
+tokens. The downstream route correctly held the partial response, no hidden
+evaluator ran, and no model, mechanism, or claim failure may be inferred.
+
+Candidates 1–3 and all eight attempted-call receipts are now retained. Task 4
+is consumed and may not be rerun. The active boundary is one fresh licensed,
+post-snapshot, source-disjoint `branch_or_predicate_replacement`, an independent
+evaluator qualified before its candidate packet is exposed, and a prospective
+v3 resume that classifies backend watchdog telemetry before downstream route
+consequences. New local calls, Luna calls, hidden evaluation, training, D1, and
+D2 remain closed until that binding passes.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

@@ -12,29 +12,32 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
-    "state": "PRODUCTION_MECHANICS_REPAIRED_ADEQUACY_RESUME_AUDIT_GREEN",
+    "state": "PRODUCTION_MECHANICS_REPAIRED_ADEQUACY_V2_WATCHDOG_INVALID_REPLACEMENT_REQUIRED",
       "observed_residual": "implementation_adequacy_power_diversity_independence",
       "next_evidence_class": "INDEPENDENT_SOURCE_DISJOINT_NON_CLAIM_ADEQUACY",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
     "maximum_inference": "The exact frozen TMax plus Semantic-IR v2r2 implementation missed its mechanics floor; the replacement production mechanics and prospective campaign audit are GREEN, but model-produced implementation adequacy and cognitive compilation generally remain unresolved.",
     "adequacy_campaign_binding": {
-      "config": "configs/theseus_semantic_ir_production_adequacy_campaign.json",
+      "config": "configs/theseus_semantic_ir_production_adequacy_campaign_v2.json",
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v2.json",
       "candidate_runner": "scripts/theseus_semantic_ir_production_adequacy_campaign_v2.py",
       "independent_scorer": "scripts/theseus_semantic_ir_production_adequacy_scorer_v2.py",
-      "state": "GREEN_CALL_FREE_REPLACEMENT_RESUME_BINDING_LOCAL_RUN_AUTHORIZED",
+      "state": "PAUSED_INVALID_INFRASTRUCTURE_TASK_04_REPLACEMENT_AND_V3_BINDING_REQUIRED",
       "task_count": 18,
-      "preserved_local_model_calls": 2,
-      "new_local_model_calls_authorized": 34,
+      "preserved_local_model_calls": 6,
+      "new_local_model_calls_authorized": 0,
       "total_denominator_local_model_calls": 36,
+      "actual_local_model_calls_attempted": 8,
+      "normal_local_model_calls_completed": 7,
+      "watchdog_invalid_local_model_calls": 1,
       "external_reference_calls_authorized": 0,
       "hidden_evaluation_before_candidate_seal_authorized": false,
       "project_selected_quality_token_cap": null,
-      "interruption_receipt": "reports/theseus_semantic_ir_production_adequacy_campaign_host_protection_interruption.json",
-      "preserved_completed_candidate_count": 1,
+      "interruption_receipt": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_watchdog_interruption.json",
+      "preserved_completed_candidate_count": 3,
       "consumed_replacement_required_indices": [
-        2
+        4
       ],
       "sealed_resume_pool": "reports/theseus_semantic_ir_production_adequacy_task_pool_v2.json",
       "replacement_task": "configs/theseus_semantic_ir_production_adequacy_replacement_02_task.json",
@@ -44,7 +47,8 @@
       "isolated_host_watchdog_owner": "scripts/theseus_semantic_ir_production_adequacy_backend.py",
       "host_watchdog_seconds": 600,
       "watchdog_activation_scored_as_capability_failure": false,
-      "candidate_generation_journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json"
+      "candidate_generation_journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json",
+      "classifier_repair_required": "classify bound backend host_safety_wall_time before downstream route_integrity_red"
     }
     },
     "claim_selection_policy": {

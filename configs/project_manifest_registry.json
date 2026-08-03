@@ -6951,9 +6951,6 @@
         "reports/theseus_semantic_ir_production_adequacy_task_pool_v2.json",
         "reports/theseus_semantic_ir_production_adequacy_campaign_audit.json",
         "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v2.json",
-        "reports/theseus_semantic_ir_production_adequacy_candidates_v2.json",
-        "reports/theseus_semantic_ir_production_adequacy_evaluation_v2.json",
-        "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_evaluator.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_task_pool.json",
@@ -6966,6 +6963,18 @@
         "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_2.json"
       ],
       "retained_evidence_outputs": [
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_candidates_v2.json",
+          "reason": "three-candidate custody from the watchdog-invalid v2 resume; not current route health"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json",
+          "reason": "terminal v2 exposure journal retained without route authority"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_watchdog_interruption.json",
+          "reason": "classified invalid-infrastructure evidence and replacement obligation retained without route authority"
+        },
         {
           "path": "reports/theseus_semantic_ir_production_adequacy_candidates.json",
           "reason": "partial candidate custody from the infrastructure-invalid interrupted adequacy campaign; not current route health"
@@ -9873,9 +9882,6 @@
         "reports/theseus_semantic_ir_production_adequacy_task_pool_v2.json",
         "reports/theseus_semantic_ir_production_adequacy_campaign_audit.json",
         "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v2.json",
-        "reports/theseus_semantic_ir_production_adequacy_candidates_v2.json",
-        "reports/theseus_semantic_ir_production_adequacy_evaluation_v2.json",
-        "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_evaluator.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_task_pool.json",
@@ -9938,6 +9944,18 @@
         "docs/assets/core-evidence-useful-safe-frontier.svg"
       ],
       "retained_report_outputs": [
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_candidates_v2.json",
+          "reason": "three-candidate custody from the watchdog-invalid v2 resume; not live product-route health"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json",
+          "reason": "terminal v2 exposure journal retained without product-route authority"
+        },
+        {
+          "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_watchdog_interruption.json",
+          "reason": "classified invalid-infrastructure evidence retained without product-route authority"
+        },
         {
           "path": "reports/theseus_semantic_ir_production_adequacy_candidates.json",
           "reason": "partial interrupted experimental custody, not live product-route health"

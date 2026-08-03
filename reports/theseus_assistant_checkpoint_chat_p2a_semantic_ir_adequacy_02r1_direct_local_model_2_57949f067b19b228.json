@@ -1,0 +1,104 @@
+{
+  "D2_cases_consumed": 0,
+  "backend": {
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "local_snapshot": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560",
+    "local_snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "model_load_count": 1,
+    "network": "forbidden_offline_environment",
+    "persistent_session_id": "semantic-ir-production-adequacy-panel-v2",
+    "runtime_versions": {
+      "mlx": "0.32.0",
+      "mlx_lm": "0.31.3",
+      "python": "3.12.5"
+    }
+  },
+  "created_utc": "2026-08-03T04:23:35.227987Z",
+  "external_inference_calls": 0,
+  "fallback_return_count": 0,
+  "faults": [],
+  "metrics": {
+    "backend_finish_reason": null,
+    "completion_predicate_enabled": true,
+    "configured_maximum_tokens": 262144,
+    "effective_context_residual_tokens": 255541,
+    "effective_maximum_tokens": 255541,
+    "exact_prompt_tokens": 6603,
+    "generated_tokens": 573,
+    "generation_tokens_per_second": 5.816,
+    "generation_wall_ms": 186723.564,
+    "host_safety_wall_seconds": 600.0,
+    "host_safety_wall_time_hit": false,
+    "load_wall_ms": 5972.767,
+    "local_model_inference_calls": 1,
+    "mlx_peak_memory_gib": 11.391,
+    "model_context_window_tokens": 262144,
+    "model_load_count": 1,
+    "persistent_session_inference_calls": 2,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "prompt_tokens": 6603,
+    "prompt_tokens_per_second": 75.269,
+    "runtime_ms": 186851,
+    "safety_ceiling_hit": false,
+    "terminal_marker_stripped": false,
+    "termination_reason": "parser_complete"
+  },
+  "policy": "project_theseus_local_inference_backend_v2",
+  "preflight_only": false,
+  "public_calibration_cases_consumed": 0,
+  "public_training_rows_written": 0,
+  "request": {
+    "execution_mode": "direct_local_model",
+    "prompt_sha256": "3dcb89e8b2fe18f487b861252b86e1a4de7c168a1ba9062fca92714a21f3f94e",
+    "raw_prompt_stored": false,
+    "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+  },
+  "response": {
+    "answer": "THESEUS_SEMANTIC_IR_V3\nSOURCE 2b2b53e58f041c5742e8c22fd9418e33a86d652306800bd0f3e1cc1a93dcbde3\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH business_logic_test.py\nNODE N-FCBD193ADA3BCEE4\nNODE_SHA 9eecad4cc73c02de152668b36d94138a9bc634014eaff623b60093aa5512b0a0\n<<<\n    def test_fixed_amount_discount(self):\n        \"\"\"Test that a fixed-amount discount code decreases the total correctly.\n\n        Given an existing checkout session with a total amount,\n        When a valid fixed-amount discount code is applied,\n        Then the total amount should be reduced, and the\n        applied discount details should be present.\n        \"\"\"\n        fixed_code = self.fixture_ctx.get_test_fixed_discount_code()\n        if not fixed_code:\n            self.skipTest(\"Fixed discount code not configured in fixtures.\")\n\n        expected_price = self.fixture_ctx.get_test_price()\n        expected_discount = self.fixture_ctx.get_expected_fixed_discount_reduction()\n\n        response_json = self.create_checkout_session(select_fulfillment=False)\n        checkout_obj = checkout.Checkout(**response_json)\n\n        # Apply Fixed-amount Discount\n        response_json = self.update_checkout_session(\n            checkout_obj, discounts={\"codes\": [fixed_code]}\n        )\n\n        discounted_checkout = checkout.Checkout(**response_json)\n\n        self.assert_totals_consistent(\n            discounted_checkout, expected_price, expected_discount=expected_discount\n        )\n\n        # Parse discounts from extra fields\n        discounts_data = getattr(discounted_checkout, \"discounts\", {})\n        discounts_obj = (\n            discount.DiscountsObject(**discounts_data) if discounts_data else None\n        )\n\n        self.assertTrue(\n            discounts_obj and discounts_obj.applied,\n            \"Applied discounts field missing\",\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].code,\n            fixed_code,\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].amount,\n            expected_discount,\n        )\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+    "evidence": {
+      "backend_policy": "project_theseus_local_inference_backend_v2",
+      "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "route_context_digest": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f"
+    },
+    "mode": "frozen_tmax_local_inference",
+    "teacher_recommended": false
+  },
+  "session": {
+    "history_turns_loaded": 0,
+    "persistence": "disabled_no_raw_text_retention",
+    "session_id": "p2a_semantic_ir_adequacy_02r1_direct_local_model_2",
+    "session_path": ""
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "user_facing_effects": 0
+}

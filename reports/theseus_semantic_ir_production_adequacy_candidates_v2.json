@@ -1,0 +1,1404 @@
+{
+  "completed_task_count": 3,
+  "config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_campaign_v2.json",
+    "sha256": "cee66b2e71caa4d321bb13534f20e19f3bf88d6c577603690f8aefe9782ee2d3"
+  },
+  "config_audit": {
+    "candidate_generation_opened": false,
+    "config_sha256": "cee66b2e71caa4d321bb13534f20e19f3bf88d6c577603690f8aefe9782ee2d3",
+    "counters": {
+      "D1_cases_consumed": 0,
+      "D2_cases_consumed": 0,
+      "candidate_or_control_calls": 0,
+      "external_inference_calls": 0,
+      "hidden_evaluator_executions": 0,
+      "local_model_calls": 0,
+      "teacher_calls": 0,
+      "training_rows_written": 0
+    },
+    "created_utc": "2026-08-03T04:17:15.941557Z",
+    "faults": [],
+    "frozen_model_contract": {
+      "faults": [],
+      "identity": {
+        "decoder": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "kv_bits": null,
+          "kv_group_size": null,
+          "maximum_tokens": 262144,
+          "quantized_kv_start": null,
+          "repetition_context_size": 128,
+          "repetition_penalty": 1.05,
+          "temperature": 0.0,
+          "worker_maximum_action_tokens": 262144
+        },
+        "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+        "generation_boundary": {
+          "ceiling_hit_is_instrument_invalid": true,
+          "model_declared_context_window_tokens": 262144,
+          "numeric_ceiling_source": "model_declared_context_window",
+          "policy": "configs/theseus_generation_completion_policy.json",
+          "project_selected_quality_token_cap": null
+        },
+        "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+        "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+      },
+      "model_card": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "maximum_action_tokens": 262144,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "temperature": 0.0
+      },
+      "ready": true,
+      "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+      "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json"
+    },
+    "hidden_evaluation_opened": false,
+    "host_watchdog_seconds": 600,
+    "policy": "project_theseus_semantic_ir_production_adequacy_campaign_audit_v2",
+    "preserved_candidate_count": 1,
+    "resume_generation_indices": [
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "runtime_ms": 8.315,
+    "sealed_task_count": 18,
+    "trigger_state": "GREEN"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 6,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 6,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T04:40:21.219952Z",
+  "expected_task_count": 18,
+  "faults": [
+    "route_integrity_red:task_04:call_2"
+  ],
+  "hidden_evaluation_opened": false,
+  "maximum_inference": "Candidate generation and syntax-visible mechanics only. Host-watchdog activation or abnormal completion is invalid infrastructure, not capability evidence. Hidden evaluation, implementation adequacy, subsystem effects, D1, D2, training value, serving, and book support remain unestablished until independent scoring.",
+  "new_candidate_count": 2,
+  "policy": "project_theseus_semantic_ir_production_adequacy_candidates_v2",
+  "preserved_candidate_count": 1,
+  "rows": [
+    {
+      "apply_faults": [],
+      "authorized_effect": true,
+      "candidate_mechanics_ready_for_hidden_evaluation": false,
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_01.json",
+      "candidate_payload": {
+        "actions": [
+          {
+            "end_line": 260,
+            "op": "REPLACE",
+            "path": "src/prioris_mcp/storage.py",
+            "replacement": "        async def list(self, provider: str | None = None, format: str | None = None) -> list[dict]:\n        def _list() -> list[dict]:\n            entries = []\n            for manifest_path in self._manifest_paths():\n                manifest = json.loads(manifest_path.read_text())\n                if provider is not None and manifest[\"provider\"] != provider:\n                    continue\n                if format is not None and manifest[\"format\"] != format:\n                    continue\n                # Handle legacy manifests missing size_bytes\n                data_path = self._data_path(\n                    manifest.get(\"provider\", \"\"),\n                    manifest.get(\"canonical_identifier\", \"\"),\n                    manifest.get(\"format\", \"\")\n                )\n                size_bytes = manifest.get(\"size_bytes\")\n                if size_bytes is None:\n                    try:\n                        size_bytes = data_path.stat().st_size\n                    except FileNotFoundError:\n                        size_bytes = 0\n                \n                entries.append(\n                    {\n                        \"provider\": manifest[\"provider\"],\n                        \"identifier\": manifest.get(\"public_identifier\") or manifest[\"canonical_identifier\"],\n                        \"format\": manifest[\"format\"],\n                        \"fetched_at\": manifest[\"fetched_at\"],\n                        \"size_bytes\": size_bytes,\n                    }\n                )\n            return entries\n\n        return await to_thread.run_sync(_list)",
+            "start_line": 240
+          }
+        ],
+        "changed_paths": [
+          "src/prioris_mcp/storage.py"
+        ],
+        "final_inventory_sha256": "f275b6e93978dbd1b5974f2079da175a53bc6b14c911be64075e31a704ed94f7",
+        "semantic_receipt": {
+          "answer_bearing_repair": false,
+          "canonicalization": {
+            "answer_bearing_transformation": false,
+            "fields": [
+              {
+                "field": "ALL_OBLIGATIONS",
+                "identifier_count": 3,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 3,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              },
+              {
+                "field": "CHANGE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 4,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "PRESERVE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 5,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "NON_GOAL_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 6,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "OBLIGATIONS",
+                "identifier_count": 2,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 8,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              }
+            ],
+            "identifier_order_changed": false,
+            "identifier_values_invented": 0,
+            "normalized_field_count": 0,
+            "policy": "project_theseus_semantic_ir_production_canonicalization_v1",
+            "rejected_field_count": 0,
+            "replacement_source_touched": false,
+            "target_identity_touched": false
+          },
+          "deterministic_lowerer": true,
+          "hidden_evaluator_fields_consumed": [],
+          "loss_obligation_ids": [],
+          "lowered_action_sha256": "7a9b861e4a4a20904fb03ae87e6c713f2522f5c473f109196d51502ff8a7889b",
+          "model_generated_ir": true,
+          "obligation_roles": {
+            "change": [
+              "O1"
+            ],
+            "non_goal": [
+              "O3"
+            ],
+            "preserve": [
+              "O2"
+            ]
+          },
+          "path_normalization": [
+            {
+              "answer_bearing_transformation": false,
+              "canonical": "src/prioris_mcp/storage.py",
+              "state": "EXACT",
+              "surface": "src/prioris_mcp/storage.py"
+            }
+          ],
+          "policy": "project_theseus_semantic_ir_production_receipt_v1",
+          "schema": "THESEUS_SEMANTIC_IR_V3",
+          "semantic_source_digest": "8be7ff037addb1b0576653d1c81130c180b006150c7503ac722d53babe2775bb",
+          "units": [
+            {
+              "change_obligation_ids": [
+                "O1"
+              ],
+              "id": "U1",
+              "node_id": "N-BE51379FB5979B8B",
+              "node_sha256": "9358714d707fd64a27311317591975f369c32bc55327efb726452d33d7679744",
+              "obligation_ids": [
+                "O1",
+                "O2"
+              ],
+              "operation": "REPLACE",
+              "path": "src/prioris_mcp/storage.py",
+              "preserve_obligation_ids": [
+                "O2"
+              ],
+              "replacement_sha256": "12b6c5f1f999a187be7541dc0754ca502e51ce514cad387508378da32fb06727"
+            }
+          ]
+        }
+      },
+      "candidate_seal": {
+        "candidate_packet_sha256": "0e36eacadd1b0d5b82270f9a39f51bf35f4263c2e97c53d4662b0d7e513c3e9c",
+        "candidate_payload_sha256": "ea18003c2a76eb17151d29feb72a696ec994ae3149841e55342b0fe463007d33",
+        "final_output_sha256": "d53b91f780845c82bca291ecb75fa90dbf9a9adde63f6c145bbc65098ac5d4bd",
+        "first_output_sha256": "d53b91f780845c82bca291ecb75fa90dbf9a9adde63f6c145bbc65098ac5d4bd",
+        "sealed_before_hidden_evaluation": true,
+        "serialized_prompt_sha256": "f617f2d3ef3dd19d12a91d527c0eb5c0a5778464924459307cbe9d80633cbe90",
+        "task_manifest_sha256": "a6d5fcbc3d1d51cd4b1dc467853407dbe554e7ec87d17703634d1e42bde26ef8"
+      },
+      "hidden_evaluator_executions": 0,
+      "index": 1,
+      "infrastructure_faults": [],
+      "model_outputs": {
+        "final": "THESEUS_SEMANTIC_IR_V3\nSOURCE 8be7ff037addb1b0576653d1c81130c180b006150c7503ac722d53babe2775bb\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH src/prioris_mcp/storage.py\nNODE N-BE51379FB5979B8B\nNODE_SHA 9358714d707fd64a27311317591975f369c32bc55327efb726452d33d7679744\n<<<\n    async def list(self, provider: str | None = None, format: str | None = None) -> list[dict]:\n        def _list() -> list[dict]:\n            entries = []\n            for manifest_path in self._manifest_paths():\n                manifest = json.loads(manifest_path.read_text())\n                if provider is not None and manifest[\"provider\"] != provider:\n                    continue\n                if format is not None and manifest[\"format\"] != format:\n                    continue\n                # Handle legacy manifests missing size_bytes\n                data_path = self._data_path(\n                    manifest.get(\"provider\", \"\"),\n                    manifest.get(\"canonical_identifier\", \"\"),\n                    manifest.get(\"format\", \"\")\n                )\n                size_bytes = manifest.get(\"size_bytes\")\n                if size_bytes is None:\n                    try:\n                        size_bytes = data_path.stat().st_size\n                    except FileNotFoundError:\n                        size_bytes = 0\n                \n                entries.append(\n                    {\n                        \"provider\": manifest[\"provider\"],\n                        \"identifier\": manifest.get(\"public_identifier\") or manifest[\"canonical_identifier\"],\n                        \"format\": manifest[\"format\"],\n                        \"fetched_at\": manifest[\"fetched_at\"],\n                        \"size_bytes\": size_bytes,\n                    }\n                )\n            return entries\n\n        return await to_thread.run_sync(_list)\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+        "first": "THESEUS_SEMANTIC_IR_V3\nSOURCE 8be7ff037addb1b0576653d1c81130c180b006150c7503ac722d53babe2775bb\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH src/prioris_mcp/storage.py\nNODE N-BE51379FB5979B8B\nNODE_SHA 9358714d707fd64a27311317591975f369c32bc55327efb726452d33d7679744\n<<<\n    async def list(self, provider: str | None = None, format: str | None = None) -> list[dict]:\n        def _list() -> list[dict]:\n            entries = []\n            for manifest_path in self._manifest_paths():\n                manifest = json.loads(manifest_path.read_text())\n                if provider is not None and manifest[\"provider\"] != provider:\n                    continue\n                if format is not None and manifest[\"format\"] != format:\n                    continue\n                # Handle legacy manifests missing size_bytes\n                data_path = self._data_path(\n                    manifest.get(\"provider\", \"\"),\n                    manifest.get(\"canonical_identifier\", \"\"),\n                    manifest.get(\"format\", \"\")\n                )\n                size_bytes = manifest.get(\"size_bytes\")\n                if size_bytes is None:\n                    try:\n                        size_bytes = data_path.stat().st_size\n                    except FileNotFoundError:\n                        size_bytes = 0\n                \n                entries.append(\n                    {\n                        \"provider\": manifest[\"provider\"],\n                        \"identifier\": manifest.get(\"public_identifier\") or manifest[\"canonical_identifier\"],\n                        \"format\": manifest[\"format\"],\n                        \"fetched_at\": manifest[\"fetched_at\"],\n                        \"size_bytes\": size_bytes,\n                    }\n                )\n            return entries\n\n        return await to_thread.run_sync(_list)\n>>>\nEND_UNIT\nLOSS NONE\nEND"
+      },
+      "opaque_task_id": "semantic-ir-adequacy-01",
+      "parse_faults": [],
+      "route_integrity_rounds": [
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "5b8bea21a64b81eee081169b833258d755495daf00d5ac15c881014682621cc6",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "f617f2d3ef3dd19d12a91d527c0eb5c0a5778464924459307cbe9d80633cbe90",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "beb16c7968a838529c5eb2f15be7384ea13771f4468557f21913c439bfee1c92",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "f617f2d3ef3dd19d12a91d527c0eb5c0a5778464924459307cbe9d80633cbe90"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        },
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "6e3cf649eada77cded59c9c76eef66aaa6a49da0b1c3af02248bb93a44e32115",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "0fb11a5a91fdff67c202169ac826436e3059226c3e725f5ab4486ec6a165b257",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "3f82a1cbee7c199e3a73fcec8592f05a47138bff42a38777d52acccf414b053a",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "0fb11a5a91fdff67c202169ac826436e3059226c3e725f5ab4486ec6a165b257"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        }
+      ],
+      "runtime_calls": [
+        {
+          "call_number": 1,
+          "candidate_output_sha256": "d53b91f780845c82bca291ecb75fa90dbf9a9adde63f6c145bbc65098ac5d4bd",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_01_direct_local_model_1.json",
+          "report_sha256": "cbd9ffbba109ea3a93765b920cb7928fe54f0d3e86c29f02872e0d8c9b6c2209",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 176464.464,
+          "runtime_trigger_state": "GREEN"
+        },
+        {
+          "call_number": 2,
+          "candidate_output_sha256": "d53b91f780845c82bca291ecb75fa90dbf9a9adde63f6c145bbc65098ac5d4bd",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_01_direct_local_model_2.json",
+          "report_sha256": "d3b3895c50392fd964e4a445ae0cf01a3a7f8d876c6cd638d2c72f02bc3df191",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 178242.48,
+          "runtime_trigger_state": "GREEN"
+        }
+      ],
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_task_01.json",
+      "termination_telemetry": [
+        {
+          "arm_id": "semantic_ir_adequacy_01",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_01_direct_local_model_1_cbd79441b5e57cb5.json",
+          "backend_report_sha256": "81cd359745e78fcaad5200b69d3173668dfa3214300293ccb9fe28b8d533157d",
+          "call_number": 1,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 255650,
+          "generated_tokens": 511,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 6494,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_01_direct_local_model_1.json",
+          "runtime_report_sha256": "cbd9ffbba109ea3a93765b920cb7928fe54f0d3e86c29f02872e0d8c9b6c2209",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        },
+        {
+          "arm_id": "semantic_ir_adequacy_01",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_01_direct_local_model_2_022f6a554dcfd934.json",
+          "backend_report_sha256": "e64750136b5c44414f45e81d494f7a2f83c49cf2d6c991d65f9dbae1aeb46830",
+          "call_number": 2,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 254913,
+          "generated_tokens": 511,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 7231,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_01_direct_local_model_2.json",
+          "runtime_report_sha256": "d3b3895c50392fd964e4a445ae0cf01a3a7f8d876c6cd638d2c72f02bc3df191",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        }
+      ],
+      "visible_verifier_passed": false
+    },
+    {
+      "apply_faults": [],
+      "authorized_effect": true,
+      "candidate_mechanics_ready_for_hidden_evaluation": false,
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_replacement_02_candidate_packet.json",
+      "candidate_payload": {
+        "actions": [
+          {
+            "end_line": 394,
+            "op": "REPLACE",
+            "path": "business_logic_test.py",
+            "replacement": "      def test_fixed_amount_discount(self):\n        \"\"\"Test that a fixed-amount discount code decreases the total correctly.\n\n        Given an existing checkout session with a total amount,\n        When a valid fixed-amount discount code is applied,\n        Then the total amount should be reduced, and the\n        applied discount details should be present.\n        \"\"\"\n        fixed_code = self.fixture_ctx.get_test_fixed_discount_code()\n        if not fixed_code:\n            self.skipTest(\"Fixed discount code not configured in fixtures.\")\n\n        expected_price = self.fixture_ctx.get_test_price()\n        expected_discount = self.fixture_ctx.get_expected_fixed_discount_reduction()\n\n        response_json = self.create_checkout_session(select_fulfillment=False)\n        checkout_obj = checkout.Checkout(**response_json)\n\n        # Apply Fixed-amount Discount\n        response_json = self.update_checkout_session(\n            checkout_obj, discounts={\"codes\": [fixed_code]}\n        )\n\n        discounted_checkout = checkout.Checkout(**response_json)\n\n        self.assert_totals_consistent(\n            discounted_checkout, expected_price, expected_discount=expected_discount\n        )\n\n        # Parse discounts from extra fields\n        discounts_data = getattr(discounted_checkout, \"discounts\", {})\n        discounts_obj = (\n            discount.DiscountsObject(**discounts_data) if discounts_data else None\n        )\n\n        self.assertTrue(\n            discounts_obj and discounts_obj.applied,\n            \"Applied discounts field missing\",\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].code,\n            fixed_code,\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].amount,\n            expected_discount,\n        )",
+            "start_line": 348
+          }
+        ],
+        "changed_paths": [
+          "business_logic_test.py"
+        ],
+        "final_inventory_sha256": "89b2f22c4651cf764dfeae8d74699b53938de4f98662c033fd206bf53b6b9775",
+        "semantic_receipt": {
+          "answer_bearing_repair": false,
+          "canonicalization": {
+            "answer_bearing_transformation": false,
+            "fields": [
+              {
+                "field": "ALL_OBLIGATIONS",
+                "identifier_count": 3,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 3,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              },
+              {
+                "field": "CHANGE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 4,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "PRESERVE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 5,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "NON_GOAL_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 6,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "OBLIGATIONS",
+                "identifier_count": 2,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 8,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              }
+            ],
+            "identifier_order_changed": false,
+            "identifier_values_invented": 0,
+            "normalized_field_count": 0,
+            "policy": "project_theseus_semantic_ir_production_canonicalization_v1",
+            "rejected_field_count": 0,
+            "replacement_source_touched": false,
+            "target_identity_touched": false
+          },
+          "deterministic_lowerer": true,
+          "hidden_evaluator_fields_consumed": [],
+          "loss_obligation_ids": [],
+          "lowered_action_sha256": "5499cbc3f5c2b85938e88006d006bcc14068b47b6adec9aeead0ecd6b0ce8945",
+          "model_generated_ir": true,
+          "obligation_roles": {
+            "change": [
+              "O1"
+            ],
+            "non_goal": [
+              "O3"
+            ],
+            "preserve": [
+              "O2"
+            ]
+          },
+          "path_normalization": [
+            {
+              "answer_bearing_transformation": false,
+              "canonical": "business_logic_test.py",
+              "state": "EXACT",
+              "surface": "business_logic_test.py"
+            }
+          ],
+          "policy": "project_theseus_semantic_ir_production_receipt_v1",
+          "schema": "THESEUS_SEMANTIC_IR_V3",
+          "semantic_source_digest": "2b2b53e58f041c5742e8c22fd9418e33a86d652306800bd0f3e1cc1a93dcbde3",
+          "units": [
+            {
+              "change_obligation_ids": [
+                "O1"
+              ],
+              "id": "U1",
+              "node_id": "N-FCBD193ADA3BCEE4",
+              "node_sha256": "9eecad4cc73c02de152668b36d94138a9bc634014eaff623b60093aa5512b0a0",
+              "obligation_ids": [
+                "O1",
+                "O2"
+              ],
+              "operation": "REPLACE",
+              "path": "business_logic_test.py",
+              "preserve_obligation_ids": [
+                "O2"
+              ],
+              "replacement_sha256": "d559c0f9cf6e4a5802da9dddca9a578635bf3169f8da14d1d4d41c5766c483ca"
+            }
+          ]
+        }
+      },
+      "candidate_seal": {
+        "candidate_packet_sha256": "2be1e6ec6250aeaa536d0cbb0e8dbbcd8d9782ec5a3b8e2e84802d4f1df36a45",
+        "candidate_payload_sha256": "e60f7d7f3fe40d962fdaa562ae538083b40283277758b7ee5abe02b56017eb30",
+        "final_output_sha256": "ac71941a170363a322252c645f1438ea389b9771aaeb9f794210774af7cf463e",
+        "first_output_sha256": "ac71941a170363a322252c645f1438ea389b9771aaeb9f794210774af7cf463e",
+        "sealed_before_hidden_evaluation": true,
+        "serialized_prompt_sha256": "2f39c2f9e80aa8f8ccd686a2a3381099bf63b6b6cb3f6dffc98aa06de6c3b4aa",
+        "task_manifest_sha256": "82f8e42d27f93f3cb97839240cf8b9d72ff0c43e5072980ea7ad5fcb1b8f6213"
+      },
+      "hidden_evaluator_executions": 0,
+      "index": 2,
+      "infrastructure_faults": [],
+      "model_outputs": {
+        "final": "THESEUS_SEMANTIC_IR_V3\nSOURCE 2b2b53e58f041c5742e8c22fd9418e33a86d652306800bd0f3e1cc1a93dcbde3\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH business_logic_test.py\nNODE N-FCBD193ADA3BCEE4\nNODE_SHA 9eecad4cc73c02de152668b36d94138a9bc634014eaff623b60093aa5512b0a0\n<<<\n    def test_fixed_amount_discount(self):\n        \"\"\"Test that a fixed-amount discount code decreases the total correctly.\n\n        Given an existing checkout session with a total amount,\n        When a valid fixed-amount discount code is applied,\n        Then the total amount should be reduced, and the\n        applied discount details should be present.\n        \"\"\"\n        fixed_code = self.fixture_ctx.get_test_fixed_discount_code()\n        if not fixed_code:\n            self.skipTest(\"Fixed discount code not configured in fixtures.\")\n\n        expected_price = self.fixture_ctx.get_test_price()\n        expected_discount = self.fixture_ctx.get_expected_fixed_discount_reduction()\n\n        response_json = self.create_checkout_session(select_fulfillment=False)\n        checkout_obj = checkout.Checkout(**response_json)\n\n        # Apply Fixed-amount Discount\n        response_json = self.update_checkout_session(\n            checkout_obj, discounts={\"codes\": [fixed_code]}\n        )\n\n        discounted_checkout = checkout.Checkout(**response_json)\n\n        self.assert_totals_consistent(\n            discounted_checkout, expected_price, expected_discount=expected_discount\n        )\n\n        # Parse discounts from extra fields\n        discounts_data = getattr(discounted_checkout, \"discounts\", {})\n        discounts_obj = (\n            discount.DiscountsObject(**discounts_data) if discounts_data else None\n        )\n\n        self.assertTrue(\n            discounts_obj and discounts_obj.applied,\n            \"Applied discounts field missing\",\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].code,\n            fixed_code,\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].amount,\n            expected_discount,\n        )\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+        "first": "THESEUS_SEMANTIC_IR_V3\nSOURCE 2b2b53e58f041c5742e8c22fd9418e33a86d652306800bd0f3e1cc1a93dcbde3\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH business_logic_test.py\nNODE N-FCBD193ADA3BCEE4\nNODE_SHA 9eecad4cc73c02de152668b36d94138a9bc634014eaff623b60093aa5512b0a0\n<<<\n    def test_fixed_amount_discount(self):\n        \"\"\"Test that a fixed-amount discount code decreases the total correctly.\n\n        Given an existing checkout session with a total amount,\n        When a valid fixed-amount discount code is applied,\n        Then the total amount should be reduced, and the\n        applied discount details should be present.\n        \"\"\"\n        fixed_code = self.fixture_ctx.get_test_fixed_discount_code()\n        if not fixed_code:\n            self.skipTest(\"Fixed discount code not configured in fixtures.\")\n\n        expected_price = self.fixture_ctx.get_test_price()\n        expected_discount = self.fixture_ctx.get_expected_fixed_discount_reduction()\n\n        response_json = self.create_checkout_session(select_fulfillment=False)\n        checkout_obj = checkout.Checkout(**response_json)\n\n        # Apply Fixed-amount Discount\n        response_json = self.update_checkout_session(\n            checkout_obj, discounts={\"codes\": [fixed_code]}\n        )\n\n        discounted_checkout = checkout.Checkout(**response_json)\n\n        self.assert_totals_consistent(\n            discounted_checkout, expected_price, expected_discount=expected_discount\n        )\n\n        # Parse discounts from extra fields\n        discounts_data = getattr(discounted_checkout, \"discounts\", {})\n        discounts_obj = (\n            discount.DiscountsObject(**discounts_data) if discounts_data else None\n        )\n\n        self.assertTrue(\n            discounts_obj and discounts_obj.applied,\n            \"Applied discounts field missing\",\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].code,\n            fixed_code,\n        )\n        self.assertEqual(\n            discounts_obj.applied[0].amount,\n            expected_discount,\n        )\n>>>\nEND_UNIT\nLOSS NONE\nEND"
+      },
+      "opaque_task_id": "semantic-ir-adequacy-02r1",
+      "parse_faults": [],
+      "route_integrity_rounds": [
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "39a260d2aedb14a87ba94f50d51e83a42c2a7839d0ffeeb9efa97754b3b38000",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "2f39c2f9e80aa8f8ccd686a2a3381099bf63b6b6cb3f6dffc98aa06de6c3b4aa",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "317d1c3aa892bcc33cc5c7384adeccb88252ff6b201374578e24c7bf1cbb62b6",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "2f39c2f9e80aa8f8ccd686a2a3381099bf63b6b6cb3f6dffc98aa06de6c3b4aa"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        },
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "1cb3020db536a42fc96377efed02a52bb9f78bd277bd84d4b2322a88b87f115f",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "3dcb89e8b2fe18f487b861252b86e1a4de7c168a1ba9062fca92714a21f3f94e",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "3c5bc24f2e2951220e89f38d9f02f95dc2ccf02a09225b200a45e2bba450ce94",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "3dcb89e8b2fe18f487b861252b86e1a4de7c168a1ba9062fca92714a21f3f94e"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        }
+      ],
+      "runtime_calls": [
+        {
+          "call_number": 1,
+          "candidate_output_sha256": "ac71941a170363a322252c645f1438ea389b9771aaeb9f794210774af7cf463e",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_02r1_direct_local_model_1.json",
+          "report_sha256": "ede66f336ffe7183fefb537d6a1de2ad5720978920021c0d261ee2a1d99283ec",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 184453.645,
+          "runtime_trigger_state": "GREEN"
+        },
+        {
+          "call_number": 2,
+          "candidate_output_sha256": "ac71941a170363a322252c645f1438ea389b9771aaeb9f794210774af7cf463e",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_02r1_direct_local_model_2.json",
+          "report_sha256": "8ed7e18540bbd703d9bbbaadc6bb97253ce5082cc36e08668f44a45523585829",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 186867.871,
+          "runtime_trigger_state": "GREEN"
+        }
+      ],
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_replacement_02_task.json",
+      "termination_telemetry": [
+        {
+          "arm_id": "semantic_ir_adequacy_02",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_02r1_direct_local_model_1_183c325993d17a09.json",
+          "backend_report_sha256": "066e82e43d8d6d4a16219317c13ac89c1d5f3fb8236403fdeaf7df0972ef8c88",
+          "call_number": 1,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 256317,
+          "generated_tokens": 573,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 5827,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_02r1_direct_local_model_1.json",
+          "runtime_report_sha256": "ede66f336ffe7183fefb537d6a1de2ad5720978920021c0d261ee2a1d99283ec",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        },
+        {
+          "arm_id": "semantic_ir_adequacy_02",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_02r1_direct_local_model_2_57949f067b19b228.json",
+          "backend_report_sha256": "077aa1a329e446d586e93c371cdbbde35a1d1b1ce3745e9d83d2c50af43cfee3",
+          "call_number": 2,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 255541,
+          "generated_tokens": 573,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 6603,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_02r1_direct_local_model_2.json",
+          "runtime_report_sha256": "8ed7e18540bbd703d9bbbaadc6bb97253ce5082cc36e08668f44a45523585829",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        }
+      ],
+      "visible_verifier_passed": false
+    },
+    {
+      "apply_faults": [],
+      "authorized_effect": true,
+      "candidate_mechanics_ready_for_hidden_evaluation": false,
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_03.json",
+      "candidate_payload": {
+        "actions": [
+          {
+            "end_line": 98,
+            "op": "REPLACE",
+            "path": "tests/components/compit/conftest.py",
+            "replacement": "    def get_current_value(device_id: int, parameter_code: CompitParameter):\n    device = all_devices.get(device_id)\n    if not device:\n        return None\n    code = PARAMS[parameter_code].get(device.definition.code, parameter_code.value)\n    param = next(\n        (p for p in device.state.params if p.code == code),\n        None,\n    )\n    return param.value if param else None",
+            "start_line": 92
+          }
+        ],
+        "changed_paths": [
+          "tests/components/compit/conftest.py"
+        ],
+        "final_inventory_sha256": "1a995182203da0d5f74828127620a9119c86992d05d94465054255cd67fbfef2",
+        "semantic_receipt": {
+          "answer_bearing_repair": false,
+          "canonicalization": {
+            "answer_bearing_transformation": false,
+            "fields": [
+              {
+                "field": "ALL_OBLIGATIONS",
+                "identifier_count": 3,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 3,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              },
+              {
+                "field": "CHANGE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 4,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "PRESERVE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 5,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "NON_GOAL_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 6,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "OBLIGATIONS",
+                "identifier_count": 2,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 8,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              }
+            ],
+            "identifier_order_changed": false,
+            "identifier_values_invented": 0,
+            "normalized_field_count": 0,
+            "policy": "project_theseus_semantic_ir_production_canonicalization_v1",
+            "rejected_field_count": 0,
+            "replacement_source_touched": false,
+            "target_identity_touched": false
+          },
+          "deterministic_lowerer": true,
+          "hidden_evaluator_fields_consumed": [],
+          "loss_obligation_ids": [],
+          "lowered_action_sha256": "074a2e4f2d72e7076da7188482142bb97ff3aa9a63413ca633bc46b4d925c4f9",
+          "model_generated_ir": true,
+          "obligation_roles": {
+            "change": [
+              "O1"
+            ],
+            "non_goal": [
+              "O3"
+            ],
+            "preserve": [
+              "O2"
+            ]
+          },
+          "path_normalization": [
+            {
+              "answer_bearing_transformation": false,
+              "canonical": "tests/components/compit/conftest.py",
+              "state": "EXACT",
+              "surface": "tests/components/compit/conftest.py"
+            }
+          ],
+          "policy": "project_theseus_semantic_ir_production_receipt_v1",
+          "schema": "THESEUS_SEMANTIC_IR_V3",
+          "semantic_source_digest": "0b9c15727713bfe5ed23eb88a6478f139c25e2bb85faf2fcafe585f13d6693d6",
+          "units": [
+            {
+              "change_obligation_ids": [
+                "O1"
+              ],
+              "id": "U1",
+              "node_id": "N-D8B0DD24A92B2F6B",
+              "node_sha256": "57f52e9a5567c272bc9b2e4c540943e4376301d625a0e1293c735fe2d910111a",
+              "obligation_ids": [
+                "O1",
+                "O2"
+              ],
+              "operation": "REPLACE",
+              "path": "tests/components/compit/conftest.py",
+              "preserve_obligation_ids": [
+                "O2"
+              ],
+              "replacement_sha256": "d80ce0fc9781d8b39c51989dcbb2c57f2c87ed6495420cd2c42b50853798b31c"
+            }
+          ]
+        }
+      },
+      "candidate_seal": {
+        "candidate_packet_sha256": "2c9b2c80b345dd71aecfc6ef8873593e7a2f184966de2a994a05b2ba98246cc2",
+        "candidate_payload_sha256": "f1c4fdd0ad039da2be861e3eb79d43e343a95ce175d6d835585f4fcc2cf636ae",
+        "final_output_sha256": "e5b3113567f61642a7e0a2781a70e4601b344a80ee7d7a35977f74163ba73852",
+        "first_output_sha256": "109a6b1c3228132d2df2199474df01b9c4de470a668892a01fa9fc34d1709d85",
+        "sealed_before_hidden_evaluation": true,
+        "serialized_prompt_sha256": "80d5bc1052a7ca11a77cebfaaea95bbf26adaf7fc1bd1e5467979f475737900a",
+        "task_manifest_sha256": "67875263f51986912eb5a5f200e37efb3792f0b00fb25271074691e2e5d2884a"
+      },
+      "hidden_evaluator_executions": 0,
+      "index": 3,
+      "infrastructure_faults": [],
+      "model_outputs": {
+        "final": "THESEUS_SEMANTIC_IR_V3\nSOURCE 0b9c15727713bfe5ed23eb88a6478f139c25e2bb85faf2fcafe585f13d6693d6\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH tests/components/compit/conftest.py\nNODE N-D8B0DD24A92B2F6B\nNODE_SHA 57f52e9a5567c272bc9b2e4c540943e4376301d625a0e1293c735fe2d910111a\n<<<\ndef get_current_value(device_id: int, parameter_code: CompitParameter):\n    device = all_devices.get(device_id)\n    if not device:\n        return None\n    code = PARAMS[parameter_code].get(device.definition.code, parameter_code.value)\n    param = next(\n        (p for p in device.state.params if p.code == code),\n        None,\n    )\n    return param.value if param else None\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+        "first": "THESEUS_SEMANTIC_IR_V3\nSOURCE 0b9c15727713bfe5ed23eb88a6478f139c25e2bb85faf2fcafe585f13d6693d6\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH tests/components/compit/conftest.py\nNODE N-D8B0DD24A92B2F6B\nNODE_SHA 57f52e9a5567c272bc9b2e4c540943e4376301d625a0e1293c735fe2d910111a\n<<<\ndef get_current_value(device_id: int, parameter_code: CompitParameter):\n    device = all_devices.get(device_id)\n    if not device:\n        return None\n    # O1: Fallback to parameter code if mapping missing\n    # O2: Use mapped code if present\n    code = PARAMS[parameter_code].get(device.definition.code, parameter_code.value)\n    param = next(\n        (p for p in device.state.params if p.code == code),\n        None,\n    )\n    return param.value if param else None\n>>>\nEND_UNIT\nLOSS NONE\nEND"
+      },
+      "opaque_task_id": "semantic-ir-adequacy-03",
+      "parse_faults": [],
+      "route_integrity_rounds": [
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "06de2434da058e287951b1621bcbde88e709478ea595ef391c84d1e04d986042",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "80d5bc1052a7ca11a77cebfaaea95bbf26adaf7fc1bd1e5467979f475737900a",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "62d9da16ed690ba28c309cc31b395cc3ee793cad4a455a26e1a02fae71654bda",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "80d5bc1052a7ca11a77cebfaaea95bbf26adaf7fc1bd1e5467979f475737900a"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        },
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "9969fb84d3c7fd19ad403dfec4228970671794c9bf96ae46712d8a597ae4e41a",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "a32f2693f2889e3c0f0cd91027e11398f9f79048c47b51acfc5010543639412a",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "1ce27724ae7ed642d840ce1ca82146650b8bd5345ce942fb79740a15de02117d",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "a32f2693f2889e3c0f0cd91027e11398f9f79048c47b51acfc5010543639412a"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        }
+      ],
+      "runtime_calls": [
+        {
+          "call_number": 1,
+          "candidate_output_sha256": "109a6b1c3228132d2df2199474df01b9c4de470a668892a01fa9fc34d1709d85",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_03_direct_local_model_1.json",
+          "report_sha256": "2c1f724badf27e779e988a2a772dcbbd175cb0200002dd3705c045cea04536e8",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 87374.533,
+          "runtime_trigger_state": "GREEN"
+        },
+        {
+          "call_number": 2,
+          "candidate_output_sha256": "e5b3113567f61642a7e0a2781a70e4601b344a80ee7d7a35977f74163ba73852",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_03_direct_local_model_2.json",
+          "report_sha256": "aa3e2b8699a44b756e393eb993602a90dc478b99445718b3dcd21f2f342d357b",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 91590.519,
+          "runtime_trigger_state": "GREEN"
+        }
+      ],
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_task_03.json",
+      "termination_telemetry": [
+        {
+          "arm_id": "semantic_ir_adequacy_03",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_03_direct_local_model_1_48247906a7a35f23.json",
+          "backend_report_sha256": "1acc513c88eb9a3c4598cd2a2d2ad2f175877e3a684ee9f09a666286bbfa93dd",
+          "call_number": 1,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 259645,
+          "generated_tokens": 350,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 2499,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_03_direct_local_model_1.json",
+          "runtime_report_sha256": "2c1f724badf27e779e988a2a772dcbbd175cb0200002dd3705c045cea04536e8",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        },
+        {
+          "arm_id": "semantic_ir_adequacy_03",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_03_direct_local_model_2_c9908be3107014fb.json",
+          "backend_report_sha256": "9e2e7f26dc7fea201e5329cc84add1623759fd732366805f016b018b79b6f1ad",
+          "call_number": 2,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 259072,
+          "generated_tokens": 325,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 3072,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_03_direct_local_model_2.json",
+          "runtime_report_sha256": "aa3e2b8699a44b756e393eb993602a90dc478b99445718b3dcd21f2f342d357b",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        }
+      ],
+      "visible_verifier_passed": false
+    }
+  ],
+  "runtime_ms": 1385288.287,
+  "state": "BLOCKED_INFRASTRUCTURE_REPLACEMENT_REQUIRED",
+  "trigger_state": "RED"
+}

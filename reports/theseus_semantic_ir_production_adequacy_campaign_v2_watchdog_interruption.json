@@ -1,0 +1,118 @@
+{
+  "campaign_config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_campaign_v2.json",
+    "sha256": "cee66b2e71caa4d321bb13534f20e19f3bf88d6c577603690f8aefe9782ee2d3"
+  },
+  "candidate_report": {
+    "completed_candidate_count": 3,
+    "completed_candidate_indices": [
+      1,
+      2,
+      3
+    ],
+    "path": "reports/theseus_semantic_ir_production_adequacy_candidates_v2.json",
+    "sha256": "74759b382c31bc1cbc9a6d3854c7a795bf62c19441497147ce5a7125f633779a"
+  },
+  "classifier_correction_required": {
+    "observed_campaign_fault": "route_integrity_red:task_04:call_2",
+    "required_precedence": "classify bound backend host_safety_wall_time before its downstream route hold",
+    "underlying_fault": "host_watchdog_infrastructure_invalid:task_04:call_2"
+  },
+  "completed_backend_receipts": [
+    {
+      "call_number": 1,
+      "generated_tokens": 573,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_02r1_direct_local_model_1_183c325993d17a09.json",
+      "sha256": "066e82e43d8d6d4a16219317c13ac89c1d5f3fb8236403fdeaf7df0972ef8c88",
+      "task_index": 2,
+      "termination_reason": "parser_complete"
+    },
+    {
+      "call_number": 2,
+      "generated_tokens": 573,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_02r1_direct_local_model_2_57949f067b19b228.json",
+      "sha256": "077aa1a329e446d586e93c371cdbbde35a1d1b1ce3745e9d83d2c50af43cfee3",
+      "task_index": 2,
+      "termination_reason": "parser_complete"
+    },
+    {
+      "call_number": 1,
+      "generated_tokens": 350,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_03_direct_local_model_1_48247906a7a35f23.json",
+      "sha256": "1acc513c88eb9a3c4598cd2a2d2ad2f175877e3a684ee9f09a666286bbfa93dd",
+      "task_index": 3,
+      "termination_reason": "parser_complete"
+    },
+    {
+      "call_number": 2,
+      "generated_tokens": 325,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_03_direct_local_model_2_c9908be3107014fb.json",
+      "sha256": "9e2e7f26dc7fea201e5329cc84add1623759fd732366805f016b018b79b6f1ad",
+      "task_index": 3,
+      "termination_reason": "parser_complete"
+    },
+    {
+      "call_number": 1,
+      "generated_tokens": 299,
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_04_direct_local_model_1_1c83e494fe1d8ddd.json",
+      "sha256": "f773d19981518b693ae1c77319eaa077f04c9410ff64c02afda3b095b18c6ddc",
+      "task_index": 4,
+      "termination_reason": "parser_complete"
+    }
+  ],
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "attempted_local_model_calls_in_denominator": 8,
+    "completed_normal_local_model_calls_in_denominator": 7,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "preserved_candidates": 3,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "watchdog_invalid_local_model_calls": 1
+  },
+  "created_utc": "2026-08-03T04:40:21.206405Z",
+  "faults": [
+    "task_04_call_2_host_watchdog_hit",
+    "task_04_surface_exposed_and_ineligible_for_rerun",
+    "candidate_denominator_incomplete",
+    "campaign_fault_classifier_masked_upstream_watchdog_with_downstream_route_hold"
+  ],
+  "journal": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v2_journal.json",
+    "sha256": "b854f118aa6d91022b6e71b4412f888c223b240bf26a0ba70fad95baec0d4a4e"
+  },
+  "maximum_inference": "This event proves that the isolated real-time host watchdog enforced its declared 600-second wall and that downstream route integrity held the partial response. It does not establish model failure, Semantic-IR inadequacy, a subsystem effect, D1, D2, training value, serving value, or ASI Stack support. Task 04 is consumed and may not be rerun.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_watchdog_interruption_v2",
+  "required_repairs": [
+    "preserve candidates 01 through 03 without regeneration",
+    "replace exposed task 04 with a fresh licensed source-disjoint same-stratum task",
+    "classify host watchdog telemetry before downstream route-integrity consequences",
+    "prospectively bind the revised denominator, runner, scorer, and remaining call authority before new model exposure"
+  ],
+  "scientific_status": "INVALID_INFRASTRUCTURE_INCOMPLETE_DENOMINATOR",
+  "state": "CAMPAIGN_PAUSED_REPLACEMENT_SURFACE_AND_CLASSIFIER_REPAIR_REQUIRED",
+  "trigger_state": "RED",
+  "watchdog_backend_receipt": {
+    "call_number": 2,
+    "capability_failure": false,
+    "generated_tokens": 2288,
+    "generation_wall_ms": 600321.481,
+    "host_safety_wall_seconds": 600.0,
+    "host_safety_wall_time_hit": true,
+    "mechanism_failure": false,
+    "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_04_direct_local_model_2_7655be7c7c45ca5f.json",
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "sha256": "d8618b14cc43a4254025d661642e7f8d08d83ad184dbf8a8c1e82a7d5536731a",
+    "task_index": 4,
+    "termination_reason": "host_safety_wall_time"
+  },
+  "watchdog_runtime_receipt": {
+    "path": "runtime/p2a/p2a_semantic_ir_adequacy_04_direct_local_model_2.json",
+    "route_release_allowed": false,
+    "sha256": "6ce6d3cf540d8e58f4d3abe0e4fb5c6ed84a3604b3de73155e965b36d2e626d7",
+    "trigger_state": "RED"
+  }
+}

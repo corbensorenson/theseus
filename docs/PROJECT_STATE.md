@@ -55,7 +55,7 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
-| Semantic-IR independent adequacy | `REPLACEMENT_RESUME_AUDIT_GREEN_LOCAL_RUN_AUTHORIZED` | The infrastructure-invalid interrupted run remains preserved with one sealed Task-1 candidate and no hidden evaluation. Consumed Task 2 was replaced—not rerun—by a post-snapshot, Apache-2.0, source-disjoint `single_expression_replacement` from `Universal-Commerce-Protocol/conformance`; its exact source, independent evaluator, parent-only packet, and balanced 18-task denominator were sealed in separate transactions. The v2 audit is GREEN and call-free. It authorizes 34 new local calls, journals every exposure, uses an isolated real-time 600-second host interlock, and treats any watchdog or abnormal completion as invalid infrastructure rather than model or mechanism failure. Luna, teacher, training, D1, and D2 remain closed |
+| Semantic-IR independent adequacy | `V2_WATCHDOG_INVALID_TASK_04_REPLACEMENT_REQUIRED` | The v2 resume preserved Task 1, completed fresh Tasks 2 and 3, and stopped before hidden evaluation when Task 4 call 2 reached the prospectively declared 600-second host watchdog. Seven of eight attempted calls completed normally; the watchdog-invalid call is not a capability or mechanism failure. Candidates 1–3 are sealed and must not be regenerated. Tasks 2 and 4 are consumed; Task 4 now requires a fresh licensed, post-snapshot, source-disjoint `branch_or_predicate_replacement`, plus a prospective v3 binding whose classifier reads backend watchdog telemetry before the downstream route hold. Luna, teacher, training, D1, and D2 remain closed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -240,11 +240,13 @@ authorize regenerating historical reports or reopening neural work.
    contract, and campaign-derived cost authority with zero reference calls.
 3. **Complete:** repair Semantic-IR identity/coverage/target/unit mechanics on
    bounded non-claim evidence through the exact production path.
-4. **Active:** run the prospectively audited v2 resume for replacement Task 2
-   and Tasks 3-18 (34 new frozen-local calls), preserve Task 1 without
-   regeneration, then independently score only after all 18 candidates are
-   sealed. Any watchdog or abnormal completion consumes that surface and
-   pauses for another fresh replacement without capability inference.
+4. **Active:** preserve sealed candidates 1–3 and the complete v2 interruption
+   evidence; replace consumed Task 4 with one fresh licensed, post-snapshot,
+   source-disjoint task in the same `branch_or_predicate_replacement` stratum;
+   repair watchdog-classifier precedence; and prospectively bind a v3 resume
+   before any new model call. Independently score only after all 18 candidates
+   are sealed. A watchdog or abnormal completion consumes its surface and
+   pauses for replacement without capability inference.
 5. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
 6. Qualify a development survivor once on fresh D1.
