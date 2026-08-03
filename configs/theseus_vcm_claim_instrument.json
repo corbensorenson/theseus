@@ -1,0 +1,277 @@
+{
+  "policy": "project_theseus_vcm_claim_instrument_v1",
+  "state": "PROSPECTIVE_VCM_INSTRUMENT_BINDING_ZERO_CALLS",
+  "active_claim_id": "virtual-context-abi.core",
+  "purpose": "Test whether the existing governed Virtual Context ABI improves context-dependent natural repository work for a frozen model beyond no-context, information-matched plain-context, and maximal-ungoverned controls while preserving source, taint, adequacy, authority, cost, and omission evidence.",
+  "source_bindings": [
+    {
+      "id": "instrument_owner",
+      "path": "scripts/theseus_vcm_claim_instrument.py",
+      "sha256": "ed6c9f450250dad4f5f6e88bdf4f9181b2c1a6526170b596c3dd194908ff76ef"
+    },
+    {
+      "id": "vcm_consumer_abi",
+      "path": "scripts/vcm_consumer_abi.py",
+      "sha256": "2011ea6df842df1e84241d5f2f909cf21e92a2da45a409ec4104bb808e5a05a4"
+    },
+    {
+      "id": "vcm_governor_owner",
+      "path": "scripts/vcm_context_governor_gate.py",
+      "sha256": "70c5f57f253126401fb1930dfde7c6ade891a04ed0aa1169f27c217c273c17b7"
+    },
+    {
+      "id": "vcm_consumer_integration_owner",
+      "path": "scripts/vcm_consumer_integration_gate.py",
+      "sha256": "fbd5c17f761448c8f7608387a32358f07fe0805913ae48cda5cd7d87bad21612"
+    },
+    {
+      "id": "vcm_governor_config",
+      "path": "configs/vcm_context_governor.json",
+      "sha256": "282c9ad1b77f534b946bf84397604ef648dd48d6f6c68a081539f591bf77adc2"
+    },
+    {
+      "id": "model_prompt_route_owner",
+      "path": "scripts/theseus_assistant_route_integrity_v2.py",
+      "sha256": "c163b49d6bf0d49ba07f142e69debe9dd789698d5c9ae0b4eefeca2edf5fcc68"
+    },
+    {
+      "id": "local_backend_owner",
+      "path": "scripts/theseus_semantic_ir_production_adequacy_backend_v2.py",
+      "sha256": "ff44f72244f85401a9d25c48bf38f54c4c919e4a1bc9407001cbc443c426f76d"
+    },
+    {
+      "id": "frozen_local_instrument",
+      "path": "configs/theseus_p4v2r2r3_local_instrument.json",
+      "sha256": "98ca21e5c7ddbb4987a6faf51093af29e8b17ac27a2ddb61a3121384740bd16f"
+    },
+    {
+      "id": "openai_reference_contract",
+      "path": "configs/theseus_external_reference_control.json",
+      "sha256": "977685d756aa469e52756ab6d690c25dae764e256333b8d4d3568a961ad2c8fc"
+    },
+    {
+      "id": "openai_reference_adapter",
+      "path": "scripts/theseus_openai_reference_adapter.py",
+      "sha256": "e7d96ac75d5fed179ab2926f4637d449c77119d0eb6daaf118b56d70b9239917"
+    },
+    {
+      "id": "openai_reference_offline_qualification",
+      "path": "reports/theseus_openai_reference_adapter_qualification.json",
+      "sha256": "7e93a185a80248a5b528d8acf761d68650a85ba02a36df69edc7a7b3a3ca5211"
+    },
+    {
+      "id": "predecessor_terminal_disposition",
+      "path": "reports/theseus_semantic_ir_production_adequacy_v6_terminal_disposition.json",
+      "sha256": "3b81f92f2e075f8f7d5b922482044ef934c98720a368fae5fb412d73c0c9e337"
+    }
+  ],
+  "frozen_local_model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "runtime": "mlx_lm_local_metal",
+    "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed",
+    "decoder": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "kv_bits": null,
+      "kv_group_size": null,
+      "maximum_tokens": 262144,
+      "quantized_kv_start": null,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "temperature": 0.0,
+      "worker_maximum_action_tokens": 262144
+    },
+    "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+    "generation_boundary": {
+      "policy": "configs/theseus_generation_completion_policy.json",
+      "numeric_ceiling_source": "model_declared_context_window",
+      "model_declared_context_window_tokens": 262144,
+      "project_selected_quality_token_cap": null,
+      "ceiling_hit_is_instrument_invalid": true
+    },
+    "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225"
+  },
+  "openai_measurement_reference": {
+    "provider": "OpenAI",
+    "model": "gpt-5.6-luna",
+    "reasoning_effort": "xhigh",
+    "measurement_only": true,
+    "same_candidate_visible_task_packet_required": true,
+    "same_independent_hidden_evaluator_required": true,
+    "outputs_may_select_tasks_or_tune_local_arms": false,
+    "outputs_may_enter_training_or_serving": false,
+    "separate_denominator_and_cost_reporting_required": true,
+    "omit_if_not_prospectively_sealed_before_first_local_arm": true
+  },
+  "prospective_design": {
+    "control_qualification_task_count": 9,
+    "task_count": 53,
+    "task_count_binding_rule": "derive_from_predeclared_useful_effect_power_analysis_before_source_acquisition",
+    "power_design": {
+      "test": "exact one-sided paired McNemar test on blind useful-completion outcomes",
+      "minimum_useful_absolute_effect": 0.35,
+      "decision_basis": "Context-dependent tasks should show a large gain to justify VCM selection, governance, latency, and lifecycle complexity; effects below 35 percentage points do not earn architecture selection in this block.",
+      "one_sided_alpha": 0.05,
+      "minimum_power": 0.8,
+      "discordance_range": [
+        0.35,
+        1.0
+      ],
+      "discordance_minimization": "deterministic bracketed numerical minimization of exact-test power over the closed feasible interval",
+      "discordance_minimization_tolerance": 1e-12,
+      "minimum_task_count_satisfying_worst_case_power": 53,
+      "worst_case_power_at_53": 0.8173258503068521,
+      "task_count_52_fails_minimum_power": true,
+      "primary_comparison_count": 1,
+      "control_selection": "Freeze the strongest eligible local control on a separate nine-task source-disjoint qualification panel before the 53-task claim panel; reference outputs never participate."
+    },
+    "task_source": "autonomously acquired licensed public repositories merged after both frozen model observation and every prior claim or adequacy source snapshot",
+    "source_disjoint_from_all_prior_claim_and_adequacy_denominators": true,
+    "task_dependence_gate": "The natural request alone is insufficient; an independently identified repository-state obligation is necessary, parent fails, exact target passes, and a known-positive artifact proves frozen-model reachability before claim scoring.",
+    "candidate_visible_fields": [
+      "natural_language_request",
+      "callable_signature_when_present",
+      "allowed_effect_paths",
+      "arm_specific_model_visible_context"
+    ],
+    "hidden_fields": [
+      "source_task_id",
+      "repository_identity",
+      "target_patch",
+      "tests",
+      "hidden_tests",
+      "expected_answer",
+      "answer_family",
+      "task_stratum",
+      "target_derived_decoder_metadata"
+    ],
+    "control_qualification_arms": [
+      {
+        "id": "local_no_added_context",
+        "model": "frozen_local",
+        "context": "natural request only"
+      },
+      {
+        "id": "local_vcm_correct",
+        "model": "frozen_local",
+        "context": "source-bound policy-admitted VCM packet"
+      },
+      {
+        "id": "local_information_matched_plain_context",
+        "model": "frozen_local",
+        "context": "the exact same model-visible source information and byte/token content without VCM selection, certificate, or governance structure"
+      },
+      {
+        "id": "local_maximal_ungoverned_context",
+        "model": "frozen_local",
+        "context": "all candidate-authorized parent context without VCM selection"
+      },
+      {
+        "id": "local_vcm_shuffled",
+        "model": "frozen_local",
+        "context": "the correct VCM packet with source-bound pages in prospectively shuffled order"
+      }
+    ],
+    "claim_arms": [
+      {
+        "id": "local_vcm_correct",
+        "model": "frozen_local",
+        "context": "source-bound policy-admitted VCM packet"
+      },
+      {
+        "id": "local_frozen_strongest_control",
+        "model": "frozen_local",
+        "context": "the strongest eligible non-VCM control frozen on the source-disjoint qualification panel"
+      },
+      {
+        "id": "luna_vcm_correct",
+        "model": "openai_measurement_reference",
+        "context": "the same candidate-visible source-bound policy-admitted VCM packet as the local treatment"
+      },
+      {
+        "id": "luna_frozen_same_control",
+        "model": "openai_measurement_reference",
+        "context": "the exact same frozen non-VCM control packet as the local comparison"
+      }
+    ],
+    "control_and_claim_panels_source_disjoint": true,
+    "pre_inference_interventions": [
+      "omitted",
+      "stale",
+      "shuffled",
+      "wrong_scope",
+      "tainted",
+      "revoked"
+    ],
+    "intervention_execution": {
+      "omitted": "typed inadequate packet; no model call; compare outcome through the no-added-context arm",
+      "stale": "must fail closed before model call",
+      "shuffled": "valid local model intervention arm",
+      "wrong_scope": "must fail closed before model call",
+      "tainted": "must fail closed before model call",
+      "revoked": "must fail closed before model call"
+    },
+    "primary_estimand": "within-model useful-completion delta for correct VCM versus the strongest eligible local control",
+    "secondary_estimands": [
+      "requirement preservation",
+      "unsafe release",
+      "false block",
+      "model-visible context use",
+      "latency",
+      "exact prompt and generated tokens",
+      "retrieval and materialization work",
+      "verifier and repair work",
+      "total local and reference cost",
+      "weak-tail residuals"
+    ],
+    "hidden_evaluation_after_all_candidate_seals": true,
+    "candidate_integrity_recomputed_independently": true,
+    "provider_model_effort_wrapper_budget_cost_and_information_differences_reported": true,
+    "reference_outputs_never_mixed_into_local_denominator": true
+  },
+  "context_resource_policy": {
+    "vcm_selection_budget": "minimum source-bound packet that independently covers every declared context obligation and passes adequacy; no fixed convenience size",
+    "information_matched_plain_context_budget": "exact same information, bytes, and tokenizer count as the correct VCM arm",
+    "maximal_context_budget": "all candidate-authorized parent context up to the exact physical model boundary; any host or physical activation is an invalid observation",
+    "host_operability_canary": "prospective non-scoring prefill/decode canary on packet sizes implied by admitted tasks before denominator execution",
+    "host_operability_canary_is_capability_evidence": false,
+    "actual_context_tokens_retrieval_work_wall_time_memory_and_cost_recorded": true
+  },
+  "completion_policy": {
+    "project_selected_quality_token_cap": null,
+    "normal_completion": [
+      "complete_artifact",
+      "model_eos"
+    ],
+    "physical_context_boundary_hit_invalidates_observation": true,
+    "host_safety_activation_is_not_capability_failure": true,
+    "context_materialization_budget_is_causal_resource": true,
+    "explicit_caller_short_response_constraint_is_not_capability_failure": true
+  },
+  "authority": {
+    "local_model_calls_authorized": 0,
+    "external_reference_calls_authorized": 0,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "task_source_acquisition_authorized_after_green_audit": true,
+    "task_source_acquisition_requires_user_input": false,
+    "user_or_operator_gate": false
+  },
+  "next_binding_requirements": [
+    "retain the predeclared 35-point useful effect, 53-task powered claim denominator, and source-disjoint 9-task control panel during acquisition",
+    "freeze licensed source-disjoint repositories and exact parent revisions",
+    "qualify independent hidden evaluators before candidate packet creation",
+    "prove task context dependence and frozen-model known-positive reachability without exposing answers",
+    "measure exact tokenizer prompt residual and host operability for every valid arm",
+    "bind local runner, reference adapter, blind scorer, call and spend authority, stop conditions, and maximum inference",
+    "open no candidate or reference call until the complete campaign audit is GREEN"
+  ],
+  "maximum_inference": "This config can authorize call-free mechanics audit and autonomous licensed source acquisition after that audit only. It cannot authorize a local or reference model call, hidden evaluation, task selection from reference outputs, training, serving, D1, D2, book support movement, or a VCM usefulness claim."
+}

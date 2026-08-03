@@ -1,0 +1,187 @@
+{
+  "active_claim_id": "virtual-context-abi.core",
+  "candidate_generation_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_claim_instrument.json",
+    "sha256": "b991705c9d41c9660810dc7a877d0e33e55810eb3dec1e0a1f1d711569a52947"
+  },
+  "consumer_replay": {
+    "summary": {
+      "assistant_dogfood_vcm_path_ready": true,
+      "canonical_consumer_count": 45,
+      "expected_invalid_control_count": 5,
+      "expected_invalid_rejected_count": 5,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "hard_gap_count": 0,
+      "native_mlx_model_cache_ready": true,
+      "planner_node_count": 37,
+      "planner_vcm_consumer_abi_ready_count": 37,
+      "public_training_rows_written": 0,
+      "ready_consumer_count": 45
+    },
+    "trigger_state": "GREEN"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T08:54:12.658581Z",
+  "faults": [],
+  "governor_replay": {
+    "summary": {
+      "chunk_count": 4,
+      "config": "configs/vcm_context_governor.json",
+      "context_abi_fixture_count": 5,
+      "context_abi_fixture_passed_count": 5,
+      "context_abi_fixture_status": "ready",
+      "context_abi_required_scenario_count": 5,
+      "context_abi_viea_record_count": 40,
+      "context_resolver_materialized_count": 3,
+      "context_resolver_passed_count": 7,
+      "context_resolver_request_count": 7,
+      "context_resolver_required_scenario_count": 6,
+      "context_resolver_status": "ready",
+      "context_resolver_typed_fault_count": 4,
+      "context_resolver_viea_record_count": 56,
+      "deletion_closure_fault_count": 0,
+      "deletion_closure_status": "closed",
+      "fail_closed_chunk_count": 0,
+      "hard_gap_count": 0,
+      "mission_brief_compression_loss": 0.15,
+      "mission_brief_omission_count": 4,
+      "mission_brief_status": "ready",
+      "pinned_chunk_count": 2,
+      "representation_certificate_count": 7,
+      "representation_certificate_expected_invalid_rejected_count": 4,
+      "representation_certificate_passed_count": 7,
+      "representation_certificate_status": "ready",
+      "representation_certificate_viea_record_count": 28,
+      "scif_status": "ready",
+      "snapshot_branch_count": 7,
+      "snapshot_branch_expected_invalid_rejected_count": 4,
+      "snapshot_branch_passed_count": 7,
+      "snapshot_branch_status": "ready",
+      "snapshot_branch_typed_fault_count": 4,
+      "snapshot_branch_viea_record_count": 21,
+      "warning_count": 0
+    },
+    "trigger_state": "GREEN"
+  },
+  "hidden_evaluation_opened": false,
+  "maximum_inference": "A GREEN audit proves only that the existing VCM packet, consumer, invalid-control, and model-prompt route mechanics support prospective experimental binding. It authorizes zero model or reference calls and establishes no VCM usefulness, safety advantage, task competence, D1 result, training value, serving value, or ASI Stack support.",
+  "packet_controls": [
+    {
+      "control": "correct",
+      "expected_fault": "",
+      "faults": [],
+      "passed": true,
+      "ready": true
+    },
+    {
+      "control": "omitted",
+      "expected_fault": "CONTEXT_REQUIRED_MISSING",
+      "faults": [
+        "CONTEXT_REQUIRED_MISSING"
+      ],
+      "passed": true,
+      "ready": false
+    },
+    {
+      "control": "stale",
+      "expected_fault": "CONTEXT_REQUIRED_STALE",
+      "faults": [
+        "CONTEXT_REQUIRED_STALE"
+      ],
+      "passed": true,
+      "ready": false
+    },
+    {
+      "control": "tainted",
+      "expected_fault": "CONTEXT_TAINT_DENIED",
+      "faults": [
+        "CONTEXT_TAINT_DENIED"
+      ],
+      "passed": true,
+      "ready": false
+    },
+    {
+      "control": "revoked",
+      "expected_fault": "CONTEXT_REVOKED_OR_DELETED",
+      "faults": [
+        "CONTEXT_REVOKED_OR_DELETED"
+      ],
+      "passed": true,
+      "ready": false
+    },
+    {
+      "control": "wrong_scope",
+      "expected_fault": "CONTEXT_SEMANTIC_REF_UNRESOLVED",
+      "faults": [
+        "CONTEXT_REQUIRED_MISSING",
+        "CONTEXT_SEMANTIC_REF_NOT_MODEL_VISIBLE",
+        "CONTEXT_SEMANTIC_REF_UNRESOLVED"
+      ],
+      "passed": true,
+      "ready": false
+    },
+    {
+      "control": "over_compressed",
+      "expected_fault": "CONTEXT_OVER_COMPRESSED",
+      "faults": [
+        "CONTEXT_OVER_COMPRESSED"
+      ],
+      "passed": true,
+      "ready": false
+    }
+  ],
+  "policy": "project_theseus_vcm_claim_instrument_audit_v1",
+  "predecessor_terminal_disposition": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_v6_terminal_disposition.json",
+    "sha256": "3b81f92f2e075f8f7d5b922482044ef934c98720a368fae5fb412d73c0c9e337"
+  },
+  "prospective_design_ready": true,
+  "route_controls": [
+    {
+      "control": "correct_vcm",
+      "passed": true
+    },
+    {
+      "control": "omitted_materialization",
+      "passed": true
+    },
+    {
+      "control": "tainted_materialization",
+      "passed": true
+    },
+    {
+      "control": "shuffled_packet_changes_binding",
+      "passed": true
+    },
+    {
+      "control": "information_matched_plain_context",
+      "passed": true
+    },
+    {
+      "control": "no_added_context",
+      "passed": true
+    },
+    {
+      "control": "maximal_ungoverned_context",
+      "passed": true
+    },
+    {
+      "control": "raw_context_excluded_from_receipt",
+      "passed": true
+    }
+  ],
+  "runtime_ms": 2342.728,
+  "task_source_acquisition_opened": false,
+  "trigger_state": "GREEN"
+}

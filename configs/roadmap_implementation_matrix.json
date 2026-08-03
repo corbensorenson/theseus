@@ -12,13 +12,13 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-    "state": "VCM_CAUSAL_INSTRUMENT_PROSPECTIVE_BINDING_ACTIVE_ZERO_CALLS",
+      "state": "VCM_INSTRUMENT_AUDIT_GREEN_POWER_BOUND_SOURCE_ACQUISITION_ACTIVE",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-    "maximum_inference": "The prospectively sealed Semantic-IR v6 campaign completed Task 1, then a fresh 45,113-token Task 2 prompt generated zero tokens before the 600-second host wall. The compact ABI repaired redundant addressing but did not make full-source ingestion host-operable. The exact Semantic-IR implementation is INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block without falsifying Semantic IR or the book claim. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim; its next stage is call-free prospective instrument binding.",
-    "adequacy_campaign_binding": {
+      "maximum_inference": "The prospectively sealed Semantic-IR v6 campaign completed Task 1, then a fresh 45,113-token Task 2 prompt generated zero tokens before the 600-second host wall. The compact ABI repaired redundant addressing but did not make full-source ingestion host-operable. The exact Semantic-IR implementation is INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block without falsifying Semantic IR or the book claim. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its call-free instrument is green and now authorizes licensed source/evaluator acquisition only; it authorizes no local or Luna inference.",
+      "adequacy_campaign_binding": {
       "config": "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v6.json",
       "candidate_runner": "scripts/theseus_semantic_ir_production_adequacy_campaign_v6.py",
@@ -125,7 +125,24 @@
       "v6_hidden_evaluator_executions": 0,
       "semantic_ir_fresh_reseal_authorized_in_current_block": false,
       "portfolio_successor_claim_id": "virtual-context-abi.core"
-    }
+    },
+      "vcm_claim_instrument": {
+        "config": "configs/theseus_vcm_claim_instrument.json",
+        "audit": "reports/theseus_vcm_claim_instrument_audit.json",
+        "owner": "scripts/theseus_vcm_claim_instrument.py",
+        "state": "GREEN_CALL_FREE_SOURCE_ACQUISITION_AUTHORIZED",
+        "control_qualification_task_count": 9,
+        "claim_task_count": 53,
+        "minimum_useful_absolute_effect": 0.35,
+        "one_sided_alpha": 0.05,
+        "minimum_power": 0.8,
+        "worst_case_power_at_53": 0.8173258503068521,
+        "control_and_claim_panels_source_disjoint": true,
+        "local_model_calls_authorized": 0,
+        "external_reference_calls_authorized": 0,
+        "task_source_acquisition_requires_user_input": false,
+        "project_selected_quality_token_cap": null
+      }
     },
     "claim_selection_policy": {
       "maximum_simultaneously_active_claims": 1,

@@ -388,6 +388,25 @@ prospectively matched; generated answer length may not be capped for quality.
 No model or Luna call opens until the complete instrument, tasks, evaluators,
 controls, contamination checks, and inference bounds are sealed call-free.
 
+That call-free instrument audit is now GREEN. It replays the existing governor,
+resolver, representation certificates, snapshot branches, 45 consumer routes,
+and fail-closed missing, stale, tainted, revoked, wrong-scope, compressed, and
+route-materialization controls. It also proves that correct and shuffled VCM
+packets create distinct bound model prompts while the exact information-matched
+plain context bypasses VCM without changing candidate-visible content.
+
+The powered design uses a nine-task source-disjoint control-qualification panel
+to freeze the strongest eligible local non-VCM control without Luna input. The
+claim panel then uses 53 new source-disjoint tasks and one exact one-sided paired
+McNemar primary comparison. A 35-point absolute effect is the minimum worth the
+selection/governance/lifecycle complexity; 53 is the first task count with at
+least 0.80 numerically minimized power over the closed feasible discordance
+interval from 0.35 through 1.0 (worst-case power 0.8173). Local VCM and the
+frozen local control form the claim denominator; Luna runs the same two packets
+as a separately denominated measurement reference. Source acquisition and
+evaluator qualification are now active, but every model and Luna call remains
+closed.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -567,17 +586,20 @@ Use existing owners; create no new cleanup or report family.
    preserve its one candidate and zero-token Task 2 watchdog; issue
    `INCONCLUSIVE_EXPERIMENT`; freeze this exact implementation without a broad
    negative or another Semantic-IR reseal in the current block.
-5. **Active:** bind the existing VCM owner to a production-path mechanics bench
-   and one prospective matched claim design with correct, omitted, stale,
-   shuffled, wrong-scope, tainted, revoked, plain-context, no-context, and
-   maximal-context controls. Authorize zero model calls until the audit is green.
-6. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
+5. **Complete:** bind and call-free audit the existing VCM owner, production-
+   path controls, nine-task control-qualification panel, 53-task powered claim
+   panel, separate Luna denominator, and zero-inference authority.
+6. **Active:** autonomously acquire and independently evaluator-qualify 62
+   licensed repositories split into source-disjoint 9-task control and 53-task
+   claim panels; then bind exact packets, host-operability canaries, runners,
+   blind scorers, calls, spend, and stop conditions before inference.
+7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
    sealed before the first arm opened.
-7. Advance a development survivor once to fresh D1; otherwise retain the exact
+8. Advance a development survivor once to fresh D1; otherwise retain the exact
    terminal state and move the portfolio forward.
-8. Return the claim packet to governed book review with support unchanged.
-9. Repeat the single-claim cycle until the Subsystem Architecture Freeze can be
+9. Return the claim packet to governed book review with support unchanged.
+10. Repeat the single-claim cycle until the Subsystem Architecture Freeze can be
    decided. Only then reassess neural training and D2.
 
 ## Explicitly Sidelined

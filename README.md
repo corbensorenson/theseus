@@ -54,8 +54,9 @@ availability alone cannot resume neural training.
   evaluator ran and no broad Semantic-IR negative is allowed.
 - The sole active claim is now `virtual-context-abi.core`, selected because the
   terminal residual is model-visible context materialization and prompt-ingest
-  burden. The existing VCM owner is in call-free prospective instrument binding;
-  no local or Luna claim call is authorized yet.
+  burden. Its call-free instrument audit is GREEN and binds a nine-task local
+  control-qualification panel plus a fresh 53-task powered claim panel. Licensed
+  source acquisition is active; no local or Luna claim call is authorized yet.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
   separately denominated OpenAI measurement-only reference. Its exact
   Responses API adapter is source-bound and offline-qualified; calls remain
