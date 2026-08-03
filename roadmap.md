@@ -233,7 +233,10 @@ source-only search selected MIT-licensed `stn1slv/md-fetch#27` as the replacemen
 its production delta removes an eager optional import and inserts a bounded
 ImportError setup guard before client construction. The other 17 tasks, stratum
 balance, and statistical design are unchanged. Replay all 18 metadata and source
-pairs before evaluator admission or any model call.
+pairs before evaluator admission or any model call. The full amended metadata
+replay is now GREEN for 18/18 rows in 90 public calls; its initial zero-row
+sandbox transport pause is retained. Source-byte replay and independent archive
+and construct audits are the active boundary.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

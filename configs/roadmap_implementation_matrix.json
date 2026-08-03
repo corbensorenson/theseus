@@ -5436,7 +5436,7 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "task11_replacement_selected_metadata_replay_authorized",
+        "status": "task11_replacement_metadata_green_source_replay_pending",
         "source_bindings": {
           "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
           "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
@@ -5465,9 +5465,12 @@
           "independent_materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v3_audit.json",
           "source_construct_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review.json",
           "construct_replacement_selection": "reports/theseus_semantic_ir_production_adequacy_task11_replacement_selection.json",
-          "construct_amended_source_candidates": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v3.json"
+          "construct_amended_source_candidates": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v3.json",
+          "construct_amended_metadata_preflight": "reports/theseus_semantic_ir_production_adequacy_metadata_v4_preflight.json",
+          "construct_amended_metadata_transport_pause": "reports/theseus_semantic_ir_production_adequacy_metadata_v4_sandbox_transport_pause.json",
+          "construct_amended_metadata_report": "reports/theseus_semantic_ir_production_adequacy_metadata_v4.json"
         },
-        "current_boundary": "The archive layer remains GREEN and the task-11 construct failure remains preserved. A source-only search selected MIT-licensed stn1slv/md-fetch PR 27 as a same-stratum replacement: its production delta inserts an optional-dependency setup guard before TavilyClient construction. The other 17 rows and the powered design are unchanged. The amended registry passes zero-call preflight; full metadata and source replay are now authorized, while evaluator, model, reference, training, D1, and D2 counters remain zero.",
+        "current_boundary": "The task-11 construct failure and initial sandbox transport pause remain preserved. The amended 18-task registry independently replayed GREEN in 90 public metadata calls: exact PR identity, nondegenerate base/head revisions, changed-source membership, post-snapshot timing, distinct repositories, and license evidence all pass. Source-byte replay and a renewed independent archive audit remain mandatory before construct review can reopen. Evaluator, model, reference, training, D1, and D2 counters remain zero.",
         "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },

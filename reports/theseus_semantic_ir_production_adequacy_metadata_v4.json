@@ -1,0 +1,550 @@
+{
+  "adequacy_preregistration_audit": {
+    "auditor_sha256": "74e8fdea0d0c19399821c755fa10ce2a3e89eefa199ea751f09048f7f08e3bc5",
+    "config_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
+    "trigger_state": "GREEN"
+  },
+  "candidate_registry": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v3.json",
+    "sha256": "55b9c0c75856365d1f7abcf7157730e12706c87c95853bf30afc9ec07c049e4a"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "network_metadata_calls": 90,
+    "parent_target_evaluator_executions": 0,
+    "source_archives_fetched": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "faults": [],
+  "maximum_inference": "A GREEN report proves that the 18 preselected public PR identities, exact public PR base/head source revisions, merge lineage, changed-source membership, post-snapshot timing, distinct-repository rule, and license files were independently recomputed before source materialization. It is metadata eligibility only, not evaluator, mechanics, capability, claim, D1, D2, or book evidence.",
+  "partial_selection_admitted": false,
+  "policy": "project_theseus_semantic_ir_production_adequacy_acquisition_v1",
+  "rows": [
+    {
+      "changed_file_count": 2,
+      "changed_file_inventory_sha256": "3745d8cd03983d9d6ba94b332aff7511f060fbcf8e91cf065c01d007199a7684",
+      "index": 1,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1089,
+        "content_sha256": "55961577f2a97a98c82cea2bee94afa5045622448c0e2249ef80247461c8773c",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "93e9a9d58042b70f0642b00a6c61cdcfd13359c6",
+      "merge_revision": "80f2b82ea1551aea149052d06f5babc13f547078",
+      "merged_utc": "2026-07-30T21:57:44Z",
+      "metadata_faults": [],
+      "parent_revision": "93e9a9d58042b70f0642b00a6c61cdcfd13359c6",
+      "pull_request": 14,
+      "pull_request_url": "https://github.com/anirbanbasu/prioris-mcp/pull/14",
+      "repository": "anirbanbasu/prioris-mcp",
+      "selected_source_paths": [
+        "src/prioris_mcp/storage.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "single_expression_replacement",
+      "target_revision": "35836c5736c5de73683093abf02fcb52feaad0cc",
+      "title": "fix: tolerate legacy manifests missing size_bytes in storage list()"
+    },
+    {
+      "changed_file_count": 3,
+      "changed_file_inventory_sha256": "6a6be1869c5132b3f55b7c04e74b94337664aee67aae2cd9ebbf3cc27cadf0bd",
+      "index": 2,
+      "license": {
+        "api_spdx": "BSD-3-Clause",
+        "content_bytes": 1533,
+        "content_sha256": "4f5bdd0f809b9e09f22eab0459a5b8f35fc18fc0207eeadbc2f6107288d2132d",
+        "declared_spdx": "BSD-3-Clause",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "8432dcc3555de9957168055cdcc62e79870c16b8",
+      "merge_revision": "1beaa44352c93f7916f2408de2288d7fa03e623a",
+      "merged_utc": "2026-08-01T21:43:10Z",
+      "metadata_faults": [],
+      "parent_revision": "8432dcc3555de9957168055cdcc62e79870c16b8",
+      "pull_request": 10715,
+      "pull_request_url": "https://github.com/sktime/sktime/pull/10715",
+      "repository": "sktime/sktime",
+      "selected_source_paths": [
+        "sktime/transformations/tsfresh.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "single_expression_replacement",
+      "target_revision": "1f67ef861597abe57b609e26d7e6567a6ade3b92",
+      "title": "[BUG] reenable tests and fix tags for `TSFreshFeatureExtractor`"
+    },
+    {
+      "changed_file_count": 2,
+      "changed_file_inventory_sha256": "04ae9efef86ad952127f1f978fd28cf18b571a9d72baeaf560cbae6ea07088c6",
+      "index": 3,
+      "license": {
+        "api_spdx": "Apache-2.0",
+        "content_bytes": 11357,
+        "content_sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+        "declared_spdx": "Apache-2.0",
+        "path": "LICENSE.md",
+        "verified": true
+      },
+      "merge_first_parent_revision": "d0305891df93bc8a8d864c141b445418f3ce212d",
+      "merge_revision": "16e77f9a6eb4173b4bb23b3b83539c5878371f0a",
+      "merged_utc": "2026-08-01T21:28:39Z",
+      "metadata_faults": [],
+      "parent_revision": "0176c934176c5017c9f9925adaa1a1df8d38fd31",
+      "pull_request": 177894,
+      "pull_request_url": "https://github.com/home-assistant/core/pull/177894",
+      "repository": "home-assistant/core",
+      "selected_source_paths": [
+        "tests/components/compit/conftest.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "single_expression_replacement",
+      "target_revision": "4845ee735fa0cf43ac862139f0f693d17baa8273",
+      "title": "compit: fix KeyError in test fixture for devices without CURRENT_TEMPERATURE mapping"
+    },
+    {
+      "changed_file_count": 11,
+      "changed_file_inventory_sha256": "6287ba927fb99c5b43a7cf10fca2e08b7ce32a5899c4e22a11d1d562aa931b4f",
+      "index": 4,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1072,
+        "content_sha256": "acb2402d0b89ad9053bc51fde3b34bcf7b3a24402224af859738d161202abbeb",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "f5ecbd72c0fc247b22f0e4bdac2a91027d9aaa19",
+      "merge_revision": "3058407ef01eb3d90886d416b882c0bfc15d0721",
+      "merged_utc": "2026-08-01T22:06:52Z",
+      "metadata_faults": [],
+      "parent_revision": "7a0c20bcf6733de0b593351582aa9b250a376dab",
+      "pull_request": 214,
+      "pull_request_url": "https://github.com/elfensky/lintle/pull/214",
+      "repository": "elfensky/lintle",
+      "selected_source_paths": [
+        "src/lintle/cli.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "05c31134bd66abf9602e6dddaa00695f39627dc4",
+      "title": "fix+refactor: the #204 minors (incl. a real precedence bug)"
+    },
+    {
+      "changed_file_count": 28,
+      "changed_file_inventory_sha256": "828a8aaea7199940900fdcf2908ceb8a567fb602646e3e4d6b62824bacacc0a1",
+      "index": 5,
+      "license": {
+        "api_spdx": "Apache-2.0",
+        "content_bytes": 10770,
+        "content_sha256": "d63ab42292ab0bc25c6ac83923020530a9ba4fa03fb7e78308586575bc79cf66",
+        "declared_spdx": "Apache-2.0",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "142c65c5f3eb7191485bab2522fdd97357b3475e",
+      "merge_revision": "06b32dcd67376beafac9790fef85a0a639432387",
+      "merged_utc": "2026-07-31T22:06:04Z",
+      "metadata_faults": [],
+      "parent_revision": "142c65c5f3eb7191485bab2522fdd97357b3475e",
+      "pull_request": 1022,
+      "pull_request_url": "https://github.com/geolens-io/geolens/pull/1022",
+      "repository": "geolens-io/geolens",
+      "selected_source_paths": [
+        "backend/app/modules/catalog/maps/style_json.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "f8a754a93383a741b5f2444151e71a160acfae41",
+      "title": "fix(builder): keep fill-color and fill-pattern mutually exclusive in both directions"
+    },
+    {
+      "changed_file_count": 8,
+      "changed_file_inventory_sha256": "75fa902e1a00664d2daab9f22d3649f2bb452b187003a06ca5e9473b27cf2604",
+      "index": 6,
+      "license": {
+        "api_spdx": "NOASSERTION",
+        "content_bytes": 1543,
+        "content_sha256": "1be1df33863f97a7bc1c4d67980bd6c69c9a6fef0a5ee76e6ad6cb91e56e8491",
+        "declared_spdx": "BSD-3-Clause",
+        "path": "LICENSE.txt",
+        "verified": true
+      },
+      "merge_first_parent_revision": "3b52211d5818ad73a25377ef5bf5aa5492a88b77",
+      "merge_revision": "81757857d46dfc18259ea0df86b61d235640426b",
+      "merged_utc": "2026-07-31T12:40:48Z",
+      "metadata_faults": [],
+      "parent_revision": "941bc425f97347315349d76a0815fb8559340332",
+      "pull_request": 32043,
+      "pull_request_url": "https://github.com/numpy/numpy/pull/32043",
+      "repository": "numpy/numpy",
+      "selected_source_paths": [
+        "numpy/f2py/auxfuncs.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "21542c6a31b835b690d2fc32b640f91356895220",
+      "title": "BUG: Fix F2Py typedef requirement checking."
+    },
+    {
+      "changed_file_count": 7,
+      "changed_file_inventory_sha256": "c2f88c0c402ef0a75d47191104ef48425a6b79e7ab52c454e9b9fba4e330094a",
+      "index": 7,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1063,
+        "content_sha256": "620ff3c20bc64cd2b59513ebaf49ca8d65be7b0115eb4bfee41ba690e1120067",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "1fc429b864f0630c0606bea9399ad4f94d734dd9",
+      "merge_revision": "41f7df1530a9f0be394513523e074f8e8cbf0303",
+      "merged_utc": "2026-07-31T14:15:00Z",
+      "metadata_faults": [],
+      "parent_revision": "1fc429b864f0630c0606bea9399ad4f94d734dd9",
+      "pull_request": 165,
+      "pull_request_url": "https://github.com/pyranges/pyranges1/pull/165",
+      "repository": "pyranges/pyranges1",
+      "selected_source_paths": [
+        "pyranges1/range_frame/range_frame.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "collection_or_data_shape_change",
+      "target_revision": "6727f380878de816f54d7e9e3cb8c80d709974ed",
+      "title": "Fix two sorting bugs, share the ordering rule with polaranges, add sort_descending"
+    },
+    {
+      "changed_file_count": 6,
+      "changed_file_inventory_sha256": "26af92391371a3afc9c9abb6d979db34d5241b5a5edaa3aace274a3c12a2716b",
+      "index": 8,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1076,
+        "content_sha256": "a4017f531ab8da04814a30dc9f3685430bc27fea1065ce36b7447cbb6ee9f679",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "1d1bb2b5c53d2821115164c59ce50c3d4bf87d90",
+      "merge_revision": "92d2056873d481320e65eb36b87f647ecc630e78",
+      "merged_utc": "2026-08-01T20:55:01Z",
+      "metadata_faults": [],
+      "parent_revision": "1d1bb2b5c53d2821115164c59ce50c3d4bf87d90",
+      "pull_request": 49,
+      "pull_request_url": "https://github.com/lairdgrouplancaster/QCoDeS-Plotter/pull/49",
+      "repository": "lairdgrouplancaster/QCoDeS-Plotter",
+      "selected_source_paths": [
+        "src/qplot/tools/worker.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "collection_or_data_shape_change",
+      "target_revision": "5c3d2e9d2cd9ef254e824c310f2d4bda892c01d3",
+      "title": "Fix high-offset serpentine sweeps and preview shutdown"
+    },
+    {
+      "changed_file_count": 4,
+      "changed_file_inventory_sha256": "3613bc8f8b719e6ad67f0d5ce9c358ee106973fef7dceae2a1613693562134b2",
+      "index": 9,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1067,
+        "content_sha256": "47fa74c34a76f7adf44139d41ed9145a5536efda8fa45eefce5059f48c8a11f1",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "10f1d1e9e777509cff490ab599f780920d92897a",
+      "merge_revision": "82be790ea1d46005fabec6c327c9663c5da1bafe",
+      "merged_utc": "2026-08-01T12:36:52Z",
+      "metadata_faults": [],
+      "parent_revision": "d52d8e4a5e33d21cabc36836dd80835c1e383541",
+      "pull_request": 44,
+      "pull_request_url": "https://github.com/sdill1973a/linafish/pull/44",
+      "repository": "sdill1973a/linafish",
+      "selected_source_paths": [
+        "linafish/ingest.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "collection_or_data_shape_change",
+      "target_revision": "4f628f8490bd2d2b6512afae9a77e6bf5c582cd1",
+      "title": "fix(ingest): bound every chunk, so a book stops arriving as one crystal"
+    },
+    {
+      "changed_file_count": 21,
+      "changed_file_inventory_sha256": "ce7d7a5df7f7a984ca71bb69eb931ab4e44fc0b810e06f3b869d4c90194a2e5a",
+      "index": 10,
+      "license": {
+        "api_spdx": "Apache-2.0",
+        "content_bytes": 11550,
+        "content_sha256": "40e0b458a68b557560def38b106a1a0da1aac57685536dcb882f1c78c647e4d3",
+        "declared_spdx": "Apache-2.0",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "7367955bcbc904c1b4c78197f79a325284769a84",
+      "merge_revision": "3c400a67ba8f1b90afb250390eb3799dcbc4613e",
+      "merged_utc": "2026-07-31T11:26:33Z",
+      "metadata_faults": [],
+      "parent_revision": "c670340ee59bd0b120a75f3e698da91f448deb99",
+      "pull_request": 7591,
+      "pull_request_url": "https://github.com/unslothai/unsloth/pull/7591",
+      "repository": "unslothai/unsloth",
+      "selected_source_paths": [
+        "studio/backend/utils/utils.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "insert_guard_or_setup_before",
+      "target_revision": "a77a9f8e5c2ebac6a14178fde12c7085c862b5b2",
+      "title": "Offline: detect an unreachable hub, not just dead DNS"
+    },
+    {
+      "changed_file_count": 4,
+      "changed_file_inventory_sha256": "736b68679944d42afcb4fa0262f61cdebfe58032a1ac044d41365dbb7e4892cf",
+      "index": 11,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1075,
+        "content_sha256": "7abc1ff97b2ebeb16bd1b8b5ffc6936c293bc2eef3bb17095aa4e89dd6c2be10",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "9396bd1d14b37552b4de3bae528e3e9f45fd0302",
+      "merge_revision": "88edf455e3a015de4bbd9a1e2c3b6101a0c031d0",
+      "merged_utc": "2026-08-01T15:49:44Z",
+      "metadata_faults": [],
+      "parent_revision": "9396bd1d14b37552b4de3bae528e3e9f45fd0302",
+      "pull_request": 27,
+      "pull_request_url": "https://github.com/stn1slv/md-fetch/pull/27",
+      "repository": "stn1slv/md-fetch",
+      "selected_source_paths": [
+        "src/mdfetch/fallback.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "insert_guard_or_setup_before",
+      "target_revision": "e8a97267ab169fba49f1d08fe56aca2e686169ca",
+      "title": "fix(core): lazy load tavily to prevent ModuleNotFoundError when uninstalled"
+    },
+    {
+      "changed_file_count": 1,
+      "changed_file_inventory_sha256": "8ebed4fe1455f89f67c7545878d8caf460a829c154a58cced6e0afe1ced18971",
+      "index": 12,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1074,
+        "content_sha256": "cc9ff5bb9850669703f447938fe1cdf3c155ef2ca98fef49ea29007cc5dd873b",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "9700c0f184cce8703fc6f98ee90d53abaf4f17b8",
+      "merge_revision": "452316a1201fb529e69a693d1b3975b5f0eaa5be",
+      "merged_utc": "2026-08-01T23:25:46Z",
+      "metadata_faults": [],
+      "parent_revision": "9700c0f184cce8703fc6f98ee90d53abaf4f17b8",
+      "pull_request": 3,
+      "pull_request_url": "https://github.com/purduecsbridge/ed-push/pull/3",
+      "repository": "purduecsbridge/ed-push",
+      "selected_source_paths": [
+        "ed_push.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "insert_guard_or_setup_before",
+      "target_revision": "e2b05b61ff358e78205c4b69f992e8b0f5f5c0be",
+      "title": "Fix double title in challenge description"
+    },
+    {
+      "changed_file_count": 21,
+      "changed_file_inventory_sha256": "63205719b82647506d2db56ff7bf42d8e6f31ed241b0e72e51fdea4e643adecd",
+      "index": 13,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1074,
+        "content_sha256": "7c77a44a8acd9b41fdc209864a8016b3d430b5d0e09309818d5b7444336df744",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "c7c54419f82f9d88c90410e4032d0f23f572d439",
+      "merge_revision": "4e0cc7bc2c0ae3b6f3196fd98f2d7a3bae8e65ef",
+      "merged_utc": "2026-07-31T15:10:45Z",
+      "metadata_faults": [],
+      "parent_revision": "5d74b4b92f93d0ffdc500038f2836d7752d37c13",
+      "pull_request": 46575,
+      "pull_request_url": "https://github.com/Azure/azure-sdk-for-python/pull/46575",
+      "repository": "Azure/azure-sdk-for-python",
+      "selected_source_paths": [
+        "sdk/servicebus/azure-servicebus/azure/servicebus/_common/mgmt_handlers.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "insert_action_or_cleanup_after",
+      "target_revision": "3b8f21efe30792eee28667f0e86e8b4d19bf8f8d",
+      "title": "feat(servicebus): add list_queue_sessions and list_subscription_sessions"
+    },
+    {
+      "changed_file_count": 27,
+      "changed_file_inventory_sha256": "50299b7e70ea3d03b220085f92bc842b7ce0b59009cc507996477b3dd8ffc930",
+      "index": 14,
+      "license": {
+        "api_spdx": "Apache-2.0",
+        "content_bytes": 10173,
+        "content_sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9",
+        "declared_spdx": "Apache-2.0",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "ecae60a2ad01bab00a54b9107d0a537c4619337b",
+      "merge_revision": "bf7bf0500bf3f91aa4d885d8b74a844c1ee1fb11",
+      "merged_utc": "2026-07-31T14:10:12Z",
+      "metadata_faults": [],
+      "parent_revision": "8fb798d61c06185eb3c2fbcbf7e06e865b436592",
+      "pull_request": 217,
+      "pull_request_url": "https://github.com/DataDog/dd-license-attribution/pull/217",
+      "repository": "DataDog/dd-license-attribution",
+      "selected_source_paths": [
+        "src/dd_license_attribution/artifact_management/source_code_manager.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "insert_action_or_cleanup_after",
+      "target_revision": "26f857f91ddab5cc29e8ac12313e9037c1637495",
+      "title": "Add Rust ecosystem support with binary-only crate fallback"
+    },
+    {
+      "changed_file_count": 52,
+      "changed_file_inventory_sha256": "68c6b8140e804d5d320926d1150353439a9e82ef991b58423da05b899071c812",
+      "index": 15,
+      "license": {
+        "api_spdx": "Apache-2.0",
+        "content_bytes": 11315,
+        "content_sha256": "be6a7ce74b58586ac920acf4a3da663980dcb5eb49509bc2ad545407e3d1459b",
+        "declared_spdx": "Apache-2.0",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "67579a1649f80ccd495c9ff26980144cde00cf8a",
+      "merge_revision": "778803892af69e7a8cb41e676546846cb9e541c0",
+      "merged_utc": "2026-08-01T08:50:40Z",
+      "metadata_faults": [],
+      "parent_revision": "67579a1649f80ccd495c9ff26980144cde00cf8a",
+      "pull_request": 1667,
+      "pull_request_url": "https://github.com/aio-libs/aiobotocore/pull/1667",
+      "repository": "aio-libs/aiobotocore",
+      "selected_source_paths": [
+        "aiobotocore/utils.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "insert_action_or_cleanup_after",
+      "target_revision": "3d3873339ff6ccf3e860c885a4cf85d027785dbe",
+      "title": "feat: run the httpx backend on trio"
+    },
+    {
+      "changed_file_count": 17,
+      "changed_file_inventory_sha256": "b76c34f9fdd8b0957b12e3106c20a160db1c98dbc6283c3c30b987a6f2a1647e",
+      "index": 16,
+      "license": {
+        "api_spdx": "Apache-2.0",
+        "content_bytes": 11340,
+        "content_sha256": "aef3d7883963999082757a215102abdf7037b40d2b417560b1fe0641c423a40d",
+        "declared_spdx": "Apache-2.0",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "a1db770e2f136110f375a9d9637236e3120b224d",
+      "merge_revision": "fa6b3aeccbc41957d85737a9ab29743a4169b5af",
+      "merged_utc": "2026-08-01T04:06:58Z",
+      "metadata_faults": [],
+      "parent_revision": "a1db770e2f136110f375a9d9637236e3120b224d",
+      "pull_request": 12,
+      "pull_request_url": "https://github.com/Off-Camber/open-frame/pull/12",
+      "repository": "Off-Camber/open-frame",
+      "selected_source_paths": [
+        "src/openframe/recognize/coords.py",
+        "src/openframe/recognize/locator.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "multi_unit_dependency_local_repair",
+      "target_revision": "4a7052658886945375ac7405c5cba76fedc329ab",
+      "title": "fix(recognize): normalize target coordinate spaces"
+    },
+    {
+      "changed_file_count": 32,
+      "changed_file_inventory_sha256": "5e6a75c99a8573d219c98e78d262da6ed7fb3371118f5131365b583ca631542b",
+      "index": 17,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1075,
+        "content_sha256": "c70ba0234bfd57f18db39670b4aa39ed3234a81cae7c9cba3fd947b41f3c9e6e",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "0177376ca4de7d4bce610c3147f3d1fbb9fc1d81",
+      "merge_revision": "759aac15ac091b053e98b287bdee9167ce46d4bb",
+      "merged_utc": "2026-08-01T21:22:11Z",
+      "metadata_faults": [],
+      "parent_revision": "0177376ca4de7d4bce610c3147f3d1fbb9fc1d81",
+      "pull_request": 2,
+      "pull_request_url": "https://github.com/HEROgold/funcsort/pull/2",
+      "repository": "HEROgold/funcsort",
+      "selected_source_paths": [
+        "src/funcsort/ordering.py",
+        "src/funcsort/sorter.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "multi_unit_dependency_local_repair",
+      "target_revision": "2d0b0e2a17b31de6858a01948661208f9e7cde12",
+      "title": "fix: never reorder a definition below code that reads it at import time"
+    },
+    {
+      "changed_file_count": 9,
+      "changed_file_inventory_sha256": "d7d59b6133a44d553676a1f56539c4fe8964926d489cbb1691bed046782acb35",
+      "index": 18,
+      "license": {
+        "api_spdx": "MIT",
+        "content_bytes": 1066,
+        "content_sha256": "b7acfa70f1343b9f9a22343042f733030eae80ce5e6613397cc71e41ed0f46ae",
+        "declared_spdx": "MIT",
+        "path": "LICENSE",
+        "verified": true
+      },
+      "merge_first_parent_revision": "1edb58addc5583f5a3dc5421236c42eb503d3c56",
+      "merge_revision": "7bfb48b919eb08debecd5dfbc9c1fbe5f09a981f",
+      "merged_utc": "2026-08-01T12:23:03Z",
+      "metadata_faults": [],
+      "parent_revision": "1edb58addc5583f5a3dc5421236c42eb503d3c56",
+      "pull_request": 94,
+      "pull_request_url": "https://github.com/awwesomeman/librae/pull/94",
+      "repository": "awwesomeman/librae",
+      "selected_source_paths": [
+        "librae/config/symbols.py",
+        "librae/db/timescale_writer.py"
+      ],
+      "source_revision_semantics": "public_pull_base_to_head_v1",
+      "stratum": "multi_unit_dependency_local_repair",
+      "target_revision": "7fa1befcca67e1cad91523d1232d67ddf0610794",
+      "title": "fix(db): validate instrument_type against one shared allow-list"
+    }
+  ],
+  "selection_admitted": true,
+  "source_revision_policy": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_source_revision_policy.json",
+    "sha256": "d8677339069cfefea0e0e7aad9317f8c103f5d5611e9ad914c45e30f72ea76bb"
+  },
+  "stage": "metadata_acquisition_complete",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_REST_API",
+    "raw_response_bodies_retained": false,
+    "request_count": 90,
+    "response_digest_chain_sha256": "866aee7ad9fc2015e40f7db6ebdb962bcf8b79dafffc43a052e5929713164f7f"
+  },
+  "trigger_state": "GREEN"
+}

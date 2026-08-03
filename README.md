@@ -124,8 +124,10 @@ blank line and cannot represent its guard/setup stratum. Its RED receipt is
 preserved. Autonomous source-only search selected MIT-licensed
 `stn1slv/md-fetch#27`, whose production delta inserts an optional-dependency
 setup guard before client construction. The unchanged 18-task registry passes
-zero-call preflight; metadata and source replay remain required before the panel
-can seal, and no adequacy observation is yet authorized.
+zero-call preflight and full independent metadata replay for all 18 rows in 90
+public calls. The initial sandbox transport pause is preserved with zero admitted
+rows. Source replay remains required before the panel can seal, and no adequacy
+observation is yet authorized.
 
 ## Repository Map
 
