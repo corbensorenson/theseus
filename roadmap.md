@@ -879,7 +879,10 @@ bound. Execute only one `cargo fetch --locked` plus one deny-network offline
 replay. Both are GREEN: all 32 crate archives match the lock, 851 source files
 stay immutable, and the bounded Cargo home retains 1,302 files/57,161,658 bytes.
 Compilation, build scripts, tests, runners, evaluators, and models stayed closed.
-Independently audit the closure before expanding.
+The independent audit is GREEN: all 32 lock checksums, retained crates/cache,
+source identity, command/network phases, and storage limits rederive without
+execution. Frozen schedule ordinal 4 is compatible task 14; seal its exact uv
+dependency-only canary next.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_36_DEPENDENCY_CANARY_GREEN_INDEPENDENT_AUDIT_NEXT",
+      "state": "VCM_V3_TASK_36_CLOSURE_AUDIT_GREEN_TASK_14_DEPENDENCY_CANARY_SEAL_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1036,6 +1036,12 @@
         "owner_sha256":"e830589cb922a3f09dee2b1d7f0cd77b06be3f416c7f27544d789c7c4087665d","config_sha256":"2bbfccd3ef69249dbf1e3ebb1d4cdd29eb3d5878b4355dcdf226a206cc8c4ff2","test_sha256":"1dbb0563585f6141a396c2277c638b2f8cc8f353049b062b4d7bafa2ae9b73e4","report_sha256":"7b52860a66bad99785a6ae398a5cc06ebf835b0ebb2c66d95ff895e5dd6efa15",
         "state":"GREEN_TASK_36_EXACT_CARGO_DEPENDENCY_CACHE_ACQUIRED_AND_OFFLINE_REPLAY_QUALIFIED","task_index":36,"schedule_ordinal":3,"lock_package_count":34,"checksum_package_count":32,"checksum_identity_sha256":"d5f9f546d3892877a83ca1b16d235b8e5f1860bcc937dfade65b0897b8c4eacc","network_enabled_dependency_fetches":1,"network_denied_offline_replays":1,"matched_checksum_count":32,"retained_store_bytes":57161658,"retained_store_file_count":1302,"retained_store_identity_sha256":"12e7cee4815194eb845c450921a4ed2f71031ca1e19641079b5c4e92c7ec6990","source_file_count":851,"source_bytes":2111948,"source_identity_sha256":"fda71627ce0755beed9c993c9a9b1d16c4c326b8d5609d61b55aa53daba8dd35","online_peak_rss_mib":70.297,"offline_peak_rss_mib":3.906,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"task-36 exact Cargo dependency-fetch and deny-network replay mechanics only; all 32 crate checksums and source immutability hold, but no build repository evaluator task VCM or model result is established","next_boundary":"independently rederive the task-36 lock checksum denominator, retained Cargo home, source, commands, deny-network phase, and storage evidence before any build or repository runner"
+      },
+      "vcm_task36_dependency_closure_audit": {
+        "config":"configs/theseus_vcm_task36_dependency_closure_audit.json","owner":"scripts/theseus_vcm_task36_dependency_closure_audit.py","test":"tests/test_theseus_vcm_task36_dependency_closure_audit.py","report":"reports/theseus_vcm_task36_dependency_closure_audit.json",
+        "owner_sha256":"0cc044f521e347a55fa0d70a1ef96f48e95db31f278c1a8274f45546a771df4a","config_sha256":"3c7c34a53dc7babda7df8e45f9cb637b6af6ba9c29e5dde12dba55c1a2826afe","test_sha256":"c8495eff1774451a85bea87bc4490c1d50136ebbf8970cb22c6a686938a5ca0a","report_sha256":"848aa849a6580e7fda0bf61f9a676a1b0c63532502aba007baf7d3b7a5a39808",
+        "state":"GREEN_TASK_36_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED","task_index":36,"lock_checksum_package_count":32,"matched_checksum_count":32,"retained_store_bytes":57161658,"retained_store_file_count":1302,"source_file_count":851,"source_bytes":2111948,"network_or_dependency_execution_performed":false,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"independent static qualification of task-36 Cargo dependency-fetch and offline-cache mechanics only; no build repository runner evaluator task VCM model or mechanism result","next_boundary":"prospectively seal frozen schedule ordinal 4 task 14's exact uv lock dependency acquisition and deny-network offline replay"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",
