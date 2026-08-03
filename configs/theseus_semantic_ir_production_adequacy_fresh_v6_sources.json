@@ -1,0 +1,132 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v6_sources_v1",
+  "state": "FIXED_BEFORE_FRESH_V6_SOURCE_RETRIEVAL",
+  "purpose": "Replace all four v5-exposed source surfaces before a uniform compact-protocol denominator.",
+  "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+  "prior_task_pool": "reports/theseus_semantic_ir_production_adequacy_fresh_v5_task_pool.json",
+  "prior_task_pool_sha256": "7fb283a784322355b891e6e8ab48049010a48aac05bf5401ceda21d1153d59f2",
+  "compact_protocol_audit": "reports/theseus_semantic_ir_compact_protocol_audit.json",
+  "compact_protocol_audit_sha256": "21113b9f775426db821ada9c4b5889904c075a14f1c6afc12010c63c76f7a997",
+  "consumed_evidence": {
+    "candidate_report": "reports/theseus_semantic_ir_production_adequacy_candidates_v5.json",
+    "candidate_report_sha256": "a1904cd02ecbe6d842fb15726068ae05c091f65af9e3dc326d1e2785725b7136",
+    "journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v5_journal.json",
+    "journal_sha256": "27e0cb3fcbc17f14b7ffa15fc53d3a9c6b36a5956415df9a5ddc6a077f8a0133",
+    "runtime_receipt": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_fresh_v5_04_direct_local_model_1_7f8eb41027f9610c.json",
+    "runtime_receipt_sha256": "3fad6be07b3de0641a134c0381d45207fc54e6d620b670eb6f14221750ad931b",
+    "consumed_indices": [1, 2, 3, 4],
+    "preserved_unscored_candidate_indices": [1, 2, 3],
+    "hidden_evaluator_executions": 0,
+    "rerun_authorized": false
+  },
+  "compact_runtime": "scripts/theseus_semantic_ir_production_adequacy_runtime_v5.py",
+  "compact_runtime_sha256": "626462aadc8a765d1ab7520a3d063d87dbf9f530836feced540047bf9629357b",
+  "authority": {
+    "public_source_file_retrieval_authorized": true,
+    "candidate_or_model_calls_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6",
+  "sources": [
+    {
+      "index": 1,
+      "opaque_task_id": "semantic-ir-adequacy-01r4",
+      "repository": "ModelTC/LightLLM",
+      "pull_request": 1420,
+      "title": "fix: fix a ep start bug",
+      "merged_utc": "2026-08-03T06:57:19Z",
+      "base_revision": "5671e070ed5d5741130db75126351e47ad6fd8f3",
+      "head_revision": "9e68fbe3bf6047183e9ce4f622eff2d0b82b065a",
+      "merge_revision": "48fb5de8f9a666a5f1cf880293b770255646eb82",
+      "stratum": "single_expression_replacement",
+      "selected_source_paths": ["lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py"],
+      "changed_paths": ["lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py", "lightllm/distributed/communication_op.py"],
+      "license": {"path": "LICENSE", "spdx": "Apache-2.0", "required_notice": "Apache License"},
+      "parent_fragments": ["topk_weights, topk_idx = self._select_experts("],
+      "target_fragments": ["topk_weights, topk_idx, _ = self._select_experts("],
+      "natural_request": "Accept the current three-value result from _select_experts while retaining topk_weights and topk_idx and explicitly discarding the third value. Preserve the call arguments and all downstream behavior. Modify only lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "The _select_experts result is unpacked as topk_weights, topk_idx, and one explicitly discarded third value."},
+        {"id": "O2", "kind": "preserve", "text": "The _select_experts call arguments and downstream use of topk_weights and topk_idx remain unchanged."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    },
+    {
+      "index": 2,
+      "opaque_task_id": "semantic-ir-adequacy-02r3",
+      "repository": "WeblateOrg/translation-finder",
+      "pull_request": 998,
+      "title": "fix: bound Laravel plural detection regex",
+      "merged_utc": "2026-08-03T07:32:02Z",
+      "base_revision": "28487ace886f2a75b58c958cc3251a6f2c32e93d",
+      "head_revision": "2f08b214976c764ba1a4c5ea753669aada81b352",
+      "merge_revision": "277f0691f1d0a181fea9298e0cd36f1b66082818",
+      "stratum": "single_expression_replacement",
+      "selected_source_paths": ["translation_finder/discovery/files.py"],
+      "changed_paths": ["translation_finder/discovery/files.py", "translation_finder/test_discovery.py"],
+      "license": {"path": "LICENSE", "spdx": "GPL-3.0", "required_notice": "GNU GENERAL PUBLIC LICENSE"},
+      "parent_fragments": ["LARAVEL_BYTES_RE = re.compile(rb\"=>.*\\|\")"],
+      "target_fragments": ["rb\"^(?>[^\\n]*?=>)[^\\n]*\\|\"", "re.MULTILINE"],
+      "natural_request": "Bound Laravel plural detection to one line and prevent repeated retry from successive arrow tokens while still recognizing a plural separator after an arrow. Modify only translation_finder/discovery/files.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "Laravel byte-pattern detection is line-anchored, line-bounded, and uses an atomic prefix through the first qualifying arrow."},
+        {"id": "O2", "kind": "preserve", "text": "A plural separator after an arrow on the same line remains detectable and unrelated discovery patterns remain unchanged."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    },
+    {
+      "index": 3,
+      "opaque_task_id": "semantic-ir-adequacy-03r3",
+      "repository": "durandtibo/feu",
+      "pull_request": 901,
+      "title": "Fix bug",
+      "merged_utc": "2026-08-02T19:12:13Z",
+      "base_revision": "2a25b73edaa866743557916d247ed25d042cd4c2",
+      "head_revision": "60150d039af6cd1dc7f70bed4bfa7bb8a1d693f5",
+      "merge_revision": "204f88542c3e1452f44b6f6c5b593b8181310f1f",
+      "stratum": "single_expression_replacement",
+      "selected_source_paths": ["src/feu/version/pypi.py"],
+      "changed_paths": ["src/feu/version/pypi.py"],
+      "license": {"path": "LICENSE", "spdx": "BSD-3-Clause", "required_notice": "Redistribution and use in source and binary forms"},
+      "parent_fragments": ["datetime.fromisoformat(t)"],
+      "target_fragments": ["datetime.fromisoformat(t.replace(\"Z\", \"+00:00\"))"],
+      "natural_request": "Accept PyPI upload timestamps that use a trailing Z when computing the earliest release date by normalizing that suffix for fromisoformat. Preserve empty-input handling and earliest-date selection. Modify only src/feu/version/pypi.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "A trailing Z in upload_time_iso_8601 is normalized to +00:00 before datetime.fromisoformat."},
+        {"id": "O2", "kind": "preserve", "text": "Missing upload times still return None and the earliest valid upload date remains selected."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    },
+    {
+      "index": 4,
+      "opaque_task_id": "semantic-ir-adequacy-04r3",
+      "repository": "statsmodels/statsmodels",
+      "pull_request": 10013,
+      "title": "BUG: multipletests raises ZeroDivisionError on an empty p-value array",
+      "merged_utc": "2026-08-03T06:07:09Z",
+      "base_revision": "d3cb403cb5d0681c73e283d08db0ea258403186b",
+      "head_revision": "b401bea6a55be3f5a245f9f7a7448ef1639ecac0",
+      "merge_revision": "57d01f5b3893f2e3693df3af5b00a023abeaf6fa",
+      "stratum": "branch_or_predicate_replacement",
+      "selected_source_paths": ["statsmodels/stats/multitest.py"],
+      "changed_paths": ["statsmodels/stats/multitest.py", "statsmodels/stats/tests/test_multi.py"],
+      "license": {"path": "LICENSE.txt", "spdx": "BSD-3-Clause", "required_notice": "Redistribution and use in source and binary forms"},
+      "parent_fragments": ["alphacBonf = alphaf / float(ntests)"],
+      "target_fragments": ["if ntests > 0:", "alphacSidak = np.nan", "alphacBonf = np.nan"],
+      "natural_request": "Make multipletests handle an empty p-value collection without division by zero, returning undefined corrected alpha thresholds while preserving normal non-empty correction behavior. Modify only statsmodels/stats/multitest.py.",
+      "obligations": [
+        {"id": "O1", "kind": "require", "text": "When ntests is zero, corrected Sidak and Bonferroni alpha thresholds are set to NaN without division."},
+        {"id": "O2", "kind": "preserve", "text": "For non-empty p-values, corrected alpha calculations and per-method dispatch retain their existing behavior."},
+        {"id": "O3", "kind": "non_goal", "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."}
+      ]
+    }
+  ],
+  "maximum_inference": "A GREEN source seal establishes only four licensed post-snapshot parent/target pairs, source-disjoint from the full v5 denominator, for consumed indices 1-4. It provides no candidate, hidden-evaluator, implementation-adequacy, subsystem-effect, D1, D2, training, serving, or book-support evidence."
+}

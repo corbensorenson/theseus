@@ -1,0 +1,291 @@
+{
+  "candidate_packet_materialized": false,
+  "config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_fresh_v6_sources.json",
+    "sha256": "98d7745570ce6f3dfada1bf8c3495163857cf728e3d8f8fc4d6cf6287421ae11"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "network_source_calls": 28,
+    "parent_target_evaluator_executions": 0,
+    "source_archives_materialized": 8,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T07:47:40.291284Z",
+  "faults": [],
+  "maximum_inference": "A GREEN source seal establishes only four licensed post-snapshot parent/target pairs, source-disjoint from the full v5 denominator, for consumed indices 1-4. It provides no candidate, hidden-evaluator, implementation-adequacy, subsystem-effect, D1, D2, training, serving, or book-support evidence.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v6_sources_v1",
+  "rows": [
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 11357,
+              "path": "LICENSE",
+              "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+            },
+            {
+              "bytes": 13161,
+              "path": "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py",
+              "sha256": "48867346d112d164454eed3319e593f2350b97f8cd9874f98f22c0b8716d730d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-01r4-parent.tar.gz",
+          "root": "semantic-adequacy-01r4",
+          "sha256": "cb49566114d0f21739838e5a239f4851d772f99fe2d7fdc390cc6f1efff2da8d"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 11357,
+              "path": "LICENSE",
+              "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+            },
+            {
+              "bytes": 13164,
+              "path": "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py",
+              "sha256": "1c8cb2a89f621cf2f976db05ef9d0c8f538ebe6082e9e0e495193a1b3c88b386"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-01r4-target.tar.gz",
+          "root": "semantic-adequacy-01r4",
+          "sha256": "d734785154990d38d3fdcbd9b055e75324bacee9c45c6dba1c3f872e8b6fa093"
+        }
+      },
+      "changed_paths": [
+        "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py",
+        "lightllm/distributed/communication_op.py"
+      ],
+      "faults": [],
+      "index": 1,
+      "license_spdx": "Apache-2.0",
+      "merge_parent_is_lineage_only": true,
+      "merge_parent_revisions": [
+        "3b17d8e9118c62c2d56168d0327d8d34f0165b26"
+      ],
+      "merge_revision": "48fb5de8f9a666a5f1cf880293b770255646eb82",
+      "merged_utc": "2026-08-03T06:57:19Z",
+      "opaque_task_id": "semantic-ir-adequacy-01r4",
+      "parent_revision": "5671e070ed5d5741130db75126351e47ad6fd8f3",
+      "pr_base_head_authoritative": true,
+      "pull_request": 1420,
+      "pull_request_url": "https://github.com/ModelTC/LightLLM/pull/1420",
+      "repository": "ModelTC/LightLLM",
+      "selected_source_paths": [
+        "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "9e68fbe3bf6047183e9ce4f622eff2d0b82b065a",
+      "title": "fix: fix a ep start bug",
+      "trigger_state": "GREEN"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 38897,
+              "path": "translation_finder/discovery/files.py",
+              "sha256": "261a676d7dfda7bbbc9ceb618c4dac80f2bdcf6e4b96a251368df8d1c6b92c04"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-02r4-parent.tar.gz",
+          "root": "semantic-adequacy-02r4",
+          "sha256": "f534f0752b9f372f273e2c9256f6211a11ab49e25dce17476fc396be5be4ba32"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 39052,
+              "path": "translation_finder/discovery/files.py",
+              "sha256": "1849d69a92932d399419889618130aeebeffe5d781d40be86b52ef220c8e57f3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-02r4-target.tar.gz",
+          "root": "semantic-adequacy-02r4",
+          "sha256": "241e24e0b2cf945bf48bfba8d9c9d4e695dcb45b3abcf50feb9c20836a725156"
+        }
+      },
+      "changed_paths": [
+        "translation_finder/discovery/files.py",
+        "translation_finder/test_discovery.py"
+      ],
+      "faults": [],
+      "index": 2,
+      "license_spdx": "GPL-3.0",
+      "merge_parent_is_lineage_only": true,
+      "merge_parent_revisions": [
+        "28487ace886f2a75b58c958cc3251a6f2c32e93d"
+      ],
+      "merge_revision": "277f0691f1d0a181fea9298e0cd36f1b66082818",
+      "merged_utc": "2026-08-03T07:32:02Z",
+      "opaque_task_id": "semantic-ir-adequacy-02r3",
+      "parent_revision": "28487ace886f2a75b58c958cc3251a6f2c32e93d",
+      "pr_base_head_authoritative": true,
+      "pull_request": 998,
+      "pull_request_url": "https://github.com/WeblateOrg/translation-finder/pull/998",
+      "repository": "WeblateOrg/translation-finder",
+      "selected_source_paths": [
+        "translation_finder/discovery/files.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "2f08b214976c764ba1a4c5ea753669aada81b352",
+      "title": "fix: bound Laravel plural detection regex",
+      "trigger_state": "GREEN"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1501,
+              "path": "LICENSE",
+              "sha256": "ef09c2e1c99b2d6dbdf9e742c6dd8342af6ea35bcb8ab811a6c727a9f83eed94"
+            },
+            {
+              "bytes": 7279,
+              "path": "src/feu/version/pypi.py",
+              "sha256": "71fb91dc7b2e16af1d13548c6616f20929a2c21bbebc32bc35ff145317ecd906"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-03r4-parent.tar.gz",
+          "root": "semantic-adequacy-03r4",
+          "sha256": "c082613034862416312b5ad137b370e0a20b731279ff789a1e6d106056a6d80d"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1501,
+              "path": "LICENSE",
+              "sha256": "ef09c2e1c99b2d6dbdf9e742c6dd8342af6ea35bcb8ab811a6c727a9f83eed94"
+            },
+            {
+              "bytes": 7302,
+              "path": "src/feu/version/pypi.py",
+              "sha256": "0deaa24f71b7bc7707604b5b3476f04ef705f15b376a9d703624aa1eb47a3c10"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-03r4-target.tar.gz",
+          "root": "semantic-adequacy-03r4",
+          "sha256": "290101da505b4ef594148d5e9201e06830727fc92c20628452298bdb5047f0eb"
+        }
+      },
+      "changed_paths": [
+        "src/feu/version/pypi.py"
+      ],
+      "faults": [],
+      "index": 3,
+      "license_spdx": "BSD-3-Clause",
+      "merge_parent_is_lineage_only": true,
+      "merge_parent_revisions": [
+        "2a25b73edaa866743557916d247ed25d042cd4c2"
+      ],
+      "merge_revision": "204f88542c3e1452f44b6f6c5b593b8181310f1f",
+      "merged_utc": "2026-08-02T19:12:13Z",
+      "opaque_task_id": "semantic-ir-adequacy-03r3",
+      "parent_revision": "2a25b73edaa866743557916d247ed25d042cd4c2",
+      "pr_base_head_authoritative": true,
+      "pull_request": 901,
+      "pull_request_url": "https://github.com/durandtibo/feu/pull/901",
+      "repository": "durandtibo/feu",
+      "selected_source_paths": [
+        "src/feu/version/pypi.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "60150d039af6cd1dc7f70bed4bfa7bb8a1d693f5",
+      "title": "Fix bug",
+      "trigger_state": "GREEN"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1636,
+              "path": "LICENSE.txt",
+              "sha256": "1ca78e1dec9dcebc55f3b96a862317f23e76422c5fc943568d955aad1f6b5fad"
+            },
+            {
+              "bytes": 26488,
+              "path": "statsmodels/stats/multitest.py",
+              "sha256": "0b1f96dcf572e41eafc7944bc5d80bc00f68221f4ba5547cb51d08db590fe0b7"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-04r4-parent.tar.gz",
+          "root": "semantic-adequacy-04r4",
+          "sha256": "d9b9f1d279f329f2e2ec7e9404d578cb2316e7595710320e2f08a5b2a4e8abd3"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1636,
+              "path": "LICENSE.txt",
+              "sha256": "1ca78e1dec9dcebc55f3b96a862317f23e76422c5fc943568d955aad1f6b5fad"
+            },
+            {
+              "bytes": 26808,
+              "path": "statsmodels/stats/multitest.py",
+              "sha256": "6bfe2cf7c4b41cf542857efbad9908c457fe062f45111e4197ce7dd40b4ae176"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/semantic-adequacy-04r4-target.tar.gz",
+          "root": "semantic-adequacy-04r4",
+          "sha256": "d9d36353fa4cf69712529f96dad0970fe5dbc9ae7c155a426bee467de7d120a4"
+        }
+      },
+      "changed_paths": [
+        "statsmodels/stats/multitest.py",
+        "statsmodels/stats/tests/test_multi.py"
+      ],
+      "faults": [],
+      "index": 4,
+      "license_spdx": "BSD-3-Clause",
+      "merge_parent_is_lineage_only": true,
+      "merge_parent_revisions": [
+        "d3cb403cb5d0681c73e283d08db0ea258403186b",
+        "b401bea6a55be3f5a245f9f7a7448ef1639ecac0"
+      ],
+      "merge_revision": "57d01f5b3893f2e3693df3af5b00a023abeaf6fa",
+      "merged_utc": "2026-08-03T06:07:09Z",
+      "opaque_task_id": "semantic-ir-adequacy-04r3",
+      "parent_revision": "d3cb403cb5d0681c73e283d08db0ea258403186b",
+      "pr_base_head_authoritative": true,
+      "pull_request": 10013,
+      "pull_request_url": "https://github.com/statsmodels/statsmodels/pull/10013",
+      "repository": "statsmodels/statsmodels",
+      "selected_source_paths": [
+        "statsmodels/stats/multitest.py"
+      ],
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "b401bea6a55be3f5a245f9f7a7448ef1639ecac0",
+      "title": "BUG: multipletests raises ZeroDivisionError on an empty p-value array",
+      "trigger_state": "GREEN"
+    }
+  ],
+  "source_pairs_admitted": true,
+  "state": "FOUR_SOURCE_PAIRS_FROZEN_BEFORE_V6_EVALUATOR_QUALIFICATION",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_API_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "request_count": 28,
+    "response_digest_chain_sha256": "16e9276ba3c6cfeb5132fa94b68837efebcfb03d3d1abb20279c453870c73060"
+  },
+  "trigger_state": "GREEN"
+}

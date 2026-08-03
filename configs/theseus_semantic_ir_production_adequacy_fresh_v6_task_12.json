@@ -1,0 +1,91 @@
+{
+  "allowed_effect_paths": [
+    "ed_push.py"
+  ],
+  "campaign_index": 12,
+  "candidate_visible_context": {
+    "full_selected_parent_sources": true,
+    "missing_allowed_effect_paths": [],
+    "project_selected_character_or_token_cap": null,
+    "reads": [
+      {
+        "end_line": 453,
+        "path": "ed_push.py",
+        "start_line": 1
+      }
+    ],
+    "searches": []
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "licensed_source_disjoint_python_causal_repair",
+  "maximum_inference": "One implementation-adequacy observation only; no treatment, D1, D2, serving, training, or book-support claim.",
+  "natural_request": "Before converting a challenge writeup, remove one duplicated leading Markdown H1 because the platform already renders the challenge title. Preserve distinct headings, title-free content, and the remainder of the writeup. Modify only ed_push.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "A duplicated leading H1 is removed exactly once before conversion."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Distinct headings, title-free content, body content, and upload behavior remain unchanged."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Modify only the declared allowed effect paths; do not alter unrelated behavior or files."
+    }
+  ],
+  "opaque_task_id": "semantic-ir-adequacy-12",
+  "partition": "semantic_ir_production_implementation_adequacy",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "candidate_copies_full_node_sha256": false,
+    "create_file_allowed_only_for_declared_missing_effect_paths": true,
+    "full_node_sha256_resolved_independently": true,
+    "inventory_truncation_allowed": false,
+    "maximum_semantic_scope_nodes": 277,
+    "maximum_symbol_nodes": 277,
+    "node_handle_bits": 128,
+    "role_partition_source_target_loss_and_dependency_identity_required": true,
+    "statement_scope_policy": "all_candidate_visible_python_statements_compact_128bit_v1",
+    "version": "THESEUS_SEMANTIC_IR_V4_COMPACT"
+  },
+  "source_archive": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-12-parent.tar.gz",
+  "source_archive_root": "semantic-adequacy-12",
+  "source_archive_sha256": "54ba66172f21de8111f9e7e8928dafcea060f46b4d37fb154e0a06f4558fcf99",
+  "source_provenance": {
+    "license_spdx": "MIT",
+    "revision": "9700c0f184cce8703fc6f98ee90d53abaf4f17b8",
+    "url": "https://github.com/purduecsbridge/ed-push"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "SyntaxError",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": false,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import ast,sys; [ast.parse(open(p, encoding='utf-8').read(), filename=p) for p in sys.argv[1:]]",
+      "ed_push.py"
+    ],
+    "timeout_seconds": 60
+  }
+}

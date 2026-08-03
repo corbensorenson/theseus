@@ -343,6 +343,17 @@ representation-mechanics evidence. Acquire and evaluator-qualify four new
 post-snapshot sources for consumed indices 1-4, uniformly rebind unexposed 5-18,
 and seal the fresh campaign before testing host operability.
 
+The source and pool portion of that boundary is now GREEN. Exact PR base/head
+pairs from Apache-2.0 LightLLM, GPL-3.0 translation-finder, BSD-3-Clause feu,
+and BSD-3-Clause statsmodels replace consumed indices 1-4 and are repository-
+disjoint from the full prior denominator. Independent evaluators distinguish
+parent, target, benign, required-mechanism mutation, missing-path, and
+unauthorized-path controls before packet creation. Unexposed indices 5-18 were
+regenerated—not byte-copied—under the same compact ABI. The resulting pool has
+18 unique repositories, three tasks in each of six strata, zero candidate/model
+calls, and a 45,113-token maximum exact prompt. Bind the candidate runner and
+blind scorer to this exact pool and runtime before opening candidate generation.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
