@@ -54,7 +54,8 @@ change.
 | Canonical runtime | `P1_ROUTE_MECHANICS_GREEN` | Direct and integrated requests traverse the same local backend and effect sandbox; integrated receipts reach live downstream execution, but usefulness is unproven |
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
-| D1 | `CLOSED_NO_SURVIVOR` | The failed implementation cannot consume the prepared fresh qualification surface |
+| Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
+| D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
 | Repository state | `SOURCE_BOUND_REGISTRY_GREEN` | The recenter and registry repairs are committed. The last complete registry gate reported zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities, with 11 eligible routes source-bound |
@@ -236,9 +237,9 @@ authorize regenerating historical reports or reopening neural work.
 2. **Complete:** source-bind and offline-qualify the Luna adapter, exact
    receipt, completion telemetry, no-serving/no-training boundary, evaluator
    contract, and campaign-derived cost authority with zero reference calls.
-3. **Active:** repair Semantic-IR identity/coverage/target/unit mechanics on non-claim
-   evidence through the exact production path.
-4. Run an independent adequacy audit and either admit one fresh campaign or
+3. **Complete:** repair Semantic-IR identity/coverage/target/unit mechanics on
+   bounded non-claim evidence through the exact production path.
+4. **Active:** run an independent adequacy audit and either admit one fresh campaign or
    freeze the implementation.
 5. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
@@ -265,9 +266,11 @@ authorize regenerating historical reports or reopening neural work.
 ## Honest Walls
 
 - No subsystem claim has earned source-disjoint D1 qualification.
-- The exact Semantic-IR implementation is inadequate; its broader claim is
-  unresolved.
-- The Luna transport is unbound and zero calls are authorized.
+- The historical Semantic-IR implementation was inadequate. The replacement
+  production mechanics are bounded-green, but independent adequacy and the
+  broader claim remain unresolved.
+- The Luna transport is source-bound and offline-qualified; it remains disabled
+  and has made zero project calls.
 - The neural checkpoint has no capability result and D2 remains sealed.
 - The generated surface is large and ownership is diffuse.
 - Local security evidence does not authorize LAN or public exposure.

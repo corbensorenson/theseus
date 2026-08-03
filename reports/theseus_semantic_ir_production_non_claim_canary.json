@@ -1,0 +1,135 @@
+{
+  "config_audit": {
+    "config_sha256": "c1af8d4dc5399934d170a8125a6273dfe848884b1b7865ca5aa468a8864585c3",
+    "counters": {
+      "D1_cases_consumed": 0,
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "hidden_evaluator_calls": 0,
+      "local_model_calls": 0,
+      "teacher_calls": 0,
+      "training_rows_written": 0
+    },
+    "created_utc": "2026-08-03T00:56:06.052256Z",
+    "faults": [],
+    "policy": "project_theseus_semantic_ir_production_config_audit_v1",
+    "trigger_state": "GREEN"
+  },
+  "config_sha256": "c1af8d4dc5399934d170a8125a6273dfe848884b1b7865ca5aa468a8864585c3",
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "local_model_calls": 2,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T00:58:29.109064Z",
+  "faults": [],
+  "maximum_inference": "This observation decides only whether the frozen local model can traverse the exact repaired Semantic-IR production path on one project-authored, source-disjoint non-claim task. It cannot establish a subsystem treatment effect, task-distribution competence, D1, D2, serving, training, or book support.",
+  "mechanics": {
+    "authorized_effects": true,
+    "changed_paths": [
+      "sample.py"
+    ],
+    "final_actions": 1,
+    "final_apply_faults": [],
+    "final_artifact_sha256": "b96e8853f564677896b8519a0f7cf1b675ef8d0fe12ba2af3c31587b6765fc9d",
+    "final_parse_faults": [],
+    "first_apply_faults": [],
+    "first_artifact_sha256": "da24c516ac1d9e0178538f79fd9e8ef0cba658d2bcba2e192800b2f533377bdd",
+    "first_parse_faults": [],
+    "natural_completion_passed": true,
+    "parse_lower_apply_passed": true,
+    "repair_prompt_contains_complete_first_artifact": true,
+    "route_integrity_passed": true,
+    "visible_verifier_passed": true
+  },
+  "model": {
+    "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+    "model_loads": 1,
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560"
+  },
+  "policy": "project_theseus_semantic_ir_production_non_claim_canary_v1",
+  "project_selected_quality_token_cap": null,
+  "runtime_ms": 143059.045,
+  "runtime_receipts": [
+    {
+      "call_number": 1,
+      "candidate_output_sha256": "da24c516ac1d9e0178538f79fd9e8ef0cba658d2bcba2e192800b2f533377bdd",
+      "report_path": "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_1.json",
+      "report_sha256": "cc8f9acf13660f4af21c89f0c6942d0ded9b215af756201b3b4b617612b083c6",
+      "returncode": 0,
+      "route_integrity_ready": true,
+      "runtime_failed_gates": [],
+      "runtime_ms": 73980.802,
+      "runtime_trigger_state": "GREEN"
+    },
+    {
+      "call_number": 2,
+      "candidate_output_sha256": "b96e8853f564677896b8519a0f7cf1b675ef8d0fe12ba2af3c31587b6765fc9d",
+      "report_path": "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_2.json",
+      "report_sha256": "505deb984557aee86ae842d1a5d0c0589f65ac63e712e65244338fbdb347d3ab",
+      "returncode": 0,
+      "route_integrity_ready": true,
+      "runtime_failed_gates": [],
+      "runtime_ms": 60768.42,
+      "runtime_trigger_state": "GREEN"
+    }
+  ],
+  "scope": "Source-disjoint model-produced non-claim production mechanics only.",
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "f886f698016039ff08f7aa3a7ee06d9ed6e8c8e35b4318430c6adaa7600d9a72",
+    "task_sha256": "2e220285f32f157e67dd500aea5405cebde7ab8c0c10fd1c9291bd1417192a66",
+    "trigger_state": "GREEN"
+  },
+  "task_sha256": "2e220285f32f157e67dd500aea5405cebde7ab8c0c10fd1c9291bd1417192a66",
+  "termination_telemetry": [
+    {
+      "arm_id": "typed_semantic_ir_production_non_claim",
+      "backend_finish_reason": null,
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_production_non_claim_01_attempt1_direct_local_model_1_e3ba88d1b99082cd.json",
+      "backend_report_sha256": "8f944beb149cdf0b5a45825ed9a51a7d1335a4d88a46f3484e45b2e4d70c207a",
+      "call_number": 1,
+      "completion_predicate_enabled": true,
+      "effective_maximum_tokens": 261335,
+      "generated_tokens": 239,
+      "model_context_window_tokens": 262144,
+      "prompt_tokens": 809,
+      "runtime_report": "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_1.json",
+      "runtime_report_sha256": "cc8f9acf13660f4af21c89f0c6942d0ded9b215af756201b3b4b617612b083c6",
+      "safety_ceiling_hit": false,
+      "termination_reason": "parser_complete"
+    },
+    {
+      "arm_id": "typed_semantic_ir_production_non_claim",
+      "backend_finish_reason": null,
+      "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_production_non_claim_01_attempt1_direct_local_model_2_a3905953d0787210.json",
+      "backend_report_sha256": "80027774eee2bd0b0c37a8158232b764ede3fe97b7aa7eb4e433abe76fbd84cc",
+      "call_number": 2,
+      "completion_predicate_enabled": true,
+      "effective_maximum_tokens": 261009,
+      "generated_tokens": 243,
+      "model_context_window_tokens": 262144,
+      "prompt_tokens": 1135,
+      "runtime_report": "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_2.json",
+      "runtime_report_sha256": "505deb984557aee86ae842d1a5d0c0589f65ac63e712e65244338fbdb347d3ab",
+      "safety_ceiling_hit": false,
+      "termination_reason": "parser_complete"
+    }
+  ],
+  "trigger_state": "GREEN"
+}

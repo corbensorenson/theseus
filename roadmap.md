@@ -179,29 +179,27 @@ Current maximum inference: the exact frozen TMax plus Semantic-IR v2r2
 implementation did not meet its own mechanics floor on the consumed P4 surface.
 That result says nothing decisive about cognitive compilation generally.
 
-### 2. Repair the exact mechanics owner on non-claim evidence
+### 2. Qualify the repaired mechanics owner independently
 
-The repair target is the observed identity/coverage/target/unit transport wall,
-not another campaign launcher. Reuse the existing Semantic-IR owners and report
-families.
+The observed identity/coverage/target/unit transport wall now has one canonical
+role-aware production owner. It passes ten deterministic production-path
+conformance fixtures, exact identity round trips, seven corruption classes, and
+one frozen-TMax model-produced non-claim canary through the real route. The
+canary made two naturally completed local calls and zero external, hidden,
+teacher, training, D1, or D2 calls.
 
-Required work:
+That closes the bounded repair stage only. It does not establish distributional
+competence or a treatment effect. The independent adequacy owner must now:
 
-1. replace ad hoc delimiter growth with one canonical typed schema and one
-   source-independent canonicalizer;
-2. allow only non-answer-bearing normalization; do not repair semantic content
-   from hidden targets or silently turn malformed output into success;
-3. use constrained decoding or schema enforcement when the backend supports it,
-   while reporting that transport difference explicitly;
-4. exercise every reachable production construct through the exact live
-   renderer-to-verifier path;
-5. qualify model-produced IR on a source-disjoint non-claim panel, not only
-   hand-authored examples;
-6. prove stable source, obligation, target, unit, and dependency identities;
-7. prove corruption rejection, intervention sensitivity, dependency-local
-   repair, unrelated-unit stability, and known-positive reachability; and
-8. derive the competence floor and panel size from the planned observable
-   effect, rather than copying a ten-task tradition.
+1. verify mechanism fidelity and known-positive reachability independently;
+2. acquire a licensed, source-disjoint, model-produced non-claim panel without
+   user task supply or labels;
+3. cover multiple edit shapes, targets, dependency structures, and difficulty
+   strata with weak-tail reporting;
+4. prove stable identities, corruption rejection, intervention sensitivity,
+   dependency-local repair, and unrelated-unit stability; and
+5. derive the competence floor and panel size from the planned observable
+   effect rather than copying a ten-task tradition.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
@@ -374,9 +372,9 @@ Use existing owners; create no new cleanup or report family.
 2. **Complete:** bind and offline-qualify the Luna measurement adapter, exact
    model/effort receipt, no-serving/no-training boundary, completion telemetry,
    evaluator interface, and campaign-derived cost authority with zero calls.
-3. **Active:** repair the exact Semantic-IR identity/coverage/target/unit mechanics on
-   non-claim evidence through the production path.
-4. Run an independent adequacy audit. If it fails, freeze the implementation
+3. **Complete:** repair the exact Semantic-IR identity/coverage/target/unit
+   mechanics on bounded non-claim evidence through the production path.
+4. **Active:** run an independent adequacy audit. If it fails, freeze the implementation
    and select the next architecture-shaping residual; do not open fresh tasks.
 5. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not

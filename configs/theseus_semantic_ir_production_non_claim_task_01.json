@@ -1,0 +1,115 @@
+{
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "opaque_task_id": "semantic-production-non-claim-01",
+  "campaign_index": 1,
+  "partition": "semantic_ir_production_non_claim_mechanics",
+  "family": "project_authored_python_mechanics",
+  "natural_request": "Update classify so the level `warn` returns `warning`. Preserve the existing `info`, `error`, and unknown-level behavior. Modify only sample.py.",
+  "allowed_effect_paths": [
+    "sample.py"
+  ],
+  "candidate_visible_context": {
+    "maximum_total_characters": 4000,
+    "reads": [
+      {
+        "path": "sample.py",
+        "start_line": 1,
+        "end_line": 9
+      }
+    ],
+    "searches": [
+      {
+        "literal": "LABELS",
+        "paths": [
+          "sample.py"
+        ]
+      },
+      {
+        "literal": "classify",
+        "paths": [
+          "sample.py"
+        ]
+      }
+    ]
+  },
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "classify('warn') returns 'warning'."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Preserve info, error, and unknown-level behavior."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Do not change visible_check.py or files outside sample.py."
+    }
+  ],
+  "obligation_dependencies": [
+    {
+      "before": "O2",
+      "after": "O1"
+    }
+  ],
+  "semantic_ir_contract": {
+    "version": "THESEUS_SEMANTIC_IR_V3",
+    "maximum_semantic_scope_nodes": 40,
+    "maximum_symbol_nodes": 40,
+    "maximum_units": 4,
+    "role_partition_source_target_loss_and_dependency_identity_required": true
+  },
+  "visible_feedback_map": [
+    {
+      "marker": "SEMANTIC_PRODUCTION_VISIBLE_WARN_MISSING",
+      "obligation_ids": [
+        "O1",
+        "O2"
+      ]
+    },
+    {
+      "marker": "SEMANTIC_PRODUCTION_VISIBLE_",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": true,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "visible_check.py"
+    ],
+    "timeout_seconds": 30
+  },
+  "source_archive": "tests/fixtures/theseus_semantic_ir_production_non_claim/semantic-production-non-claim-01.tar.gz",
+  "source_archive_root": "semantic-production-non-claim-01",
+  "source_archive_sha256": "f886f698016039ff08f7aa3a7ee06d9ed6e8c8e35b4318430c6adaa7600d9a72",
+  "source_provenance": {
+    "url": "local://project-theseus/semantic-production-non-claim-01",
+    "repository": "Project Theseus authored mechanics fixture",
+    "revision": "v1",
+    "registered_revision": "v1",
+    "license_spdx": "MIT",
+    "license_paths": [
+      "LICENSE"
+    ]
+  },
+  "contamination_screen": {
+    "development_task_eligible_for_training_D1_or_D2": false,
+    "later_patch_hidden_test_or_oracle_candidate_visible": false,
+    "previous_theseus_surface": false,
+    "public_benchmark": false,
+    "source_disjoint_from_all_prior_theseus_development_sources": true,
+    "task_selected_before_any_candidate_or_control": true
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "maximum_inference": "One project-authored, source-disjoint, model-produced non-claim mechanics observation only; no treatment effect, D1, D2, serving, training, or ASI Stack support claim."
+}

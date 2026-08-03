@@ -1,0 +1,50 @@
+{
+  "config_audit": {
+    "config_sha256": "6d3838c88726fbffb3e852783ba22d2f9402b0b67656383c8ec06190977c882c",
+    "counters": {
+      "D1_cases_consumed": 0,
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "hidden_evaluator_calls": 0,
+      "local_model_calls": 0,
+      "teacher_calls": 0,
+      "training_rows_written": 0
+    },
+    "created_utc": "2026-08-03T00:53:58.255559Z",
+    "faults": [],
+    "policy": "project_theseus_semantic_ir_production_config_audit_v1",
+    "trigger_state": "GREEN"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T00:53:58.261170Z",
+  "faults": [
+    "persistent_backend_not_ready:qualified_mlx_runtime_missing"
+  ],
+  "policy": "project_theseus_semantic_ir_production_non_claim_canary_v1",
+  "runtime_ms": 5.98,
+  "task_audit": {
+    "counters": {
+      "D2_cases_consumed": 0,
+      "external_inference_calls": 0,
+      "fallback_return_count": 0,
+      "public_calibration_cases_consumed": 0,
+      "public_training_rows_written": 0,
+      "teacher_calls": 0,
+      "user_facing_effects": 0
+    },
+    "faults": [],
+    "policy": "project_theseus_p4_cognitive_compilation_task_audit_v1",
+    "source_archive_sha256": "b49d3da4d1d1e6a3f2d49ef3b302844b3cb311806b12f0dd480fc3a5e2d45181",
+    "task_sha256": "db92cdc6ed8ff7f371b60eaeabd89cd53b6003728f329b362d88d946d9ef068a",
+    "trigger_state": "GREEN"
+  },
+  "trigger_state": "RED"
+}

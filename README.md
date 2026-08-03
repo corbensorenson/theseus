@@ -44,6 +44,10 @@ availability alone cannot resume neural training.
   and Semantic IR 0/10, but the Semantic-IR path parsed and lowered only 2/10
   against its frozen 8/10 mechanics floor. No broad mechanism conclusion is
   allowed and D1 remains closed.
+- The replacement role-aware Semantic-IR production owner passes 10/10
+  deterministic conformance fixtures and one source-disjoint project-authored
+  TMax canary with 2/2 naturally completed production-path artifacts. This
+  closes bounded mechanics repair only; independent adequacy is active.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
   separately denominated OpenAI measurement-only reference. Its exact
   Responses API adapter is source-bound and offline-qualified; calls remain
@@ -93,9 +97,11 @@ ASI Stack claim
 ```
 
 The active claim is `cognitive-compilation-and-semantic-ir.core`. The immediate
-work is to repair its identity, coverage, target, and unit transport mechanics
-on non-claim evidence. A new task pool opens only if the exact production path
-passes an independent adequacy audit.
+production mechanics repair is complete: one canonical role-aware schema now
+passes deterministic conformance, corruption rejection, and an exact-route
+model-produced non-claim canary. The active work is the independent adequacy
+audit. One easy project-authored canary is not task-distribution competence, a
+subsystem effect, or authority to open D1.
 
 ## Repository Map
 
@@ -137,11 +143,10 @@ python3 -m pytest -q tests/test_roadmap_book_sync.py \
 ```
 
 Some tests are intentionally artifact-, MLX-, or platform-gated. A skip is not
-a capability pass. During the current uncommitted recentering transaction the
-roadmap gate is expected to be `YELLOW` with zero hard gaps and the project
-registry is expected to be `RED` on content-bound source/route receipts. Rebind
-those once at a coherent source boundary; do not use piecemeal report refreshes
-to manufacture a green worktree.
+a capability pass. The recenter, registry repair, and source-bound Luna adapter
+are committed. New active-claim evidence must be rebound once at each coherent
+source boundary; do not use piecemeal report refreshes to manufacture a green
+worktree.
 
 For local runtime inspection:
 
@@ -176,7 +181,8 @@ and autonomous resource and rollback readiness. D2 remains sealed until then.
 
 - No ASI Stack mechanism has yet earned source-disjoint D1 qualification.
 - The exact Semantic-IR implementation failed its mechanics floor; the broader
-  cognitive-compilation claim remains unresolved.
+  cognitive-compilation claim remains unresolved. Its replacement production
+  owner has passed bounded mechanics evidence but not independent adequacy.
 - The Luna transport is bound but no future four-cell claim pool, independent
   evaluator, custody path, and spend authority are prospectively sealed, so no
   hosted reference call is authorized.

@@ -1,0 +1,61 @@
+{
+  "policy": "project_theseus_semantic_ir_production_v1",
+  "state": "PRODUCTION_MECHANICS_REPAIR_ACTIVE",
+  "purpose": "Bind one canonical role-aware Semantic-IR production owner and test it on source-disjoint model-produced non-claim evidence before any fresh claim campaign opens.",
+  "production_owner": "scripts/theseus_semantic_ir_production.py",
+  "production_owner_sha256": "6a48cbd5b763343f7edbb65292881f186fd4714ae2ab6d12092d6bc2b4295f20",
+  "conformance_report": "reports/theseus_semantic_ir_production_conformance.json",
+  "conformance_report_sha256": "ca022c60362fa9ae064dac3c26d4d28e02d8d4ac9adecafb172840582ba15c8f",
+  "non_claim_task": "configs/theseus_semantic_ir_production_non_claim_task_01.json",
+  "non_claim_task_sha256": "2e220285f32f157e67dd500aea5405cebde7ab8c0c10fd1c9291bd1417192a66",
+  "base_local_instrument": "configs/theseus_p4v2r2r3_local_instrument.json",
+  "base_local_instrument_sha256": "98ca21e5c7ddbb4987a6faf51093af29e8b17ac27a2ddb61a3121384740bd16f",
+  "candidate_runner": "scripts/theseus_semantic_ir_production_canary.py",
+  "candidate_runner_sha256": "aeece764ccbf29bc5914e1c75f5ea52f7df35b4de9d29b3c382ec3bad01aa67f",
+  "frozen_model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "role": "STATIC_NON_CLAIM_MECHANICS_INSTRUMENT"
+  },
+  "generation_completion": {
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "project_selected_quality_token_cap": null,
+    "numeric_boundary": "pinned_model_declared_context_minus_exact_prompt_tokens",
+    "physical_boundary_hit_invalidates_observation": true,
+    "physical_boundary_hit_is_mechanism_failure": false
+  },
+  "mechanics_contract": {
+    "model_calls": 2,
+    "first_call": "complete production Semantic-IR artifact",
+    "second_call": "complete repaired artifact with complete first artifact and complete visible verifier feedback",
+    "hidden_evaluator_calls": 0,
+    "effect_scope": "disposable_snapshot_only",
+    "required_path": [
+      "production_renderer",
+      "local_route_integrity",
+      "production_transport",
+      "role_aware_parser",
+      "target_identity_resolver",
+      "deterministic_lowerer",
+      "disposable_applier",
+      "visible_verifier",
+      "complete_repair_prompt"
+    ]
+  },
+  "authority": {
+    "user_or_operator_approval_required": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "hidden_evaluator_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false
+  },
+  "next_gate": "A GREEN model-produced canary permits an independent implementation adequacy audit, not a claim campaign. A YELLOW canary repairs this owner on non-claim evidence or freezes it; it does not consume fresh claim or D1 evidence.",
+  "maximum_inference": "The bound source and conformance receipt establish production mechanics only. Model competence and subsystem effect remain untested until the non-claim canary and independent adequacy gate finish."
+}

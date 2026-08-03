@@ -1,0 +1,280 @@
+{
+  "bindings": {
+    "pool": {
+      "path": "configs/theseus_p4v2r2r2_task_pool.json",
+      "sha256": "7c78025dcbad76a637016a8287e2fd6c94b7f1dc580959a8c9fd3c4e1215ef1f"
+    },
+    "production_owner": {
+      "path": "scripts/theseus_semantic_ir_production.py",
+      "sha256": "6a48cbd5b763343f7edbb65292881f186fd4714ae2ab6d12092d6bc2b4295f20"
+    }
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "coverage": {
+    "complete_first_artifact_in_repair_prompt": true,
+    "consumed_evaluator_only_mechanics_fixtures": 10,
+    "corruption_rejections": {
+      "change_coverage": 10,
+      "coordinate_identity": 10,
+      "non_goal_mutation": 10,
+      "role_identity": 10,
+      "source_identity": 10,
+      "target_hash": 10,
+      "unparsed_text": 10
+    },
+    "exact_coordinate_round_trips": 10,
+    "operation_mechanics": {
+      "INSERT_AFTER": 1,
+      "INSERT_BEFORE": 2,
+      "REPLACE": 14
+    },
+    "parse_lower_apply_visible_passes": 10
+  },
+  "created_utc": "2026-08-03T00:53:16.718911Z",
+  "faults": [],
+  "maximum_inference": "The canonical production schema, role-aware parser, target resolver, deterministic lowerer, disposable applier, visible verifier, corruption interventions, and complete repair prompt conform on retained evaluator-only mechanics fixtures. This is non-claim mechanics evidence only and does not rescore a model candidate or establish competence, treatment effect, D1, D2, serving, training, or ASI Stack book support.",
+  "policy": "project_theseus_semantic_ir_production_conformance_v1",
+  "project_selected_quality_token_cap": null,
+  "runtime_ms": 1423.101,
+  "tasks": [
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "e2037f3f1b667725e5694a4861dd39f567afd7ea1342d9fd6dc2dabbd3881f72",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 2,
+      "prompt_sha256": "a7a8e83595def9621793a6cbc1bbb4477fd2b1b9bef429b4da3d938cd3dd0f9e",
+      "repair_prompt_sha256": "c3d77af16659550972bd98cc4d58bafbfef79e831a27d08500549e516e69d109",
+      "stem": "p4v2r2r2_01_h11_181",
+      "task_sha256": "32bb645f0009f55a6a829595482af6e2990105a36d6729c1bd06d5e66cd87215",
+      "upgraded_oracle_sha256": "147fdc0abccd3f8ee56b73898f1f366e44768dee97490cc4c42c899e23f9ef8e",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "cd66e384687cd356d5dc6e8c7d60e5e629d30549ac6d6ffdd78f03e3de5a0274",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 2,
+      "prompt_sha256": "5b7f34cd17a6600cd7aa3bb9fabccf24f43ac897c21fce7ecc82d2868eccff27",
+      "repair_prompt_sha256": "2f051abc04b58d87893b683bb5577f365748fb2764076553081a1a2d6657096f",
+      "stem": "p4v2r2r2_02_h2_1313",
+      "task_sha256": "10da469ea17cb433f121398ffc1b260f4fa0ea7cf07d17a8389aeec9a3ba55ba",
+      "upgraded_oracle_sha256": "f4b1a0a708e307fa86cdf2c04e65765d088d7d7fed0e4000fc471b99368268eb",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "fd770341b0e98fb8359eaad083038e3c65b2f478625ede437b2c47bd3af6260c",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 1,
+      "prompt_sha256": "140f15f658fa506c4dab2d51323e9a2ba739bad2cac0d4a81a858756296aab5c",
+      "repair_prompt_sha256": "25342c49d2c0c5df030e438690c2cef78e75aaa6953919885bcf62ddcddfbab1",
+      "stem": "p4v2r2r2_03_pygments_3215",
+      "task_sha256": "cdf3a8654438897b33e0b93f3ddf9cd15a47869b36c22a0776876b3eea541dfb",
+      "upgraded_oracle_sha256": "c8d1d96c01d9143568ea66b58cf0d09b89c12f0d34522f459c5402634aad069a",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "00b91843c47f70cf5c55b5e282b4b4e589a6a0472a1ac8d3ca8d699d089f9d1b",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 1,
+      "prompt_sha256": "39b7c5bae370f073a03491f82abbd57082d322926d13c21475b83b86df1900a4",
+      "repair_prompt_sha256": "a4a66245f82901895b37b2682b5975b982bea2ca967e82b3acd9f77a2a90f70c",
+      "stem": "p4v2r2r2_04_pluggy_545",
+      "task_sha256": "19456a3f95227657d932089a8cb620e37d69500229c10b82929f4a352758a7d6",
+      "upgraded_oracle_sha256": "9b23e893bc016b10d198b0b17c9f9424a88a1ff90264ff2444b65cb4e563913b",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "f7b3ce686eb7534a9350469cbc34c6d7bc112ae49bc65dab3e885e287dbe33b5",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 1,
+      "prompt_sha256": "bdb8a5b934566563636be0191f5c2b995c964c9d824a95f6586deffa154dc05a",
+      "repair_prompt_sha256": "9d994c17586d7281e263676d3ed48692a8faa7874613dd8dcbbbc44b20effa37",
+      "stem": "p4v2r2r2_05_asgiref_537",
+      "task_sha256": "ff2ef6c29e79e6afd8c3c183551ced535527d721c31b491121e963ef1188c524",
+      "upgraded_oracle_sha256": "634c60743fd108b130c9d279cc10625f806923cdbfe3b3b55019c69a42eedb19",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "973ae293249d4a9afaba461dd0424c9ae8c19052aa95ca86421b295e38b8a493",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 2,
+      "prompt_sha256": "513b6afcef1b366dc4da646ee97d4bcb8c48e8a2c1d4384a72a9d0db86aca56f",
+      "repair_prompt_sha256": "d688a7c4d240dacf79dd87669a1ff13b08f7b8ab5ba8d5f03b2077174683fd1f",
+      "stem": "p4v2r2r2_06_platformdirs_469",
+      "task_sha256": "db63ae21aa5cf8dd6b7c3d1819eefd4b50671819de6d0b4d6bd516307191b050",
+      "upgraded_oracle_sha256": "67c839f81789d6ebf7d23f257455ab1e20abfb893067f57798a5907d97e581df",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "57d29fad2436599bdc7d1044da93e9222be8bff4bb6ca32d0e219361b45ccd49",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 1,
+      "prompt_sha256": "a35c1606e8f05fb26cae1303e7bccc5d6d3f68b761e3a9f5d0daab8441c09f5c",
+      "repair_prompt_sha256": "2f5fc3e1481df8852e11f7ab1ee61e5ece786b2ef404d858be86b05eebb5529d",
+      "stem": "p4v2r2r2_07_markupsafe_418",
+      "task_sha256": "b0e59c899e2b3da4fb6bf6f98de767000fa2c1b2cf16fbb174bee4d0f2b4d5b8",
+      "upgraded_oracle_sha256": "f762ecff4bb6c6013d816e343f79014035e6e89885647374970de4615fbd85a7",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "1ec87bedcfb11b759bfe0442c8356e3954f7dd0e8afdaa79b71c01b3ca214ab3",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 2,
+      "prompt_sha256": "e55b30871509408ea807464fa38651e52583a7e20e11ac90bf43c7a0fdca38a0",
+      "repair_prompt_sha256": "84dbe1bb3d9db3121d8bc54ff086e75fc59231be70a5568a3d4bd3d43ace9833",
+      "stem": "p4v2r2r2_08_itsdangerous_378",
+      "task_sha256": "7de6f2ddbe2adc7ebc8851f9210c683cb9d00f9d24e9617e817189156034a127",
+      "upgraded_oracle_sha256": "248b141b8a66677dd777de4c1bb1b2947e307fbfe566472bf03ebd293269f644",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "e8c062253171eefbcde9f1403fe36b8cad1ff4d61ad66d5dbd647789c10c10f7",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 1,
+      "prompt_sha256": "262c4d0988b16edff077d861c154a9113ff46afc17ba0e2503d194a05741465e",
+      "repair_prompt_sha256": "a5ba8481bb8d15a0bfbcb789a40618ee64feefb0f39afa5a2749005eded95fb6",
+      "stem": "p4v2r2r2_09_tryceratops_75",
+      "task_sha256": "714165e68502283e715d959dd7aaa95021e6b8b0303b1a862a9002e5128017b8",
+      "upgraded_oracle_sha256": "e68da8c059a2a3b8d37a7fa39aca420acc5ee0952bc25bd303e779d102a7f81f",
+      "visible_verifier_passed": true
+    },
+    {
+      "apply_faults": [],
+      "candidate_or_control_calls": 0,
+      "corruption_rejections": {
+        "change_coverage": true,
+        "coordinate_identity": true,
+        "non_goal_mutation": true,
+        "role_identity": true,
+        "source_identity": true,
+        "target_hash": true,
+        "unparsed_text": true
+      },
+      "evaluator_only_oracle_sha256": "d8854c6ee313a5bb44f0b5f5a17f42038417f3ab15d915bdf6c75ba8595d65bd",
+      "exact_coordinate_round_trip": true,
+      "hidden_evaluator_calls": 0,
+      "parse_lower_actions": 1,
+      "prompt_sha256": "fa4cf6b855d3fdf709e89cb9bd9b78e75a03b6a9060ace9c2c6cf14ed84339d6",
+      "repair_prompt_sha256": "f4df75058ad06b8f6f7d6b4076ae6a7fbff751e9091d49aaf734c523684eb39b",
+      "stem": "p4v2r2r2_10_xarray_11401",
+      "task_sha256": "1efbc41377a13365907639f31c2e1ebd7dd70d782abb8e28dfd18e45e9a6eb79",
+      "upgraded_oracle_sha256": "05f818612cd24fecf02e224d4d6122afeeb612352029b2f69707692b5b83270b",
+      "visible_verifier_passed": true
+    }
+  ],
+  "trigger_state": "GREEN"
+}

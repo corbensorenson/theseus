@@ -12,9 +12,9 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
-      "state": "TERMINAL_P4_INCONCLUSIVE_IMPLEMENTATION_MECHANICS_REPAIR_ACTIVE",
-      "observed_residual": "semantic_ir_identity_coverage_target_unit_transport",
-      "next_evidence_class": "SOURCE_DISJOINT_NON_CLAIM_PRODUCTION_PATH_MECHANICS",
+      "state": "PRODUCTION_MECHANICS_REPAIRED_INDEPENDENT_ADEQUACY_ACTIVE",
+      "observed_residual": "implementation_adequacy_power_diversity_independence",
+      "next_evidence_class": "INDEPENDENT_SOURCE_DISJOINT_NON_CLAIM_ADEQUACY",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
       "maximum_inference": "The exact frozen TMax plus Semantic-IR v2r2 implementation missed its mechanics floor; cognitive compilation generally remains unresolved."
@@ -92,8 +92,8 @@
     "immediate_execution_order": [
       "complete_source_controlled_program_recenter_neural_hold_and_registry_rebind",
       "complete_luna_transport_offline_qualification_with_zero_calls",
-      "active_repair_semantic_ir_production_path_mechanics_on_non_claim_evidence",
-      "run_independent_mechanics_adequacy_audit",
+      "complete_semantic_ir_production_path_mechanics_repair_on_bounded_non_claim_evidence",
+      "active_independent_mechanics_adequacy_audit",
       "open_at_most_one_fresh_source_disjoint_claim_campaign_only_after_adequacy",
       "qualify_a_development_survivor_once_on_fresh_D1",
       "return_claim_packet_to_book_review_without_support_movement",
@@ -5409,36 +5409,52 @@
       {
         "id": "S0",
         "title": "Program recenter and neural hold",
+        "status": "complete",
         "exit": "Roadmap, project state, README, active flagship identity, book binding, and executable launch policy agree that subsystem proof is active and the neural seed is held at step 11,992 regardless of host readiness."
       },
       {
         "id": "S1",
         "title": "Prospective Luna reference binding",
+        "status": "complete",
         "exit": "The exact approved OpenAI transport, model and xhigh receipt, wrapper, tool policy, completion telemetry, evaluator adapter, price basis, spend authority, and no-serving/no-training/no-task-selection boundaries are source-bound with zero reference calls."
       },
       {
         "id": "S2",
         "title": "Semantic-IR production mechanics repair",
+        "status": "complete_bounded_mechanics_only",
+        "source_bindings": {
+          "config": "configs/theseus_semantic_ir_production.json",
+          "production_owner": "scripts/theseus_semantic_ir_production.py",
+          "conformance_report": "reports/theseus_semantic_ir_production_conformance.json",
+          "model_produced_canary_report": "reports/theseus_semantic_ir_production_non_claim_canary.json",
+          "failed_preflight_evidence": "reports/theseus_semantic_ir_production_non_claim_canary_system_python_preflight_failure.json"
+        },
+        "bounded_result": "Ten of ten deterministic production fixtures passed parse/lower/apply/visible verification and exact coordinate round-trip; seven corruption classes were rejected on all ten. One project-authored source-disjoint non-claim TMax task produced two of two naturally completed production artifacts through the exact route. No external, hidden, teacher, training, D1, or D2 calls occurred.",
+        "maximum_inference": "The repaired owner has bounded production-mechanics evidence. One easy project-authored task cannot establish distributional competence, independent adequacy, a subsystem treatment effect, D1, D2, or book support.",
         "exit": "One canonical typed schema and source-independent canonicalizer exercise the exact production renderer, transport, parser, lowerer, applier, verifier, intervention, and repair path on source-disjoint model-produced non-claim evidence without answer-bearing repair."
       },
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
+        "status": "active",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },
       {
         "id": "S4",
         "title": "One fresh claim-development experiment",
+        "status": "blocked_by_S3",
         "exit": "One powered source-disjoint cohort runs frozen TMax direct and treatment plus prospectively sealed Luna direct and treatment when available, along with claim-specific strong controls, blind scoring, uncertainty, weak tails, rollback, and total-system cost; it receives one terminal disposition."
       },
       {
         "id": "S5",
         "title": "Fresh D1 qualification",
+        "status": "blocked_by_S4_survivor",
         "exit": "A development survivor is frozen and qualified exactly once on fresh source-disjoint D1 evidence; a non-survivor does not open D1."
       },
       {
         "id": "S6",
         "title": "Claim handoff and next residual",
+        "status": "blocked_by_terminal_claim_disposition",
         "exit": "Every denominator, failure, residual, digest, cost, replay command, maximum inference, and non-claim reaches book review with support unchanged; the observed residual selects the next single architecture-shaping claim."
       }
     ],
@@ -8210,7 +8226,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Repair the exact P4 Semantic-IR identity, obligation-coverage, target, and unit transport mechanics through one canonical typed schema and the exact production renderer-to-verifier path. Use source-disjoint model-produced non-claim evidence, corruption rejection, intervention sensitivity, dependency-local repair, and independent adequacy. Keep KERC/RDC and every alternate semantic substrate frozen unless this implementation receives a terminal disposition that specifically activates one.",
+      "smallest_next_patch": "Independently audit the repaired Semantic-IR production owner on an autonomously acquired, licensed, source-disjoint, model-produced non-claim panel. Require faithful mechanism coverage, known-positive reachability, stable identity, corruption rejection, intervention sensitivity, dependency-local repair, unrelated-unit stability, weak-tail reporting, and a power-derived floor before opening a claim denominator. Keep KERC/RDC and every alternate semantic substrate frozen unless this implementation receives a terminal disposition that specifically activates one.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -9001,13 +9017,13 @@
       },
       {
         "id": "T4",
-        "state": "active_semantic_ir_identity_coverage_target_unit_mechanics_repair",
+        "state": "production_mechanics_repaired_independent_adequacy_active",
         "depends_on": ["T3"],
         "exit": "The exact production renderer, model-visible protocol, canonicalizer, parser, lowerer, applier, verifier, intervention, and repair path pass source-disjoint model-produced non-claim mechanics, corruption, identity, locality, and known-positive tests; otherwise freeze the implementation."
       },
       {
         "id": "T5",
-        "state": "blocked_by_T4_independent_adequacy",
+        "state": "blocked_by_T4_independent_adequacy_verdict",
         "depends_on": ["T4"],
         "exit": "If T4 is adequate, freeze one source-disjoint claim-development experiment with local direct/treatment and prospectively available Luna direct/treatment cells plus claim-specific strong controls; run it once and issue a scoped terminal disposition."
       },
