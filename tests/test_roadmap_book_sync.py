@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE",
+            "VCM_V3_STATIC_PREFETCH_SCHEDULE_GREEN_SINGLE_DEPENDENCY_CANARY_NEXT",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])

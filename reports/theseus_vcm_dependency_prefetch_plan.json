@@ -1,0 +1,3747 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_dependency_prefetch_plan.json",
+    "sha256": "3e8a36c9f00dc1786a41a09cc49968ee548cbf2eac175cddf0366781587c8167"
+  },
+  "created_utc": "2026-08-03T17:54:17.771535Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "manager_policy": {
+    "audit_and_fund_side_effects_disabled": true,
+    "content_addressed_store_required": true,
+    "dependency_store_never_training_data": true,
+    "exact_frozen_or_locked_mode_required": true,
+    "install_scripts_disabled": true,
+    "network_allowed_only_during_prefetch": true,
+    "network_denied_during_repository_execution": true
+  },
+  "maximum_inference": "A GREEN plan freezes one governing evaluator-ecosystem lock and bounded manager command per locked task. It performs no prefetch, install, build, repository, evaluator, or model execution and does not prove dependency availability or task validity.",
+  "observations": {
+    "immutable_resolution_required_task_count": 6,
+    "locked_prefetch_planned_task_count": 48,
+    "no_project_lock_required_task_count": 8,
+    "parent_target_or_evaluator_executions": 0,
+    "prefetch_executions": 0,
+    "task_count": 62,
+    "tasks_with_governing_lock": 48,
+    "tasks_with_known_package_estimate": 48,
+    "tasks_with_prefetch_command": 48,
+    "tasks_with_unknown_package_estimate": 0
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_dependency_prefetch_plan_v1",
+  "reports": {
+    "dependency_classes": {
+      "path": "reports/theseus_vcm_dependency_class_audit_v2.json",
+      "sha256": "1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"
+    },
+    "runner_inventory": {
+      "path": "reports/theseus_vcm_repository_runner_inventory_v3.json",
+      "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"
+    },
+    "toolchains": {
+      "path": "reports/theseus_vcm_toolchain_identity_audit_v2.json",
+      "sha256": "544a9a5312f5123289f4940a677fe5322bd45ef3f3645bac2bca2b87ba3cd1bf"
+    }
+  },
+  "resource_policy": {
+    "boundary_activation_disposition": "INCONCLUSIVE_INSTRUMENT_NOT_TASK_OR_MECHANISM_FAILURE",
+    "execution_order": "strictly_sequential_smallest_estimated_lock_graph_first",
+    "maximum_output_mib": 32,
+    "maximum_process_group_rss_mib": 8192,
+    "maximum_retained_bytes_per_task": 4294967296,
+    "maximum_wall_seconds_per_task": 1800,
+    "minimum_free_bytes_after_each_task": 10737418240
+  },
+  "rows": [
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 1,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "JavaScript",
+      "repository": "endoftheline818/opensourcesai-cmdcenter",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 591,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "e1183b245c2a729b05c796c8ca86401379612ca7613ac7f658b84e5439c557dc"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 2,
+        "selection_depth": 0,
+        "sha256": "2976bf39a190934a7120bccb3ee533f9275ac4ce372795ef36b5883ee1533006"
+      },
+      "index": 2,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-02"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 35,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+      },
+      "index": 3,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-03"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "QoderAI/better-harness",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 1,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 479,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "frontend/package.json",
+          "sha256": "a398aa97d0453eb5309051936f45c01b7ccd78caf7beb2ada4afccd0585cc2e1"
+        },
+        "path": "frontend/yarn.lock",
+        "runner_manager_match_count": 2,
+        "selection_depth": 1,
+        "sha256": "2a1b94bff42f6ad45a0add210306cc9f6e3ba48947c75909d737040af63bfc1c"
+      },
+      "index": 4,
+      "manager": "yarn",
+      "package_estimate_known": true,
+      "package_estimate_method": "yarn_v1_version_entries",
+      "prefetch_command_template": [
+        "node",
+        "yarn.js",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--non-interactive",
+        "--cache-folder",
+        "runtime/vcm_evaluator/dependency_store/yarn/task-04"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "frappe/draw",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 31,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "frontend"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 751,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "a4ef0eee2f10cf570cd47f6a9576c951ff5744ea53473ce6bb48563240848962"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "1cc3484b17b973ec5b0d82cb24730c039db551d088463efd609eeadd39e05e57"
+      },
+      "index": 5,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-05"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "didaquis/didibudget-frontend",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 37,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 195,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "454c4904261ba755904264d9411fb4b987dc65c720e1cc2e73da7e466ba670c0"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 6,
+        "selection_depth": 0,
+        "sha256": "ff4e4312af85e790c86498f9ed8fa88dd29208b60cb214ef4a6b5396855abecb"
+      },
+      "index": 6,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-06"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "elkimek/get-based",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 15,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"
+      },
+      "index": 7,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-07"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "moshcoder/moshcode",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 2,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 562,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "0cf0d523258d81e488f4748e082bd736e25f9a50b7781b41ec0b9c664a7331f4"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 4,
+        "selection_depth": 0,
+        "sha256": "004c20526a9993fa9d071c1ce3accc7a76729928336d09c2c9f416e223423cb2"
+      },
+      "index": 8,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-08"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "manufosela/karajan-code",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 33,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 316,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "48078366c01494ed9e03055a702cea823339be75b08ffdca2f05b1868c0f0aea"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "ef231222c2764d384b01eb518966307706d16471b95171f17acd68b1bf7e7e5d"
+      },
+      "index": 9,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-09"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "KosAlyohyn/vue-route-state",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 24,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 10,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "JavaScript",
+      "repository": "Autodidac/OrphanedMiscProjects",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 327,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "1a2367bdf677917cac5cd7d3e931416c3c33fe1a19c1af2116ff8e9f29ee06f0"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 51,
+        "selection_depth": 0,
+        "sha256": "7c182f647a6cae64574e9e0c4a1ca107c33bbf1f461452bf258880359ed1802b"
+      },
+      "index": 11,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-11"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "frootai/frootai",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 26,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 12,
+      "manager": "resolver_required",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "IMMUTABLE_RESOLUTION_MUST_BE_FROZEN_BEFORE_PREFETCH",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 13,
+      "manager": "resolver_required",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "dknowles2/ha-pitboss",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "IMMUTABLE_RESOLUTION_MUST_BE_FROZEN_BEFORE_PREFETCH",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 41,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "0bbf17d265d3baebce11ec4ed3038cb34d60f7fbf8a2cebdfff5fd9333e0dc31"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "e9d46f3c4907fa639ce5b41dbb11e6cd7c59b1ae792efaaf5c8f6381830a567d"
+      },
+      "index": 14,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-14"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "scrape-badger/scrapebadger-python",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 4,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 119,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "f7d2eabbf51f03a4acefeacee086dc29d7b8ff311c224dcad43afd6db9ae5c46"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1b5b26c1f483480cb28f4d84a32f1fad258680328085a503a03448d58db8d07b"
+      },
+      "index": 15,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-15"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "ray-manaloto/macos-development-environment",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 9,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 16,
+      "manager": "resolver_required",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "IMMUTABLE_RESOLUTION_MUST_BE_FROZEN_BEFORE_PREFETCH",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 116,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "8390c290f142c4abd2c737f469583d357ecf2a2dd16cfeda1ab26ee06d4298cb"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "4d5c12441e1b067792e603f980efa7f6e6b2c2011576669583bb7f4af827e5f6"
+      },
+      "index": 17,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-17"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "presidio-v/presidio-hardened-x402",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 8,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 250,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "2d8c6e3391e9d7d32e7988887a357ffc9ea53d2535be7c5657e46a2df7885378"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "960cda43f7981a88370226c1d7f5d4c50c5c111ab64a5515549f2dc1c4115b07"
+      },
+      "index": 18,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-18"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "NousResearch/hermes-agent",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 19,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 178,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "0cde8dee8a964ee8220468c2951f8469df8e4eb52343ce9b12079fcf1ed25463"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "a68522def8270ee84a4ddb896cb182bb1a067ca0545ace7ad7ae566b77a5c060"
+      },
+      "index": 19,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-19"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "cs0lar/treelang",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 13,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 20,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "bnet47/codexicon",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 129,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "a570ce005069af9db5ec9fe9e7b5be76acffde568e3f6aee1e9628f6e5c927d7"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "90196348cdfc0b6e5c0ca6064276abc7336349fa8374fbbfbe11bc3852b511e9"
+      },
+      "index": 21,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-21"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "ctsdownloads/easyspeak",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 10,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 22,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "TejashPrakash/student-management-system",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 23,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "pullboxapp/pullbox-direct-providers",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 98,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "7935bb763b4d3a7a1a51e175abf9a45e8181d502e1fd1e1951c091c26bc2ed1a"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1ff180c0e1e08a3f5bd3a5b2937b256d8bd8198857bc344375b230b740228881"
+      },
+      "index": 24,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-24"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "openonion/connectonion",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 7,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 25,
+      "manager": "resolver_required",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "fibsem-os/fibsem-os",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "IMMUTABLE_RESOLUTION_MUST_BE_FROZEN_BEFORE_PREFETCH",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 58,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "949801c6cd3c07565926a70c44e26d97cfa542890eebb1574a13a720560a1ad7"
+      },
+      "index": 26,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-26"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "quodeq/quodeq",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 6,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 27,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "malkreide/mcp-audit-skill",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 256,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "e8c99cc369509712572c2ca53617b004628a3216ea4c88a1d61a52022dd21a8d"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1956357983bda4308684e543f793fa84e2f31cbb07be85a8fc196ed9d77c14b1"
+      },
+      "index": 28,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-28"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "microsoft/winml-cli",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 20,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 301,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "be49401bb87b0e58e435fb080115b5ccb4815bb7d5a837718c1c5b350de7bbad"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 4,
+        "selection_depth": 0,
+        "sha256": "020de05e885ad22122cfa63d314bd4997f52809e76966c03c06739764553770f"
+      },
+      "index": 29,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "TAJD/cofferdam",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 23,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 51,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "674d54461401ec1680d22001b7411e505ee026c1d6c0796038ced82765ea23c8"
+      },
+      "index": 30,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "kanso-lang/kanso",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 5,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 233,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "311433775370242b843c5495e75482d440a990c08693fe924eb9f7720b5147a4"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 17,
+        "selection_depth": 0,
+        "sha256": "86d23a5a694bf4637fc6f4192b75ad24bb8a2526bea7fd56e34029b95b6fc328"
+      },
+      "index": 31,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "matssun/mcp-re",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 18,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 626,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "4bc1b0e657fc6c9342ead7c45f643e01113d9b966eee2a1d5982eddaeee2b2f1"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 16,
+        "selection_depth": 0,
+        "sha256": "6e4b5e534bdf5ff9aa699e25e9be6e874ddb12e7c6c29bb25635a0668c319de3"
+      },
+      "index": 32,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "Rul1an/assay",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 36,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 134,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "59c7c653ef17e0ce08e6f09c20eafe32a1a736b8d3a1fa7e343a53e1e87f7dd6"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 9,
+        "selection_depth": 0,
+        "sha256": "e2824e0819c913725e25b7cf488625827f17383597188b2b8af9f84b427a039a"
+      },
+      "index": 33,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "elan8/sysml-v2-parser",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 11,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 326,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "872e8bb442c41c23ee107ef2a7aa1d02bb07cc05f0c789b691542ff002f146b2"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 19,
+        "selection_depth": 0,
+        "sha256": "2632741f8bc28f8e453995bb9aabdc4a62a6dac5a93f953f1a10d8489710ab00"
+      },
+      "index": 34,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "elan8/spec42",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 25,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 35,
+      "manager": "resolver_required",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Rust",
+      "repository": "Stranger6667/jsonschema",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "IMMUTABLE_RESOLUTION_MUST_BE_FROZEN_BEFORE_PREFETCH",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 34,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "680461bbfb2b6e77bbf3387fc7999b0a1737cf340b311adc836db8a215940e42"
+      },
+      "index": 36,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "tomerwave/godlint",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 3,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 572,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "666d3a8109597becf7d7c9686e70d6aa649227c9bba9ac6187902d61f3987049"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 12,
+        "selection_depth": 0,
+        "sha256": "c6cf872d070f778c2f8e348177b7e1bee60c97c3929cc2621ad105dc17ebc82c"
+      },
+      "index": 37,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "BrokkAi/bifrost",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 34,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 185,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "45f529e2a4d4c07687cfa139949db1a23ea057792f915922266c4c462a3faeda"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "06f5a58bf6866260465f029299203dfa6390fc5a01da66b3bb6265505e85920b"
+      },
+      "index": 38,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "surrealdb/surrealkv",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 14,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 762,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "93fa14f81f443b737bc62a68a04ffe2879fc9fdba4d71166990961f066dbbae6"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 15,
+        "selection_depth": 0,
+        "sha256": "d3e1681ad2bfb1aa9bb1ab9997e85658168e663b3079a3a0f4ed38bc8d187688"
+      },
+      "index": 39,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "Syynth/brink",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 38,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 402,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "frontend/package.json",
+          "sha256": "8282e24fff2b5f87e939becb79786b47a29ce5198f976b916b55be902ad2b72c"
+        },
+        "path": "frontend/package-lock.json",
+        "runner_manager_match_count": 1,
+        "selection_depth": 1,
+        "sha256": "1c1526341901bc8f9b1aab0f6f2cf51d8cd72d833fd8c26df6f32dccd8c27d12"
+      },
+      "index": 40,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-40"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "ainetus/Co-Study4Grid",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 29,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "frontend"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1944,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "30027248e53b8a9df2c65dd00309a2d3f7a08dadec7a3008514595cf53d5d415"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 6,
+        "selection_depth": 0,
+        "sha256": "2b90944f33e60a3023d6c236b00dc9b6461d8c583a98aba3ef450dd8468cf02d"
+      },
+      "index": 41,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-41"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "positonic/exponential",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 43,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2674,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "822e0aac373a49a8fde2be44a01de581b43cea8c80d73c7d73f9f6df12b88706"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "1c0bf3efbc63e2b1eef9c6b622220a43f11812c17f4894c9743bc89c0fdd4b34"
+      },
+      "index": 42,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-42"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "constructive-io/constructive",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 45,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 350,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "fbd92b76c29336e552734e3bf8cb0f1af36678ff5c2b9ecf48c904e6ef47fd0b"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 12,
+        "selection_depth": 0,
+        "sha256": "a2f250b4f287433801318498c01560bea86ac8dd193c5440be95c029daa9eceb"
+      },
+      "index": 43,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-43"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "cwh555/AnimeList",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 27,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2132,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "e29664536ac991568a0673aa0a0f7333d6b29a803d8301934b6ff85afcfb9fe0"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 2,
+        "selection_depth": 0,
+        "sha256": "aef3b6482d284294e3197b9b8402dd94b562abe3aff3bc47f1ca968ba91f7ae7"
+      },
+      "index": 44,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-44"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "Gigadrive/sdk",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 44,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1344,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "6fa6d8dc7d0e90d3bf83d90e08f39713fb1cd7aa3a95537317c68bf4a38511cc"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 9,
+        "selection_depth": 0,
+        "sha256": "6a8511c282eaae7ee005e73d3445421424b52a74ee3ba9c68871c1b243cb3ce5"
+      },
+      "index": 45,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-45"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 41,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 137,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "138dbe3a326a9d7b3dfa8e037afca7839817c5e786fba5f30bbc35ad99ff3cae"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "c2fc72a762ce9730722881cc989fdd0cb83dedf267b357dcb99db0470de7e26f"
+      },
+      "index": 46,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-46"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "celados/gkit",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 12,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 460,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "runner/package.json",
+          "sha256": "cbe39bf2ff3e4f63e544cb9c199ab80717a8693a49b78e4de483f5a76657bda1"
+        },
+        "path": "runner/pnpm-lock.yaml",
+        "runner_manager_match_count": 1,
+        "selection_depth": 1,
+        "sha256": "10b5422cf41ae5b4ac2b9a933ec7b6ff8d9eb4e25b2dfd32a667d29c0ed792ca"
+      },
+      "index": 47,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-47"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "handsontable/examples",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 30,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "runner"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1033,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "d739d33b5ff4eae43349ba4bb5f6495e4f4ff461e5562532e723aa189f9041e8"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1ade9cca4e7f50219c07033c25111bdb2f9595e4ac870fb991652b6f8b83f128"
+      },
+      "index": 48,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-48"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "pokle/glidecomp",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 40,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1548,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "783532e287a1242c9fce2acbbf99921fd08d2c32d24219cfd1c099ebf72aafdb"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "6ea944f1ee587f6b2fd676427b86ad6d2637bef992f71c6d9fae56e99eadbef4"
+      },
+      "index": 49,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-49"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "AKogut/flakemetry",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 42,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 3002,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "6cdeea20488004b2d8860a218166a5e31b0beb7b3cf17f89a123778f38b69a66"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 4,
+        "selection_depth": 0,
+        "sha256": "2ef5251dd830d330f85d106cf11e4ed94fdf375f08e0aad35dd5336c8a9b913f"
+      },
+      "index": 50,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-50"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "tutur3u/platform",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 47,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 3748,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "8deb6c9c2c7e908fcd3ffc2741dc1a6776d14579fcc173d6ffeaf4bde8631142"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "cb00a3e29cba353f45bd668ab5cb287b0334ac1686e5f1e9c60b496a6dac6cd5"
+      },
+      "index": 51,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-51"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "inkeep/open-knowledge",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 48,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2989,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "3a2b80f162988e20c1d8ab54cb064b219491f3ae218a3739085c167df5aa852d"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "2f80b6a269200d77f890507c6fc20f2520854340c5ff40faf1f0170ec49d6f9c"
+      },
+      "index": 52,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-52"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "masumi-network/sokosumi",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 46,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 395,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "182143c1989e637002e6180ac0d03b268dcce1bff83d2701a0ae6593e613bfbd"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "d0a1d4746d00939c036bbe3057f86f6660bfe4a67b25c38c2971cf4982f13281"
+      },
+      "index": 53,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-53"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "omnist-dev/omnist-ts",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 28,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 282,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "b08b9ffccd2c5fc2d7c751dc0d2f738c5f9be0083ddc36a6c69f51abbe410fb1"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 18,
+        "selection_depth": 0,
+        "sha256": "249b33ca446afaec9122616eb986c3cfd3d82e0732ce364acf0b9d1ee895a7e1"
+      },
+      "index": 54,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-54"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 21,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 923,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "db5a307c1713115be55e803d0d34ead7fb6357c52695be47ffb034876d1db6cd"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 56,
+        "selection_depth": 0,
+        "sha256": "7d85b1d82fd7ee439a7c96b9bac94f5caf0dca36c4124806076e11b04a02c2c3"
+      },
+      "index": 55,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-55"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "rickfelix/EHG_Engineer",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 39,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 56,
+      "manager": "resolver_required",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "AbsoluteMode/session-recall",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "IMMUTABLE_RESOLUTION_MUST_BE_FROZEN_BEFORE_PREFETCH",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 57,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "matt82198/aesop",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "estimated_locked_package_count": 0,
+      "evaluator_execution_ready": false,
+      "governing_lock": null,
+      "index": 58,
+      "manager": "trusted_runtime_or_harness",
+      "package_estimate_known": true,
+      "package_estimate_method": "not_applicable",
+      "prefetch_command_template": [],
+      "prefetch_executed": false,
+      "prefetch_planned": false,
+      "query_language": "Python",
+      "repository": "ShadowEnemyx/serien-sammler",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": null,
+      "state": "NO_PROJECT_LOCK_REQUIRED_STATIC_CLOSURE",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 550,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "4115e139357dee9f5db58444fd6712784a9de99654f40a546415a8d63bef6387"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "29e3061fba725775c0a39c348bbba6056efca1e8b43f837b585ddefed5bc44ce"
+      },
+      "index": 59,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "dcdpr/jp",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 32,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 200,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "f53399b4f5522b2eea231a2522a3a50f5f80509f83908da600809724dc6a6b4c"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "708707f655cefa30a2e49c7824e7ce92fe1fb524752316dd365e2d68b79e2cb7"
+      },
+      "index": 60,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "tsz-org/tsz",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 17,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 284,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "3e25096fa04007d6448cbc182ca438141255396e865a91018eee1a8b3d5f8bd5"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "51c3546fdeedf836920ff475827e9b2857141fb40f4d9028305bc392164f37d0"
+      },
+      "index": 61,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-61"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "pocket-stack/pocketjs",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 22,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 199,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "ab8fbd310512c6cbae42abc832f061047aeb7f8ee657721c77d7a1854a257dd1"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "4fa8deb55ec5347dca372e821d550438e3c359a973039e8bb3a02b3e0eb72fd3"
+      },
+      "index": 62,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-62"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "conorbronsdon/substack-mcp",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 16,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    }
+  ],
+  "schedule": [
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+      },
+      "index": 3,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-03"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "QoderAI/better-harness",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 1,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"
+      },
+      "index": 7,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-07"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "moshcoder/moshcode",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 2,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 34,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "680461bbfb2b6e77bbf3387fc7999b0a1737cf340b311adc836db8a215940e42"
+      },
+      "index": 36,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "tomerwave/godlint",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 3,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 41,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "0bbf17d265d3baebce11ec4ed3038cb34d60f7fbf8a2cebdfff5fd9333e0dc31"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "e9d46f3c4907fa639ce5b41dbb11e6cd7c59b1ae792efaaf5c8f6381830a567d"
+      },
+      "index": 14,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-14"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "scrape-badger/scrapebadger-python",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 4,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 51,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "674d54461401ec1680d22001b7411e505ee026c1d6c0796038ced82765ea23c8"
+      },
+      "index": 30,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "kanso-lang/kanso",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 5,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 58,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "949801c6cd3c07565926a70c44e26d97cfa542890eebb1574a13a720560a1ad7"
+      },
+      "index": 26,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-26"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "quodeq/quodeq",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 6,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 98,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "7935bb763b4d3a7a1a51e175abf9a45e8181d502e1fd1e1951c091c26bc2ed1a"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1ff180c0e1e08a3f5bd3a5b2937b256d8bd8198857bc344375b230b740228881"
+      },
+      "index": 24,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-24"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "openonion/connectonion",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 7,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 116,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "8390c290f142c4abd2c737f469583d357ecf2a2dd16cfeda1ab26ee06d4298cb"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "4d5c12441e1b067792e603f980efa7f6e6b2c2011576669583bb7f4af827e5f6"
+      },
+      "index": 17,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-17"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "presidio-v/presidio-hardened-x402",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 8,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 119,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "f7d2eabbf51f03a4acefeacee086dc29d7b8ff311c224dcad43afd6db9ae5c46"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1b5b26c1f483480cb28f4d84a32f1fad258680328085a503a03448d58db8d07b"
+      },
+      "index": 15,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-15"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "ray-manaloto/macos-development-environment",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 9,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 129,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "a570ce005069af9db5ec9fe9e7b5be76acffde568e3f6aee1e9628f6e5c927d7"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "90196348cdfc0b6e5c0ca6064276abc7336349fa8374fbbfbe11bc3852b511e9"
+      },
+      "index": 21,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-21"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "ctsdownloads/easyspeak",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 10,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 134,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "59c7c653ef17e0ce08e6f09c20eafe32a1a736b8d3a1fa7e343a53e1e87f7dd6"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 9,
+        "selection_depth": 0,
+        "sha256": "e2824e0819c913725e25b7cf488625827f17383597188b2b8af9f84b427a039a"
+      },
+      "index": 33,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "elan8/sysml-v2-parser",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 11,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 137,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "138dbe3a326a9d7b3dfa8e037afca7839817c5e786fba5f30bbc35ad99ff3cae"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "c2fc72a762ce9730722881cc989fdd0cb83dedf267b357dcb99db0470de7e26f"
+      },
+      "index": 46,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-46"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "celados/gkit",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 12,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 178,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "0cde8dee8a964ee8220468c2951f8469df8e4eb52343ce9b12079fcf1ed25463"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "a68522def8270ee84a4ddb896cb182bb1a067ca0545ace7ad7ae566b77a5c060"
+      },
+      "index": 19,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-19"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "cs0lar/treelang",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 13,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 185,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "45f529e2a4d4c07687cfa139949db1a23ea057792f915922266c4c462a3faeda"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "06f5a58bf6866260465f029299203dfa6390fc5a01da66b3bb6265505e85920b"
+      },
+      "index": 38,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "surrealdb/surrealkv",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 14,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 195,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "454c4904261ba755904264d9411fb4b987dc65c720e1cc2e73da7e466ba670c0"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 6,
+        "selection_depth": 0,
+        "sha256": "ff4e4312af85e790c86498f9ed8fa88dd29208b60cb214ef4a6b5396855abecb"
+      },
+      "index": 6,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-06"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "elkimek/get-based",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 15,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 199,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "ab8fbd310512c6cbae42abc832f061047aeb7f8ee657721c77d7a1854a257dd1"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "4fa8deb55ec5347dca372e821d550438e3c359a973039e8bb3a02b3e0eb72fd3"
+      },
+      "index": 62,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-62"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "conorbronsdon/substack-mcp",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 16,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 200,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "f53399b4f5522b2eea231a2522a3a50f5f80509f83908da600809724dc6a6b4c"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "708707f655cefa30a2e49c7824e7ce92fe1fb524752316dd365e2d68b79e2cb7"
+      },
+      "index": 60,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "tsz-org/tsz",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 17,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 233,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "311433775370242b843c5495e75482d440a990c08693fe924eb9f7720b5147a4"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 17,
+        "selection_depth": 0,
+        "sha256": "86d23a5a694bf4637fc6f4192b75ad24bb8a2526bea7fd56e34029b95b6fc328"
+      },
+      "index": 31,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "matssun/mcp-re",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 18,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 250,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "2d8c6e3391e9d7d32e7988887a357ffc9ea53d2535be7c5657e46a2df7885378"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "960cda43f7981a88370226c1d7f5d4c50c5c111ab64a5515549f2dc1c4115b07"
+      },
+      "index": 18,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-18"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "NousResearch/hermes-agent",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 19,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 256,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "pyproject.toml",
+          "sha256": "e8c99cc369509712572c2ca53617b004628a3216ea4c88a1d61a52022dd21a8d"
+        },
+        "path": "uv.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1956357983bda4308684e543f793fa84e2f31cbb07be85a8fc196ed9d77c14b1"
+      },
+      "index": 28,
+      "manager": "uv",
+      "package_estimate_known": true,
+      "package_estimate_method": "uv_toml_package_array",
+      "prefetch_command_template": [
+        "uv",
+        "sync",
+        "--frozen",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/uv/task-28"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Python",
+      "repository": "microsoft/winml-cli",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 20,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 282,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "b08b9ffccd2c5fc2d7c751dc0d2f738c5f9be0083ddc36a6c69f51abbe410fb1"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 18,
+        "selection_depth": 0,
+        "sha256": "249b33ca446afaec9122616eb986c3cfd3d82e0732ce364acf0b9d1ee895a7e1"
+      },
+      "index": 54,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-54"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 21,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 284,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "3e25096fa04007d6448cbc182ca438141255396e865a91018eee1a8b3d5f8bd5"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "51c3546fdeedf836920ff475827e9b2857141fb40f4d9028305bc392164f37d0"
+      },
+      "index": 61,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-61"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "pocket-stack/pocketjs",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 22,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 301,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "be49401bb87b0e58e435fb080115b5ccb4815bb7d5a837718c1c5b350de7bbad"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 4,
+        "selection_depth": 0,
+        "sha256": "020de05e885ad22122cfa63d314bd4997f52809e76966c03c06739764553770f"
+      },
+      "index": 29,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "TAJD/cofferdam",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 23,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 316,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "48078366c01494ed9e03055a702cea823339be75b08ffdca2f05b1868c0f0aea"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "ef231222c2764d384b01eb518966307706d16471b95171f17acd68b1bf7e7e5d"
+      },
+      "index": 9,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-09"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "KosAlyohyn/vue-route-state",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 24,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 326,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "872e8bb442c41c23ee107ef2a7aa1d02bb07cc05f0c789b691542ff002f146b2"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 19,
+        "selection_depth": 0,
+        "sha256": "2632741f8bc28f8e453995bb9aabdc4a62a6dac5a93f953f1a10d8489710ab00"
+      },
+      "index": 34,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "elan8/spec42",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 25,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 327,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "1a2367bdf677917cac5cd7d3e931416c3c33fe1a19c1af2116ff8e9f29ee06f0"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 51,
+        "selection_depth": 0,
+        "sha256": "7c182f647a6cae64574e9e0c4a1ca107c33bbf1f461452bf258880359ed1802b"
+      },
+      "index": 11,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-11"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "frootai/frootai",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 26,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 350,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "fbd92b76c29336e552734e3bf8cb0f1af36678ff5c2b9ecf48c904e6ef47fd0b"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 12,
+        "selection_depth": 0,
+        "sha256": "a2f250b4f287433801318498c01560bea86ac8dd193c5440be95c029daa9eceb"
+      },
+      "index": 43,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-43"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "cwh555/AnimeList",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 27,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 395,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "182143c1989e637002e6180ac0d03b268dcce1bff83d2701a0ae6593e613bfbd"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "d0a1d4746d00939c036bbe3057f86f6660bfe4a67b25c38c2971cf4982f13281"
+      },
+      "index": 53,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-53"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "omnist-dev/omnist-ts",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 28,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 402,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "frontend/package.json",
+          "sha256": "8282e24fff2b5f87e939becb79786b47a29ce5198f976b916b55be902ad2b72c"
+        },
+        "path": "frontend/package-lock.json",
+        "runner_manager_match_count": 1,
+        "selection_depth": 1,
+        "sha256": "1c1526341901bc8f9b1aab0f6f2cf51d8cd72d833fd8c26df6f32dccd8c27d12"
+      },
+      "index": 40,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-40"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "ainetus/Co-Study4Grid",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 29,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "frontend"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 460,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "runner/package.json",
+          "sha256": "cbe39bf2ff3e4f63e544cb9c199ab80717a8693a49b78e4de483f5a76657bda1"
+        },
+        "path": "runner/pnpm-lock.yaml",
+        "runner_manager_match_count": 1,
+        "selection_depth": 1,
+        "sha256": "10b5422cf41ae5b4ac2b9a933ec7b6ff8d9eb4e25b2dfd32a667d29c0ed792ca"
+      },
+      "index": 47,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-47"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "handsontable/examples",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 30,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "runner"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 479,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "frontend/package.json",
+          "sha256": "a398aa97d0453eb5309051936f45c01b7ccd78caf7beb2ada4afccd0585cc2e1"
+        },
+        "path": "frontend/yarn.lock",
+        "runner_manager_match_count": 2,
+        "selection_depth": 1,
+        "sha256": "2a1b94bff42f6ad45a0add210306cc9f6e3ba48947c75909d737040af63bfc1c"
+      },
+      "index": 4,
+      "manager": "yarn",
+      "package_estimate_known": true,
+      "package_estimate_method": "yarn_v1_version_entries",
+      "prefetch_command_template": [
+        "node",
+        "yarn.js",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--non-interactive",
+        "--cache-folder",
+        "runtime/vcm_evaluator/dependency_store/yarn/task-04"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "frappe/draw",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 31,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "frontend"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 550,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "4115e139357dee9f5db58444fd6712784a9de99654f40a546415a8d63bef6387"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 1,
+        "selection_depth": 0,
+        "sha256": "29e3061fba725775c0a39c348bbba6056efca1e8b43f837b585ddefed5bc44ce"
+      },
+      "index": 59,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "dcdpr/jp",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 32,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 562,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "0cf0d523258d81e488f4748e082bd736e25f9a50b7781b41ec0b9c664a7331f4"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 4,
+        "selection_depth": 0,
+        "sha256": "004c20526a9993fa9d071c1ce3accc7a76729928336d09c2c9f416e223423cb2"
+      },
+      "index": 8,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-08"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "manufosela/karajan-code",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 33,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 572,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "666d3a8109597becf7d7c9686e70d6aa649227c9bba9ac6187902d61f3987049"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 12,
+        "selection_depth": 0,
+        "sha256": "c6cf872d070f778c2f8e348177b7e1bee60c97c3929cc2621ad105dc17ebc82c"
+      },
+      "index": 37,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "BrokkAi/bifrost",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 34,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 591,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "e1183b245c2a729b05c796c8ca86401379612ca7613ac7f658b84e5439c557dc"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 2,
+        "selection_depth": 0,
+        "sha256": "2976bf39a190934a7120bccb3ee533f9275ac4ce372795ef36b5883ee1533006"
+      },
+      "index": 2,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-02"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 35,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 626,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "4bc1b0e657fc6c9342ead7c45f643e01113d9b966eee2a1d5982eddaeee2b2f1"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 16,
+        "selection_depth": 0,
+        "sha256": "6e4b5e534bdf5ff9aa699e25e9be6e874ddb12e7c6c29bb25635a0668c319de3"
+      },
+      "index": 32,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "Rul1an/assay",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 36,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 751,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "a4ef0eee2f10cf570cd47f6a9576c951ff5744ea53473ce6bb48563240848962"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "1cc3484b17b973ec5b0d82cb24730c039db551d088463efd609eeadd39e05e57"
+      },
+      "index": 5,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-05"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "didaquis/didibudget-frontend",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 37,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 762,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "Cargo.toml",
+          "sha256": "93fa14f81f443b737bc62a68a04ffe2879fc9fdba4d71166990961f066dbbae6"
+        },
+        "path": "Cargo.lock",
+        "runner_manager_match_count": 15,
+        "selection_depth": 0,
+        "sha256": "d3e1681ad2bfb1aa9bb1ab9997e85658168e663b3079a3a0f4ed38bc8d187688"
+      },
+      "index": 39,
+      "manager": "cargo",
+      "package_estimate_known": true,
+      "package_estimate_method": "cargo_toml_package_array",
+      "prefetch_command_template": [
+        "cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "Rust",
+      "repository": "Syynth/brink",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 38,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 923,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "db5a307c1713115be55e803d0d34ead7fb6357c52695be47ffb034876d1db6cd"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 56,
+        "selection_depth": 0,
+        "sha256": "7d85b1d82fd7ee439a7c96b9bac94f5caf0dca36c4124806076e11b04a02c2c3"
+      },
+      "index": 55,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-55"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "JavaScript",
+      "repository": "rickfelix/EHG_Engineer",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 39,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1033,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "d739d33b5ff4eae43349ba4bb5f6495e4f4ff461e5562532e723aa189f9041e8"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "1ade9cca4e7f50219c07033c25111bdb2f9595e4ac870fb991652b6f8b83f128"
+      },
+      "index": 48,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-48"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "pokle/glidecomp",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 40,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1344,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "6fa6d8dc7d0e90d3bf83d90e08f39713fb1cd7aa3a95537317c68bf4a38511cc"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 9,
+        "selection_depth": 0,
+        "sha256": "6a8511c282eaae7ee005e73d3445421424b52a74ee3ba9c68871c1b243cb3ce5"
+      },
+      "index": 45,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-45"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 41,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1548,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "783532e287a1242c9fce2acbbf99921fd08d2c32d24219cfd1c099ebf72aafdb"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "6ea944f1ee587f6b2fd676427b86ad6d2637bef992f71c6d9fae56e99eadbef4"
+      },
+      "index": 49,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-49"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "AKogut/flakemetry",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 42,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 1944,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "30027248e53b8a9df2c65dd00309a2d3f7a08dadec7a3008514595cf53d5d415"
+        },
+        "path": "package-lock.json",
+        "runner_manager_match_count": 6,
+        "selection_depth": 0,
+        "sha256": "2b90944f33e60a3023d6c236b00dc9b6461d8c583a98aba3ef450dd8468cf02d"
+      },
+      "index": 41,
+      "manager": "npm",
+      "package_estimate_known": true,
+      "package_estimate_method": "npm_packages_map",
+      "prefetch_command_template": [
+        "node",
+        "npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "runtime/vcm_evaluator/dependency_store/npm/task-41"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "positonic/exponential",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 43,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2132,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "e29664536ac991568a0673aa0a0f7333d6b29a803d8301934b6ff85afcfb9fe0"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 2,
+        "selection_depth": 0,
+        "sha256": "aef3b6482d284294e3197b9b8402dd94b562abe3aff3bc47f1ca968ba91f7ae7"
+      },
+      "index": 44,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-44"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "Gigadrive/sdk",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 44,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2674,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "822e0aac373a49a8fde2be44a01de581b43cea8c80d73c7d73f9f6df12b88706"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 3,
+        "selection_depth": 0,
+        "sha256": "1c0bf3efbc63e2b1eef9c6b622220a43f11812c17f4894c9743bc89c0fdd4b34"
+      },
+      "index": 42,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-42"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "constructive-io/constructive",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 45,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 2989,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "3a2b80f162988e20c1d8ab54cb064b219491f3ae218a3739085c167df5aa852d"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "2f80b6a269200d77f890507c6fc20f2520854340c5ff40faf1f0170ec49d6f9c"
+      },
+      "index": 52,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-52"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "masumi-network/sokosumi",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 46,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 3002,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "6cdeea20488004b2d8860a218166a5e31b0beb7b3cf17f89a123778f38b69a66"
+        },
+        "path": "bun.lock",
+        "runner_manager_match_count": 4,
+        "selection_depth": 0,
+        "sha256": "2ef5251dd830d330f85d106cf11e4ed94fdf375f08e0aad35dd5336c8a9b913f"
+      },
+      "index": 50,
+      "manager": "bun",
+      "package_estimate_known": true,
+      "package_estimate_method": "bun_text_lock_package_arrays",
+      "prefetch_command_template": [
+        "bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "runtime/vcm_evaluator/dependency_store/bun/task-50"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "tutur3u/platform",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 47,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "estimated_locked_package_count": 3748,
+      "evaluator_execution_ready": false,
+      "governing_lock": {
+        "manifest": {
+          "path": "package.json",
+          "sha256": "8deb6c9c2c7e908fcd3ffc2741dc1a6776d14579fcc173d6ffeaf4bde8631142"
+        },
+        "path": "pnpm-lock.yaml",
+        "runner_manager_match_count": 0,
+        "selection_depth": 0,
+        "sha256": "cb00a3e29cba353f45bd668ab5cb287b0334ac1686e5f1e9c60b496a6dac6cd5"
+      },
+      "index": 51,
+      "manager": "pnpm",
+      "package_estimate_known": true,
+      "package_estimate_method": "pnpm_top_level_lock_entries",
+      "prefetch_command_template": [
+        "node",
+        "pnpm.cjs",
+        "fetch",
+        "--frozen-lockfile",
+        "--store-dir",
+        "runtime/vcm_evaluator/dependency_store/pnpm/task-51"
+      ],
+      "prefetch_executed": false,
+      "prefetch_planned": true,
+      "query_language": "TypeScript",
+      "repository": "inkeep/open-knowledge",
+      "repository_execution_authorized": false,
+      "schedule_ordinal": 48,
+      "state": "LOCKED_PREFETCH_PLANNED",
+      "working_directory": "."
+    }
+  ],
+  "state": "BOUNDED_EVALUATOR_DEPENDENCY_PREFETCH_SCHEDULE_FROZEN",
+  "trigger_state": "GREEN"
+}

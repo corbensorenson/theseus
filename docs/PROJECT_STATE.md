@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE` | The repaired 62-task English panel, all 124 exact parent/head closures, and source-bound runner candidates are GREEN. Forty-eight tasks have evaluator-ecosystem lock receipts, eight scoped evaluators need no project lock under static closure, and six require immutable resolution. No task is execution-ready; local and Luna calls remain zero-authority until dependency/build qualification, parent-fail/target-pass canaries, packets, scorers, call/spend ceilings, and stop conditions are sealed |
+| Active VCM claim | `V3_STATIC_PREFETCH_SCHEDULE_GREEN_SINGLE_DEPENDENCY_CANARY_NEXT` | The repaired 62-task English panel, all 124 exact parent/head closures, source-bound runner candidates, corrected dependency classes, exact manager set, trusted offline build mechanics, and 48-lock static prefetch schedule are GREEN. No task is evaluator-ready; local and Luna calls remain zero-authority until real dependency closure, parent-fail/target-pass canaries, packets, scorers, call/spend ceilings, and stop conditions are sealed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -400,6 +400,13 @@ borrows an unrelated JavaScript lock, and four apparent external imports resolve
 to repository-local aliases. The current split is 48 exact ecosystem locks,
 eight scoped no-lock paths, and six immutable-resolution tasks.
 
+A call-free prefetch successor now selects one governing lock and bounded manager
+command for each of the 48 locked tasks. Every lock has a measured graph estimate;
+the audit repaired an initial zero estimate for four Bun text locks before any
+network work. The frozen order starts with task 3's two-package npm graph. The
+plan makes no dependency, repository, evaluator, or model execution claim. Only
+one prospectively sealed task-3 dependency-acquisition canary may run next.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -573,28 +580,17 @@ authorize regenerating historical reports or reopening neural work.
 9. **Complete:** bind and call-free audit the existing VCM production-path
    mechanics bench, 9-task control qualification, 53-task powered claim design,
    separate Luna denominator, and zero-call authority.
-10. **Active:** acquire and independently qualify the two source-disjoint
-   licensed panels. The metadata-only selection rule is prospectively sealed
-   but attempt 1 failed closed on an inadequate Python pool. It is preserved;
-   the v2 repair improved eligibility but still failed closed. Preserve it; V3
-   now has a green zero-query preflight that expands only the deterministic
-   search pool and batches transport, but its run exposed a fork-head transport
-   bug before any identity sealed. It is preserved and v4's owner-only repair is
-   preserved; v4 then paused on transient transport with zero identities sealed.
-   V5's retry owner paused on secondary throttling with exact accounting and
-   zero identities. V6's single-request GraphQL node batches passed live schema,
-   node-bridge, pacing, and full-selector rehearsal, then paused on a rapid
-   unknown-network exhaustion after 57 successes. Preserve it; repair only the
-   bounded retry horizon and final checkpoint hash ordering. V7 completed GREEN
-   with all 62 exact-panel identities and a verified final checkpoint hash.
-   The execution-free materializer preserved 61 source pairs but rejected the
-   Python claim Task 28 verifier as byte-identical. Its single-slot replacement
-   completed GREEN. The combined archive audit then rejected six non-English
-   requests under Rule 7 while verifying all archive receipts. Replace only
-   slots 1, 12, 19, 48, 51, and 56 under frozen panel/language constraints, then
-   qualify evaluators before
-   sealing packets, host canaries, runners, scorers, calls, spend, and stop
-   rules without user gates.
+10. **Active:** complete the VCM evaluator instrument without opening model
+   authority. The source-disjoint 62-task English panel, 124 parent/head
+   closures, runner candidates, dependency classes, exact manager set, and
+   trusted offline build mechanics are GREEN. A static plan binds all 48 exact
+   lock tasks and schedules task 3 first. Seal and execute only that real
+   dependency-acquisition canary, independently audit its retained closure,
+   network boundary, script suppression, and storage accounting, then expand
+   sequentially only if the canary passes. Resolve the six immutable-resolution
+   tasks separately, qualify TypeScript and untrusted Rust builds, and only then
+   run parent-fail/target-pass evaluator canaries before packets, scorers, calls,
+   spend, and stop rules are sealed without user gates.
 11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
 12. Qualify a development survivor once on fresh D1.

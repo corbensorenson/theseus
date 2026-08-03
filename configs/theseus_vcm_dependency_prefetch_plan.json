@@ -1,0 +1,58 @@
+{
+  "policy": "project_theseus_vcm_dependency_prefetch_plan_v1",
+  "state": "STATIC_PREFETCH_SCHEDULE_BEFORE_NETWORK_DEPENDENCY_OR_REPOSITORY_EXECUTION",
+  "reports": {
+    "dependency_classes": {"path": "reports/theseus_vcm_dependency_class_audit_v2.json", "sha256": "1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"},
+    "runner_inventory": {"path": "reports/theseus_vcm_repository_runner_inventory_v3.json", "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"},
+    "toolchains": {"path": "reports/theseus_vcm_toolchain_identity_audit_v2.json", "sha256": "544a9a5312f5123289f4940a677fe5322bd45ef3f3645bac2bca2b87ba3cd1bf"}
+  },
+  "expected_observations": {
+    "task_count": 62,
+    "locked_prefetch_planned_task_count": 48,
+    "no_project_lock_required_task_count": 8,
+    "immutable_resolution_required_task_count": 6,
+    "tasks_with_governing_lock": 48,
+    "tasks_with_prefetch_command": 48,
+    "tasks_with_known_package_estimate": 48,
+    "tasks_with_unknown_package_estimate": 0,
+    "prefetch_executions": 0,
+    "parent_target_or_evaluator_executions": 0
+  },
+  "resource_policy": {
+    "execution_order": "strictly_sequential_smallest_estimated_lock_graph_first",
+    "minimum_free_bytes_after_each_task": 10737418240,
+    "maximum_retained_bytes_per_task": 4294967296,
+    "maximum_wall_seconds_per_task": 1800,
+    "maximum_process_group_rss_mib": 8192,
+    "maximum_output_mib": 32,
+    "boundary_activation_disposition": "INCONCLUSIVE_INSTRUMENT_NOT_TASK_OR_MECHANISM_FAILURE"
+  },
+  "manager_policy": {
+    "install_scripts_disabled": true,
+    "audit_and_fund_side_effects_disabled": true,
+    "network_allowed_only_during_prefetch": true,
+    "network_denied_during_repository_execution": true,
+    "exact_frozen_or_locked_mode_required": true,
+    "content_addressed_store_required": true,
+    "dependency_store_never_training_data": true
+  },
+  "report": "reports/theseus_vcm_dependency_prefetch_plan.json",
+  "authority": {
+    "normalized_archive_static_read_authorized": true,
+    "archive_extraction_authorized": false,
+    "network_dependency_prefetch_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN plan freezes one governing evaluator-ecosystem lock and bounded manager command per locked task. It performs no prefetch, install, build, repository, evaluator, or model execution and does not prove dependency availability or task validity."
+}

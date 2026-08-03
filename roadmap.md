@@ -768,6 +768,18 @@ are independently resolved to repository-local modules. The current split is
 48 exact ecosystem locks, eight no-project-lock scoped paths, and six immutable-
 resolution tasks. No dependency or repository execution produced this result.
 
+The static dependency-prefetch plan is now GREEN. It selects one governing
+evaluator-ecosystem lock and exact manager command for each of the 48 locked
+tasks, records a measured lock-graph estimate for all 48 (including Bun's
+JSONC-like text locks), and orders the work strictly sequentially with a 10 GiB
+host reserve. It caught and repaired a planning defect that had mistaken four
+unparsed Bun locks for zero-package graphs. The plan itself performed zero
+prefetch, install, build, repository, evaluator, or model executions. Next seal
+and run only the smallest measured graph, task 3, as a dependency-acquisition
+canary; do not execute its repository runner or expand to the remaining 47
+until the retained closure, network boundary, script suppression, and storage
+accounting pass independent audit.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

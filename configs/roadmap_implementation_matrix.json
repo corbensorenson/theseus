@@ -12,12 +12,12 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE",
+      "state": "VCM_V3_STATIC_PREFETCH_SCHEDULE_GREEN_SINGLE_DEPENDENCY_CANARY_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired 62-task English source panel, 124 exact parent/head closures, source-bound runner candidates, and static dependency classes are GREEN. This is evaluator-instrument materialization only: dependency/build qualification, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired 62-task English source panel, 124 exact parent/head closures, source-bound runner candidates, dependency classes, complete manager identities, trusted offline build mechanics, and static 48-lock prefetch schedule are GREEN. This is evaluator-instrument materialization only: real dependency closure, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
       "adequacy_campaign_binding": {
       "config": "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v6.json",
@@ -824,7 +824,32 @@
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "trusted dependency-free or local-file fixture build mechanics only; no real lock untrusted repository evaluator task or model qualification",
-        "next_boundary": "bind Yarn then prefetch exact real lock artifacts into a content-addressed offline store with install scripts disabled and a physical storage reserve"
+        "next_boundary": "execute exactly one prospectively sealed smallest-graph real-lock dependency acquisition canary with scripts disabled and a physical storage reserve"
+      },
+      "vcm_dependency_prefetch_plan": {
+        "config": "configs/theseus_vcm_dependency_prefetch_plan.json",
+        "owner": "scripts/theseus_vcm_dependency_prefetch_plan.py",
+        "test": "tests/test_theseus_vcm_dependency_prefetch_plan.py",
+        "report": "reports/theseus_vcm_dependency_prefetch_plan.json",
+        "owner_sha256": "99befaa2384325130f4dc658e3675aa882a2278bc8190ef94e6ae5034a0ba061",
+        "config_sha256": "3e8a36c9f00dc1786a41a09cc49968ee548cbf2eac175cddf0366781587c8167",
+        "report_sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc",
+        "state": "GREEN_BOUNDED_EVALUATOR_DEPENDENCY_PREFETCH_SCHEDULE_FROZEN",
+        "task_count": 62,
+        "locked_prefetch_planned_task_count": 48,
+        "no_project_lock_required_task_count": 8,
+        "immutable_resolution_required_task_count": 6,
+        "tasks_with_known_package_estimate": 48,
+        "tasks_with_unknown_package_estimate": 0,
+        "first_schedule_index": 3,
+        "first_schedule_manager": "npm",
+        "first_schedule_estimated_locked_package_count": 2,
+        "prefetch_executions": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "static governing-lock selection, manager command, graph-size ordering, and physical safety policy only; no dependency, repository, evaluator, task, or model execution",
+        "next_boundary": "seal and run only task 3 as the first real dependency-acquisition canary; preserve any platform or lock incompatibility as instrument evidence and do not execute its repository runner"
       }
     },
     "claim_selection_policy": {
