@@ -152,12 +152,24 @@ def test_vcm_source_acquisition_v6_batches_transport_only() -> None:
     v6 = p2a.read_json(acquisition_v6.DEFAULT_CONFIG)
     assert report["trigger_state"] == "GREEN"
     assert report["state"] == "METADATA_SELECTION_V6_GRAPHQL_BATCH_LIVE_SCHEMA_QUALIFIED"
+    assert {
+        key: value for key, value in v6["search"].items() if key != "resource"
+    } == {
+        key: value for key, value in v5["search"].items() if key != "resource"
+    }
+    assert v6["search"]["resource"] == "search/issues only"
     assert v6["selection"] == v5["selection"]
     assert v6["panels"] == v5["panels"]
     assert v6["chronology"] == v5["chronology"]
     assert v6["authority"] == v5["authority"]
     assert v6["graphql_transport"]["node_batch_size"] == 40
     assert v6["graphql_transport"]["maximum_parallel_graphql_requests"] == 1
+    assert v6["graphql_transport"]["live_schema_qualification"][
+        "required_schema_fields_missing"
+    ] == []
+    assert v6["graphql_transport"]["live_schema_qualification"][
+        "fresh_candidate_queries"
+    ] == 0
     lowered = acquisition_v6.GRAPHQL_QUERY.lower()
     assert "body" not in lowered
     assert "patch" not in lowered
