@@ -1,0 +1,95 @@
+{
+  "attempt_endpoint_hash_chain_sha256": "3a67a8d56ff8a10f209969c7b96a12c08a237893872ba2964f40cb87c34783c4",
+  "attempt_endpoint_hashes": [
+    "108ee91ffe3aa6a3cde5c1b450e0e0f2ea7a8404ea9e78a2926cc157c9352218",
+    "bd576173914db00133b1462d2634880581902330b32912550c1473469dd46f1b",
+    "dbe0d5101de490c6892517e65bd0ad7bcab67d1e13f6a7d14ddb573975b5372a",
+    "ed81be4088274d037a09009e7a273bee4cb59ecb0421731b08f9dcfc36b31595",
+    "796ad5e4e5105a15779a8e04346a1683fc9ba272565901e8475df2febc30bce0",
+    "fa92949a6e7b9f4cd2b741788367d0c3925ef9072f34413774d7e21514123eff",
+    "de11a96b9c2f07887331824addf8f58420a1dfa9936309c7e454107d20a5942e",
+    "f0166cf053cfeeaf4d91684018a897d525352939ea70ca73a0dcc7f5e866fcec",
+    "03072d42861a96ce91d7b3393b1eb01c88ac584f61d5f05ff50c75ed862a444d",
+    "379cf3287918ce1bc1e558a65bb3aafdfa0a6886c0142bbd33c1c1d190f9162d",
+    "32770b045c0f7be87b9850e190b85a7f1edeec55869c92ff49907eb2a439b6a9",
+    "3bfbcfdacd60ccdc3e8a5db97a3a90b40ed9408a78f263f89da417e2a25cbb9f",
+    "57ccf04626ebdfea5375db971b3125251f288cb349903d8490606995c0c54af2",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77",
+    "3bb5097834b4f46f500af1f9ce361d6cf543635ecb09ef812158c10619042c77"
+  ],
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_language_replacements.json",
+    "sha256": "e74189fa991af038d8970744ca56c4f7595244111fd3e503c5428b53d008f890"
+  },
+  "created_utc": "2026-08-03T11:48:16.521824Z",
+  "external_reference_calls": 0,
+  "hidden_evaluation_opened": false,
+  "local_model_calls": 0,
+  "logical_request_count": 14,
+  "permanent_candidate_failure_count": 0,
+  "physical_attempt_count": 21,
+  "policy": "project_theseus_vcm_source_materialization_checkpoint_v1",
+  "response_digest_chain_sha256": "fbbe46cd2729212806741a62dc912d2e1d796b80d461ec5719aaf16c6094e2ac",
+  "response_digests": [
+    "2c4e560687fe58b56a7e71de3acfa3325bfaabdfd2cc4a9c99d7c6c3f1e8368b",
+    "f88ad10f517de7ff52d81b946fd8d504757cbfab871774e57598bbd5163deb50",
+    "a673e55419d4dccbf0d07039a7d37a0cd5ef56d82af192baee8a4e8f859f6d2d",
+    "b707a7ec510da710aaeb3cd1b5dc242b4db2e5e5b4e5a01199ee15ef3bd46661",
+    "3da908dbb42dce5641f2434a8908aaf35ffde4f786b829463f2149f2cd629b8e",
+    "8c11100786ff82de798a7aeebe59b667b1704b547cab59cc16ba93eaccc2db45",
+    "fb782899a75a0a4ef7d53e65b65facc8912f16e3bc5f8aee626e1c7fe49f13fb",
+    "6687d7ceaa1277a348ae9642fe828097dd5f742ef94f261b5187482e5eff446c",
+    "66e8952cf9ee1760039e98bf48185953cd7c0fd2ac070fd5d64f9247db18f2bd",
+    "c7e3ea9ceb510ad0b44aed4e44b21aa5cbd9e32cb132400c42a4c4aafd23926a",
+    "cb7a84d2bc94bd7ef4a8c6441efe0dfa7b55736f8c264fe4ea358844c77cea2f",
+    "125a29606ac608bdcf3f484fc613247e70a83c225be28b1fa7445c3e39953696",
+    "ad689df3fad52119b09555c0d36bc0ae60e2caccef70259d357efacd1f7ddc42"
+  ],
+  "retry_attempt_count": 7,
+  "retry_policy": {
+    "host_transport_activation_is_not_task_or_mechanism_failure": true,
+    "maximum_attempts_per_logical_request": 8,
+    "maximum_total_backoff_seconds_per_logical_request": 108.0,
+    "permanent_candidate_http_statuses": [
+      404,
+      410
+    ],
+    "rate_limited_403_retryable_when_explicit": true,
+    "retry_delays_seconds": [
+      1.0,
+      2.0,
+      4.0,
+      8.0,
+      16.0,
+      32.0,
+      45.0
+    ],
+    "retry_unknown_network_failures": true,
+    "transient_http_statuses": [
+      408,
+      429,
+      500,
+      502,
+      503,
+      504
+    ]
+  },
+  "selected_repository_count": 0,
+  "selected_source_identities_retained": false,
+  "source_content_retrieval_opened": true,
+  "state": "LANGUAGE_REPLACEMENT_TRANSPORT_OR_CLASSIFIER_PAUSED_NO_ADMISSION",
+  "status_counts": {
+    "200": 13,
+    "unknown": 8
+  },
+  "successful_request_count": 13,
+  "transport_failure_count": 1,
+  "updated_utc": "2026-08-03T15:05:16.803126Z"
+}

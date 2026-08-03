@@ -1,5 +1,10 @@
 {
   "candidate_packet_materialization_opened": false,
+  "checkpoint": {
+    "path": "reports/theseus_vcm_language_replacements_checkpoint.json",
+    "sha256": "5515fa2ee1d419dc85d22f01e06ad63ca11301306399af6b9183a164db6d1bd3"
+  },
+  "checkpoint_artifact_hash_verified_final": true,
   "config": {
     "path": "configs/theseus_vcm_language_replacements.json",
     "sha256": "e74189fa991af038d8970744ca56c4f7595244111fd3e503c5428b53d008f890"
@@ -20,8 +25,10 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T11:47:16.081693Z",
-  "faults": [],
+  "created_utc": "2026-08-03T11:48:16.521468Z",
+  "faults": [
+    "TransportRetriesExhausted:metadata_transport_exhausted:unknown"
+  ],
   "hidden_evaluation_opened": false,
   "maximum_inference": "A GREEN report proves only that six frozen-rule, source-disjoint, same-panel, same-programming-language replacements have English natural-language requests and content-bound changed source/verifier archives. It does not admit the combined panel until its independent audit passes, execute repositories, qualify an evaluator, authorize candidate or local/Luna calls, establish VCM usefulness, or move D1, D2, serving, training, or book support.",
   "policy": "project_theseus_vcm_language_replacements_v1",
@@ -32,6 +39,31 @@
     "path": "reports/theseus_vcm_source_panel_audit.json",
     "sha256": "64c2f667f6542a950315f4a92154cb6c2c27caa0af20a88a9649161345a34f83"
   },
-  "state": "SIX_LANGUAGE_REPLACEMENT_PREFLIGHT_GREEN",
-  "trigger_state": "GREEN"
+  "state": "LANGUAGE_REPLACEMENT_TRANSPORT_OR_CLASSIFIER_PAUSED_NO_ADMISSION",
+  "transport": {
+    "credentials_retained": false,
+    "logical_request_count": 14,
+    "physical_attempt_count": 21,
+    "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "retry_attempt_count": 7,
+    "source_content_requests": 0,
+    "title_requests": 0
+  },
+  "transport_retry_accounting": {
+    "attempt_endpoint_hash_chain_sha256": "3a67a8d56ff8a10f209969c7b96a12c08a237893872ba2964f40cb87c34783c4",
+    "logical_request_count": 14,
+    "permanent_candidate_failure_count": 0,
+    "physical_attempt_count": 21,
+    "response_digest_chain_sha256": "fbbe46cd2729212806741a62dc912d2e1d796b80d461ec5719aaf16c6094e2ac",
+    "retry_attempt_count": 7,
+    "state": "LANGUAGE_REPLACEMENT_TRANSPORT_OR_CLASSIFIER_PAUSED_NO_ADMISSION",
+    "status_counts": {
+      "200": 13,
+      "unknown": 8
+    },
+    "successful_request_count": 13,
+    "transport_failure_count": 1
+  },
+  "trigger_state": "PAUSED"
 }

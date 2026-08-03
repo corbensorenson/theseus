@@ -247,6 +247,15 @@ All 24 archives stage outside the repository and publish only if all six slots
 complete. This grants no repository execution, candidate packet, evaluator,
 local/Luna, training, D1, D2, serving, or book authority.
 
+The first live six-slot run paused with no admission after 13 successful
+metadata requests; logical request 14 exhausted eight attempts as an unknown
+GraphQL transport failure. The final receipt records 14 logical requests, 21
+attempts, seven retries, one terminal failure, healthy provider quotas, zero
+title/source/classifier/execution/model activity, and zero published archives.
+Preserve it. The next owner may reduce only GraphQL node batches from 40 to 20
+and repair checkpoint-derived terminal counter reporting; all scientific rules
+and authority remain frozen.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

@@ -568,7 +568,19 @@ language script. Content still must pass changed-source and changed-verifier
 byte gates. All 24 archives stage outside the repository and none publish
 unless all six slots succeed. This classifier is only a task-scope filter; it
 does not generate, evaluate, rank by quality, or enter any candidate/model
-denominator. One bounded replacement run is next.
+denominator.
+
+The first live replacement run paused before any title, source, classifier,
+archive, evaluator, or model activity. Thirteen metadata requests succeeded;
+the fourteenth exhausted eight attempts as an unknown GraphQL transport failure
+(14 logical requests, 21 attempts, seven retries). GitHub core, search, and
+GraphQL quotas were healthy immediately afterward. The final checkpoint hash
+matches the report and the replacement output directory does not exist, so the
+all-six-or-none boundary held. Preserve this receipt. Repair only the response-
+size-sensitive GraphQL transport by reducing node batches from 40 to 20 and
+correct the terminal report's metadata counter from its checkpoint; do not
+change search population, rank, eligibility, slots, language policy, content
+gates, or downstream authority.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
