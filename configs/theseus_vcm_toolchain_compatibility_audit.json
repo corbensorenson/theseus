@@ -1,0 +1,99 @@
+{
+  "policy": "project_theseus_vcm_toolchain_compatibility_audit_v1",
+  "state": "STATIC_DECLARED_VERSION_COMPATIBILITY_BEFORE_SECOND_DEPENDENCY_TASK",
+  "owner": "scripts/theseus_vcm_toolchain_compatibility_audit.py",
+  "owner_sha256": "8544b8a08ab8af41897cbb35e6352893b852f100ca73124a894babfab11659af",
+  "reports": {
+    "prefetch_plan": {
+      "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
+      "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
+    },
+    "runner_inventory": {
+      "path": "reports/theseus_vcm_repository_runner_inventory_v3.json",
+      "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"
+    },
+    "toolchains": {
+      "path": "reports/theseus_vcm_toolchain_identity_audit_v2.json",
+      "sha256": "544a9a5312f5123289f4940a677fe5322bd45ef3f3645bac2bca2b87ba3cd1bf"
+    },
+    "node_runtime": {
+      "path": "reports/theseus_vcm_node_bootstrap.json",
+      "sha256": "fd434ecc416966898eaf1c0ed70e3aafb499514cfc7d36f73a58f77436340937"
+    }
+  },
+  "tool_profiles": [
+    {
+      "id": "node22_15_npm10_9_2",
+      "manager": "npm",
+      "manager_version": "10.9.2",
+      "runtime_versions": {"node": "22.15.0"}
+    },
+    {
+      "id": "node22_20_npm10_9_3",
+      "manager": "npm",
+      "manager_version": "10.9.3",
+      "runtime_versions": {"node": "22.20.0"}
+    },
+    {
+      "id": "node22_15_pnpm10_13_1",
+      "manager": "pnpm",
+      "manager_version": "10.13.1",
+      "runtime_versions": {"node": "22.15.0"}
+    },
+    {
+      "id": "node22_20_pnpm10_13_1",
+      "manager": "pnpm",
+      "manager_version": "10.13.1",
+      "runtime_versions": {"node": "22.20.0"}
+    },
+    {
+      "id": "node22_15_yarn1_22_22",
+      "manager": "yarn",
+      "manager_version": "1.22.22",
+      "runtime_versions": {"node": "22.15.0"}
+    },
+    {
+      "id": "node22_20_yarn1_22_22",
+      "manager": "yarn",
+      "manager_version": "1.22.22",
+      "runtime_versions": {"node": "22.20.0"}
+    },
+    {
+      "id": "bun1_2_0",
+      "manager": "bun",
+      "manager_version": "1.2.0",
+      "runtime_versions": {"bun": "1.2.0"}
+    },
+    {
+      "id": "cargo1_90_rustc1_90",
+      "manager": "cargo",
+      "manager_version": "1.90.0",
+      "runtime_versions": {"rustc": "1.90.0"}
+    },
+    {
+      "id": "uv0_11_28_python3_12_5",
+      "manager": "uv",
+      "manager_version": "0.11.28",
+      "runtime_versions": {"python": "3.12.5"}
+    }
+  ],
+  "report": "reports/theseus_vcm_toolchain_compatibility_audit.json",
+  "authority": {
+    "normalized_archive_and_manifest_static_read_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_prefetch_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN audit statically classifies declared package-manager, Node, Python, uv, and Rust version compatibility for the 48 exact-lock tasks against hash-bound local profiles. It performs no dependency, repository, evaluator, or model execution. Absence of a declared version is reported separately and is not proof of compatibility; a compatible declaration does not prove dependency resolution, build, runner, evaluator, task, VCM, model, D1, D2, or book claims."
+}

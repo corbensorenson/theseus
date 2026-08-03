@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_TASK_3_DEPENDENCY_CLOSURE_INDEPENDENTLY_GREEN_MANAGER_COMPATIBILITY_AUDIT_NEXT",
+            "VCM_V3_TOOLCHAIN_COMPATIBILITY_CLASSIFIED_TASK_7_PNPM_10_32_1_BOOTSTRAP_NEXT",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])

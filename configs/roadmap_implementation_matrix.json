@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_3_DEPENDENCY_CLOSURE_INDEPENDENTLY_GREEN_MANAGER_COMPATIBILITY_AUDIT_NEXT",
+      "state": "VCM_V3_TOOLCHAIN_COMPATIBILITY_CLASSIFIED_TASK_7_PNPM_10_32_1_BOOTSTRAP_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -973,7 +973,33 @@
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "independent static qualification of task-3 dependency acquisition and offline-cache mechanics only; no repository runner evaluator task VCM model or mechanism result",
-        "next_boundary": "statically compare all 48 governing manifests and package-manager/runtime requirements against exact local tool versions before a second dependency task is authorized"
+        "next_boundary": "bind and acquire exact pnpm 10.32.1 for schedule ordinal 2 task 7 before any second dependency acquisition"
+      },
+      "vcm_toolchain_compatibility_audit": {
+        "config": "configs/theseus_vcm_toolchain_compatibility_audit.json",
+        "owner": "scripts/theseus_vcm_toolchain_compatibility_audit.py",
+        "test": "tests/test_theseus_vcm_toolchain_compatibility_audit.py",
+        "report": "reports/theseus_vcm_toolchain_compatibility_audit.json",
+        "owner_sha256": "8544b8a08ab8af41897cbb35e6352893b852f100ca73124a894babfab11659af",
+        "config_sha256": "6ef0abf422208e48fff8b779a3611be6dea344a7488764b8ae31b03e0bbf0a06",
+        "report_sha256": "db1b0b257b5c5935181f659f6b8269367b0b5ff3982d630b2b9ee9031dbcbefa",
+        "state": "GREEN_FORTY_EIGHT_LOCKED_TASK_TOOLCHAIN_COMPATIBILITY_CLASSIFIED",
+        "locked_task_count": 48,
+        "compatible_declared_requirement_task_count": 18,
+        "no_declared_version_requirement_task_count": 16,
+        "incompatible_declared_requirement_task_count": 14,
+        "unresolved_requirement_syntax_task_count": 0,
+        "incompatible_task_indices": [7, 36, 46, 6, 28, 29, 9, 47, 5, 49, 44, 52, 50, 51],
+        "second_schedule_task_index": 7,
+        "second_schedule_required_manager": "pnpm",
+        "second_schedule_required_manager_version": "10.32.1",
+        "bound_pnpm_version": "10.13.1",
+        "dependency_prefetch_executions": 0,
+        "repository_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "static declared-version compatibility classification only; compatible declarations and absent declarations are separate and no dependency repository evaluator task or model result is established",
+        "next_boundary": "acquire and hash-qualify pnpm 10.32.1 for task 7 without dependency or repository execution, then regenerate compatibility before sealing the second dependency canary"
       }
     },
     "claim_selection_policy": {

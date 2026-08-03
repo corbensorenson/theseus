@@ -842,6 +842,15 @@ compare all 48 governing manifests' manager and runtime requirements against
 the exact bound tools; "binary present" is no longer sufficient compatibility
 evidence.
 
+The 48-task declared-version compatibility audit is GREEN: 18 tasks are
+compatible with at least one exact bound profile, 16 declare no manager/runtime
+version and remain a weaker separate class, 14 are explicitly incompatible,
+and zero requirement expressions are unresolved. The incompatible indices are
+7, 36, 46, 6, 28, 29, 9, 47, 5, 49, 44, 52, 50, and 51. Schedule ordinal 2,
+task 7, pins pnpm 10.32.1 while the prior bound CLI is 10.13.1. Do not skip the
+frozen order or tolerate version drift: bind and acquire exact pnpm 10.32.1,
+qualify only its identity, then regenerate compatibility before sealing task 7.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
