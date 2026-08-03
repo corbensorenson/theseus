@@ -780,6 +780,15 @@ canary; do not execute its repository runner or expand to the remaining 47
 until the retained closure, network boundary, script suppression, and storage
 accounting pass independent audit.
 
+The task-3 canary preflight then found a real compatibility gap in the earlier
+"complete" tool identity: its manifest requires Node `>=22.20.0 <25.0.0` and
+npm `>=10.9.3 <12.0.0`, while the bound local lane is Node 22.15.0 with npm
+10.9.2. Do not treat a warning-tolerant install as qualification. One official
+Node 22.20.0 Darwin arm64 archive is now prospectively bound to the exact
+Node.js `SHASUMS256.txt` digest and may be safely materialized and version-
+probed. That bootstrap opens no dependency, repository, evaluator, or model
+authority. Only after it is GREEN may the task-3 dependency canary be sealed.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

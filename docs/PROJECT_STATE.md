@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `V3_STATIC_PREFETCH_SCHEDULE_GREEN_SINGLE_DEPENDENCY_CANARY_NEXT` | The repaired 62-task English panel, all 124 exact parent/head closures, source-bound runner candidates, corrected dependency classes, exact manager set, trusted offline build mechanics, and 48-lock static prefetch schedule are GREEN. No task is evaluator-ready; local and Luna calls remain zero-authority until real dependency closure, parent-fail/target-pass canaries, packets, scorers, call/spend ceilings, and stop conditions are sealed |
+| Active VCM claim | `VCM_V3_NODE_22_20_BOOTSTRAP_READY_BEFORE_TASK_3_DEPENDENCY_CANARY` | The repaired source panel and static evaluator instrument remain GREEN, but the first scheduled lock task requires Node 22.20.0/npm 10.9.3 while the prior identity is Node 22.15.0/npm 10.9.2. An official checksum-bound compatible runtime bootstrap is sealed; no dependency, repository, evaluator, local-model, or Luna execution is yet authorized |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -407,6 +407,13 @@ network work. The frozen order starts with task 3's two-package npm graph. The
 plan makes no dependency, repository, evaluator, or model execution claim. Only
 one prospectively sealed task-3 dependency-acquisition canary may run next.
 
+Its preflight caught an exact runtime incompatibility before that canary ran:
+task 3 requires Node at least 22.20.0 and npm at least 10.9.3, but the earlier
+identity was Node 22.15.0/npm 10.9.2. The official Node 22.20.0 Darwin arm64
+archive and Node.js checksum-list digest are now prospectively bound. One safe
+bootstrap plus exact Node/npm version probes is next; dependency and repository
+execution remain closed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -584,8 +591,9 @@ authorize regenerating historical reports or reopening neural work.
    authority. The source-disjoint 62-task English panel, 124 parent/head
    closures, runner candidates, dependency classes, exact manager set, and
    trusted offline build mechanics are GREEN. A static plan binds all 48 exact
-   lock tasks and schedules task 3 first. Seal and execute only that real
-   dependency-acquisition canary, independently audit its retained closure,
+   lock tasks and schedules task 3 first. First materialize and version-qualify
+   its exact checksum-bound Node 22.20.0/npm 10.9.3 runtime. Then seal and
+   execute only that real dependency-acquisition canary and independently audit its retained closure,
    network boundary, script suppression, and storage accounting, then expand
    sequentially only if the canary passes. Resolve the six immutable-resolution
    tasks separately, qualify TypeScript and untrusted Rust builds, and only then

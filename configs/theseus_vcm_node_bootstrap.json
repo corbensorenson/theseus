@@ -1,0 +1,58 @@
+{
+  "policy": "project_theseus_vcm_node_bootstrap_v1",
+  "state": "PROSPECTIVE_EXACT_NODE_RUNTIME_FOR_VCM_TASK_3_DEPENDENCY_CANARY_ONLY",
+  "owner": "scripts/theseus_vcm_node_bootstrap.py",
+  "owner_sha256": "2f816f892c39052709ce756a755cd3c3e01be9a516d4315527850dd930a4a852",
+  "artifact": {
+    "name": "node",
+    "version": "22.20.0",
+    "npm_version": "10.9.3",
+    "platform": "darwin-arm64",
+    "archive_name": "node-v22.20.0-darwin-arm64.tar.gz",
+    "archive_root": "node-v22.20.0-darwin-arm64",
+    "url": "https://nodejs.org/dist/v22.20.0/node-v22.20.0-darwin-arm64.tar.gz",
+    "sha256": "cc04a76a09f79290194c0646f48fec40354d88969bec467789a5d55dd097f949"
+  },
+  "checksum_source": {
+    "url": "https://nodejs.org/dist/v22.20.0/SHASUMS256.txt",
+    "sha256": "bf8c265bcf527d132273051e4d57c7b4a1da51c90c4acf121b9784a6e2e81e47",
+    "selected_line": "cc04a76a09f79290194c0646f48fec40354d88969bec467789a5d55dd097f949  node-v22.20.0-darwin-arm64.tar.gz",
+    "metadata_requests_before_contract": 1
+  },
+  "task_binding": {
+    "index": 3,
+    "repository": "QoderAI/better-harness",
+    "manifest_package_manager": "npm@10.9.3",
+    "manifest_node_engine": ">=22.20.0 <25.0.0",
+    "manifest_npm_engine": ">=10.9.3 <12.0.0",
+    "prior_node_version": "22.15.0",
+    "prior_npm_version": "10.9.2",
+    "prior_identity_compatible": false
+  },
+  "target": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64",
+  "ca_bundle": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/certifi/cacert.pem",
+  "ca_bundle_sha256": "4f3975ff30abbf35443b486064ae8bcb41dff707ffdf576c76d292fb458aa0a9",
+  "maximum_archive_bytes": 134217728,
+  "minimum_free_bytes_after_acquisition": 10737418240,
+  "timeout_seconds": 180,
+  "report": "reports/theseus_vcm_node_bootstrap.json",
+  "authority": {
+    "exact_artifact_download_authorized": true,
+    "safe_extraction_authorized": true,
+    "exact_version_probe_authorized": true,
+    "dependency_prefetch_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report proves only that the official checksum-bound Node 22.20.0 Darwin arm64 runtime, including npm 10.9.3, was safely materialized and version-probed for VCM task 3's dependency canary. It does not qualify dependency acquisition, repository execution, evaluators, task validity, VCM, models, D1, D2, or book support."
+}

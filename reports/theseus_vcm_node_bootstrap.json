@@ -1,0 +1,20 @@
+{
+  "acquisition_executed": false,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_node_bootstrap.json",
+    "sha256": "3dcca33bd0a18957121cbeba8504096ad3b456abc80741af727a56f9dea721c7"
+  },
+  "created_utc": "2026-08-03T18:04:09.187148Z",
+  "dependency_installations": 0,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN report proves only that the official checksum-bound Node 22.20.0 Darwin arm64 runtime, including npm 10.9.3, was safely materialized and version-probed for VCM task 3's dependency canary. It does not qualify dependency acquisition, repository execution, evaluators, task validity, VCM, models, D1, D2, or book support.",
+  "network_requests": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_node_bootstrap_v1",
+  "repository_executions": 0,
+  "state": "READY_FOR_EXACT_NODE_RUNTIME_ACQUISITION",
+  "tool_version_probes": 0,
+  "trigger_state": "PAUSED"
+}
