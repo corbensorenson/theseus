@@ -277,6 +277,132 @@ def test_v6_graphql_fixture_rejects_head_commit_identity_mismatch() -> None:
     assert "head_commit_identity_mismatch" in reasons
 
 
+def test_v6_full_selector_rehearsal_seals_exact_disjoint_panels(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    config = p2a.read_json(acquisition_v6.DEFAULT_CONFIG)
+    node_rows: dict[str, dict[str, object]] = {}
+    language_suffix = {
+        "Python": "py",
+        "TypeScript": "ts",
+        "JavaScript": "js",
+        "Rust": "rs",
+    }
+
+    def fake_rest(
+        resource: str, fields: dict[str, object]
+    ) -> tuple[dict[str, object], str]:
+        assert resource == "search/issues"
+        query = str(fields["q"])
+        language = next(
+            value
+            for value in language_suffix
+            if f"language:{value}" in query
+        )
+        page = int(fields["page"])
+        items = []
+        for index in range(100):
+            repository = f"v6-fixture/{language.lower()}-{page:02d}-{index:03d}"
+            number = page * 1000 + index
+            node_id = f"PR_{language}_{page}_{index}"
+            items.append(
+                {
+                    "repository_url": f"https://api.github.com/repos/{repository}",
+                    "number": number,
+                    "node_id": node_id,
+                }
+            )
+            suffix = language_suffix[language]
+            node_rows[node_id] = {
+                "__typename": "PullRequest",
+                "id": node_id,
+                "number": number,
+                "url": f"https://github.com/{repository}/pull/{number}",
+                "state": "MERGED",
+                "isDraft": False,
+                "createdAt": "2026-08-01T00:00:00Z",
+                "mergedAt": "2026-08-01T02:00:00Z",
+                "additions": 5,
+                "deletions": 1,
+                "changedFiles": 2,
+                "baseRefOid": "a" * 40,
+                "headRefOid": "b" * 40,
+                "mergeCommit": {"oid": "c" * 40},
+                "author": {"login": "human"},
+                "repository": {
+                    "nameWithOwner": repository,
+                    "isFork": False,
+                    "isArchived": False,
+                    "isDisabled": False,
+                    "stargazerCount": 5,
+                    "primaryLanguage": {"name": language},
+                    "licenseInfo": {"spdxId": "MIT"},
+                },
+                "files": {"nodes": [
+                    {"path": f"src/module.{suffix}", "changeType": "MODIFIED"},
+                    {"path": f"tests/module.test.{suffix}", "changeType": "MODIFIED"},
+                ]},
+                "commits": {"nodes": [
+                    {
+                        "commit": {
+                            "oid": "b" * 40,
+                            "committedDate": "2026-08-01T01:00:00Z",
+                        }
+                    }
+                ]},
+            }
+        return {"items": items}, f"{language}:{page}".encode().hex().ljust(64, "0")[:64]
+
+    def fake_graphql(
+        resource: str, fields: dict[str, object]
+    ) -> tuple[dict[str, object], str]:
+        assert resource == "graphql:nodes"
+        ids = list(fields["ids"])
+        assert 1 <= len(ids) <= 40
+        return {
+            "data": {"nodes": [node_rows[str(node_id)] for node_id in ids]}
+        }, "f" * 64
+
+    monkeypatch.setattr(acquisition_v6.v1, "api_json", fake_rest)
+    monkeypatch.setattr(acquisition_v6, "graphql_api", fake_graphql)
+    retry_policy = config["transport_retry_policy"]
+    ledger = acquisition_v5.RequestLedger(
+        tmp_path / "checkpoint.json",
+        acquisition_v6.DEFAULT_CONFIG,
+        retry_policy,
+    )
+    report = acquisition_v6.acquire(
+        acquisition_v6.DEFAULT_CONFIG, ledger, retry_policy
+    )
+    rows = report["selected_source_identities"]
+    assert report["trigger_state"] == "GREEN"
+    assert report["state"] == "SIXTY_TWO_SOURCE_IDENTITIES_FROZEN_BEFORE_CONTENT_RETRIEVAL"
+    assert len(rows) == 62
+    assert len({row["repository"] for row in rows}) == 62
+    assert sum(row["panel"] == "control_qualification" for row in rows) == 9
+    assert sum(row["panel"] == "claim" for row in rows) == 53
+    for language, quota in config["panels"]["control_qualification"][
+        "language_quotas"
+    ].items():
+        assert sum(
+            row["panel"] == "control_qualification"
+            and row["query_language"] == language
+            for row in rows
+        ) == quota
+    for language, quota in config["panels"]["claim"]["language_quotas"].items():
+        assert sum(
+            row["panel"] == "claim" and row["query_language"] == language
+            for row in rows
+        ) == quota
+    assert report["metadata_transport"]["rest_search_requests"] == 40
+    assert report["metadata_transport"]["graphql_node_batch_size"] == 40
+    assert ledger.summary()["logical_request_count"] == 44
+    assert ledger.summary()["physical_attempt_count"] == 44
+    assert report["source_content_retrieval_opened"] is False
+    assert report["candidate_packet_materialization_opened"] is False
+    assert all(row["candidate_content_retrieved"] is False for row in rows)
+
+
 def test_panel_quotas_are_exact_and_source_disjoint_by_construction() -> None:
     config = p2a.read_json(acquisition.DEFAULT_CONFIG)
     panels = config["panels"]
