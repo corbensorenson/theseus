@@ -516,6 +516,16 @@ evaluators, local/Luna inference, training, D1/D2, serving, and book promotion
 remain closed. The next transaction must separately bind immutable source
 retrieval and independent evaluator qualification to this exact report.
 
+The source-materialization transaction is now prospectively sealed and GREEN
+at zero source requests and zero executions. It may retrieve only each frozen
+PR title, selected changed source/verifier paths at exact base/head revisions,
+and repository license bytes. It writes four deterministic archives per task
+(parent/target source and parent/target verifier), verifies the title against
+the v7 digest, retains no response bodies in the checkpoint, and cannot execute
+untrusted code, install dependencies, build candidate packets, evaluate, or
+call either model. Physical file/aggregate byte boundaries are host-safety
+invalidations, not task or mechanism failures. One source-only run is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -710,7 +720,9 @@ Use existing owners; create no new cleanup or report family.
    requests. Preserve it. V7's bounded recovery succeeded and froze all 62
    unique repositories with exact 9/53 source-disjoint panels and a verified
    final checkpoint hash. Bind immutable source retrieval and independent
-   evaluator qualification to that exact report, then bind
+   evaluator qualification to that exact report. The execution-free source
+   materializer is sealed GREEN at zero requests; run it, audit all archives,
+   then separately qualify evaluators and bind
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.

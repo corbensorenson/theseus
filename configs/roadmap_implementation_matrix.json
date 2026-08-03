@@ -272,6 +272,31 @@
         "local_model_calls_authorized": 0,
         "external_reference_calls_authorized": 0,
         "user_or_operator_gate": false
+      },
+      "vcm_source_materialization": {
+        "config": "configs/theseus_vcm_source_materialization.json",
+        "preflight": "reports/theseus_vcm_source_materialization.json",
+        "checkpoint": "reports/theseus_vcm_source_materialization_checkpoint.json",
+        "owner": "scripts/theseus_vcm_source_materialization.py",
+        "metadata_selection_report": "reports/theseus_vcm_source_acquisition_v7.json",
+        "metadata_selection_report_sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2",
+        "state": "GREEN_PREFLIGHT_ZERO_SOURCE_REQUESTS_ZERO_EXECUTIONS",
+        "selected_repository_count": 62,
+        "archive_roles_per_repository": 4,
+        "selected_changed_source_and_verifier_paths_only": true,
+        "exact_base_and_head_revisions_bound": true,
+        "pr_title_only_graphql_metadata": true,
+        "body_patch_reviews_comments_or_issue_content_requested": false,
+        "license_content_bound_at_base_and_head": true,
+        "deterministic_archives": true,
+        "untrusted_code_execution_authorized": false,
+        "candidate_packet_materialization_authorized": false,
+        "hidden_evaluation_authorized": false,
+        "local_model_calls_authorized": false,
+        "external_reference_calls_authorized": false,
+        "user_or_operator_gate": false,
+        "source_requests_executed": 0,
+        "parent_target_or_evaluator_executions": 0
       }
     },
     "claim_selection_policy": {

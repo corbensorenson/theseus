@@ -1,0 +1,36 @@
+{
+  "archive_set_admitted": false,
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_source_materialization.json",
+    "sha256": "44abb155aeb4eea422f6a3e936a7d0d9a10a30481d6ecc05d66fe659817f4034"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "public_metadata_title_requests": 0,
+    "public_source_content_requests": 0,
+    "source_archives_materialized": 0,
+    "source_bytes_materialized": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T11:14:38.358714Z",
+  "faults": [],
+  "hidden_evaluation_opened": false,
+  "maximum_inference": "A GREEN materialization proves only that the exact frozen v7 changed source paths, changed verifier paths, PR titles, and repository licenses were content-bound at exact base/head revisions into deterministic archives without untrusted execution. It does not establish parent failure, target success, evaluator independence or adequacy, candidate-visible packet integrity, VCM usefulness, local or Luna competence, training value, D1, D2, serving, or ASI Stack support.",
+  "metadata_selection": {
+    "path": "reports/theseus_vcm_source_acquisition_v7.json",
+    "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"
+  },
+  "partial_archive_set_admitted": false,
+  "policy": "project_theseus_vcm_source_materialization_v1",
+  "selected_repository_count": 62,
+  "source_content_retrieval_opened": false,
+  "state": "VCM_SOURCE_MATERIALIZATION_PREFLIGHT_GREEN",
+  "trigger_state": "GREEN"
+}

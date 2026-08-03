@@ -202,6 +202,14 @@ answer, tests, or node IDs. Source retrieval, packets, evaluators, local/Luna
 calls, training, D1/D2, serving, and book promotion remain closed. Next bind
 immutable source retrieval and independent evaluator qualification separately.
 
+The source materializer is now prospectively sealed and GREEN at zero source
+requests and zero executions. It is bound to the exact v7 report and may fetch
+only PR title, selected changed source/verifier files at base/head, and license
+bytes. Four deterministic archives per task keep source and evaluator custody
+separate. It cannot execute untrusted code, install dependencies, build packets,
+evaluate candidates, or call local/Luna. Physical byte boundaries invalidate
+host operability only. One source-only run is active.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -389,7 +397,8 @@ authorize regenerating historical reports or reopening neural work.
    unknown-network exhaustion after 57 successes. Preserve it; repair only the
    bounded retry horizon and final checkpoint hash ordering. V7 completed GREEN
    with all 62 exact-panel identities and a verified final checkpoint hash.
-   Separately authorize immutable source contents and evaluator qualification before
+   The execution-free source materializer is sealed GREEN at zero requests; run
+   and audit it, then separately qualify evaluators before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.
 11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit

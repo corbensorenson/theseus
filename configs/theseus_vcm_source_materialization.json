@@ -1,0 +1,78 @@
+{
+  "policy": "project_theseus_vcm_source_materialization_v1",
+  "state": "PROSPECTIVE_SOURCE_RETRIEVAL_BEFORE_ANY_UNTRUSTED_EXECUTION_OR_CANDIDATE_PACKET",
+  "purpose": "Materialize only the frozen v7 changed source paths, changed verifier paths, PR title, and repository license at exact base/head revisions into deterministic archives without executing untrusted code.",
+  "metadata_selection_report": "reports/theseus_vcm_source_acquisition_v7.json",
+  "metadata_selection_report_sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2",
+  "metadata_selection_checkpoint": "reports/theseus_vcm_source_acquisition_v7_checkpoint.json",
+  "metadata_selection_checkpoint_sha256": "427ff75b9e899f3d91dfc25752e1e9bc463508d28bb611563d7bb372b85b5cac",
+  "source_bindings": [
+    {"id": "materialization_owner", "path": "scripts/theseus_vcm_source_materialization.py", "sha256": "b25db4539b37a3c67d30f3c1f89d7a1d371fa6148ebaec538ca321a5fa8d4aea"},
+    {"id": "archive_owner", "path": "scripts/theseus_semantic_ir_production_adequacy_materialization.py", "sha256": "70cf6a62c18f8aecc0f255beb12049d253f589c6ebbf737c69ef98c92b416dd6"},
+    {"id": "metadata_selection_config", "path": "configs/theseus_vcm_source_acquisition_v7.json", "sha256": "0a60abfc70113e4e660f196e5651415a8b8ef61ed7322048a1d4d738777a495f"},
+    {"id": "metadata_selection_owner", "path": "scripts/theseus_vcm_source_acquisition_v7.py", "sha256": "b2b8591863e4894de0b301bc8f366e87d3bc1fe215346ef93bd9c734112766c9"},
+    {"id": "metadata_selection_report", "path": "reports/theseus_vcm_source_acquisition_v7.json", "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"},
+    {"id": "metadata_selection_checkpoint", "path": "reports/theseus_vcm_source_acquisition_v7_checkpoint.json", "sha256": "427ff75b9e899f3d91dfc25752e1e9bc463508d28bb611563d7bb372b85b5cac"}
+  ],
+  "title_policy": {
+    "graphql_title_only": true,
+    "body_patch_reviews_comments_or_issue_content_requested": false,
+    "title_sha256_must_match_frozen_v7_digest": true,
+    "title_is_candidate_visible_only_after_later_packet_seal": true
+  },
+  "archive_policy": {
+    "selected_paths_and_license_only": true,
+    "roles": ["parent_source", "target_source", "parent_verifier", "target_verifier"],
+    "deterministic_tar_gzip": true,
+    "mtime": 0,
+    "uid": 0,
+    "gid": 0,
+    "mode": "0644",
+    "symlinks_allowed": false,
+    "maximum_single_file_bytes": 2097152,
+    "maximum_total_materialized_bytes": 536870912,
+    "physical_byte_boundaries_are_host_safety_not_task_or_mechanism_failure": true,
+    "untrusted_code_execution_authorized": false,
+    "network_use_during_later_evaluation_authorized": false
+  },
+  "transport_retry_policy": {
+    "maximum_attempts_per_logical_request": 8,
+    "retry_delays_seconds": [1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 45.0],
+    "maximum_total_backoff_seconds_per_logical_request": 108.0,
+    "transient_http_statuses": [408, 429, 500, 502, 503, 504],
+    "permanent_candidate_http_statuses": [404, 410],
+    "retry_unknown_network_failures": true,
+    "rate_limited_403_retryable_when_explicit": true,
+    "host_transport_activation_is_not_task_or_mechanism_failure": true
+  },
+  "checkpoint_policy": {
+    "path": "reports/theseus_vcm_source_materialization_checkpoint.json",
+    "write_after_every_logical_request_begin": true,
+    "write_after_every_physical_attempt": true,
+    "response_and_endpoint_hashes_only": true,
+    "candidate_identities_retained": false,
+    "source_content_retained": false,
+    "credentials_retained": false,
+    "finalize_before_report_artifact_hash": true
+  },
+  "output_directory": "tests/fixtures/theseus_vcm_claim_sources_v1",
+  "output": "reports/theseus_vcm_source_materialization.json",
+  "authority": {
+    "public_source_file_retrieval_authorized": true,
+    "public_pr_title_metadata_retrieval_authorized": true,
+    "untrusted_code_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN materialization proves only that the exact frozen v7 changed source paths, changed verifier paths, PR titles, and repository licenses were content-bound at exact base/head revisions into deterministic archives without untrusted execution. It does not establish parent failure, target success, evaluator independence or adequacy, candidate-visible packet integrity, VCM usefulness, local or Luna competence, training value, D1, D2, serving, or ASI Stack support."
+}

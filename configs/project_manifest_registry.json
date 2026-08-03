@@ -825,7 +825,7 @@
       "canonical_surface": "theseus_assistant_runtime",
       "canonical_path": "configs/theseus_vcm_claim_instrument.json",
       "promotion_role": "prospective_vcm_claim_design_and_bounded_source_metadata_selection",
-      "successor_policy": "The claim instrument remains canonical. Source-acquisition configs v1-v6 are immutable evidence for two inadequate-pool results, one fork-head interruption, one transient transport pause, one secondary-throttle pause, and one short-backoff GraphQL transport pause. V7 is the active metadata-only transport successor: it reuses v6 selection and batching exactly, lengthens only bounded transient recovery, and finalizes the checkpoint before report hashing. Search science, zero-inference authority, and every consumed predecessor remain immutable."
+      "successor_policy": "The claim instrument remains canonical. Source-acquisition configs v1-v6 are immutable negative transport/pool evidence; v7 is the GREEN frozen 62-identity metadata owner. The separate source-materialization config is the active source-byte boundary and may retrieve only frozen changed source/verifier paths, PR title, and license into deterministic archives without execution or candidate/model authority. Search science, zero-inference authority, and every consumed predecessor remain immutable."
     },
     {
       "root": "scripts",
@@ -834,7 +834,7 @@
       "canonical_surface": "theseus_assistant_runtime",
       "canonical_path": "scripts/theseus_runtime.py",
       "promotion_role": "orthogonal_runtime_claim_instrument_and_metadata_only_acquisition_boundaries",
-      "successor_policy": "theseus_runtime.py remains the canonical runtime. The VCM claim auditor and source-acquisition v1-v7 owners are non-serving experimental boundaries. The base owner fixes eligibility, v3 fixes the expanded pool, v4 fixes fork chronology, v5 adds retry accounting, v6 batches identical metadata through GraphQL nodes, and v7 changes only bounded recovery plus final checkpoint hash custody. Earlier owners remain exact evidence for consumed attempts; none can route serving or authorize model calls."
+      "successor_policy": "theseus_runtime.py remains the canonical runtime. The VCM claim auditor, source-acquisition v1-v7 lineage, and execution-free source materializer are non-serving experimental boundaries. V7 owns the frozen identities; the materializer may content-bind only selected files and licenses. Earlier owners remain exact evidence for consumed attempts; none can route serving or authorize model calls."
     },
     {
       "root": "scripts",
@@ -6918,6 +6918,7 @@
         "scripts/theseus_vcm_source_acquisition_v5.py",
         "scripts/theseus_vcm_source_acquisition_v6.py",
         "scripts/theseus_vcm_source_acquisition_v7.py",
+        "scripts/theseus_vcm_source_materialization.py",
         "scripts/theseus_openai_reference_adapter.py",
         "configs/theseus_assistant_p2a_instrument.json",
         "configs/theseus_assistant_p2b_instrument.json",
@@ -6972,9 +6973,11 @@
         "configs/theseus_vcm_source_acquisition_v5.json",
         "configs/theseus_vcm_source_acquisition_v6.json",
         "configs/theseus_vcm_source_acquisition_v7.json",
+        "configs/theseus_vcm_source_materialization.json",
         "tests/fixtures/theseus_semantic_ir_production_non_claim/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/**/*",
+        "tests/fixtures/theseus_vcm_claim_sources_v1/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_02/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_04/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/**/*",
@@ -7011,6 +7014,7 @@
         "tests/test_theseus_semantic_ir_production_adequacy_fresh_v6.py",
         "tests/test_theseus_vcm_claim_instrument.py",
         "tests/test_theseus_vcm_source_acquisition.py",
+        "tests/test_theseus_vcm_source_materialization.py",
         "configs/theseus_assistant_runtime_p2b_qwen35.json",
         "configs/theseus_p2b_task_pool.json",
         "configs/theseus_p2b_task_requests_7502.json",
@@ -7135,6 +7139,8 @@
         "reports/theseus_vcm_source_acquisition_v6_checkpoint.json",
         "reports/theseus_vcm_source_acquisition_v7.json",
         "reports/theseus_vcm_source_acquisition_v7_checkpoint.json",
+        "reports/theseus_vcm_source_materialization.json",
+        "reports/theseus_vcm_source_materialization_checkpoint.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.json",
@@ -9902,6 +9908,7 @@
         "scripts/theseus_vcm_source_acquisition_v5.py",
         "scripts/theseus_vcm_source_acquisition_v6.py",
         "scripts/theseus_vcm_source_acquisition_v7.py",
+        "scripts/theseus_vcm_source_materialization.py",
         "scripts/theseus_p2c_disposition.py",
         "scripts/theseus_p3_local_model_freeze.py",
         "scripts/theseus_p3_task_pool.py",
@@ -9956,6 +9963,7 @@
         "configs/theseus_vcm_source_acquisition_v5.json",
         "configs/theseus_vcm_source_acquisition_v6.json",
         "configs/theseus_vcm_source_acquisition_v7.json",
+        "configs/theseus_vcm_source_materialization.json",
         "configs/theseus_assistant_p3_instrument.json",
         "configs/theseus_p3_task_sources.json",
         "configs/theseus_p3_task_pool.json",
@@ -10043,6 +10051,7 @@
         "tests/test_theseus_semantic_ir_production_adequacy_fresh_v6.py",
         "tests/test_theseus_vcm_claim_instrument.py",
         "tests/test_theseus_vcm_source_acquisition.py",
+        "tests/test_theseus_vcm_source_materialization.py",
         "tests/test_theseus_p2a_online_task_pool.py",
         "tests/test_theseus_p2b_model_selection.py",
         "tests/test_theseus_p2b_sanitize_archive.py",
@@ -10066,6 +10075,7 @@
         "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_04/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v5/**/*",
+        "tests/fixtures/theseus_vcm_claim_sources_v1/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v6/**/*",
         "runtime/p2a/p2a_semantic_production_non_claim_01_attempt1_direct_local_model_*.json",
         "tests/fixtures/core_evidence_local_8b_hidden/*.py"
