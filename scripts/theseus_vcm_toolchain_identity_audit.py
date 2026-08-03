@@ -78,6 +78,13 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         observed_hash = p2a.sha256_file(path) if path.is_file() else ""
         if observed_hash != str(declared.get("sha256") or ""):
             faults.append(f"tool_identity_invalid:{name}")
+        support_files = []
+        for support_raw in p2a.dicts(declared.get("support_files")):
+            support_path = p2a.resolve(str(support_raw.get("path") or ""))
+            support_hash = p2a.sha256_file(support_path) if support_path.is_file() else ""
+            if support_hash != str(support_raw.get("sha256") or ""):
+                faults.append(f"tool_support_identity_invalid:{name}:{p2a.rel(support_path)}")
+            support_files.append({"path": p2a.rel(support_path), "sha256": support_hash})
         command = [str(path), *p2a.strings(declared.get("version_command"))]
         completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True, check=False)
         output = (completed.stdout or completed.stderr).strip()
@@ -87,6 +94,7 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             "available": path.is_file() and observed_hash == str(declared.get("sha256") or ""),
             "path": p2a.rel(path),
             "sha256": observed_hash,
+            "support_files": support_files,
             "version_command": command,
             "version_output": output,
             "version_output_sha256": hashlib.sha256(output.encode()).hexdigest(),
@@ -133,7 +141,7 @@ def audit(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "policy": POLICY,
         "created_utc": p2a.now(),
         "trigger_state": "GREEN" if not faults else "RED",
-        "state": "LOCAL_TOOLCHAIN_IDENTITIES_BOUND_YARN_RESIDUAL" if not faults else "TOOLCHAIN_IDENTITY_AUDIT_INVALID",
+        "state": "LOCAL_TOOLCHAIN_IDENTITIES_COMPLETE" if not faults else "TOOLCHAIN_IDENTITY_AUDIT_INVALID",
         "faults": sorted(set(faults)),
         "config": artifact(config_path),
         "dependency_class_report": artifact(dependency_path),

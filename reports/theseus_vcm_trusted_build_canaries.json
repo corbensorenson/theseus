@@ -1,14 +1,13 @@
 {
   "candidate_or_control_calls": 0,
-  "command_receipt_count": 16,
+  "command_receipt_count": 19,
   "config": {
     "path": "configs/theseus_vcm_trusted_build_canaries.json",
-    "sha256": "0291898b2e4b4555949e24f131f48c21b12f2f5a9cf6fa5315ac58f22bf96873"
+    "sha256": "94ea362e1093d40a6f882bf928cffa72aa7a81a636fa0adf3d4e191be99f68e9"
   },
-  "created_utc": "2026-08-03T17:01:12.437323Z",
+  "created_utc": "2026-08-03T17:08:36.271735Z",
   "dependency_prefetch_authorized": false,
   "explicitly_unqualified_scopes": [
-    "yarn_runtime",
     "remote_dependency_prefetch",
     "real_lock_resolution",
     "untrusted_install_scripts",
@@ -18,7 +17,7 @@
   ],
   "external_reference_calls": 0,
   "faults": [],
-  "maximum_inference": "A GREEN report qualifies only trusted local offline fixtures for exact pip, npm, pnpm, Bun, Deno/TypeScript, and rustc mechanics under the declared network and write sandbox. It does not qualify Yarn, remote prefetch, real repository locks, untrusted install/build scripts, repository compilation, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
+  "maximum_inference": "A GREEN report qualifies only trusted local offline fixtures for exact pip, npm, pnpm, Bun, Yarn, Deno/TypeScript, and rustc mechanics under the declared network and write sandbox. It does not qualify remote prefetch, real repository locks, untrusted install/build scripts, repository compilation, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_trusted_build_canaries_v1",
   "qualification_executed": true,
@@ -28,6 +27,7 @@
     "npm_local_file_offline_install_ignore_scripts",
     "pnpm_local_file_offline_install_ignore_scripts",
     "bun_local_file_offline_install_ignore_scripts",
+    "yarn_local_file_offline_install_ignore_scripts",
     "deno_dependency_free_typescript_check_and_run",
     "rustc_dependency_free_trusted_source_compile_and_run"
   ],
@@ -72,7 +72,7 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 79,
-      "stdout_sha256": "af0941f8d2311b77d6e865e6920c07e8cd952006b600906bb6e6e6a2ff842758"
+      "stdout_sha256": "8397582259dbda4839756c1b3492b58d6f7b982b7aed5e277c91d0dc4209df95"
     },
     "bun_offline_lock": {
       "boundary_hit": false,
@@ -92,7 +92,7 @@
       "stderr_sha256": "47f54b390e29cf9d23c0e13e15bbff6224c42e067872d642b63deb38a8c5152c",
       "stderr_tail": "Saved lockfile\n",
       "stdout_bytes": 67,
-      "stdout_sha256": "59eeb95adeefb9f1066540c9b1893c1c35bb474ffe4fe290beba8934aeb5fd12"
+      "stdout_sha256": "08703da70e5eab9e432c9c378cf41243c98a9073f83d2419083058e17b0f341d"
     },
     "deno_typescript_check": {
       "boundary_hit": false,
@@ -101,15 +101,15 @@
         "/Users/corbensorenson/miniforge3/bin/deno",
         "check",
         "--no-config",
-        "/private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts"
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/typescript/canary.ts"
       ],
       "cwd_leaf": "typescript",
       "project_selected_quality_token_cap": null,
       "returncode": 0,
       "stderr_bytes": 74,
-      "stderr_head": "Check file:///private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts\n",
-      "stderr_sha256": "007f7a99f47b8e762d45a8fc5b033be59c3ac76e4897df4900363ad3138c5f7c",
-      "stderr_tail": "Check file:///private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts\n",
+      "stderr_head": "Check file:///private/tmp/theseus-vcm-build-7w9rqsnw/typescript/canary.ts\n",
+      "stderr_sha256": "4673632bee75a88f57f18ed56f26c8e82507b537f72e0c4334b9922d789b734d",
+      "stderr_tail": "Check file:///private/tmp/theseus-vcm-build-7w9rqsnw/typescript/canary.ts\n",
       "stdout_bytes": 0,
       "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -121,7 +121,7 @@
         "run",
         "--cached-only",
         "--no-config",
-        "/private/tmp/theseus-vcm-build-uo36hrti/typescript/canary.ts"
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/typescript/canary.ts"
       ],
       "cwd_leaf": "typescript",
       "project_selected_quality_token_cap": null,
@@ -175,7 +175,7 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 26,
-      "stdout_sha256": "0b3d25a2ceffca226faa25c54d7c4809bcdc24ede4e32465fd38cf547edfb28f"
+      "stdout_sha256": "49cb21230c5cbef6f37ffe5012b7d9f6b5faf8ec5af0b0ff3fa7e21a6ebeec21"
     },
     "npm_offline_lock": {
       "boundary_hit": false,
@@ -198,7 +198,7 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 21,
-      "stdout_sha256": "61f3f5ecf87603955802b8cc3a35d56497bad7a431b3046f3d7c48a9dc87b02d"
+      "stdout_sha256": "b21c7777af05aa0b4c4f0d3a4e142a8c7fbc88bedbd0cacf2582d501d30b4866"
     },
     "pip_import": {
       "boundary_hit": false,
@@ -229,9 +229,9 @@
         "--disable-pip-version-check",
         "--no-index",
         "--find-links",
-        "/private/tmp/theseus-vcm-build-uo36hrti/pip/wheelhouse",
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/pip/wheelhouse",
         "--target",
-        "/private/tmp/theseus-vcm-build-uo36hrti/pip/site",
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/pip/site",
         "trusted-dep==1.0.0"
       ],
       "cwd_leaf": "pip",
@@ -242,7 +242,7 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 216,
-      "stdout_sha256": "c071ecea535d8ca192130dc0c000ac2ffe852437d335e5d903d618b9b782c5e4"
+      "stdout_sha256": "5a49a27c1eb805dda004e80118938f2e39c546642de90508838aaf6922b65230"
     },
     "pnpm_lifecycle_script_suppression": {
       "passed": true,
@@ -285,7 +285,7 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 244,
-      "stdout_sha256": "0c4bdf9ae4dcb55b866cb255ba743939b3bf3b01ec6ac0e0d38383cb6b788634"
+      "stdout_sha256": "d1604d6afff1eeb98feb3a10d0aafbaa2892fc0126bd533306e3b5e6e02992fd"
     },
     "pnpm_offline_lock": {
       "boundary_hit": false,
@@ -306,13 +306,13 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "stderr_tail": "",
       "stdout_bytes": 149,
-      "stdout_sha256": "0afbdcf1fa011331549798c3f9fe422eb605571eca77860e45f9c0d0da40605b"
+      "stdout_sha256": "020c976d521e840929a17bd10909ec8fc38b4f501ef62cbe4b0d557404ff457b"
     },
     "rust_binary_run": {
       "boundary_hit": false,
       "boundary_reason": "",
       "command": [
-        "/private/tmp/theseus-vcm-build-uo36hrti/rust/canary"
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/rust/canary"
       ],
       "cwd_leaf": "rust",
       "project_selected_quality_token_cap": null,
@@ -330,9 +330,9 @@
       "command": [
         "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
         "--edition=2021",
-        "/private/tmp/theseus-vcm-build-uo36hrti/rust/canary.rs",
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/rust/canary.rs",
         "-o",
-        "/private/tmp/theseus-vcm-build-uo36hrti/rust/canary"
+        "/private/tmp/theseus-vcm-build-7w9rqsnw/rust/canary"
       ],
       "cwd_leaf": "rust",
       "project_selected_quality_token_cap": null,
@@ -352,7 +352,7 @@
         "-c",
         "import json,pathlib,socket\no=pathlib.Path('/Users/corbensorenson/Documents/Theseus-Hive/runtime/control/vcm_trusted_build_escape');r={}\ntry:o.write_text('x');r['outside_write_denied']=False\nexcept OSError:r['outside_write_denied']=True\ns=socket.socket();s.settimeout(.2)\ntry:s.connect(('127.0.0.1',9));r['network_denied']=False\nexcept OSError:r['network_denied']=True\nprint(json.dumps(r,sort_keys=True))\n"
       ],
-      "cwd_leaf": "theseus-vcm-build-uo36hrti",
+      "cwd_leaf": "theseus-vcm-build-7w9rqsnw",
       "expected_denials": [
         "network_denied",
         "outside_write_denied"
@@ -366,13 +366,78 @@
       "stderr_tail": "",
       "stdout_bytes": 55,
       "stdout_sha256": "d23a414460f4b0861013af68a12fdc99606eb692107a330883215762e1291d0b"
+    },
+    "yarn_lifecycle_script_suppression": {
+      "passed": true,
+      "sentinel_hits": []
+    },
+    "yarn_local_import": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "-e",
+        "const d=require('trusted-dep');if(d.value!==7)process.exit(2)"
+      ],
+      "cwd_leaf": "yarn",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "yarn_offline_install": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--non-interactive"
+      ],
+      "cwd_leaf": "yarn",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 37,
+      "stderr_head": "warning Ignored scripts due to flag.\n",
+      "stderr_sha256": "d3b4b8bcec7a769be0bda3e85b95acc71112c7b93335f86e1e8b40d4758be5da",
+      "stderr_tail": "warning Ignored scripts due to flag.\n",
+      "stdout_bytes": 155,
+      "stdout_sha256": "02289f47d4ab1a92202bcb26b2dc90e61b0232ffc91fefd51b7bf47de40eda60"
+    },
+    "yarn_offline_lock": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+        "install",
+        "--offline",
+        "--ignore-scripts",
+        "--non-interactive"
+      ],
+      "cwd_leaf": "yarn",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 37,
+      "stderr_head": "warning Ignored scripts due to flag.\n",
+      "stderr_sha256": "d3b4b8bcec7a769be0bda3e85b95acc71112c7b93335f86e1e8b40d4758be5da",
+      "stderr_tail": "warning Ignored scripts due to flag.\n",
+      "stdout_bytes": 203,
+      "stdout_sha256": "1dba3cda467e2026c94762337d2f141d55690f9c223d79436f9a90cd715c3b6b"
     }
   },
   "repository_execution_authorized": false,
   "state": "TRUSTED_OFFLINE_BUILD_CANARIES_QUALIFIED",
   "toolchain_identity_report": {
     "path": "reports/theseus_vcm_toolchain_identity_audit.json",
-    "sha256": "76a137b68d047c0bc1c1b2ad4913f8ee622605b5493cf516ef22997e5e624d68"
+    "sha256": "3916ce71ace35ad230032562e27c84895cc913e2c4f81cedef1f6adbb7edf7ae"
   },
   "trigger_state": "GREEN"
 }

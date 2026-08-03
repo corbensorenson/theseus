@@ -8,6 +8,7 @@ import hashlib
 import json
 import os
 import resource
+import shutil
 import socket
 import subprocess
 import sys
@@ -54,7 +55,7 @@ def preflight(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         identity = p2a.read_json(identity_path)
     if identity.get("trigger_state") != "GREEN":
         faults.append("toolchain_identity_not_green")
-    for name in ("sandbox_exec", "python", "node", "npm_cli", "pnpm_cli", "bun", "deno", "rustc"):
+    for name in ("sandbox_exec", "python", "node", "npm_cli", "pnpm_cli", "yarn_cli", "bun", "deno", "rustc"):
         raw = p2a.mapping(p2a.mapping(config.get("tools")).get(name))
         path = p2a.resolve(str(raw.get("path") or ""))
         if not path.is_file() or p2a.sha256_file(path) != str(raw.get("sha256") or ""):
@@ -115,7 +116,7 @@ def qualify(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
             pip_root, profile, {**env, "PYTHONPATH": str(pip_root / "site")}, config,
         )
 
-        for manager in ("npm", "pnpm", "bun"):
+        for manager in ("npm", "pnpm", "bun", "yarn"):
             manager_root = root / manager
             make_node_fixture(manager_root)
             if manager == "npm":
@@ -126,11 +127,17 @@ def qualify(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
                 prefix = [tools["node"], tools["pnpm_cli"]]
                 lock_args = ["install", "--lockfile-only", "--offline", "--ignore-scripts"]
                 install_args = ["install", "--offline", "--frozen-lockfile", "--ignore-scripts"]
-            else:
+            elif manager == "bun":
                 prefix = [tools["bun"]]
                 lock_args = ["install", "--lockfile-only", "--offline", "--ignore-scripts"]
                 install_args = ["install", "--offline", "--frozen-lockfile", "--ignore-scripts"]
+            else:
+                prefix = [tools["node"], tools["yarn_cli"]]
+                lock_args = ["install", "--offline", "--ignore-scripts", "--non-interactive"]
+                install_args = ["install", "--offline", "--frozen-lockfile", "--ignore-scripts", "--non-interactive"]
             receipts[f"{manager}_offline_lock"] = run(prefix + lock_args, manager_root, profile, env, config)
+            if manager == "yarn" and (manager_root / "node_modules").is_dir():
+                shutil.rmtree(manager_root / "node_modules")
             receipts[f"{manager}_offline_install"] = run(prefix + install_args, manager_root, profile, env, config)
             receipts[f"{manager}_local_import"] = run(
                 [tools["node"], "-e", "const d=require('trusted-dep');if(d.value!==7)process.exit(2)"],
@@ -176,6 +183,7 @@ def qualify(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "npm_local_file_offline_install_ignore_scripts",
         "pnpm_local_file_offline_install_ignore_scripts",
         "bun_local_file_offline_install_ignore_scripts",
+        "yarn_local_file_offline_install_ignore_scripts",
         "deno_dependency_free_typescript_check_and_run",
         "rustc_dependency_free_trusted_source_compile_and_run",
     ] if passed else []
@@ -188,7 +196,7 @@ def qualify(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "qualification_executed": True,
         "qualified_scopes": scopes,
         "explicitly_unqualified_scopes": [
-            "yarn_runtime", "remote_dependency_prefetch", "real_lock_resolution",
+            "remote_dependency_prefetch", "real_lock_resolution",
             "untrusted_install_scripts", "untrusted_repository_transpilation",
             "untrusted_rust_or_build_script_compilation", "repository_runner_adequacy",
         ],

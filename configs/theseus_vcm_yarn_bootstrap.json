@@ -1,0 +1,39 @@
+{
+  "policy": "project_theseus_vcm_yarn_bootstrap_v1",
+  "state": "PROSPECTIVE_EXACT_YARN_CLASSIC_ACQUISITION_FOR_TASK_4_ONLY",
+  "owner": "scripts/theseus_vcm_yarn_bootstrap.py",
+  "owner_sha256": "d0548bf4a3038870f149d05167d9df6054c37d0248d7442695ea7e9edb90b927",
+  "artifact": {
+    "name": "yarn",
+    "version": "1.22.22",
+    "url": "https://registry.npmjs.org/yarn/-/yarn-1.22.22.tgz",
+    "sha1": "ac34549e6aa8e7ead463a7407e1c7390f61a6610",
+    "sha512_base64": "prL3kGtyG7o9Z9Sv8IPfBNrWTDmXB4Qbes8A9rEzt6wkJV8mUvoirjU0Mp3GGAU06Y0XQyA3/2/RQFVuK7MTfg==",
+    "metadata_query": "npm view yarn@1.22.22 dist.integrity dist.shasum dist.tarball --json"
+  },
+  "target": "runtime/vcm_evaluator/toolchains/yarn-1.22.22",
+  "ca_bundle": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/certifi/cacert.pem",
+  "ca_bundle_sha256": "4f3975ff30abbf35443b486064ae8bcb41dff707ffdf576c76d292fb458aa0a9",
+  "maximum_archive_bytes": 4194304,
+  "minimum_free_bytes_after_acquisition": 10737418240,
+  "timeout_seconds": 60,
+  "report": "reports/theseus_vcm_yarn_bootstrap.json",
+  "authority": {
+    "exact_artifact_download_authorized": true,
+    "safe_extraction_authorized": true,
+    "tool_execution_authorized": false,
+    "repository_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report proves only that the exact registry-integrity-bound Yarn Classic 1.22.22 archive was safely materialized for the one Yarn-v1-locked task. It does not qualify Yarn execution, dependency installation, task 4, repository runners, evaluators, VCM, models, D1, D2, or book claims."
+}

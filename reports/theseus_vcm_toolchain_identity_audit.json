@@ -2,9 +2,9 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_toolchain_identity_audit.json",
-    "sha256": "332eb0eedbb1c135d0eb500132deec231f493309ef82fa4094e5b5132f381bab"
+    "sha256": "636d9bbf7e5b115fba8575f5989edc314d9f20f6de110d48aba9a6251ba94042"
   },
-  "created_utc": "2026-08-03T16:54:46.041728Z",
+  "created_utc": "2026-08-03T17:06:23.326983Z",
   "dependency_class_report": {
     "path": "reports/theseus_vcm_dependency_class_audit.json",
     "sha256": "375c6fa5f06c7f2ef4e481ed28f3d6b12249d1c98a1f53ce4582adefddc68826"
@@ -12,22 +12,18 @@
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN audit binds exact local tool identities and maps lock formats to available managers. It does not qualify package resolution, installation, transpilation, compilation, sandbox behavior, repository runners, evaluators, tasks, VCM, or models. Missing Yarn affects only the exact Yarn-locked task and is a toolchain residual rather than task evidence.",
-  "missing_tool_task_indices": {
-    "yarn": [
-      4
-    ]
-  },
+  "missing_tool_task_indices": {},
   "observations": {
-    "available_tool_count": 11,
+    "available_tool_count": 12,
     "declared_tool_count": 12,
-    "missing_tool_count": 1,
+    "missing_tool_count": 0,
     "parent_target_or_evaluator_executions": 0,
     "task_count": 62,
     "tasks_evaluator_execution_ready": 0,
     "tasks_lock_not_required_for_scoped_evaluator": 7,
     "tasks_requiring_immutable_resolution": 6,
-    "tasks_with_complete_lock_manager_identity": 48,
-    "tasks_with_missing_lock_manager_identity": 1
+    "tasks_with_complete_lock_manager_identity": 49,
+    "tasks_with_missing_lock_manager_identity": 0
   },
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_toolchain_identity_audit_v1",
@@ -83,19 +79,19 @@
       "repository_execution_performed": false
     },
     {
-      "available_lock_managers": [],
+      "available_lock_managers": [
+        "yarn"
+      ],
       "dependency_class": "EXACT_LOCK_RECEIPT_PRESENT",
       "evaluator_execution_ready": false,
       "immutable_resolution_required_before_execution": false,
       "index": 4,
-      "lock_manager_identity_complete": false,
+      "lock_manager_identity_complete": true,
       "lock_managers": [
         "yarn"
       ],
       "lock_not_required_for_scoped_evaluator": false,
-      "missing_lock_managers": [
-        "yarn"
-      ],
+      "missing_lock_managers": [],
       "query_language": "JavaScript",
       "repository": "frappe/draw",
       "repository_execution_performed": false
@@ -1107,12 +1103,13 @@
       "repository_execution_performed": false
     }
   ],
-  "state": "LOCAL_TOOLCHAIN_IDENTITIES_BOUND_YARN_RESIDUAL",
+  "state": "LOCAL_TOOLCHAIN_IDENTITIES_COMPLETE",
   "tools": {
     "bun": {
       "available": true,
       "path": "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
       "sha256": "ccb160515c299e9509f8735808913aec3b3055476f71eca045a140260bb3a932",
+      "support_files": [],
       "version_command": [
         "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
         "--version"
@@ -1125,6 +1122,7 @@
       "available": true,
       "path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
       "sha256": "b617f75ab3fadd5d764368413b7e87532dfa45039aac431f9c0af883b824a6e6",
+      "support_files": [],
       "version_command": [
         "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo",
         "--version"
@@ -1137,6 +1135,7 @@
       "available": true,
       "path": "/Users/corbensorenson/miniforge3/bin/deno",
       "sha256": "d224f15938109fe892a5637a6fbe6c5c4e98cbd1b07fdf56682e8915430e5fd0",
+      "support_files": [],
       "version_command": [
         "/Users/corbensorenson/miniforge3/bin/deno",
         "--version"
@@ -1149,6 +1148,7 @@
       "available": true,
       "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
       "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [],
       "version_command": [
         "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
         "--version"
@@ -1161,6 +1161,12 @@
       "available": true,
       "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
       "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [
+        {
+          "path": "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
+          "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7"
+        }
+      ],
       "version_command": [
         "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
         "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
@@ -1174,6 +1180,7 @@
       "available": true,
       "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
       "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "support_files": [],
       "version_command": [
         "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
         "-m",
@@ -1188,6 +1195,12 @@
       "available": true,
       "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
       "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [
+        {
+          "path": "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs",
+          "sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9"
+        }
+      ],
       "version_command": [
         "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
         "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs",
@@ -1201,6 +1214,7 @@
       "available": true,
       "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
       "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "support_files": [],
       "version_command": [
         "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
         "-m",
@@ -1215,6 +1229,7 @@
       "available": true,
       "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
       "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "support_files": [],
       "version_command": [
         "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
         "--version"
@@ -1227,6 +1242,7 @@
       "available": true,
       "path": "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
       "sha256": "b2011d06d5c7efff7b48b1e1aec6106989e44f3a5ad1d171e06a41c0fbc3ffea",
+      "support_files": [],
       "version_command": [
         "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
         "--version"
@@ -1239,6 +1255,7 @@
       "available": true,
       "path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
       "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf",
+      "support_files": [],
       "version_command": [
         "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
         "--version"
@@ -1248,14 +1265,23 @@
       "version_returncode": 0
     },
     "yarn": {
-      "available": false,
-      "path": "",
-      "sha256": "",
+      "available": true,
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+      "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "support_files": [
+        {
+          "path": "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+          "sha256": "148e19db309ec9eaf7720b28df811337906eea8a1758deaa54afee60a6305e04"
+        }
+      ],
       "version_command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
         "--version"
       ],
-      "version_output": "",
-      "version_returncode": null
+      "version_output": "1.22.22",
+      "version_output_sha256": "feb97ccb8fb16be6aabb7e25a3434679be448969f8ea27b677d44a0b6ea294ba",
+      "version_returncode": 0
     }
   },
   "trigger_state": "GREEN"

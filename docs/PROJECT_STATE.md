@@ -380,14 +380,15 @@ receipt is not installed closure proof, and no task is evaluator-ready. The next
 owner is offline dependency/harness materialization plus TypeScript and untrusted
 Rust build qualification, followed only then by parent-fail/target-pass canaries.
 
-Exact identity queries then bound 11 local tools: Python, pytest, pip, Node, npm,
-pnpm, Bun, Deno/TypeScript, the existing repository-local uv binary, Cargo, and
-Rust. Forty-eight lock-bearing tasks now have an available exact manager identity.
-Only Yarn-locked task 4 has a manager gap. This is inventory evidence only; no
-install, build, repository, evaluator, or model execution occurred.
+Exact identity queries first bound 11 local tools: Python, pytest, pip, Node,
+npm, pnpm, Bun, Deno/TypeScript, the existing repository-local uv binary, Cargo,
+and Rust. One bounded registry request then safely materialized hash-bound Yarn
+Classic 1.22.22 for task 4. All 49 lock-bearing tasks now have an available exact
+manager identity. This is tool evidence only; no repository, evaluator, or model
+execution occurred.
 
 Trusted offline build canaries subsequently passed for local-wheel pip installs,
-local-file npm/pnpm/Bun installs with lifecycle scripts suppressed, dependency-
+local-file npm/pnpm/Bun/Yarn installs with lifecycle scripts suppressed, dependency-
 free Deno TypeScript check/run, and concrete rustc compile/run. Network denial,
 write confinement, and resource ceilings were active for all 16 commands. The
 initial outer-sandbox, obsolete Deno flag, and too-low host process ceiling

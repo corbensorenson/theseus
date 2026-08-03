@@ -746,18 +746,20 @@ untrusted Rust compilation before any parent-fail/target-pass canary.
 The exact local toolchain audit prevents redundant bootstrap work. It binds
 Python 3.12, pytest, pip, Node 22, npm, pnpm, Bun, Deno with TypeScript 5.8.3,
 the existing repository-local uv 0.11.28 binary, and concrete Cargo/Rust 1.90
-by content hash and observed version. These cover 48 of the 49 lock-bearing
-tasks; only Yarn-locked task 4 lacks a local manager identity. Tool presence is
-not install/build qualification, and every evaluator remains closed.
+by content hash and observed version. An exact Yarn Classic 1.22.22 successor
+was then acquired from one registry request with both registry digests, safe
+extraction, and package identity verified. All 49 lock-bearing tasks now have an
+exact manager identity. Tool presence is not install/build qualification, and
+every evaluator remains closed.
 
-Trusted offline build canaries are now GREEN for pip, npm, pnpm, Bun,
+Trusted offline build canaries are now GREEN for pip, npm, pnpm, Bun, Yarn,
 Deno/TypeScript, and concrete rustc. All fixture installs used local artifacts,
 network denial, write confinement, resource ceilings, and lifecycle-script
 suppression; 16 command receipts passed. The preserved first failures were
 owner defects: outer sandbox nesting, an obsolete Deno flag, and an `RLIMIT_NPROC`
 below the host's existing process count. This does not qualify real locks,
-untrusted build scripts, repository compilation, or runner adequacy. Yarn and
-content-addressed real dependency prefetch remain next.
+untrusted build scripts, repository compilation, or runner adequacy.
+Content-addressed real dependency prefetch remains next.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
