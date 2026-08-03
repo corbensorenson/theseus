@@ -885,10 +885,14 @@ execution. The all-task pair audit corrects the target-only denominator: 38
 tasks have identical dependency identities and 10 diverge (11, 14, 17, 19, 33,
 46, 53, 54, 61, 62), so 48 tasks require 58 distinct closures. Frozen task 14
 is compatible and its separate parent and target uv closures are now
-prospectively sealed at zero execution. The seal binds both exact manifest/lock
-identities, uv 0.11.28, Python 3.12.5, wheel-only sync commands, distinct retained
-stores, deny-network replays, storage limits, and zero downstream authority.
-Execute and independently audit both closures before advancing the schedule.
+prospectively sealed at zero execution. Both wheel-only syncs and both
+deny-network replays are GREEN: each side retained 371 files/9,035,818 bytes,
+exposed the same 12 lock-compatible runtime distributions, and preserved its
+180-file source tree. The independent audit rehashed all 742 retained files,
+reparsed both 41-package locks and 24 cached metadata records, and rederived the
+commands, network phases, and storage boundaries without execution. Required
+closures 4 and 5 are qualified. Frozen schedule ordinal 5 is task 30's single
+identical parent/target Cargo closure; seal it before any fetch or runner.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

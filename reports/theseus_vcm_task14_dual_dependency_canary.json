@@ -4,13 +4,13 @@
     "path": "configs/theseus_vcm_task14_dual_dependency_canary.json",
     "sha256": "969d4b415534faa33b78e1186927f8a969d0d566936868678080ef1fff584a9a"
   },
-  "created_utc": "2026-08-03T19:24:14.857298Z",
-  "execution_performed": false,
+  "created_utc": "2026-08-03T19:27:21.654417Z",
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN canary proves only that task 14's divergent parent and target uv locks separately materialize wheel-only dependency environments, replay with network denied, retain distinct caches, preserve source identity, and install only lock-compatible distributions without the project. It does not execute build backends, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
-  "network_denied_offline_replays": 0,
-  "network_enabled_dependency_syncs": 0,
+  "network_denied_offline_replays": 2,
+  "network_enabled_dependency_syncs": 2,
   "observed_side_dependency_identities": {
     "parent": {
       "artifact_identity_sha256": "75a413aa1fe9158292c0032439b54ad82cd09766cfb477a818cea1513bcd01fa",
@@ -44,8 +44,487 @@
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_task14_dual_dependency_canary_v1",
   "project_installations": 0,
+  "receipts": {
+    "free_bytes_after": 35445760000,
+    "free_bytes_before": 35466018816,
+    "retained_total_bytes": 18071636,
+    "sides": {
+      "parent": {
+        "cache": {
+          "bytes": 9035818,
+          "file_count": 371,
+          "identity_sha256": "d42fc4f5224eaadf57c15e0d6c7609896131d5d92e07e22003d23b6aecdb9597",
+          "path": "/private/tmp/theseus-vcm-task14-dual-uu45f0gy/parent/cache"
+        },
+        "offline_environment": {
+          "distribution_count": 12,
+          "distributions": [
+            {
+              "metadata_sha256": "ee5b6ac64b09274c026051813484025939564067801f485115d9cadc207cf791",
+              "name": "annotated-types",
+              "version": "0.7.0"
+            },
+            {
+              "metadata_sha256": "aed7b6fc2da160a3fdfe254c158a204b3071747073c18e394b54eb2e206cc5d9",
+              "name": "anyio",
+              "version": "4.12.0"
+            },
+            {
+              "metadata_sha256": "fc9a6b1aeff595649d1e5aee44129ca2b5e7adfbc10e1bd7ffa291afc1d06cb7",
+              "name": "certifi",
+              "version": "2025.11.12"
+            },
+            {
+              "metadata_sha256": "28f326098ac09fcba79b8f180f96087c841fe2456215cb7b872a9c7d5cd19d64",
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "metadata_sha256": "fe2d4fda6199128978779e0cf27f3c045c531863fcdd987eacc74f3a18d41c21",
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "metadata_sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25",
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "metadata_sha256": "7c2c12c30f52ba237c4c81e59454804944025b9e6102cf1dcca9ebf5168411b0",
+              "name": "idna",
+              "version": "3.11"
+            },
+            {
+              "metadata_sha256": "a3ba23e895191fed69b8323cbcbcdc82984ca0b6a3cdc62c48a2341886a9c08d",
+              "name": "pydantic",
+              "version": "2.12.5"
+            },
+            {
+              "metadata_sha256": "09f83baa3202ec3da98a284a56afdf1ba69976e4af7172488887e5b2b20591a9",
+              "name": "pydantic-core",
+              "version": "2.41.5"
+            },
+            {
+              "metadata_sha256": "c138378fe8f18934ac99de060535c53ec6c13aeed65e94c32641da7ee3192a72",
+              "name": "typing-extensions",
+              "version": "4.15.0"
+            },
+            {
+              "metadata_sha256": "61096cd0bfe3c7040b6f98c22b02d190fe01936d0ff7616c5134fed02891953a",
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "metadata_sha256": "25c0ef5a8f03552c39ba80c015b93d37c7c95ee449be7adc2d7541172063c0df",
+              "name": "websockets",
+              "version": "16.0"
+            }
+          ],
+          "faults": [],
+          "identity_sha256": "52633e35d1209fa0aaac10ababe9ca2f1dfadaaa08d8802b025e23fa610546b0"
+        },
+        "offline_replay": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "captured_output_mib_limit": 8,
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "sync",
+            "--frozen",
+            "--no-build",
+            "--no-install-project",
+            "--no-install-workspace",
+            "--no-default-groups",
+            "--no-python-downloads",
+            "--link-mode",
+            "copy",
+            "--color",
+            "never",
+            "--no-progress",
+            "--offline",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-task14-dual-uu45f0gy/parent/cache"
+          ],
+          "duration_ms": 254.959,
+          "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+          "maximum_process_group_rss_mib": 32.406,
+          "network_denied": true,
+          "returncode": 0,
+          "rss_telemetry_fault": "",
+          "single_written_file_mib_limit": 4096,
+          "stderr_bytes": 447,
+          "stderr_head": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: .venv\nInstalled 12 packages in 159ms\n + annotated-types==0.7.0\n + anyio==4.12.0\n + certifi==2025.11.12\n + h11==0.16.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + idna==3.11\n + pydantic==2.12.5\n + pydantic-core==2.41.5\n + typing-extensions==4.15.0\n + typing-inspection==0.4.2\n + websockets==16.0\n",
+          "stderr_sha256": "cae20c103fbd168110343e46abe7d11929dfddc93e252ddc2630945252b6749b",
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distribution_count": 12,
+          "distributions": [
+            {
+              "metadata_sha256": "ee5b6ac64b09274c026051813484025939564067801f485115d9cadc207cf791",
+              "name": "annotated-types",
+              "version": "0.7.0"
+            },
+            {
+              "metadata_sha256": "aed7b6fc2da160a3fdfe254c158a204b3071747073c18e394b54eb2e206cc5d9",
+              "name": "anyio",
+              "version": "4.12.0"
+            },
+            {
+              "metadata_sha256": "fc9a6b1aeff595649d1e5aee44129ca2b5e7adfbc10e1bd7ffa291afc1d06cb7",
+              "name": "certifi",
+              "version": "2025.11.12"
+            },
+            {
+              "metadata_sha256": "28f326098ac09fcba79b8f180f96087c841fe2456215cb7b872a9c7d5cd19d64",
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "metadata_sha256": "fe2d4fda6199128978779e0cf27f3c045c531863fcdd987eacc74f3a18d41c21",
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "metadata_sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25",
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "metadata_sha256": "7c2c12c30f52ba237c4c81e59454804944025b9e6102cf1dcca9ebf5168411b0",
+              "name": "idna",
+              "version": "3.11"
+            },
+            {
+              "metadata_sha256": "a3ba23e895191fed69b8323cbcbcdc82984ca0b6a3cdc62c48a2341886a9c08d",
+              "name": "pydantic",
+              "version": "2.12.5"
+            },
+            {
+              "metadata_sha256": "09f83baa3202ec3da98a284a56afdf1ba69976e4af7172488887e5b2b20591a9",
+              "name": "pydantic-core",
+              "version": "2.41.5"
+            },
+            {
+              "metadata_sha256": "c138378fe8f18934ac99de060535c53ec6c13aeed65e94c32641da7ee3192a72",
+              "name": "typing-extensions",
+              "version": "4.15.0"
+            },
+            {
+              "metadata_sha256": "61096cd0bfe3c7040b6f98c22b02d190fe01936d0ff7616c5134fed02891953a",
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "metadata_sha256": "25c0ef5a8f03552c39ba80c015b93d37c7c95ee449be7adc2d7541172063c0df",
+              "name": "websockets",
+              "version": "16.0"
+            }
+          ],
+          "faults": [],
+          "identity_sha256": "52633e35d1209fa0aaac10ababe9ca2f1dfadaaa08d8802b025e23fa610546b0"
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "captured_output_mib_limit": 8,
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "sync",
+            "--frozen",
+            "--no-build",
+            "--no-install-project",
+            "--no-install-workspace",
+            "--no-default-groups",
+            "--no-python-downloads",
+            "--link-mode",
+            "copy",
+            "--color",
+            "never",
+            "--no-progress",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-task14-dual-uu45f0gy/parent/cache"
+          ],
+          "duration_ms": 974.578,
+          "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+          "maximum_process_group_rss_mib": 42.75,
+          "network_denied": false,
+          "returncode": 0,
+          "rss_telemetry_fault": "",
+          "single_written_file_mib_limit": 4096,
+          "stderr_bytes": 538,
+          "stderr_head": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: .venv\nDownloading pydantic-core (1.8MiB)\n Downloaded pydantic-core\nPrepared 12 packages in 676ms\nInstalled 12 packages in 157ms\n + annotated-types==0.7.0\n + anyio==4.12.0\n + certifi==2025.11.12\n + h11==0.16.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + idna==3.11\n + pydantic==2.12.5\n + pydantic-core==2.41.5\n + typing-extensions==4.15.0\n + typing-inspection==0.4.2\n + websockets==16.0\n",
+          "stderr_sha256": "3a3aef6d5bc9112836344cc540f392ce77e22f41fd8aa172f4cbf86ce42f49d3",
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "repository_extraction": {
+          "member_receipts_sha256": "cf4871160cf7747efd333318f4fbaf7eb10dbe6bcfb5f39272497d6d4a2c6cfb",
+          "regular_file_bytes": 1486028,
+          "regular_file_count": 180
+        },
+        "repository_source_after": {
+          "bytes": 1486028,
+          "file_count": 180,
+          "identity_sha256": "cf4871160cf7747efd333318f4fbaf7eb10dbe6bcfb5f39272497d6d4a2c6cfb"
+        },
+        "repository_source_before": {
+          "bytes": 1486028,
+          "file_count": 180,
+          "identity_sha256": "cf4871160cf7747efd333318f4fbaf7eb10dbe6bcfb5f39272497d6d4a2c6cfb"
+        },
+        "retained_store": {
+          "bytes": 9035818,
+          "file_count": 371,
+          "identity_sha256": "d42fc4f5224eaadf57c15e0d6c7609896131d5d92e07e22003d23b6aecdb9597",
+          "path": "runtime/vcm_evaluator/dependency_store/uv/task-14-parent"
+        }
+      },
+      "target": {
+        "cache": {
+          "bytes": 9035818,
+          "file_count": 371,
+          "identity_sha256": "fc9c38e609353f54350a980d3d6403313965e4a4a49800402db41e1ba2160864",
+          "path": "/private/tmp/theseus-vcm-task14-dual-uu45f0gy/target/cache"
+        },
+        "offline_environment": {
+          "distribution_count": 12,
+          "distributions": [
+            {
+              "metadata_sha256": "ee5b6ac64b09274c026051813484025939564067801f485115d9cadc207cf791",
+              "name": "annotated-types",
+              "version": "0.7.0"
+            },
+            {
+              "metadata_sha256": "aed7b6fc2da160a3fdfe254c158a204b3071747073c18e394b54eb2e206cc5d9",
+              "name": "anyio",
+              "version": "4.12.0"
+            },
+            {
+              "metadata_sha256": "fc9a6b1aeff595649d1e5aee44129ca2b5e7adfbc10e1bd7ffa291afc1d06cb7",
+              "name": "certifi",
+              "version": "2025.11.12"
+            },
+            {
+              "metadata_sha256": "28f326098ac09fcba79b8f180f96087c841fe2456215cb7b872a9c7d5cd19d64",
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "metadata_sha256": "fe2d4fda6199128978779e0cf27f3c045c531863fcdd987eacc74f3a18d41c21",
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "metadata_sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25",
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "metadata_sha256": "7c2c12c30f52ba237c4c81e59454804944025b9e6102cf1dcca9ebf5168411b0",
+              "name": "idna",
+              "version": "3.11"
+            },
+            {
+              "metadata_sha256": "a3ba23e895191fed69b8323cbcbcdc82984ca0b6a3cdc62c48a2341886a9c08d",
+              "name": "pydantic",
+              "version": "2.12.5"
+            },
+            {
+              "metadata_sha256": "09f83baa3202ec3da98a284a56afdf1ba69976e4af7172488887e5b2b20591a9",
+              "name": "pydantic-core",
+              "version": "2.41.5"
+            },
+            {
+              "metadata_sha256": "c138378fe8f18934ac99de060535c53ec6c13aeed65e94c32641da7ee3192a72",
+              "name": "typing-extensions",
+              "version": "4.15.0"
+            },
+            {
+              "metadata_sha256": "61096cd0bfe3c7040b6f98c22b02d190fe01936d0ff7616c5134fed02891953a",
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "metadata_sha256": "25c0ef5a8f03552c39ba80c015b93d37c7c95ee449be7adc2d7541172063c0df",
+              "name": "websockets",
+              "version": "16.0"
+            }
+          ],
+          "faults": [],
+          "identity_sha256": "52633e35d1209fa0aaac10ababe9ca2f1dfadaaa08d8802b025e23fa610546b0"
+        },
+        "offline_replay": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "captured_output_mib_limit": 8,
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "sync",
+            "--frozen",
+            "--no-build",
+            "--no-install-project",
+            "--no-install-workspace",
+            "--no-default-groups",
+            "--no-python-downloads",
+            "--link-mode",
+            "copy",
+            "--color",
+            "never",
+            "--no-progress",
+            "--offline",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-task14-dual-uu45f0gy/target/cache"
+          ],
+          "duration_ms": 245.739,
+          "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+          "maximum_process_group_rss_mib": 32.391,
+          "network_denied": true,
+          "returncode": 0,
+          "rss_telemetry_fault": "",
+          "single_written_file_mib_limit": 4096,
+          "stderr_bytes": 447,
+          "stderr_head": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: .venv\nInstalled 12 packages in 150ms\n + annotated-types==0.7.0\n + anyio==4.12.0\n + certifi==2025.11.12\n + h11==0.16.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + idna==3.11\n + pydantic==2.12.5\n + pydantic-core==2.41.5\n + typing-extensions==4.15.0\n + typing-inspection==0.4.2\n + websockets==16.0\n",
+          "stderr_sha256": "02e0740649a76d17ace2ea9f3a49a34d1bda7e904f7610abb2fb2a6aa9424c62",
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distribution_count": 12,
+          "distributions": [
+            {
+              "metadata_sha256": "ee5b6ac64b09274c026051813484025939564067801f485115d9cadc207cf791",
+              "name": "annotated-types",
+              "version": "0.7.0"
+            },
+            {
+              "metadata_sha256": "aed7b6fc2da160a3fdfe254c158a204b3071747073c18e394b54eb2e206cc5d9",
+              "name": "anyio",
+              "version": "4.12.0"
+            },
+            {
+              "metadata_sha256": "fc9a6b1aeff595649d1e5aee44129ca2b5e7adfbc10e1bd7ffa291afc1d06cb7",
+              "name": "certifi",
+              "version": "2025.11.12"
+            },
+            {
+              "metadata_sha256": "28f326098ac09fcba79b8f180f96087c841fe2456215cb7b872a9c7d5cd19d64",
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "metadata_sha256": "fe2d4fda6199128978779e0cf27f3c045c531863fcdd987eacc74f3a18d41c21",
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "metadata_sha256": "febb9b0f8f3e80d57c8199c304f35c4336e8581d1d18d7983c92766b82793b25",
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "metadata_sha256": "7c2c12c30f52ba237c4c81e59454804944025b9e6102cf1dcca9ebf5168411b0",
+              "name": "idna",
+              "version": "3.11"
+            },
+            {
+              "metadata_sha256": "a3ba23e895191fed69b8323cbcbcdc82984ca0b6a3cdc62c48a2341886a9c08d",
+              "name": "pydantic",
+              "version": "2.12.5"
+            },
+            {
+              "metadata_sha256": "09f83baa3202ec3da98a284a56afdf1ba69976e4af7172488887e5b2b20591a9",
+              "name": "pydantic-core",
+              "version": "2.41.5"
+            },
+            {
+              "metadata_sha256": "c138378fe8f18934ac99de060535c53ec6c13aeed65e94c32641da7ee3192a72",
+              "name": "typing-extensions",
+              "version": "4.15.0"
+            },
+            {
+              "metadata_sha256": "61096cd0bfe3c7040b6f98c22b02d190fe01936d0ff7616c5134fed02891953a",
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "metadata_sha256": "25c0ef5a8f03552c39ba80c015b93d37c7c95ee449be7adc2d7541172063c0df",
+              "name": "websockets",
+              "version": "16.0"
+            }
+          ],
+          "faults": [],
+          "identity_sha256": "52633e35d1209fa0aaac10ababe9ca2f1dfadaaa08d8802b025e23fa610546b0"
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "captured_output_mib_limit": 8,
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "sync",
+            "--frozen",
+            "--no-build",
+            "--no-install-project",
+            "--no-install-workspace",
+            "--no-default-groups",
+            "--no-python-downloads",
+            "--link-mode",
+            "copy",
+            "--color",
+            "never",
+            "--no-progress",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-task14-dual-uu45f0gy/target/cache"
+          ],
+          "duration_ms": 1106.969,
+          "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+          "maximum_process_group_rss_mib": 43.391,
+          "network_denied": false,
+          "returncode": 0,
+          "rss_telemetry_fault": "",
+          "single_written_file_mib_limit": 4096,
+          "stderr_bytes": 538,
+          "stderr_head": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: .venv\nDownloading pydantic-core (1.8MiB)\n Downloaded pydantic-core\nPrepared 12 packages in 821ms\nInstalled 12 packages in 157ms\n + annotated-types==0.7.0\n + anyio==4.12.0\n + certifi==2025.11.12\n + h11==0.16.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + idna==3.11\n + pydantic==2.12.5\n + pydantic-core==2.41.5\n + typing-extensions==4.15.0\n + typing-inspection==0.4.2\n + websockets==16.0\n",
+          "stderr_sha256": "3e7398c0766c267536c4f8b048af112165e9357f117405e88b5bd8c6530b1be7",
+          "stdout_bytes": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "repository_extraction": {
+          "member_receipts_sha256": "36cb6cd635c25fafe3a452300bfdde7275a65bd4448ae8df568d04b7f5fde6ec",
+          "regular_file_bytes": 1491671,
+          "regular_file_count": 180
+        },
+        "repository_source_after": {
+          "bytes": 1491671,
+          "file_count": 180,
+          "identity_sha256": "36cb6cd635c25fafe3a452300bfdde7275a65bd4448ae8df568d04b7f5fde6ec"
+        },
+        "repository_source_before": {
+          "bytes": 1491671,
+          "file_count": 180,
+          "identity_sha256": "36cb6cd635c25fafe3a452300bfdde7275a65bd4448ae8df568d04b7f5fde6ec"
+        },
+        "retained_store": {
+          "bytes": 9035818,
+          "file_count": 371,
+          "identity_sha256": "fc9c38e609353f54350a980d3d6403313965e4a4a49800402db41e1ba2160864",
+          "path": "runtime/vcm_evaluator/dependency_store/uv/task-14-target"
+        }
+      }
+    }
+  },
   "repository_runner_executions": 0,
   "source_build_executions": 0,
-  "state": "READY_FOR_TASK_14_DUAL_UV_DEPENDENCY_CANARY",
-  "trigger_state": "PAUSED"
+  "state": "TASK_14_SEPARATE_PARENT_TARGET_UV_CLOSURES_ACQUIRED_AND_OFFLINE_REPLAY_QUALIFIED",
+  "trigger_state": "GREEN"
 }

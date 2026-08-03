@@ -1,0 +1,109 @@
+{
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_task14_dual_dependency_canary.json",
+      "sha256": "969d4b415534faa33b78e1186927f8a969d0d566936868678080ef1fff584a9a"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_task14_dual_dependency_canary.json",
+      "sha256": "02742d98f3537f43f62a94d88bd906a5c46a8d60eefde1e146aca948927198d8"
+    },
+    "trusted_build_canaries": {
+      "path": "reports/theseus_vcm_trusted_build_canaries.json",
+      "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_task14_dual_dependency_closure_audit.json",
+    "sha256": "1d3c1dc38187290b60897554b7b455ae34f9e8aa8fccc0381b3e6d40874c8a0a"
+  },
+  "created_utc": "2026-08-03T19:32:58.607419Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN independent audit rederives both task-14 uv lock identities, every retained cache file, cached distribution metadata and lock membership, source immutability, exact build-free commands, deny-network phases, and storage boundaries without network, dependency, build, repository, evaluator, or model execution. It qualifies only the fourth and fifth required dependency closures and does not qualify repository runners, the evaluator construct, VCM, a model, D1, D2, or a book claim.",
+  "network_or_dependency_execution_performed": false,
+  "observations": {
+    "current_free_bytes": 34694578176,
+    "parent": {
+      "cached_distribution_count": 12,
+      "lock_artifact_identity_sha256": "75a413aa1fe9158292c0032439b54ad82cd09766cfb477a818cea1513bcd01fa",
+      "lock_package_count": 41,
+      "retained_store_bytes": 9035818,
+      "retained_store_file_count": 371,
+      "retained_store_identity_sha256": "d42fc4f5224eaadf57c15e0d6c7609896131d5d92e07e22003d23b6aecdb9597",
+      "source_bytes": 1486028,
+      "source_file_count": 180,
+      "source_identity_sha256": "cf4871160cf7747efd333318f4fbaf7eb10dbe6bcfb5f39272497d6d4a2c6cfb"
+    },
+    "target": {
+      "cached_distribution_count": 12,
+      "lock_artifact_identity_sha256": "843680dd828c2a3d7a66391a0caf92c0f05be8bde578088faa7200e36000886d",
+      "lock_package_count": 41,
+      "retained_store_bytes": 9035818,
+      "retained_store_file_count": 371,
+      "retained_store_identity_sha256": "fc9c38e609353f54350a980d3d6403313965e4a4a49800402db41e1ba2160864",
+      "source_bytes": 1491671,
+      "source_file_count": 180,
+      "source_identity_sha256": "36cb6cd635c25fafe3a452300bfdde7275a65bd4448ae8df568d04b7f5fde6ec"
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task14_dual_dependency_closure_audit_v1",
+  "project_installations": 0,
+  "repository_runner_executions": 0,
+  "side_checks": {
+    "parent": {
+      "archive_matches_source_receipt": true,
+      "cached_distribution_count_exact": true,
+      "cached_distributions_are_locked": true,
+      "cached_metadata_matches_report": true,
+      "lock_identity_exact": true,
+      "lock_package_count_exact": true,
+      "no_sdist_payload": true,
+      "offline_command_exact": true,
+      "offline_phase_green": true,
+      "online_command_exact": true,
+      "online_offline_distributions_match": true,
+      "online_phase_green": true,
+      "project_not_cached_as_distribution": true,
+      "required_runtime_dependencies_present": true,
+      "source_before_after_identical": true,
+      "store_bytes_match": true,
+      "store_file_count_matches": true,
+      "store_identity_matches": true
+    },
+    "target": {
+      "archive_matches_source_receipt": true,
+      "cached_distribution_count_exact": true,
+      "cached_distributions_are_locked": true,
+      "cached_metadata_matches_report": true,
+      "lock_identity_exact": true,
+      "lock_package_count_exact": true,
+      "no_sdist_payload": true,
+      "offline_command_exact": true,
+      "offline_phase_green": true,
+      "online_command_exact": true,
+      "online_offline_distributions_match": true,
+      "online_phase_green": true,
+      "project_not_cached_as_distribution": true,
+      "required_runtime_dependencies_present": true,
+      "source_before_after_identical": true,
+      "store_bytes_match": true,
+      "store_file_count_matches": true,
+      "store_identity_matches": true
+    }
+  },
+  "source_build_executions": 0,
+  "state": "TASK_14_DUAL_UV_DEPENDENCY_CLOSURES_INDEPENDENTLY_REDERIVED",
+  "static_audit_only": true,
+  "storage_checks": {
+    "current_above_reserve": true,
+    "each_side_below_ceiling": true,
+    "reported_total_matches_sides": true,
+    "run_after_above_reserve": true,
+    "run_before_above_reserve": true,
+    "total_below_ceiling": true
+  },
+  "trigger_state": "GREEN"
+}

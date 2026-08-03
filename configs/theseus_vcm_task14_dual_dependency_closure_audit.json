@@ -1,0 +1,33 @@
+{
+  "policy": "project_theseus_vcm_task14_dual_dependency_closure_audit_v1",
+  "state": "INDEPENDENT_STATIC_AUDIT_BEFORE_TASK_14_REPOSITORY_RUNNERS",
+  "owner": "scripts/theseus_vcm_task14_dual_dependency_closure_audit.py",
+  "owner_sha256": "836521e5e57890e7d11e141a7e20338b720e027c96cfdb76d72cac03c228ba9d",
+  "artifacts": {
+    "canary_config": {"path": "configs/theseus_vcm_task14_dual_dependency_canary.json", "sha256": "969d4b415534faa33b78e1186927f8a969d0d566936868678080ef1fff584a9a"},
+    "canary_report": {"path": "reports/theseus_vcm_task14_dual_dependency_canary.json", "sha256": "02742d98f3537f43f62a94d88bd906a5c46a8d60eefde1e146aca948927198d8"},
+    "trusted_build_canaries": {"path": "reports/theseus_vcm_trusted_build_canaries.json", "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"}
+  },
+  "report": "reports/theseus_vcm_task14_dual_dependency_closure_audit.json",
+  "authority": {
+    "static_audit_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_sync_authorized": false,
+    "source_build_authorized": false,
+    "build_backend_execution_authorized": false,
+    "project_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN independent audit rederives both task-14 uv lock identities, every retained cache file, cached distribution metadata and lock membership, source immutability, exact build-free commands, deny-network phases, and storage boundaries without network, dependency, build, repository, evaluator, or model execution. It qualifies only the fourth and fifth required dependency closures and does not qualify repository runners, the evaluator construct, VCM, a model, D1, D2, or a book claim."
+}
