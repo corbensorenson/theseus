@@ -288,6 +288,17 @@ normal completion by complete artifact or model EOS, no project-selected
 quality token cap, and no hidden evaluation until all 18 candidates seal. Luna,
 teacher, training, claim-development, D1, and D2 remain closed.
 
+The first v4 execution then consumed Task 1 call 1 without sealing a candidate.
+Its 124,138-token prompt remained physically addressable, but prompt ingestion
+occupied the full 600-second host wall and the backend generated zero tokens.
+The context boundary and project-selected quality cap were not touched. The
+campaign stopped with zero admitted candidates and zero hidden evaluation. This
+is retained infrastructure evidence: exact context fit is necessary but not
+sufficient for a usable instrument on this host. Task 1 may not be rerun.
+Acquire one smaller licensed post-snapshot source in the same stratum, qualify
+its evaluator before packet creation, rebind unexposed Tasks 2-18 unchanged,
+and seal a fresh v5 campaign before any further model call.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
