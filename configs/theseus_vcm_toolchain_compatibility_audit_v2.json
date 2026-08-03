@@ -1,0 +1,43 @@
+{
+  "policy": "project_theseus_vcm_toolchain_compatibility_audit_v2",
+  "state": "SOURCE_BOUND_STATIC_RECLASSIFICATION_AFTER_EXACT_PNPM_10_32_1_QUALIFICATION",
+  "owner": "scripts/theseus_vcm_toolchain_compatibility_audit_v2.py",
+  "owner_sha256": "06f41f37bc4e6e1ef19a2160b50c412b5eb6704786bc72658fdc0a71f97dfb5b",
+  "reports": {
+    "predecessor_audit": {
+      "path": "reports/theseus_vcm_toolchain_compatibility_audit.json",
+      "sha256": "db1b0b257b5c5935181f659f6b8269367b0b5ff3982d630b2b9ee9031dbcbefa"
+    },
+    "pnpm_bootstrap": {
+      "path": "reports/theseus_vcm_pnpm_bootstrap.json",
+      "sha256": "5003d355fb56f6779b3ce2b959a00fa55e57f38989a4d9b807c8cad304709d3c"
+    }
+  },
+  "added_profile": {
+    "id": "node22_20_pnpm10_32_1",
+    "manager": "pnpm",
+    "manager_version": "10.32.1",
+    "runtime_versions": {"node": "22.20.0"},
+    "cli_path": "runtime/vcm_evaluator/toolchains/pnpm-10.32.1/bin/pnpm.cjs",
+    "cli_sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9"
+  },
+  "report": "reports/theseus_vcm_toolchain_compatibility_audit_v2.json",
+  "authority": {
+    "source_bound_static_reclassification_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_prefetch_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN successor proves only that adding the source-bound exact pnpm 10.32.1/Node 22.20.0 profile changes task 7 from declared-incompatible to declared-compatible while preserving the other 47 classifications. It performs no dependency, repository, evaluator, or model execution. Declared compatibility does not prove dependency resolution, build, runner, evaluator, task, VCM, D1, D2, or book claims."
+}

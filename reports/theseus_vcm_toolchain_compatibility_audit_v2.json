@@ -1,0 +1,2222 @@
+{
+  "added_profile": {
+    "cli_path": "runtime/vcm_evaluator/toolchains/pnpm-10.32.1/bin/pnpm.cjs",
+    "cli_sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9",
+    "id": "node22_20_pnpm10_32_1",
+    "manager": "pnpm",
+    "manager_version": "10.32.1",
+    "runtime_versions": {
+      "node": "22.20.0"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_toolchain_compatibility_audit_v2.json",
+    "sha256": "7f4f0c90111186f5ee90113992362ab1112861adac8746ec2dfd78dc662961c5"
+  },
+  "created_utc": "2026-08-03T18:43:03.275750Z",
+  "dependency_prefetch_executions": 0,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN successor proves only that adding the source-bound exact pnpm 10.32.1/Node 22.20.0 profile changes task 7 from declared-incompatible to declared-compatible while preserving the other 47 classifications. It performs no dependency, repository, evaluator, or model execution. Declared compatibility does not prove dependency resolution, build, runner, evaluator, task, VCM, D1, D2, or book claims.",
+  "observations": {
+    "candidate_or_control_calls": 0,
+    "changed_task_indices": [
+      7
+    ],
+    "compatible_declared_requirement_task_count": 19,
+    "dependency_prefetch_executions": 0,
+    "external_reference_calls": 0,
+    "incompatible_declared_requirement_task_count": 13,
+    "locked_task_count": 48,
+    "no_declared_version_requirement_task_count": 16,
+    "repository_executions": 0,
+    "unresolved_requirement_syntax_task_count": 0
+  },
+  "pnpm_bootstrap": {
+    "path": "reports/theseus_vcm_pnpm_bootstrap.json",
+    "sha256": "5003d355fb56f6779b3ce2b959a00fa55e57f38989a4d9b807c8cad304709d3c"
+  },
+  "policy": "project_theseus_vcm_toolchain_compatibility_audit_v2",
+  "predecessor_audit": {
+    "path": "reports/theseus_vcm_toolchain_compatibility_audit.json",
+    "sha256": "db1b0b257b5c5935181f659f6b8269367b0b5ff3982d630b2b9ee9031dbcbefa"
+  },
+  "repository_executions": 0,
+  "rows": [
+    {
+      "compatible_profile_ids": [
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 3,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "10.9.3",
+              "kind": "manager",
+              "name": "npm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=10.9.3 <12.0.0",
+              "kind": "manager",
+              "name": "npm",
+              "satisfied": false,
+              "source": "engines.npm"
+            },
+            {
+              "expression": ">=22.20.0 <25.0.0",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.9.3",
+              "kind": "manager",
+              "name": "npm",
+              "satisfied": true,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=10.9.3 <12.0.0",
+              "kind": "manager",
+              "name": "npm",
+              "satisfied": true,
+              "source": "engines.npm"
+            },
+            {
+              "expression": ">=22.20.0 <25.0.0",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "QoderAI/better-harness",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "10.9.3",
+          "kind": "manager",
+          "name": "npm",
+          "source": "packageManager"
+        },
+        {
+          "expression": ">=10.9.3 <12.0.0",
+          "kind": "manager",
+          "name": "npm",
+          "source": "engines.npm"
+        },
+        {
+          "expression": ">=22.20.0 <25.0.0",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 1,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_20_pnpm10_32_1"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 7,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "10.32.1",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.32.1",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.32.1",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": true,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "moshcoder/moshcode",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "10.32.1",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "packageManager"
+        }
+      ],
+      "schedule_ordinal": 2,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 36,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.97",
+              "kind": "runtime_minimum",
+              "name": "rustc",
+              "satisfied": false,
+              "source": "package.rust-version"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "tomerwave/godlint",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.97",
+          "kind": "runtime_minimum",
+          "name": "rustc",
+          "source": "package.rust-version"
+        }
+      ],
+      "schedule_ordinal": 3,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 14,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "0bbf17d265d3baebce11ec4ed3038cb34d60f7fbf8a2cebdfff5fd9333e0dc31"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.10",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "scrape-badger/scrapebadger-python",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.10",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 4,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 30,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "kanso-lang/kanso",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 5,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 26,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.12",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "quodeq/quodeq",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.12",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 6,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 24,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "7935bb763b4d3a7a1a51e175abf9a45e8181d502e1fd1e1951c091c26bc2ed1a"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.10",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "openonion/connectonion",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.10",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 7,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 17,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "8390c290f142c4abd2c737f469583d357ecf2a2dd16cfeda1ab26ee06d4298cb"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.10",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "presidio-v/presidio-hardened-x402",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.10",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 8,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 15,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "f7d2eabbf51f03a4acefeacee086dc29d7b8ff311c224dcad43afd6db9ae5c46"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.12",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "ray-manaloto/macos-development-environment",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.12",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 9,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 21,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "a570ce005069af9db5ec9fe9e7b5be76acffde568e3f6aee1e9628f6e5c927d7"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.10, <3.15",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "ctsdownloads/easyspeak",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.10, <3.15",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 10,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 33,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "59c7c653ef17e0ce08e6f09c20eafe32a1a736b8d3a1fa7e343a53e1e87f7dd6"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.88",
+              "kind": "runtime_minimum",
+              "name": "rustc",
+              "satisfied": true,
+              "source": "package.rust-version"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "elan8/sysml-v2-parser",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.88",
+          "kind": "runtime_minimum",
+          "name": "rustc",
+          "source": "package.rust-version"
+        }
+      ],
+      "schedule_ordinal": 11,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 46,
+      "manager": "bun",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "138dbe3a326a9d7b3dfa8e037afca7839817c5e786fba5f30bbc35ad99ff3cae"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.3.10",
+              "kind": "manager",
+              "name": "bun",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "bun1_2_0"
+        }
+      ],
+      "repository": "celados/gkit",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.3.10",
+          "kind": "manager",
+          "name": "bun",
+          "source": "packageManager"
+        }
+      ],
+      "schedule_ordinal": 12,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 19,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "0cde8dee8a964ee8220468c2951f8469df8e4eb52343ce9b12079fcf1ed25463"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.12",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "cs0lar/treelang",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.12",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 13,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 38,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "45f529e2a4d4c07687cfa139949db1a23ea057792f915922266c4c462a3faeda"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.86",
+              "kind": "runtime_minimum",
+              "name": "rustc",
+              "satisfied": true,
+              "source": "package.rust-version"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "surrealdb/surrealkv",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.86",
+          "kind": "runtime_minimum",
+          "name": "rustc",
+          "source": "package.rust-version"
+        }
+      ],
+      "schedule_ordinal": 14,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 6,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "454c4904261ba755904264d9411fb4b987dc65c720e1cc2e73da7e466ba670c0"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "24.x",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": "24.x",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "elkimek/get-based",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "24.x",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 15,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 62,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "ab8fbd310512c6cbae42abc832f061047aeb7f8ee657721c77d7a1854a257dd1"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=18.0.0",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=18.0.0",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "conorbronsdon/substack-mcp",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=18.0.0",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 16,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 60,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "f53399b4f5522b2eea231a2522a3a50f5f80509f83908da600809724dc6a6b4c"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "tsz-org/tsz",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 17,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 31,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "311433775370242b843c5495e75482d440a990c08693fe924eb9f7720b5147a4"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "matssun/mcp-re",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 18,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "uv0_11_28_python3_12_5"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 18,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "2d8c6e3391e9d7d32e7988887a357ffc9ea53d2535be7c5657e46a2df7885378"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.11,<3.14",
+              "kind": "python",
+              "name": "python",
+              "satisfied": true,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "NousResearch/hermes-agent",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.11,<3.14",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 19,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 28,
+      "manager": "uv",
+      "manifest": {
+        "path": "pyproject.toml",
+        "sha256": "e8c99cc369509712572c2ca53617b004628a3216ea4c88a1d61a52022dd21a8d"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=3.11,<3.12",
+              "kind": "python",
+              "name": "python",
+              "satisfied": false,
+              "source": "project.requires-python"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "uv0_11_28_python3_12_5"
+        }
+      ],
+      "repository": "microsoft/winml-cli",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=3.11,<3.12",
+          "kind": "python",
+          "name": "python",
+          "source": "project.requires-python"
+        }
+      ],
+      "schedule_ordinal": 20,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 54,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "b08b9ffccd2c5fc2d7c751dc0d2f738c5f9be0083ddc36a6c69f51abbe410fb1"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=22",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 21,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "bun1_2_0"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 61,
+      "manager": "bun",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "3e25096fa04007d6448cbc182ca438141255396e865a91018eee1a8b3d5f8bd5"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "bun1_2_0"
+        }
+      ],
+      "repository": "pocket-stack/pocketjs",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 22,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 29,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "be49401bb87b0e58e435fb080115b5ccb4815bb7d5a837718c1c5b350de7bbad"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.93",
+              "kind": "runtime_minimum",
+              "name": "rustc",
+              "satisfied": false,
+              "source": "package.rust-version"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "TAJD/cofferdam",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.93",
+          "kind": "runtime_minimum",
+          "name": "rustc",
+          "source": "package.rust-version"
+        }
+      ],
+      "schedule_ordinal": 23,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 9,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "48078366c01494ed9e03055a702cea823339be75b08ffdca2f05b1868c0f0aea"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "11.12.1",
+              "kind": "manager",
+              "name": "npm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=18",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": "11.12.1",
+              "kind": "manager",
+              "name": "npm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=18",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "KosAlyohyn/vue-route-state",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "11.12.1",
+          "kind": "manager",
+          "name": "npm",
+          "source": "packageManager"
+        },
+        {
+          "expression": ">=18",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 24,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 34,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "872e8bb442c41c23ee107ef2a7aa1d02bb07cc05f0c789b691542ff002f146b2"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "elan8/spec42",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [
+        "manifest_parse_failed:TOMLDecodeError"
+      ],
+      "requirements": [],
+      "schedule_ordinal": 25,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 11,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "1a2367bdf677917cac5cd7d3e931416c3c33fe1a19c1af2116ff8e9f29ee06f0"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "frootai/frootai",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 26,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 43,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "fbd92b76c29336e552734e3bf8cb0f1af36678ff5c2b9ecf48c904e6ef47fd0b"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=18",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=18",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "cwh555/AnimeList",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=18",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 27,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 53,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "182143c1989e637002e6180ac0d03b268dcce1bff83d2701a0ae6593e613bfbd"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=20",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=20",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "omnist-dev/omnist-ts",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=20",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 28,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 40,
+      "manager": "npm",
+      "manifest": {
+        "path": "frontend/package.json",
+        "sha256": "8282e24fff2b5f87e939becb79786b47a29ce5198f976b916b55be902ad2b72c"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "ainetus/Co-Study4Grid",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 29,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 47,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "runner/package.json",
+        "sha256": "cbe39bf2ff3e4f63e544cb9c199ab80717a8693a49b78e4de483f5a76657bda1"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "10.34.5",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.34.5",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.34.5",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "handsontable/examples",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "10.34.5",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "packageManager"
+        },
+        {
+          "expression": ">=22",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 30,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_yarn1_22_22",
+        "node22_20_yarn1_22_22"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 4,
+      "manager": "yarn",
+      "manifest": {
+        "path": "frontend/package.json",
+        "sha256": "a398aa97d0453eb5309051936f45c01b7ccd78caf7beb2ada4afccd0585cc2e1"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_yarn1_22_22"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_yarn1_22_22"
+        }
+      ],
+      "repository": "frappe/draw",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 31,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 59,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "4115e139357dee9f5db58444fd6712784a9de99654f40a546415a8d63bef6387"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "dcdpr/jp",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 32,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 8,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "0cf0d523258d81e488f4748e082bd736e25f9a50b7781b41ec0b9c664a7331f4"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=22.12.0",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=22.12.0",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "manufosela/karajan-code",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=22.12.0",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 33,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 37,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "666d3a8109597becf7d7c9686e70d6aa649227c9bba9ac6187902d61f3987049"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "BrokkAi/bifrost",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 34,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 2,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "e1183b245c2a729b05c796c8ca86401379612ca7613ac7f658b84e5439c557dc"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 35,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 32,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "4bc1b0e657fc6c9342ead7c45f643e01113d9b966eee2a1d5982eddaeee2b2f1"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.89",
+              "kind": "runtime_minimum",
+              "name": "rustc",
+              "satisfied": true,
+              "source": "package.rust-version"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "Rul1an/assay",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.89",
+          "kind": "runtime_minimum",
+          "name": "rustc",
+          "source": "package.rust-version"
+        }
+      ],
+      "schedule_ordinal": 36,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 5,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "a4ef0eee2f10cf570cd47f6a9576c951ff5744ea53473ce6bb48563240848962"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "24.14.x",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [
+            {
+              "expression": "24.14.x",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "didaquis/didibudget-frontend",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "24.14.x",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 37,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "cargo1_90_rustc1_90"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 39,
+      "manager": "cargo",
+      "manifest": {
+        "path": "Cargo.toml",
+        "sha256": "93fa14f81f443b737bc62a68a04ffe2879fc9fdba4d71166990961f066dbbae6"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "cargo1_90_rustc1_90"
+        }
+      ],
+      "repository": "Syynth/brink",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 38,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 55,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "db5a307c1713115be55e803d0d34ead7fb6357c52695be47ffb034876d1db6cd"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "rickfelix/EHG_Engineer",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 39,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "bun1_2_0"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 48,
+      "manager": "bun",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "d739d33b5ff4eae43349ba4bb5f6495e4f4ff461e5562532e723aa189f9041e8"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "bun1_2_0"
+        }
+      ],
+      "repository": "pokle/glidecomp",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 40,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 45,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "6fa6d8dc7d0e90d3bf83d90e08f39713fb1cd7aa3a95537317c68bf4a38511cc"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 41,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 49,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "783532e287a1242c9fce2acbbf99921fd08d2c32d24219cfd1c099ebf72aafdb"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "9.12.3",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=9",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": true,
+              "source": "engines.pnpm"
+            },
+            {
+              "expression": ">=20",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "9.12.3",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=9",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": true,
+              "source": "engines.pnpm"
+            },
+            {
+              "expression": ">=20",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "9.12.3",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=9",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": true,
+              "source": "engines.pnpm"
+            },
+            {
+              "expression": ">=20",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "AKogut/flakemetry",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "9.12.3",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "packageManager"
+        },
+        {
+          "expression": ">=9",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "engines.pnpm"
+        },
+        {
+          "expression": ">=20",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 42,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_npm10_9_2",
+        "node22_20_npm10_9_3"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 41,
+      "manager": "npm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "30027248e53b8a9df2c65dd00309a2d3f7a08dadec7a3008514595cf53d5d415"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_15_npm10_9_2"
+        },
+        {
+          "checks": [],
+          "compatible": true,
+          "profile_id": "node22_20_npm10_9_3"
+        }
+      ],
+      "repository": "positonic/exponential",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [],
+      "schedule_ordinal": 43,
+      "state": "NO_DECLARED_VERSION_REQUIREMENTS_TOOL_AVAILABLE"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 44,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "e29664536ac991568a0673aa0a0f7333d6b29a803d8301934b6ff85afcfb9fe0"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "10.34.4",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.34.4",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.34.4",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "Gigadrive/sdk",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "10.34.4",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "packageManager"
+        }
+      ],
+      "schedule_ordinal": 44,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [
+        "node22_15_pnpm10_13_1",
+        "node22_20_pnpm10_13_1",
+        "node22_20_pnpm10_32_1"
+      ],
+      "dependency_prefetch_authorized": false,
+      "index": 42,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "822e0aac373a49a8fde2be44a01de581b43cea8c80d73c7d73f9f6df12b88706"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": ">=22",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": true,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": true,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "constructive-io/constructive",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": ">=22",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 45,
+      "state": "COMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 52,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "3a2b80f162988e20c1d8ab54cb064b219491f3ae218a3739085c167df5aa852d"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "11.18.0",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "11.18.0",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "11.18.0",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "masumi-network/sokosumi",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "11.18.0",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "packageManager"
+        }
+      ],
+      "schedule_ordinal": 46,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 50,
+      "manager": "bun",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "6cdeea20488004b2d8860a218166a5e31b0beb7b3cf17f89a123778f38b69a66"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "1.3.14",
+              "kind": "manager",
+              "name": "bun",
+              "satisfied": false,
+              "source": "packageManager"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "bun1_2_0"
+        }
+      ],
+      "repository": "tutur3u/platform",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "1.3.14",
+          "kind": "manager",
+          "name": "bun",
+          "source": "packageManager"
+        }
+      ],
+      "schedule_ordinal": 47,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    },
+    {
+      "compatible_profile_ids": [],
+      "dependency_prefetch_authorized": false,
+      "index": 51,
+      "manager": "pnpm",
+      "manifest": {
+        "path": "package.json",
+        "sha256": "8deb6c9c2c7e908fcd3ffc2741dc1a6776d14579fcc173d6ffeaf4bde8631142"
+      },
+      "profile_evaluations": [
+        {
+          "checks": [
+            {
+              "expression": "10.33.0",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=24",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_15_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.33.0",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=24",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_13_1"
+        },
+        {
+          "checks": [
+            {
+              "expression": "10.33.0",
+              "kind": "manager",
+              "name": "pnpm",
+              "satisfied": false,
+              "source": "packageManager"
+            },
+            {
+              "expression": ">=24",
+              "kind": "runtime",
+              "name": "node",
+              "satisfied": false,
+              "source": "engines.node"
+            }
+          ],
+          "compatible": false,
+          "profile_id": "node22_20_pnpm10_32_1"
+        }
+      ],
+      "repository": "inkeep/open-knowledge",
+      "repository_execution_authorized": false,
+      "requirement_parse_faults": [],
+      "requirements": [
+        {
+          "expression": "10.33.0",
+          "kind": "manager",
+          "name": "pnpm",
+          "source": "packageManager"
+        },
+        {
+          "expression": ">=24",
+          "kind": "runtime",
+          "name": "node",
+          "source": "engines.node"
+        }
+      ],
+      "schedule_ordinal": 48,
+      "state": "INCOMPATIBLE_DECLARED_REQUIREMENTS"
+    }
+  ],
+  "state": "FORTY_EIGHT_LOCKED_TASK_TOOLCHAIN_COMPATIBILITY_RECLASSIFIED_WITH_PNPM_10_32_1",
+  "trigger_state": "GREEN"
+}

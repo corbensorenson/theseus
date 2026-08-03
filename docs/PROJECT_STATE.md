@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_7_PNPM_10_32_1_QUALIFIED_COMPATIBILITY_REGENERATION_NEXT` | Exact pnpm 10.32.1 is GREEN after one digest-verified registry acquisition and a Node 22.20.0 version probe. Regenerate the 48-task compatibility classification before task 7 dependencies |
+| Active VCM claim | `VCM_V3_TASK_7_COMPATIBILITY_GREEN_DEPENDENCY_CANARY_SEAL_NEXT` | Exact pnpm 10.32.1 is GREEN. Its source-bound successor audit changes only task 7 to compatible: 19 declared-compatible, 16 no-declaration, 13 incompatible, 0 unresolved. Seal task 7's dependency-only canary next |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -460,7 +460,11 @@ reserve, and downstream zero-authority contract were prospectively sealed. The
 one authorized request acquired a 4,534,444-byte archive matching both digests;
 safe extraction retained 1,077 files/18,914,320 bytes, and exact Node 22.20.0
 reported pnpm 10.32.1. Dependency and repository execution remain closed. The
-48-task compatibility audit must now be regenerated before task 7 advances.
+source-bound successor compatibility audit is GREEN: only task 7 changed, from
+declared-incompatible to declared-compatible under `node22_20_pnpm10_32_1`.
+The other 47 states are preserved, producing 19 compatible, 16 no-declaration,
+13 incompatible, and zero unresolved. Task 7's exact-lock dependency-only
+canary must be prospectively sealed before any acquisition.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -647,8 +651,10 @@ authorize regenerating historical reports or reopening neural work.
    closure audit is GREEN. **Complete:** all 48 locked tasks have declared-
    version compatibility classifications. Exact pnpm 10.32.1 acquisition for
    task 7 is GREEN after one registry-digest-verified acquisition and exact Node
-   22.20.0 version probe. Regenerate the all-task compatibility classification,
-   then expand sequentially only through compatible tools.
+   22.20.0 version probe. **Complete:** the successor compatibility audit changes
+   only task 7 to compatible (19 compatible, 16 no-declaration, 13 incompatible,
+   zero unresolved). Prospectively seal task 7's dependency-only canary, then
+   expand sequentially only through compatible tools.
    Resolve the six immutable-resolution
    tasks separately, qualify TypeScript and untrusted Rust builds, and only then
    run parent-fail/target-pass evaluator canaries before packets, scorers, calls,
