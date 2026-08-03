@@ -50,3 +50,11 @@ def test_unsafe_archive_member_is_rejected(tmp_path: Path) -> None:
             assert "unsafe_archive_member" in str(exc)
         else:
             raise AssertionError(value)
+
+
+def test_materialized_archive_counter_counts_only_emitted_receipts() -> None:
+    rows = [
+        {"archives": {"parent": {}, "target": {}}},
+        {"archives": {}},
+    ]
+    assert sum(len(materialization.adequacy.mapping(row["archives"])) for row in rows) == 2

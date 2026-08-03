@@ -1,0 +1,58 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_source_candidates_v2",
+  "state": "AMENDED_AFTER_SOURCE_ONLY_FAILURE_BEFORE_EVALUATOR_OR_MODEL",
+  "adequacy_preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
+  "adequacy_preregistration_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
+  "selection_method": "Metadata-and-diff-only stratified selection from public post-snapshot merged GitHub pull requests. One selected path was prospectively amended after exact source-byte retrieval showed it unchanged; no parent/target evaluator result, candidate output, control output, hidden test, model call, teacher call, or user-supplied task or label informed the amendment.",
+  "source_only_amendment": {
+    "predecessor_registry": "configs/theseus_semantic_ir_production_adequacy_source_candidates.json",
+    "predecessor_registry_sha256": "31183fe270ef012c96c7519308413f2c83321148614d646203d6058894f0b4c1",
+    "trigger_failure_report": "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure.json",
+    "trigger_failure_report_sha256": "56e0354645d7eb02d94cff65f9b9a017e407b4fefaf3bcd81f4041348ddf3fca",
+    "selected_path_change": {
+      "index": 4,
+      "from": ["src/lintle/extract.py"],
+      "to": ["src/lintle/cli.py"]
+    },
+    "reason": "The exact first-parent and merge revisions contain identical extract.py bytes. The frozen PR changed-file patch identifies cli.py as the actual explicit-versus-omitted predicate repair.",
+    "statistical_design_changed": false,
+    "repository_or_pr_changed": false,
+    "stratum_changed": false,
+    "model_or_evaluator_observed": false
+  },
+  "task_count": 18,
+  "candidates": [
+    {"index": 1, "repository": "anirbanbasu/prioris-mcp", "pull_request": 14, "title": "fix: tolerate legacy manifests missing size_bytes in storage list()", "merged_utc": "2026-07-30T21:57:44Z", "merge_revision": "80f2b82ea1551aea149052d06f5babc13f547078", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "single_expression_replacement", "selected_source_paths": ["src/prioris_mcp/storage.py"]},
+    {"index": 2, "repository": "sktime/sktime", "pull_request": 10715, "title": "[BUG] reenable tests and fix tags for `TSFreshFeatureExtractor`", "merged_utc": "2026-08-01T21:43:10Z", "merge_revision": "1beaa44352c93f7916f2408de2288d7fa03e623a", "declared_license_spdx": "BSD-3-Clause", "license_paths": ["LICENSE"], "stratum": "single_expression_replacement", "selected_source_paths": ["sktime/transformations/tsfresh.py"]},
+    {"index": 3, "repository": "home-assistant/core", "pull_request": 177894, "title": "compit: fix KeyError in test fixture for devices without CURRENT_TEMPERATURE mapping", "merged_utc": "2026-08-01T21:28:39Z", "merge_revision": "16e77f9a6eb4173b4bb23b3b83539c5878371f0a", "declared_license_spdx": "Apache-2.0", "license_paths": ["LICENSE.md"], "stratum": "single_expression_replacement", "selected_source_paths": ["tests/components/compit/conftest.py"]},
+    {"index": 4, "repository": "elfensky/lintle", "pull_request": 214, "title": "fix+refactor: the #204 minors (incl. a real precedence bug)", "merged_utc": "2026-08-01T22:06:52Z", "merge_revision": "3058407ef01eb3d90886d416b882c0bfc15d0721", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "branch_or_predicate_replacement", "selected_source_paths": ["src/lintle/cli.py"]},
+    {"index": 5, "repository": "geolens-io/geolens", "pull_request": 1022, "title": "fix(builder): keep fill-color and fill-pattern mutually exclusive in both directions", "merged_utc": "2026-07-31T22:06:04Z", "merge_revision": "06b32dcd67376beafac9790fef85a0a639432387", "declared_license_spdx": "Apache-2.0", "license_paths": ["LICENSE"], "stratum": "branch_or_predicate_replacement", "selected_source_paths": ["backend/app/modules/catalog/maps/style_json.py"]},
+    {"index": 6, "repository": "numpy/numpy", "pull_request": 32043, "title": "BUG: Fix F2Py typedef requirement checking.", "merged_utc": "2026-07-31T12:40:48Z", "merge_revision": "81757857d46dfc18259ea0df86b61d235640426b", "declared_license_spdx": "BSD-3-Clause", "license_paths": ["LICENSE.txt"], "stratum": "branch_or_predicate_replacement", "selected_source_paths": ["numpy/f2py/auxfuncs.py"]},
+    {"index": 7, "repository": "pyranges/pyranges1", "pull_request": 165, "title": "Fix two sorting bugs, share the ordering rule with polaranges, add sort_descending", "merged_utc": "2026-07-31T14:15:00Z", "merge_revision": "41f7df1530a9f0be394513523e074f8e8cbf0303", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "collection_or_data_shape_change", "selected_source_paths": ["pyranges1/range_frame/range_frame.py"]},
+    {"index": 8, "repository": "lairdgrouplancaster/QCoDeS-Plotter", "pull_request": 49, "title": "Fix high-offset serpentine sweeps and preview shutdown", "merged_utc": "2026-08-01T20:55:01Z", "merge_revision": "92d2056873d481320e65eb36b87f647ecc630e78", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "collection_or_data_shape_change", "selected_source_paths": ["src/qplot/tools/worker.py"]},
+    {"index": 9, "repository": "sdill1973a/linafish", "pull_request": 44, "title": "fix(ingest): bound every chunk, so a book stops arriving as one crystal", "merged_utc": "2026-08-01T12:36:52Z", "merge_revision": "82be790ea1d46005fabec6c327c9663c5da1bafe", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "collection_or_data_shape_change", "selected_source_paths": ["linafish/ingest.py"]},
+    {"index": 10, "repository": "unslothai/unsloth", "pull_request": 7591, "title": "Offline: detect an unreachable hub, not just dead DNS", "merged_utc": "2026-07-31T11:26:33Z", "merge_revision": "3c400a67ba8f1b90afb250390eb3799dcbc4613e", "declared_license_spdx": "Apache-2.0", "license_paths": ["LICENSE"], "stratum": "insert_guard_or_setup_before", "selected_source_paths": ["studio/backend/utils/utils.py"]},
+    {"index": 11, "repository": "OregonDigital/od2_md_scripts", "pull_request": 45, "title": "Validation bug fixes", "merged_utc": "2026-08-01T20:20:26Z", "merge_revision": "a6a9e1ace0796a4c930602b4d4e191a2ea0410a3", "declared_license_spdx": "CC0-1.0", "license_paths": ["LICENSE"], "stratum": "insert_guard_or_setup_before", "selected_source_paths": ["od2validation.py"]},
+    {"index": 12, "repository": "purduecsbridge/ed-push", "pull_request": 3, "title": "Fix double title in challenge description", "merged_utc": "2026-08-01T23:25:46Z", "merge_revision": "452316a1201fb529e69a693d1b3975b5f0eaa5be", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "insert_guard_or_setup_before", "selected_source_paths": ["ed_push.py"]},
+    {"index": 13, "repository": "Azure/azure-sdk-for-python", "pull_request": 46575, "title": "feat(servicebus): add list_queue_sessions and list_subscription_sessions", "merged_utc": "2026-07-31T15:10:45Z", "merge_revision": "4e0cc7bc2c0ae3b6f3196fd98f2d7a3bae8e65ef", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "insert_action_or_cleanup_after", "selected_source_paths": ["sdk/servicebus/azure-servicebus/azure/servicebus/_common/mgmt_handlers.py"]},
+    {"index": 14, "repository": "DataDog/dd-license-attribution", "pull_request": 217, "title": "Add Rust ecosystem support with binary-only crate fallback", "merged_utc": "2026-07-31T14:10:12Z", "merge_revision": "bf7bf0500bf3f91aa4d885d8b74a844c1ee1fb11", "declared_license_spdx": "Apache-2.0", "license_paths": ["LICENSE"], "stratum": "insert_action_or_cleanup_after", "selected_source_paths": ["src/dd_license_attribution/artifact_management/source_code_manager.py"]},
+    {"index": 15, "repository": "aio-libs/aiobotocore", "pull_request": 1667, "title": "feat: run the httpx backend on trio", "merged_utc": "2026-08-01T08:50:40Z", "merge_revision": "778803892af69e7a8cb41e676546846cb9e541c0", "declared_license_spdx": "Apache-2.0", "license_paths": ["LICENSE"], "stratum": "insert_action_or_cleanup_after", "selected_source_paths": ["aiobotocore/utils.py"]},
+    {"index": 16, "repository": "Off-Camber/open-frame", "pull_request": 12, "title": "fix(recognize): normalize target coordinate spaces", "merged_utc": "2026-08-01T04:06:58Z", "merge_revision": "fa6b3aeccbc41957d85737a9ab29743a4169b5af", "declared_license_spdx": "Apache-2.0", "license_paths": ["LICENSE"], "stratum": "multi_unit_dependency_local_repair", "selected_source_paths": ["src/openframe/recognize/coords.py", "src/openframe/recognize/locator.py"]},
+    {"index": 17, "repository": "HEROgold/funcsort", "pull_request": 2, "title": "fix: never reorder a definition below code that reads it at import time", "merged_utc": "2026-08-01T21:22:11Z", "merge_revision": "759aac15ac091b053e98b287bdee9167ce46d4bb", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "multi_unit_dependency_local_repair", "selected_source_paths": ["src/funcsort/ordering.py", "src/funcsort/sorter.py"]},
+    {"index": 18, "repository": "awwesomeman/librae", "pull_request": 94, "title": "fix(db): validate instrument_type against one shared allow-list", "merged_utc": "2026-08-01T12:23:03Z", "merge_revision": "7bfb48b919eb08debecd5dfbc9c1fbe5f09a981f", "declared_license_spdx": "MIT", "license_paths": ["LICENSE"], "stratum": "multi_unit_dependency_local_repair", "selected_source_paths": ["librae/config/symbols.py", "librae/db/timescale_writer.py"]}
+  ],
+  "boundaries": {
+    "network_source_calls": 78,
+    "source_archives_materialized": 34,
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "This amendment repairs one source-path binding after a source-only failure. It does not change the panel or statistical design and provides no evaluator, mechanics, capability, claim, D1, D2, training, or book evidence."
+}

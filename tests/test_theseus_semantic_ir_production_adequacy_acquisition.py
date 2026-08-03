@@ -60,6 +60,19 @@ def test_candidate_registry_preflight_is_green_and_zero_call() -> None:
     assert set(report["counters"].values()) == {0}
 
 
+def test_source_only_amendment_is_exactly_one_path_and_pre_model() -> None:
+    registry = json.loads(acquisition.DEFAULT_CANDIDATES.read_text())
+    config = json.loads(
+        (ROOT / registry["adequacy_preregistration"]).read_text()
+    )
+    assert acquisition.audit_candidate_registry(registry, config) == []
+    tampered = json.loads(json.dumps(registry))
+    tampered["candidates"][4]["selected_source_paths"] = ["another.py"]
+    assert "amendment_scope_not_single_candidate" in acquisition.audit_candidate_registry(
+        tampered, config
+    )
+
+
 def test_independent_metadata_row_recomputes_parent_files_and_license() -> None:
     registry = json.loads(acquisition.DEFAULT_CANDIDATES.read_text())
     selected = registry["candidates"][0]

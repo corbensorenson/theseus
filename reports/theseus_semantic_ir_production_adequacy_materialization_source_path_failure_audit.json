@@ -1,0 +1,29 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_materialization_failure_audit_v1",
+  "trigger_state": "RED",
+  "source_failure_report": "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure.json",
+  "source_failure_report_sha256": "56e0354645d7eb02d94cff65f9b9a017e407b4fefaf3bcd81f4041348ddf3fca",
+  "source_failure": "task_4:selected_source_bytes_unchanged",
+  "reported_source_archives_materialized": 36,
+  "independently_recomputed_archive_receipt_count": 34,
+  "counter_disposition": "INVALID_OVERCOUNT_IN_RED_REPORT_PRESERVED_UNCHANGED",
+  "amendment_scope": {
+    "task_index": 4,
+    "repository": "elfensky/lintle",
+    "pull_request": 214,
+    "from_selected_source_paths": ["src/lintle/extract.py"],
+    "to_selected_source_paths": ["src/lintle/cli.py"],
+    "reason": "The exact first-parent and merge revisions contain identical extract.py bytes. The frozen PR changed-file patch identifies cli.py as the actual explicit-versus-omitted predicate repair."
+  },
+  "prohibited_counters": {
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "maximum_inference": "This audit preserves and corrects accounting for a source-only materialization failure. It authorizes only a prospectively committed single-path source-binding amendment before any evaluator or model call."
+}

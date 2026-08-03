@@ -21,10 +21,11 @@ import theseus_d1_online_metadata_acquisition as github_metadata  # noqa: E402
 import theseus_semantic_ir_production_adequacy as adequacy  # noqa: E402
 
 
-DEFAULT_CANDIDATES = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_candidates.json"
+DEFAULT_CANDIDATES = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_candidates_v2.json"
 DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_metadata.json"
 POLICY = "project_theseus_semantic_ir_production_adequacy_acquisition_v1"
-CANDIDATE_POLICY = "project_theseus_semantic_ir_production_adequacy_source_candidates_v1"
+CANDIDATE_POLICY_V1 = "project_theseus_semantic_ir_production_adequacy_source_candidates_v1"
+CANDIDATE_POLICY_V2 = "project_theseus_semantic_ir_production_adequacy_source_candidates_v2"
 HEX40 = set("0123456789abcdef")
 
 
@@ -238,9 +239,15 @@ def audit_candidate_registry(
     registry: dict[str, Any], config: dict[str, Any]
 ) -> list[str]:
     faults: list[str] = []
-    if registry.get("policy") != CANDIDATE_POLICY:
+    policy = registry.get("policy")
+    if policy not in {CANDIDATE_POLICY_V1, CANDIDATE_POLICY_V2}:
         faults.append("candidate_registry_policy_invalid")
-    if registry.get("state") != "FIXED_BEFORE_SOURCE_MATERIALIZATION_OR_EVALUATOR_EXECUTION":
+    expected_state = (
+        "FIXED_BEFORE_SOURCE_MATERIALIZATION_OR_EVALUATOR_EXECUTION"
+        if policy == CANDIDATE_POLICY_V1
+        else "AMENDED_AFTER_SOURCE_ONLY_FAILURE_BEFORE_EVALUATOR_OR_MODEL"
+    )
+    if registry.get("state") != expected_state:
         faults.append("candidate_registry_state_invalid")
     rows = dictionaries(registry.get("candidates"))
     expected = integer(mapping(config.get("competence_design")).get("panel_size"))
@@ -277,13 +284,93 @@ def audit_candidate_registry(
             observed[stratum] += 1
     if observed != expected_strata:
         faults.append("candidate_strata_not_balanced")
+    if policy == CANDIDATE_POLICY_V2:
+        faults.extend(audit_source_only_amendment(registry))
+    else:
+        boundaries = mapping(registry.get("boundaries"))
+        for key, value in boundaries.items():
+            if key == "user_or_operator_gate":
+                if value is not False:
+                    faults.append("user_gate_present")
+            elif integer(value) != 0:
+                faults.append(f"preselection_counter_nonzero:{key}")
+    return faults
+
+
+def audit_source_only_amendment(registry: dict[str, Any]) -> list[str]:
+    faults: list[str] = []
+    amendment = mapping(registry.get("source_only_amendment"))
+    predecessor_path = resolve(str(amendment.get("predecessor_registry") or ""))
+    failure_path = resolve(str(amendment.get("trigger_failure_report") or ""))
+    if (
+        not predecessor_path.is_file()
+        or sha256_file(predecessor_path)
+        != str(amendment.get("predecessor_registry_sha256") or "")
+    ):
+        faults.append("amendment_predecessor_binding_invalid")
+        predecessor = {}
+    else:
+        predecessor = read_json(predecessor_path)
+    if (
+        not failure_path.is_file()
+        or sha256_file(failure_path)
+        != str(amendment.get("trigger_failure_report_sha256") or "")
+    ):
+        faults.append("amendment_failure_binding_invalid")
+        failure = {}
+    else:
+        failure = read_json(failure_path)
+    if failure.get("trigger_state") != "RED" or failure.get("faults") != [
+        "task_4:selected_source_bytes_unchanged"
+    ]:
+        faults.append("amendment_trigger_failure_invalid")
+    failure_counters = mapping(failure.get("counters"))
+    prohibited = (
+        "parent_target_evaluator_executions",
+        "candidate_or_control_calls",
+        "local_model_calls",
+        "external_inference_calls",
+        "teacher_calls",
+        "training_rows_written",
+        "D1_cases_consumed",
+        "D2_cases_consumed",
+    )
+    if any(integer(failure_counters.get(key)) != 0 for key in prohibited):
+        faults.append("amendment_trigger_crossed_prohibited_boundary")
+    predecessor_rows = dictionaries(predecessor.get("candidates"))
+    current_rows = dictionaries(registry.get("candidates"))
+    changes: list[dict[str, Any]] = []
+    for before, after in zip(predecessor_rows, current_rows, strict=False):
+        if before != after:
+            changes.append({"before": before, "after": after})
+    expected_change = mapping(amendment.get("selected_path_change"))
+    if len(predecessor_rows) != len(current_rows) or len(changes) != 1:
+        faults.append("amendment_scope_not_single_candidate")
+    elif (
+        integer(changes[0]["before"].get("index")) != integer(expected_change.get("index"))
+        or changes[0]["before"].get("selected_source_paths") != expected_change.get("from")
+        or changes[0]["after"].get("selected_source_paths") != expected_change.get("to")
+        or {
+            key: value
+            for key, value in changes[0]["before"].items()
+            if key != "selected_source_paths"
+        }
+        != {
+            key: value
+            for key, value in changes[0]["after"].items()
+            if key != "selected_source_paths"
+        }
+    ):
+        faults.append("amendment_scope_mismatch")
     boundaries = mapping(registry.get("boundaries"))
-    for key, value in boundaries.items():
-        if key == "user_or_operator_gate":
-            if value is not False:
-                faults.append("user_gate_present")
-        elif integer(value) != 0:
-            faults.append(f"preselection_counter_nonzero:{key}")
+    if boundaries.get("user_or_operator_gate") is not False:
+        faults.append("user_gate_present")
+    if integer(boundaries.get("network_source_calls")) != 78:
+        faults.append("amendment_source_call_count_invalid")
+    if integer(boundaries.get("source_archives_materialized")) != 34:
+        faults.append("amendment_archive_receipt_count_invalid")
+    if any(integer(boundaries.get(key)) != 0 for key in prohibited):
+        faults.append("amendment_boundary_invalid")
     return faults
 
 

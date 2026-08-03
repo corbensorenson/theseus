@@ -175,7 +175,9 @@ def materialize(config_path: Path, *, client: ContentClient) -> dict[str, Any]:
     admitted = not faults and len(rows) == 18
     counters = zero_counters()
     counters["network_source_calls"] = client.request_count
-    counters["source_archives_materialized"] = len(rows) * 2
+    counters["source_archives_materialized"] = sum(
+        len(adequacy.mapping(row.get("archives"))) for row in rows
+    )
     return {
         **before,
         "stage": "source_materialization_complete",
