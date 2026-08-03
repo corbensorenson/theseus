@@ -289,6 +289,20 @@ Zero repository/model executions occurred. Preserve the host-instrument failure
 and retry only with telemetry permission; JavaScript/TypeScript and Rust still
 need separate sandbox qualification regardless of the Python result.
 
+The permission-corrected trusted Python retry is now GREEN with all isolation,
+resource, environment, output, and escape canaries passing. Its scope remains
+pinned Python only.
+
+The VCM evaluator-feasibility audit is RED without revoking source admission.
+Every task has a primary-language executable verifier file, but none of the 62
+changed-file archives contains a package manifest, dependency lock, transitive
+local source closure receipt, or independent runner command, and none has a
+parent-fail/target-pass receipt. Eight tasks include 21 auxiliary test fixtures,
+docs, or images. Evaluator-ready count is therefore zero. Treat this solely as
+an instrument-materialization gap; the next transaction must bind exact project
+closures, dependencies, runners, and Python/Node/TypeScript/Rust sandboxes before
+any untrusted execution.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

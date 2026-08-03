@@ -621,6 +621,24 @@ repository executions, and zero model calls. Preserve it and retry the trusted
 canary only with host telemetry permission. Even a GREEN retry would qualify
 the pinned Python path only, not Node/TypeScript or Rust.
 
+The permission-corrected trusted retry is GREEN: every declared Python sandbox
+canary passed, including network, host read, symlink escape, outside write,
+shell execution, child escape, minimized environment, CPU, file-size, open-file,
+process, RSS, output, and wall controls. This supersedes only the current Python
+host qualification; the RED attempt remains historical evidence.
+
+The static VCM evaluator-feasibility audit is RED while preserving the GREEN
+source panel. All 62 tasks contain at least one primary-language executable
+verifier path (88 total), but the selected changed-file archives contain zero
+package/dependency manifests, zero locks, zero transitive local-source closure
+receipts, zero independently derived runner commands, and zero parent-fail/
+target-pass receipts. Eight tasks also carry 21 auxiliary executable or fixture/
+doc/image artifacts. Consequently zero tasks are evaluator-ready. This is an
+instrument gap, not a failure of any task, model, VCM, or ASI Stack mechanism.
+Next materialize exact base/head repository or transitive closures, bind manifests,
+locks, and runners, prefetch dependencies under policy, qualify Node/TypeScript
+and Rust sandboxes alongside Python, and only then execute parent/target canaries.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

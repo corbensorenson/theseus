@@ -1,0 +1,1545 @@
+{
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_evaluator_feasibility_audit.json",
+    "sha256": "c72052bfb67b8d5052aaf8b9da3f560e4b85ba975b738e996073198bd81bb1c4"
+  },
+  "created_utc": "2026-08-03T15:30:26.437498Z",
+  "evaluator_execution_authorized": false,
+  "external_reference_calls": 0,
+  "faults": [
+    "python_sandbox_only_node_typescript_rust_unqualified",
+    "zero_of_62_tasks_have_independent_runner_command_receipts",
+    "zero_of_62_tasks_have_materialized_dependency_locks",
+    "zero_of_62_tasks_have_materialized_dependency_manifests",
+    "zero_of_62_tasks_have_transitive_local_source_closure",
+    "zero_parent_fail_target_pass_receipts"
+  ],
+  "language_task_counts": {
+    "JavaScript": 13,
+    "Python": 20,
+    "Rust": 13,
+    "TypeScript": 16
+  },
+  "local_model_calls": 0,
+  "maximum_inference": "A RED feasibility result preserves the GREEN source panel and means only that the selected changed-file archives are not yet an adequate executable evaluator instrument. Missing manifests, locks, dependency closure, runner commands, or language sandbox coverage are instrument gaps, never task failures or evidence against VCM. No parent/target/mechanism inference is permitted until the missing evaluator owners are materialized and independently qualified.",
+  "observations": {
+    "auxiliary_executable_verifier_path_count": 2,
+    "evaluator_ready_task_count": 0,
+    "nonexecutable_verifier_artifact_count": 19,
+    "primary_executable_verifier_path_count": 88,
+    "primary_executable_verifier_task_count": 62,
+    "task_count": 62,
+    "tasks_with_auxiliary_or_nonexecutable_verifier_artifacts": 8,
+    "tasks_with_dependency_lock": 0,
+    "tasks_with_dependency_or_package_manifest": 0,
+    "tasks_with_independent_runner_command_receipt": 0,
+    "tasks_with_parent_fail_target_pass_receipt": 0,
+    "tasks_with_transitive_local_source_closure_receipt": 0
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_evaluator_feasibility_audit_v1",
+  "python_sandbox_qualified_for_pinned_python_only": true,
+  "reports": {
+    "python_sandbox_qualification": {
+      "path": "reports/theseus_d1_evaluator_sandbox_qualification.json",
+      "sha256": "2da0c6d09517858f0f25949ed0deb18547d1ac8f11838e10f2606c59a2d6e798"
+    },
+    "source_panel": {
+      "path": "reports/theseus_vcm_source_panel_audit_v2.json",
+      "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"
+    }
+  },
+  "required_next_instrument": {
+    "complete_output_resource_and_cost_receipts": true,
+    "dependency_prefetch_then_network_denied_execution": true,
+    "exact_base_and_head_repository_or_transitive_source_closure": true,
+    "inadequate_harness_disposition": "INCONCLUSIVE_EXPERIMENT_NOT_TASK_OR_VCM_FAILURE",
+    "independent_runner_command_derivation": true,
+    "install_scripts_disabled_or_sandboxed": true,
+    "known_good_known_bad_and_transplant_controls": true,
+    "package_manifest_and_lock_receipts": true,
+    "parent_must_fail_and_target_must_pass": true,
+    "python_node_typescript_and_rust_sandbox_canaries": true
+  },
+  "source_panel_remains_admitted": true,
+  "state": "EVALUATOR_INSTRUMENT_MATERIALIZATION_REQUIRED",
+  "task_gaps": [
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 1,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "test/design.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "endoftheline818/opensourcesai-cmdcenter"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 2,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "src/services/airQualityService.test.js",
+        "src/services/airQualityService.timezone.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "Aditya8369/Pollution-Control-Hub"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 3,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [
+        "docs/specs/2026-07-30-kimi-host-support.md"
+      ],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "test/session-analysis-fs.test.mjs",
+        "test/session-analysis-providers.test.mjs"
+      ],
+      "query_language": "JavaScript",
+      "repository": "QoderAI/better-harness"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [
+        "draw/draw/doctype/draw_diagram/test_draw_diagram.py"
+      ],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 4,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "frontend/src/components/toolbar/ShareMenu.test.js",
+        "frontend/src/composables/useShare.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "frappe/draw"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 5,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "src/components/Expenses/AddExpenseForm/index.test.js",
+        "src/components/SuccessToast/index.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "didaquis/didibudget-frontend"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 6,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/api-network-runtime.test.js",
+        "tests/proxy-rate-limit.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "elkimek/get-based"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 7,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "test/serve.test.mjs"
+      ],
+      "query_language": "JavaScript",
+      "repository": "moshcoder/moshcode"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 8,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/environment/board-select.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "manufosela/karajan-code"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 9,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/use-url-query-param.spec.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "KosAlyohyn/vue-route-state"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 10,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "VidCoreLargePlayer/tests/popup-guard.test.mjs"
+      ],
+      "query_language": "JavaScript",
+      "repository": "Autodidac/OrphanedMiscProjects"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 11,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "scripts/test-solution-play-website-search.mjs"
+      ],
+      "query_language": "JavaScript",
+      "repository": "frootai/frootai"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 12,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_packaging.py"
+      ],
+      "query_language": "Python",
+      "repository": "rickli0822-prog/windows-ai-login-doctor"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 13,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_sensor.py"
+      ],
+      "query_language": "Python",
+      "repository": "dknowles2/ha-pitboss"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 14,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/danger/test_ballistic.py",
+        "tests/danger/test_cruise.py",
+        "tests/danger/test_drone.py",
+        "tests/danger/test_generic.py"
+      ],
+      "query_language": "Python",
+      "repository": "denysdovhan/ha-aerial-danger"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 15,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/mde/test_update_lifecycle.py",
+        "tests/mde/test_validate_mise.py"
+      ],
+      "query_language": "Python",
+      "repository": "ray-manaloto/macos-development-environment"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 16,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "ops-server/dashboard/test_arena_auth.py",
+        "ops-server/tools/training_test_runner.py"
+      ],
+      "query_language": "Python",
+      "repository": "dynatrace-wwse/codespaces-framework"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 17,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_declared_dependencies.py",
+        "tests/test_policy_schema.py"
+      ],
+      "query_language": "Python",
+      "repository": "presidio-v/presidio-hardened-x402"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 18,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/tools/test_lazy_deps_managed.py"
+      ],
+      "query_language": "Python",
+      "repository": "NousResearch/hermes-agent"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 19,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/core/test_text_chunking.py"
+      ],
+      "query_language": "Python",
+      "repository": "Ganesh-403/semantic-plagiarism-detector"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 20,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_codexicon.py"
+      ],
+      "query_language": "Python",
+      "repository": "bnet47/codexicon"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 21,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_pyxterm_flow_control.py"
+      ],
+      "query_language": "Python",
+      "repository": "mfat/sshpilot"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 22,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_input_validators.py"
+      ],
+      "query_language": "Python",
+      "repository": "TejashPrakash/student-management-system"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 23,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/unit/test_vulnerability_baseline.py"
+      ],
+      "query_language": "Python",
+      "repository": "pullboxapp/pullbox-direct-providers"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 24,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/unit/test_an_unreadable_list_is_not_empty.py"
+      ],
+      "query_language": "Python",
+      "repository": "openonion/connectonion"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 25,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/autolamella/test_status_dict_vocabulary.py"
+      ],
+      "query_language": "Python",
+      "repository": "fibsem-os/fibsem-os"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 26,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/api/test_findings_rate_limit_exempt.py",
+        "tests/api/test_routes_rescore.py",
+        "tests/core/test_contained_path.py"
+      ],
+      "query_language": "Python",
+      "repository": "quodeq/quodeq"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 27,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_carry_forward.py"
+      ],
+      "query_language": "Python",
+      "repository": "malkreide/mcp-audit-skill"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 28,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/test_opening_geography.py"
+      ],
+      "query_language": "Python",
+      "repository": "moritan777/chat-trpg-gm-mvp"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 29,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "crates/cofferdam-cli/tests/context_smoke.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "TAJD/cofferdam"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 30,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [
+        "tests/golden/mem/an_accumulator_loop_keeps_its_garbage.kso",
+        "tests/golden/mem/an_accumulator_loop_reclaims_its_garbage.kso",
+        "tests/golden/mem/an_accumulator_loop_reclaims_its_garbage.mem",
+        "tests/golden/mem/an_accumulator_loop_reclaims_its_garbage.stdout"
+      ],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/map_accumulator_peak.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "kanso-lang/kanso"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 31,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "mcp-re-proxy/tests/redis_replay_e2e_test.rs",
+        "mcp-re-proxy/tests/replay_race_harness_test.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "matssun/mcp-re"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 32,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "src/app/help/tests.rs",
+        "tests/config_cli.rs",
+        "tests/pty_smoke.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "maelguimet/catomic"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 33,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/apollo_regressions.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "elan8/sysml-v2-parser"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 34,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "crates/lsp_server/tests/integration/interconnection_visualization.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "elan8/spec42"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 35,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [
+        "crates/jsonschema/tests/canonical-suite/algebra.json",
+        "crates/jsonschema/tests/canonical-suite/dependencies.json",
+        "crates/jsonschema/tests/canonical-suite/errors.json",
+        "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+        "crates/jsonschema/tests/canonical-suite/items.json",
+        "crates/jsonschema/tests/canonical-suite/object.json",
+        "crates/jsonschema/tests/canonical-suite/oneof.json",
+        "crates/jsonschema/tests/canonical-suite/unevaluated.json"
+      ],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "crates/jsonschema/tests/canonicalization.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "Stranger6667/jsonschema"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 36,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "crates/godlint-core/tests/glob.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "tomerwave/godlint"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 37,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/suite_bench_policy/taint_policy_adapter.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "BrokkAi/bifrost"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 38,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "src/test/crash_consistency_tests.rs",
+        "src/test/mod.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "surrealdb/surrealkv"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 39,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [
+        "docs/t1e-spec.md"
+      ],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "crates/brink-compiler/tests/tm3_strict_policy.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "Syynth/brink"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 40,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "frontend/src/game/solutionLog.test.ts",
+        "frontend/src/hooks/useAnalysis.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "ainetus/Co-Study4Grid"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 41,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "src/server/services/ticketSync/__tests__/roundTripProperty.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "positonic/exponential"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 42,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "pgpm/transform/__tests__/byte-slice.test.ts",
+        "pgpm/transform/__tests__/program.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "constructive-io/constructive"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [
+        "tests/test-catalog.mjs"
+      ],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 43,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/score-dashboard-cover-sources.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "cwh555/AnimeList"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 44,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "packages/network-config/src/nextjs-runtime-cache-client.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "Gigadrive/sdk"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 45,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "tests/unit/upload-auth.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 46,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "packages/gkit/scripts/generate-dataforseo.test.ts",
+        "packages/gkit/scripts/release-preflight.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "celados/gkit"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 47,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "runner/e2e/sidebar-crud.spec.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "handsontable/examples"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 48,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "web/frontend/src/analysis/panel-tab.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "pokle/glidecomp"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 49,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "apps/web/src/app/projects/[projectId]/tests/[testId]/page.tsx",
+        "packages/queries/src/__tests__/identity-split.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "AKogut/flakemetry"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 50,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "apps/web/src/app/api/v1/workspaces/[wsId]/external-chat/config/route.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "tutur3u/platform"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 51,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "packages/app/src/App.dom.test.tsx",
+        "packages/app/src/components/navigation-targets.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "inkeep/open-knowledge"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 52,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "apps/web/src/app/(app)/chat/components/__tests__/room-message-row.test.tsx"
+      ],
+      "query_language": "TypeScript",
+      "repository": "masumi-network/sokosumi"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 53,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "claim",
+      "primary_executable_verifier_paths": [
+        "test/index.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "omnist-dev/omnist-ts"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 54,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "tests/harness-settings.test.mjs",
+        "tests/migrate-session-hook.test.mjs"
+      ],
+      "query_language": "JavaScript",
+      "repository": "bd-makers/team-harness"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 55,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "tests/unit/security/rls-probe-template.test.js"
+      ],
+      "query_language": "JavaScript",
+      "repository": "rickfelix/EHG_Engineer"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 56,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "tests/test_share_cli.py",
+        "tests/test_share_transport.py"
+      ],
+      "query_language": "Python",
+      "repository": "AbsoluteMode/session-recall"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 57,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "tests/test_merge_queue.py"
+      ],
+      "query_language": "Python",
+      "repository": "matt82198/aesop"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed"
+      ],
+      "index": 58,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "tests/test_core.py"
+      ],
+      "query_language": "Python",
+      "repository": "ShadowEnemyx/serien-sammler"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 59,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        ".config/jp/tools/src/cargo/check_tests.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "dcdpr/jp"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 60,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [
+        "SPEC.md"
+      ],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "crates/vigia/tests/render.rs"
+      ],
+      "query_language": "Rust",
+      "repository": "breferrari/vigia"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 61,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [
+        "tests/goldens/vita/im-rowtap.40.png",
+        "tests/goldens/vita/im-rowtap.90.png",
+        "tests/goldens/web/im-rowtap.40.png",
+        "tests/goldens/web/im-rowtap.90.png"
+      ],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "tests/golden-specs.ts",
+        "tests/portal-hit.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "pocket-stack/pocketjs"
+    },
+    {
+      "auxiliary_executable_verifier_paths": [],
+      "evaluator_ready": false,
+      "gaps": [
+        "dependency_or_package_manifest_absent",
+        "dependency_lock_receipt_absent",
+        "transitive_local_source_closure_absent",
+        "independent_runner_command_receipt_absent",
+        "parent_fail_target_pass_not_executed",
+        "language_specific_sandbox_not_qualified"
+      ],
+      "index": 62,
+      "lock_members": [],
+      "manifest_members": [],
+      "nonexecutable_verifier_artifact_paths": [],
+      "panel": "control_qualification",
+      "primary_executable_verifier_paths": [
+        "src/__tests__/client.test.ts",
+        "src/__tests__/server.test.ts"
+      ],
+      "query_language": "TypeScript",
+      "repository": "conorbronsdon/substack-mcp"
+    }
+  ],
+  "trigger_state": "RED",
+  "trusted_toolchains_observed_not_execution_authorized": {
+    "cargo": {
+      "available": true,
+      "command": [
+        "cargo",
+        "--version"
+      ],
+      "path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+      "returncode": 0,
+      "sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+      "version_output": "cargo 1.90.0 (840b83a10 2025-07-30)",
+      "version_query_succeeded": true
+    },
+    "node": {
+      "available": true,
+      "command": [
+        "node",
+        "--version"
+      ],
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+      "returncode": 0,
+      "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951",
+      "version_output": "v22.15.0",
+      "version_query_succeeded": true
+    },
+    "npm": {
+      "available": true,
+      "command": [
+        "npm",
+        "--version"
+      ],
+      "path": "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
+      "returncode": 0,
+      "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7",
+      "version_output": "10.9.2",
+      "version_query_succeeded": true
+    },
+    "python": {
+      "available": true,
+      "command": [
+        "python3",
+        "--version"
+      ],
+      "path": "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+      "returncode": 0,
+      "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "version_output": "Python 3.12.5",
+      "version_query_succeeded": true
+    },
+    "rustc": {
+      "available": true,
+      "command": [
+        "rustc",
+        "--version"
+      ],
+      "path": "/opt/homebrew/Cellar/rustup/1.28.2/bin/rustup-init",
+      "returncode": 0,
+      "sha256": "bdc20671e4a36f75a0b68e02caca169d8a67892f9f6d110b426a61630a7fb505",
+      "version_output": "rustc 1.90.0 (1159e78c4 2025-09-14)",
+      "version_query_succeeded": true
+    },
+    "sandbox_exec": {
+      "available": true,
+      "command": [
+        "sandbox-exec",
+        "-h"
+      ],
+      "path": "/usr/bin/sandbox-exec",
+      "returncode": 64,
+      "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38",
+      "version_output": "/usr/bin/sandbox-exec: illegal option -- h\nUsage: sandbox-exec [options] command [args]\nOptions:\n  -f profile-file     Read profile from file.\n  -n profile-name     Use pre-defined profile.\n  -p profile-string   Specify profile on the command line.\n  -D key=value        Define a profile parameter.\nExactly one of -f, -n, -p must be specified.",
+      "version_query_succeeded": false
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "policy": "project_theseus_vcm_evaluator_feasibility_audit_v1",
+  "state": "PROSPECTIVE_STATIC_EVALUATOR_FEASIBILITY_AUDIT_BEFORE_REPOSITORY_EXECUTION",
+  "purpose": "Determine whether the admitted changed-file archives contain enough independently bound project context, dependencies, runners, and sandbox coverage to measure parent-fail/target-pass honestly.",
+  "reports": {
+    "source_panel": {"path": "reports/theseus_vcm_source_panel_audit_v2.json", "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
+    "python_sandbox_qualification": {"path": "reports/theseus_d1_evaluator_sandbox_qualification.json", "sha256": "2da0c6d09517858f0f25949ed0deb18547d1ac8f11838e10f2606c59a2d6e798"}
+  },
+  "expected_observations": {
+    "task_count": 62,
+    "primary_executable_verifier_task_count": 62,
+    "primary_executable_verifier_path_count": 88,
+    "auxiliary_executable_verifier_path_count": 2,
+    "nonexecutable_verifier_artifact_count": 19,
+    "tasks_with_auxiliary_or_nonexecutable_verifier_artifacts": 8,
+    "tasks_with_dependency_or_package_manifest": 0,
+    "tasks_with_dependency_lock": 0,
+    "tasks_with_transitive_local_source_closure_receipt": 0,
+    "tasks_with_independent_runner_command_receipt": 0,
+    "tasks_with_parent_fail_target_pass_receipt": 0,
+    "evaluator_ready_task_count": 0
+  },
+  "authority": {
+    "trusted_toolchain_identity_queries_authorized": true,
+    "network_calls_authorized": false,
+    "repository_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output": "reports/theseus_vcm_evaluator_feasibility_audit.json",
+  "maximum_inference": "A RED feasibility result preserves the GREEN source panel and means only that the selected changed-file archives are not yet an adequate executable evaluator instrument. Missing manifests, locks, dependency closure, runner commands, or language sandbox coverage are instrument gaps, never task failures or evidence against VCM. No parent/target/mechanism inference is permitted until the missing evaluator owners are materialized and independently qualified."
+}
