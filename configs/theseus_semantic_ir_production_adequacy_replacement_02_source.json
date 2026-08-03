@@ -1,0 +1,60 @@
+{
+  "authority": {
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "candidate_or_control_calls_authorized": false,
+    "external_inference_authorized": false,
+    "local_model_calls_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "public_source_file_retrieval_authorized": true,
+    "serving_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "consumed_observation": {
+    "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_02.json",
+    "candidate_packet_sha256": "f65aba489102838e35ed817299ed19a5aef9e88334aaf5146f2f93e8ab5e2221",
+    "interruption_receipt": "reports/theseus_semantic_ir_production_adequacy_campaign_host_protection_interruption.json",
+    "interruption_receipt_sha256": "c071ab2f4560dd24ffaae56453a13d7f34f02dca058dd3e63f0a73ccafa0393e",
+    "original_task_manifest": "configs/theseus_semantic_ir_production_adequacy_task_02.json",
+    "original_task_manifest_sha256": "cc6bd6c8795b9ce8133ad417981bc0f0b06cdbe02c17e7c29ca435e34c81ab5b",
+    "rerun_authorized": false
+  },
+  "expected_change": {
+    "added_fragments": [
+      "expected_discount,",
+      "\"applied discount amount must match the configured fixed reduction\","
+    ],
+    "deleted_fragments": [
+      "500,"
+    ],
+    "selected_source_paths": [
+      "business_logic_test.py"
+    ]
+  },
+  "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+  "license": {
+    "path": "LICENSE",
+    "required_header": "Apache License\n                           Version 2.0, January 2004",
+    "spdx": "Apache-2.0"
+  },
+  "maximum_inference": "A GREEN source report proves only that a fresh, licensed, source-disjoint same-stratum replacement was independently metadata-checked and that exact parent and target bytes were frozen. It does not establish evaluator adequacy, candidate competence, Semantic-IR adequacy, a subsystem effect, D1, D2, training value, serving, or book support.",
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy_replacement_02",
+  "policy": "project_theseus_semantic_ir_production_adequacy_replacement_source_v1",
+  "prior_materialization": "reports/theseus_semantic_ir_production_adequacy_materialization_v4.json",
+  "prior_materialization_sha256": "7572e6ebb82ae6b16575298c42450a31d7c50ce2823fd5fc6346b12d6216f122",
+  "replacement": {
+    "base_revision": "e37e48a476afec5569b77a303a509dd8cbdb13e6",
+    "head_revision": "2b4672f55a225f6d44fdba480d1518ed5d91b108",
+    "index": 2,
+    "merge_revision": "f252c0d7a147469bbb1520444b8000bf1b950938",
+    "merged_utc": "2026-07-31T13:51:27Z",
+    "pull_request": 71,
+    "repository": "Universal-Commerce-Protocol/conformance",
+    "stratum": "single_expression_replacement",
+    "title": "fix: use configured fixed-discount amount in business_logic_test"
+  },
+  "state": "FIXED_BEFORE_REPLACEMENT_SOURCE_RETRIEVAL"
+}
