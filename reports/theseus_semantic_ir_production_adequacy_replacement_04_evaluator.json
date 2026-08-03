@@ -1,0 +1,88 @@
+{
+  "candidate_packet_materialized": false,
+  "checks": {
+    "benign_equivalent_positive": true,
+    "missing_dtype_cast_rejected": true,
+    "missing_required_path_rejected": true,
+    "parent_negative": true,
+    "target_positive": true,
+    "truthiness_mutation_rejected": true,
+    "unauthorized_path_rejected": true,
+    "wrong_dtype_dataflow_rejected": true,
+    "wrong_none_default_rejected": true,
+    "wrong_order_rejected": true
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 0,
+    "network_source_calls": 0,
+    "parent_target_evaluator_executions": 10,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "evaluator_owner": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.py",
+    "sha256": "1882486256714d35b4443d19b1cafd293e50651c4d80b0e000ed5d816d8a6f37"
+  },
+  "faults": [],
+  "hidden_from_candidate_generation": true,
+  "maximum_inference": "A GREEN report establishes only that the replacement evaluator rejects the frozen parent, accepts the frozen target and a benign variant, and rejects truthiness, default, dtype-dataflow, ordering, missing-path, and unauthorized-path controls. It does not establish candidate competence, Semantic-IR adequacy or treatment effect, D1, D2, training value, serving, or book support.",
+  "observations": {
+    "benign_equivalent": {
+      "fault": null,
+      "passed": true
+    },
+    "missing_dtype_cast": {
+      "fault": null,
+      "passed": false
+    },
+    "missing_required_path": {
+      "fault": null,
+      "passed": false
+    },
+    "parent": {
+      "fault": null,
+      "passed": false
+    },
+    "target": {
+      "fault": null,
+      "passed": true
+    },
+    "truthiness_mutation": {
+      "fault": null,
+      "passed": false
+    },
+    "unauthorized_path": {
+      "fault": null,
+      "passed": false
+    },
+    "wrong_dtype_dataflow": {
+      "fault": null,
+      "passed": false
+    },
+    "wrong_none_default": {
+      "fault": null,
+      "passed": false
+    },
+    "wrong_order": {
+      "fault": null,
+      "passed": false
+    }
+  },
+  "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-04r1",
+  "policy": "project_theseus_semantic_ir_production_adequacy_replacement_04_evaluator_v1",
+  "selected_source_paths": [
+    "skbio/alignment/_pair.py"
+  ],
+  "source_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
+    "sha256": "579bb48e49e1ce2c777d97a3e87e2a029fcd51b668e6aee49d26423bfd6a91a4"
+  },
+  "state": "QUALIFIED_BEFORE_CANDIDATE_PACKET_MATERIALIZATION",
+  "trigger_state": "GREEN",
+  "verification_kind": "independent_ast_none_branch_dtype_dataflow_and_order"
+}

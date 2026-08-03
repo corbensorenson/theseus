@@ -265,11 +265,13 @@ Candidates 1–3 and all eight attempted-call receipts are now retained. Task 4
 is consumed and may not be rerun. A fresh post-snapshot, BSD-3-Clause,
 source-disjoint `branch_or_predicate_replacement` from `scikit-bio/scikit-bio`
 is metadata-checked and frozen as exact parent/target source and license bytes.
-The active boundary is its independent evaluator, which must qualify before the
-candidate packet is exposed, followed by a prospective v3 resume that classifies
-backend watchdog telemetry before downstream route consequences. New local
-calls, Luna calls, hidden evaluation, training, D1, and D2 remain closed until
-that binding passes.
+Its independent AST evaluator now qualifies parent-negative,
+target/benign-positive, truthiness, default, dtype-dataflow, ordering,
+missing-path, and unauthorized-path controls before candidate exposure. The
+active boundary is the parent-only packet and a prospective v3 resume that
+classifies backend watchdog telemetry before downstream route consequences. New
+local calls, Luna calls, hidden evaluation, training, D1, and D2 remain closed
+until that binding passes.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
