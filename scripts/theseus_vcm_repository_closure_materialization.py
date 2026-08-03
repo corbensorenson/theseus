@@ -10,6 +10,8 @@ import os
 import shutil
 import sys
 import tempfile
+import tarfile
+import urllib.error
 import urllib.request
 from pathlib import Path
 from typing import Any, Callable
@@ -94,7 +96,7 @@ def execute(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "allowed_transport_origin": "https://codeload.github.com",
     }
     try:
-        result = d1.materialize(adapted, registry, downloader=transport)
+        result = materialize_closures(adapted, registry, transport)
     except HostStorageBoundary as exc:
         return {
             **before,
@@ -105,6 +107,17 @@ def execute(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
             "network_fetches": transport.completed_downloads,
             "downloaded_bytes": transport.completed_bytes,
             "physical_boundary_hit": True,
+        }
+    except (OSError, tarfile.TarError, urllib.error.URLError, ValueError) as exc:
+        return {
+            **before,
+            "trigger_state": "PAUSED",
+            "state": "RETRYABLE_TRANSPORT_OR_ARCHIVE_ERROR_RETAIN_COMPLETED_DERIVATIVES",
+            "faults": [f"{type(exc).__name__}:{exc}"[:4000]],
+            "execution_authorized": False,
+            "network_fetches": transport.completed_downloads,
+            "downloaded_bytes": transport.completed_bytes,
+            "physical_boundary_hit": False,
         }
     faults = list(result.get("faults", []))
     return {
@@ -121,6 +134,53 @@ def execute(config: dict[str, Any], config_path: Path) -> dict[str, Any]:
         "physical_boundary_hit": False,
         "parent_target_or_evaluator_executions": 0,
     }
+
+
+def materialize_closures(config: dict[str, Any], registry: dict[str, Any], downloader: Callable[[str, Path], None]) -> dict[str, Any]:
+    faults = d1.audit_registry(registry)
+    rows = []
+    archive_root = resolve(config["archive_root"])
+    report_root = resolve(config["sanitization_report_root"])
+    reserve = int(config["physical_storage_policy"]["minimum_free_bytes_after_download"])
+    network_fetches = 0
+    for task in registry["tasks"]:
+        task_row = {"campaign_index": task["campaign_index"], "repository": task["repository"], "selection_digest": task["selection_digest"], "artifacts": []}
+        for plan in d1.artifact_plan(task, config):
+            upstream = archive_root / plan["upstream_name"]
+            normalized = archive_root / plan["normalized_name"]
+            sanitation_path = report_root / plan["sanitization_name"]
+            if normalized.is_file() and sanitation_path.is_file():
+                sanitation = read_json(sanitation_path)
+                artifact_faults = d1.audit_materialized_artifact(task, plan, normalized, sanitation)
+                upstream_sha = str(sanitation.get("input", {}).get("sha256") or "")
+            else:
+                if not upstream.is_file():
+                    downloader(plan["url"], upstream); network_fetches += 1
+                upstream_sha = sha256_file(upstream)
+                if shutil.disk_usage(archive_root).free - upstream.stat().st_size < reserve:
+                    raise HostStorageBoundary("normalization_free_space_reserve_boundary_hit")
+                sanitation = d1.sanitizer.sanitize(upstream, normalized)
+                write_json(sanitation_path, sanitation)
+                artifact_faults = d1.audit_materialized_artifact(task, plan, normalized, sanitation)
+                if artifact_faults:
+                    faults.extend(artifact_faults)
+                else:
+                    upstream.unlink(missing_ok=True)
+            task_row["artifacts"].append({
+                **plan,
+                "upstream_retained": upstream.is_file(),
+                "upstream_sha256": upstream_sha,
+                "normalized": relative(normalized),
+                "normalized_sha256": sha256_file(normalized),
+                "sanitization_report": relative(sanitation_path),
+                "sanitization_report_sha256": sha256_file(sanitation_path),
+                "source_archive_root": sanitation.get("source_archive_root"),
+                "faults": artifact_faults,
+            })
+        rows.append(task_row)
+    count = sum(len(row["artifacts"]) for row in rows)
+    if count != len(registry["tasks"]) * 2: faults.append("materialized_archive_count_invalid")
+    return {"trigger_state": "GREEN" if not faults else "RED", "faults": sorted(set(faults)), "archive_artifacts": count, "network_fetches": network_fetches, "tasks": rows}
 
 
 def transform_panel(panel: dict[str, Any]) -> dict[str, Any]:

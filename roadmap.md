@@ -664,6 +664,9 @@ authorizes no repository, dependency, evaluator, or model execution. Because the
 host currently has limited free space, it preserves a 10 GiB physical reserve
 and rejects any single upstream archive above 2 GiB. A boundary hit is an invalid
 instrument materialization on this host, never a task or mechanism negative.
+To avoid doubling storage, upstream bytes are deleted only after the normalized
+derivative passes the exact-member and safety audit; the upstream SHA-256 and
+sanitization receipt remain durable, and completed derivatives are retryable.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

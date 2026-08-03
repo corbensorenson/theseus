@@ -3,9 +3,9 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_repository_closure_materialization.json",
-    "sha256": "27a793aa6eb756a5d85689e05f16745eca4729041beffe1996c8afc370fada27"
+    "sha256": "1b1d29f498c0362ef39f6a90f607873b133a9fa7cfea6f22f872dced1001a8c2"
   },
-  "created_utc": "2026-08-03T15:46:55.184982Z",
+  "created_utc": "2026-08-03T15:49:04.050757Z",
   "execution_authorized": true,
   "external_reference_calls": 0,
   "faults": [],
@@ -20,7 +20,7 @@
   },
   "state": "EXACT_REPOSITORY_CLOSURE_FETCH_READY",
   "storage": {
-    "available_bytes": 39249297408,
+    "available_bytes": 39227994112,
     "maximum_upstream_archive_bytes": 2147483648,
     "minimum_free_bytes_after_download": 10737418240,
     "total_bytes": 994662584320

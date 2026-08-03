@@ -42,3 +42,5 @@ def test_storage_policy_is_physical_and_preserves_ten_gib_reserve():
     assert config["physical_storage_policy"]["minimum_free_bytes_after_download"] >= 10 * 1024**3
     assert config["authority"]["user_or_operator_gate"] is False
     assert config["authority"]["untrusted_repository_execution_authorized"] is False
+    assert config["retention_policy"]["upstream_bytes_retained_after_normalization"] is False
+    assert config["retention_policy"]["upstream_sha256_receipt_retained"] is True

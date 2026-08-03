@@ -3,7 +3,7 @@
   "state": "PROSPECTIVE_EXACT_REPOSITORY_CLOSURE_BEFORE_UNTRUSTED_EXECUTION",
   "source_panel": "reports/theseus_vcm_source_panel_audit_v2.json",
   "bindings": [
-    {"id": "closure_owner", "path": "scripts/theseus_vcm_repository_closure_materialization.py", "sha256": "6573023f26d96ec6c31534f88adcf959854c449c010420d58fcbc6b0505a7fa7"},
+    {"id": "closure_owner", "path": "scripts/theseus_vcm_repository_closure_materialization.py", "sha256": "854a278d217c5c2b500ac8e8ee5c68cc8fa3d9e442e0aae0132577eb3fe91420"},
     {"id": "source_panel", "path": "reports/theseus_vcm_source_panel_audit_v2.json", "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
     {"id": "materialization_owner", "path": "scripts/theseus_d1_source_materialization.py", "sha256": "8816d4c6758c0a18771997948249cb17b556c46015e1bfa084d7bfd3ac1b4be0"},
     {"id": "archive_sanitizer", "path": "scripts/theseus_p2b_sanitize_archive.py", "sha256": "492aade0141d9f3bec3a0e9871a413ff9cf2fae4d540bc231e62c7ded04b9816"}
@@ -14,6 +14,12 @@
   "physical_storage_policy": {
     "minimum_free_bytes_after_download": 10737418240,
     "maximum_upstream_archive_bytes": 2147483648
+  },
+  "retention_policy": {
+    "upstream_bytes_retained_after_normalization": false,
+    "upstream_sha256_receipt_retained": true,
+    "normalized_deterministic_derivative_retained": true,
+    "completed_derivatives_reused_after_retry": true
   },
   "authority": {
     "exact_public_source_archive_retrieval_authorized": true,

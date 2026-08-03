@@ -323,6 +323,8 @@ selected-member and root-license checks, zero untrusted execution, and a 10 GiB
 host free-space reserve. The current receipt is preflight-only with zero network
 fetches. The next transaction may acquire archives autonomously; storage-boundary
 activation is an instrument result and cannot be scored against a task or claim.
+Successful normalization retains the upstream byte hash but removes the duplicate
+upstream archive, preserving the deterministic derivative and restartability.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
