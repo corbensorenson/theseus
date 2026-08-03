@@ -380,6 +380,12 @@ receipt is not installed closure proof, and no task is evaluator-ready. The next
 owner is offline dependency/harness materialization plus TypeScript and untrusted
 Rust build qualification, followed only then by parent-fail/target-pass canaries.
 
+Exact identity queries then bound 11 local tools: Python, pytest, pip, Node, npm,
+pnpm, Bun, Deno/TypeScript, the existing repository-local uv binary, Cargo, and
+Rust. Forty-eight lock-bearing tasks now have an available exact manager identity.
+Only Yarn-locked task 4 has a manager gap. This is inventory evidence only; no
+install, build, repository, evaluator, or model execution occurred.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

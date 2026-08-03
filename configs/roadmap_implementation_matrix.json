@@ -716,6 +716,28 @@
         "external_reference_calls": 0,
         "maximum_inference": "static dependency classification only; locks are receipts rather than installed closure proof and no task is execution-ready",
         "next_boundary": "materialize an immutable offline dependency store for the six unresolved tasks, independently qualify exact locks and trusted harness identities for the other tasks, then qualify TypeScript transpilation and untrusted Rust compilation before parent-fail target-pass canaries"
+      },
+      "vcm_toolchain_identity_audit": {
+        "config": "configs/theseus_vcm_toolchain_identity_audit.json",
+        "owner": "scripts/theseus_vcm_toolchain_identity_audit.py",
+        "test": "tests/test_theseus_vcm_toolchain_identity_audit.py",
+        "report": "reports/theseus_vcm_toolchain_identity_audit.json",
+        "owner_sha256": "013e3931e1a0e203cdf20ee869fe42718495de501bda54e16612b8f7b216d198",
+        "config_sha256": "332eb0eedbb1c135d0eb500132deec231f493309ef82fa4094e5b5132f381bab",
+        "report_sha256": "76a137b68d047c0bc1c1b2ad4913f8ee622605b5493cf516ef22997e5e624d68",
+        "state": "GREEN_LOCAL_TOOLCHAIN_IDENTITIES_BOUND_YARN_RESIDUAL",
+        "declared_tool_count": 12,
+        "available_tool_count": 11,
+        "missing_tool_count": 1,
+        "tasks_with_complete_lock_manager_identity": 48,
+        "tasks_with_missing_lock_manager_identity": 1,
+        "missing_yarn_task_indices": [4],
+        "tasks_evaluator_execution_ready": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "local tool identity and lock-manager mapping only; no dependency build evaluator task or model qualification",
+        "next_boundary": "qualify trusted offline install transpile and compile canaries for the available exact tools, acquire or bind one exact Yarn runtime under bounded policy, then materialize immutable task dependency closures"
       }
     },
     "claim_selection_policy": {

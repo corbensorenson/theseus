@@ -743,6 +743,13 @@ tasks remain evaluator-not-ready. Next materialize and independently verify the
 offline dependency/harness closure, then qualify TypeScript transpilation and
 untrusted Rust compilation before any parent-fail/target-pass canary.
 
+The exact local toolchain audit prevents redundant bootstrap work. It binds
+Python 3.12, pytest, pip, Node 22, npm, pnpm, Bun, Deno with TypeScript 5.8.3,
+the existing repository-local uv 0.11.28 binary, and concrete Cargo/Rust 1.90
+by content hash and observed version. These cover 48 of the 49 lock-bearing
+tasks; only Yarn-locked task 4 lacks a local manager identity. Tool presence is
+not install/build qualification, and every evaluator remains closed.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
