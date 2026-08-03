@@ -856,7 +856,10 @@ Node 22.20.0 reported pnpm 10.32.1. Dependency and repository execution remained
 at zero. The source-bound successor audit is GREEN and changes only task 7 from
 incompatible to compatible; the other 47 classifications are preserved. Counts
 are now 19 compatible, 16 no-declaration, 13 incompatible, and zero unresolved.
-Prospectively seal task 7's dependency-only canary next.
+Task 7's dependency-only canary is prospectively sealed at zero execution. Its
+parent and target manifest/lock identities match, and the lock contains exact
+`@moshcoder/moshpit-dns@0.2.2`. Execute only the lifecycle-disabled online pnpm
+install and network-denied offline replay, then independently audit the closure.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

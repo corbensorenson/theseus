@@ -1,0 +1,36 @@
+{
+  "policy": "project_theseus_vcm_task7_dependency_canary_v1",
+  "state": "PROSPECTIVE_TASK_7_EXACT_PNPM_DEPENDENCY_ACQUISITION_AND_OFFLINE_REPLAY",
+  "owner": "scripts/theseus_vcm_task7_dependency_canary.py",
+  "owner_sha256": "c32478ab08b111464893c81aabc26926226b2e3e92195f3f37162660210f3156",
+  "reports": {
+    "prefetch_plan": {"path": "reports/theseus_vcm_dependency_prefetch_plan.json", "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"},
+    "node_runtime": {"path": "reports/theseus_vcm_node_bootstrap.json", "sha256": "fd434ecc416966898eaf1c0ed70e3aafb499514cfc7d36f73a58f77436340937"},
+    "pnpm_runtime": {"path": "reports/theseus_vcm_pnpm_bootstrap.json", "sha256": "5003d355fb56f6779b3ce2b959a00fa55e57f38989a4d9b807c8cad304709d3c"},
+    "compatibility_v2": {"path": "reports/theseus_vcm_toolchain_compatibility_audit_v2.json", "sha256": "dd8dda57f892f59a20ef099dda4a76e3df731c87970e9b5a95ce906ce4c5750c"}
+  },
+  "task": {
+    "index": 7, "schedule_ordinal": 2, "repository": "moshcoder/moshcode", "manager": "pnpm", "working_directory": ".", "estimated_locked_package_count": 2,
+    "required_files": {"manifest": {"path": "package.json", "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"}, "lock": {"path": "pnpm-lock.yaml", "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"}},
+    "expected_dependencies": {"@moshcoder/moshpit-dns": "0.2.2"},
+    "expected_lock_integrity_sha512_hex": "c68080573157ec229e0848003b9f1523c78756276ec0416288c6cf5aa135e18c8fc25b64f5f93c5c8e2fd732fd8da537b496152bfc91502b8a7f8061246d6d1a"
+  },
+  "archives": {
+    "parent": {"path": "runtime/vcm_evaluator/source_archives/07_moshcoder-moshcode_parent.tar.gz", "sha256": "e726ac7ff6f7fceb2896ea1f0ffe8cfd97472e248004defcfb070c159ab3c5e0", "archive_root": "moshcode-be906053dba93d429301525a3f3caff15b198ed6"},
+    "target": {"path": "runtime/vcm_evaluator/source_archives/07_moshcoder-moshcode_target.tar.gz", "sha256": "b81fa591eaadc4a86612595d0ddfbe4177186177ab9609ad637b2cd7e5b3f974", "archive_root": "moshcode-136a57101a048e5baf6a6a32d68169356487a438"}
+  },
+  "tools": {
+    "sandbox_exec": {"path": "/usr/bin/sandbox-exec", "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},
+    "node": {"path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node", "sha256": "49161ba4e67afda85c25b2daa1f0e91d1bffc023d2dbc4886eda7a9ba38bca62", "version": "22.20.0"},
+    "pnpm_cli": {"path": "runtime/vcm_evaluator/toolchains/pnpm-10.32.1/bin/pnpm.cjs", "sha256": "b276da51dc8ca5b0d3ee3371695b50fc8b3244b281b091c63a3f082a88dadeb9", "version": "10.32.1"}
+  },
+  "commands": {"online_acquisition_args": ["install", "--frozen-lockfile", "--ignore-scripts", "--reporter=silent"], "offline_replay_args": ["install", "--frozen-lockfile", "--ignore-scripts", "--reporter=silent", "--offline"]},
+  "retained_store": "runtime/vcm_evaluator/dependency_store/pnpm/task-07",
+  "limits": {"minimum_free_bytes_after_execution": 10737418240, "maximum_retained_bytes": 4294967296, "maximum_single_written_file_mib": 4096, "wall_seconds_per_command": 600, "cpu_seconds_per_command": 300, "output_mib": 8, "open_files": 512, "user_processes": 384, "max_process_group_rss_mib": 4096, "terminate_grace_seconds": 5, "boundary_activation_disposition": "INCONCLUSIVE_INSTRUMENT_NOT_TASK_OR_MECHANISM_FAILURE"},
+  "report": "reports/theseus_vcm_task7_dependency_canary.json",
+  "authority": {
+    "temporary_normalized_archive_extraction_authorized": true, "single_network_dependency_acquisition_authorized": true, "untrusted_dependency_archive_extraction_authorized": true, "lifecycle_script_disabled_dependency_installation_authorized": true, "network_denied_offline_replay_authorized": true, "content_addressed_cache_retention_authorized": true,
+    "untrusted_lifecycle_script_execution_authorized": false, "repository_runner_execution_authorized": false, "parent_target_evaluator_execution_authorized": false, "candidate_packet_materialization_authorized": false, "local_model_calls_authorized": false, "external_reference_calls_authorized": false, "teacher_calls_authorized": false, "training_rows_authorized": false, "serving_authorized": false, "D1_authorized": false, "D2_authorized": false, "book_support_promotion_authorized": false, "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN canary proves only that task 7's identical parent/target pnpm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a content-addressed store while exact dependency versions and source immutability hold. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim."
+}

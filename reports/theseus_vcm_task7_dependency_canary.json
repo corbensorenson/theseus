@@ -1,0 +1,46 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_task7_dependency_canary.json",
+    "sha256": "974344944cf2ebcaac56c0032c9d9cf3f8faf6b575d04237114e5dd7b684d617"
+  },
+  "created_utc": "2026-08-03T18:48:29.533044Z",
+  "dependency_installations": 0,
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN canary proves only that task 7's identical parent/target pnpm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a content-addressed store while exact dependency versions and source immutability hold. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim.",
+  "network_denied_dependency_installations": 0,
+  "network_enabled_dependency_installations": 0,
+  "observed_parent_target_dependency_identities": {
+    "parent": {
+      "lock": {
+        "bytes": 479,
+        "path": "pnpm-lock.yaml",
+        "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"
+      },
+      "manifest": {
+        "bytes": 667,
+        "path": "package.json",
+        "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+      }
+    },
+    "target": {
+      "lock": {
+        "bytes": 479,
+        "path": "pnpm-lock.yaml",
+        "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"
+      },
+      "manifest": {
+        "bytes": 667,
+        "path": "package.json",
+        "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+      }
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task7_dependency_canary_v1",
+  "repository_runner_executions": 0,
+  "state": "READY_FOR_TASK_7_EXACT_PNPM_DEPENDENCY_CANARY",
+  "trigger_state": "PAUSED"
+}
