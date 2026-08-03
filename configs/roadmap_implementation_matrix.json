@@ -527,6 +527,23 @@
         "external_reference_calls": 0,
         "maximum_inference": "host telemetry and trusted canary implementation findings only; no repository task model VCM mechanism or book negative",
         "next_boundary": "materialize exact repository closures manifests locks and independent runner receipts before separately qualifying dependency installation TypeScript transpilation and untrusted Rust compilation"
+      },
+      "vcm_repository_closure_materialization": {
+        "config": "configs/theseus_vcm_repository_closure_materialization.json",
+        "owner": "scripts/theseus_vcm_repository_closure_materialization.py",
+        "test": "tests/test_theseus_vcm_repository_closure_materialization.py",
+        "report": "reports/theseus_vcm_repository_closure_materialization.json",
+        "owner_sha256": "6573023f26d96ec6c31534f88adcf959854c449c010420d58fcbc6b0505a7fa7",
+        "config_sha256": "27a793aa6eb756a5d85689e05f16745eca4729041beffe1996c8afc370fada27",
+        "report_sha256": "5e7ee88d724cf12062360d606a699bf70a7bc68104c406f02d6e8bb291d78413",
+        "state": "GREEN_PREFLIGHT_EXACT_62_TASK_124_ARCHIVE_FETCH_READY_ZERO_NETWORK_FETCHES",
+        "minimum_free_bytes_after_download": 10737418240,
+        "maximum_upstream_archive_bytes": 2147483648,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "transport and physical storage readiness only; no repository task model VCM mechanism or book claim",
+        "next_boundary": "execute exact codeload parent and head archive acquisition under the physical reserve then audit manifests locks closure and runner evidence without executing repository code"
       }
     },
     "claim_selection_policy": {

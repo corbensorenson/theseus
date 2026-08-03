@@ -1,0 +1,31 @@
+{
+  "archive_artifacts": 0,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_repository_closure_materialization.json",
+    "sha256": "27a793aa6eb756a5d85689e05f16745eca4729041beffe1996c8afc370fada27"
+  },
+  "created_utc": "2026-08-03T15:46:55.184982Z",
+  "execution_authorized": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN report proves only that exact admitted parent/head repository archives were fetched, byte-bound, normalized to deterministic regular-file-only archives, and contain the selected changed members and a root license. Storage limits are physical host-safety boundaries; touching one invalidates closure materialization for this host and is never a task, VCM, model, mechanism, or book negative. No repository code, dependency installer, evaluator, candidate, model, D1, or D2 execution is authorized.",
+  "network_fetches": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "planned_archive_count": 124,
+  "policy": "project_theseus_vcm_repository_closure_materialization_v1",
+  "source_panel": {
+    "path": "reports/theseus_vcm_source_panel_audit_v2.json",
+    "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"
+  },
+  "state": "EXACT_REPOSITORY_CLOSURE_FETCH_READY",
+  "storage": {
+    "available_bytes": 39249297408,
+    "maximum_upstream_archive_bytes": 2147483648,
+    "minimum_free_bytes_after_download": 10737418240,
+    "total_bytes": 994662584320
+  },
+  "task_count": 62,
+  "transformed_registry_sha256": "f74c3fd0966135a627f1632f6a4d298a604186c59428fbff3c58f6af13ebafc1",
+  "trigger_state": "GREEN"
+}

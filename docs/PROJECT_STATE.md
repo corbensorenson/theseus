@@ -317,6 +317,13 @@ execution remains forbidden: all 62 tasks still lack materialized manifests,
 locks, transitive closure, independently derived runners, and parent-fail/
 target-pass receipts, and build/install/transpile adequacy is not qualified.
 
+Exact closure acquisition is prospectively ready for all 62 tasks: 124 exact
+parent/head codeload archives, deterministic regular-file-only normalization,
+selected-member and root-license checks, zero untrusted execution, and a 10 GiB
+host free-space reserve. The current receipt is preflight-only with zero network
+fetches. The next transaction may acquire archives autonomously; storage-boundary
+activation is an instrument result and cannot be scored against a task or claim.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

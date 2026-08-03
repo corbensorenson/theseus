@@ -1,0 +1,34 @@
+{
+  "policy": "project_theseus_vcm_repository_closure_materialization_v1",
+  "state": "PROSPECTIVE_EXACT_REPOSITORY_CLOSURE_BEFORE_UNTRUSTED_EXECUTION",
+  "source_panel": "reports/theseus_vcm_source_panel_audit_v2.json",
+  "bindings": [
+    {"id": "closure_owner", "path": "scripts/theseus_vcm_repository_closure_materialization.py", "sha256": "6573023f26d96ec6c31534f88adcf959854c449c010420d58fcbc6b0505a7fa7"},
+    {"id": "source_panel", "path": "reports/theseus_vcm_source_panel_audit_v2.json", "sha256": "a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
+    {"id": "materialization_owner", "path": "scripts/theseus_d1_source_materialization.py", "sha256": "8816d4c6758c0a18771997948249cb17b556c46015e1bfa084d7bfd3ac1b4be0"},
+    {"id": "archive_sanitizer", "path": "scripts/theseus_p2b_sanitize_archive.py", "sha256": "492aade0141d9f3bec3a0e9871a413ff9cf2fae4d540bc231e62c7ded04b9816"}
+  ],
+  "archive_root": "runtime/vcm_evaluator/source_archives",
+  "sanitization_report_root": "reports/theseus_vcm_repository_closure_sanitization",
+  "report": "reports/theseus_vcm_repository_closure_materialization.json",
+  "physical_storage_policy": {
+    "minimum_free_bytes_after_download": 10737418240,
+    "maximum_upstream_archive_bytes": 2147483648
+  },
+  "authority": {
+    "exact_public_source_archive_retrieval_authorized": true,
+    "untrusted_repository_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report proves only that exact admitted parent/head repository archives were fetched, byte-bound, normalized to deterministic regular-file-only archives, and contain the selected changed members and a root license. Storage limits are physical host-safety boundaries; touching one invalidates closure materialization for this host and is never a task, VCM, model, mechanism, or book negative. No repository code, dependency installer, evaluator, candidate, model, D1, or D2 execution is authorized."
+}

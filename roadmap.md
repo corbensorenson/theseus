@@ -657,6 +657,14 @@ independent runner receipts, and parent-fail/target-pass evidence. npm installs,
 TypeScript transpilation, Cargo resolution, untrusted Rust compilation, and
 repository-runner adequacy remain explicitly unqualified.
 
+The exact repository-closure materializer is now GREEN at preflight. It derives
+an exact 62-task parent/head registry from the admitted panel, plans 124 immutable
+codeload archives, reuses the deterministic regular-file-only sanitizer, and
+authorizes no repository, dependency, evaluator, or model execution. Because the
+host currently has limited free space, it preserves a 10 GiB physical reserve
+and rejects any single upstream archive above 2 GiB. A boundary hit is an invalid
+instrument materialization on this host, never a task or mechanism negative.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
