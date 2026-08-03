@@ -311,6 +311,25 @@ The v5 campaign audit is GREEN and call-free, prospectively authorizing exactly
 36 frozen-local calls. Hidden evaluation remains closed until all candidates
 seal.
 
+The v5 execution then sealed Tasks 1-3 through six admitted frozen-local calls.
+Task 4 call 1 received a 74,626-token prompt and reached the 600-second host wall
+with zero generated tokens. It did not touch the physical context boundary or a
+project-selected answer-length limit. The campaign stopped before candidate
+admission for Task 4 and before every hidden evaluator. This reproduces the v4
+prefill-scale wall on a different source and preserves three unscored candidates
+plus one invalid infrastructure receipt; it is not evidence against TMax,
+Semantic IR, or the book claim.
+
+The next repair is representation-wide rather than another one-off task swap.
+The complete statement inventory currently repeats a full path, 64-hex digest,
+and label for every node even though the full parent source is also visible.
+Bind a compact statement-address ABI that keeps every address and resolves
+integrity independently, prove collision resistance and exact parse/lower/apply
+behavior, measure exact frozen-tokenizer prompt size without truncation, and
+then seal one uniform fresh denominator. Every v5-exposed source is consumed;
+unexposed sources may be rebound only under the same compact protocol. No model
+call may precede the call-free audit.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -486,11 +505,11 @@ Use existing owners; create no new cleanup or report family.
    evaluator interface, and campaign-derived cost authority with zero calls.
 3. **Complete:** repair the exact Semantic-IR identity/coverage/target/unit
    mechanics on bounded non-claim evidence through the production path.
-4. **Active:** complete the prospectively frozen selected-file source
-   materialization and independent parent-negative/target-positive evaluator
-   qualification, then run the independent adequacy audit. If it fails, freeze
-   the implementation and select the next architecture-shaping residual; do not
-   open fresh claim tasks.
+4. **Active:** preserve the v5 partial run, replace its redundant statement
+   inventory with one compact integrity-bound ABI, retire all exposed surfaces,
+   and seal a uniform fresh adequacy denominator. If the independent adequacy
+   run then fails, freeze the implementation and select the next
+   architecture-shaping residual; do not open fresh claim tasks.
 5. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
    sealed before the first arm opened.

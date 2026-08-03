@@ -5535,7 +5535,7 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "task_pool_sealed_adequacy_runner_binding_active",
+        "status": "v5_infrastructure_invalid_compact_statement_protocol_active",
         "source_bindings": {
           "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
           "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
@@ -5581,9 +5581,11 @@
           "task_pool_test": "tests/test_theseus_semantic_ir_production_adequacy_task_pool.py",
           "sealed_task_pool": "reports/theseus_semantic_ir_production_adequacy_task_pool.json",
           "candidate_task_manifests": "configs/theseus_semantic_ir_production_adequacy_task_*.json",
-          "candidate_packet_manifests": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_*.json"
+          "candidate_packet_manifests": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_*.json",
+          "v5_candidate_evidence": "reports/theseus_semantic_ir_production_adequacy_candidates_v5.json",
+          "v5_campaign_journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v5_journal.json"
         },
-        "current_boundary": "The task-11 construct failure, sandbox transport pause, and CREATE_FILE representation failure remain preserved. A versioned adequacy runtime repaired the two missing-file causal slices without changing the historical production owner hash. All 18 exact candidate prompts are now sealed from natural requests, obligation roles and dependencies, complete selected parent sources, semantic identities, and declared missing paths only. Recursive forbidden-field checks, target/revision exclusion, exact prompt replay, full-parent inclusion, physical-context headroom, and zero model/reference/teacher/training/D1/D2 counters are GREEN. The next owner is the call-free adequacy campaign runner and independent scoring integration; model exposure remains closed until that runner is source-bound and audited.",
+        "current_boundary": "V5 sealed three candidates through six admitted frozen-local calls, then Task 4 call 1 reached the prospectively declared 600-second host wall after a 74,626-token prompt and generated zero tokens. The physical context boundary and project-selected quality cap were not touched; hidden evaluator, reference, teacher, training, D1, and D2 counters remain zero. The seven receipts and three candidates are preserved without scoring. Reproduction of the v4 prefill-scale wall localizes the active instrument defect to redundant per-statement path, full-digest, and label presentation. The next owner is a uniform compact integrity-bound statement ABI with complete addressability, independent collision/integrity resolution, exact parse/lower/apply parity, frozen-tokenizer measurement, and fresh replacement of every exposed v5 surface. No further model call is authorized before its call-free audit.",
         "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },
