@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_36_DEPENDENCY_CANARY_PROSPECTIVELY_SEALED",
+      "state": "VCM_V3_TASK_36_DEPENDENCY_CANARY_GREEN_INDEPENDENT_AUDIT_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1033,9 +1033,9 @@
       },
       "vcm_task36_dependency_canary": {
         "config":"configs/theseus_vcm_task36_dependency_canary.json","owner":"scripts/theseus_vcm_task36_dependency_canary.py","test":"tests/test_theseus_vcm_task36_dependency_canary.py","report":"reports/theseus_vcm_task36_dependency_canary.json",
-        "owner_sha256":"e830589cb922a3f09dee2b1d7f0cd77b06be3f416c7f27544d789c7c4087665d","config_sha256":"2bbfccd3ef69249dbf1e3ebb1d4cdd29eb3d5878b4355dcdf226a206cc8c4ff2","test_sha256":"1dbb0563585f6141a396c2277c638b2f8cc8f353049b062b4d7bafa2ae9b73e4","report_sha256":"588f86a4148c36803461630d9c62c2914cf39f609f569875ebcfda38051f0d22",
-        "state":"PAUSED_READY_FOR_TASK_36_EXACT_CARGO_DEPENDENCY_CANARY","task_index":36,"schedule_ordinal":3,"lock_package_count":34,"checksum_package_count":32,"checksum_identity_sha256":"d5f9f546d3892877a83ca1b16d235b8e5f1860bcc937dfade65b0897b8c4eacc","network_enabled_dependency_fetches":0,"network_denied_offline_replays":0,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
-        "maximum_inference":"prospective exact task-36 Cargo checksum fetch and deny-network replay seal only; no dependency fetch build repository evaluator task VCM or model result is established","next_boundary":"execute one online cargo fetch --locked and one deny-network offline replay, verify all 32 crate checksums, preserve source identity, and retain only the bounded Cargo home"
+        "owner_sha256":"e830589cb922a3f09dee2b1d7f0cd77b06be3f416c7f27544d789c7c4087665d","config_sha256":"2bbfccd3ef69249dbf1e3ebb1d4cdd29eb3d5878b4355dcdf226a206cc8c4ff2","test_sha256":"1dbb0563585f6141a396c2277c638b2f8cc8f353049b062b4d7bafa2ae9b73e4","report_sha256":"7b52860a66bad99785a6ae398a5cc06ebf835b0ebb2c66d95ff895e5dd6efa15",
+        "state":"GREEN_TASK_36_EXACT_CARGO_DEPENDENCY_CACHE_ACQUIRED_AND_OFFLINE_REPLAY_QUALIFIED","task_index":36,"schedule_ordinal":3,"lock_package_count":34,"checksum_package_count":32,"checksum_identity_sha256":"d5f9f546d3892877a83ca1b16d235b8e5f1860bcc937dfade65b0897b8c4eacc","network_enabled_dependency_fetches":1,"network_denied_offline_replays":1,"matched_checksum_count":32,"retained_store_bytes":57161658,"retained_store_file_count":1302,"retained_store_identity_sha256":"12e7cee4815194eb845c450921a4ed2f71031ca1e19641079b5c4e92c7ec6990","source_file_count":851,"source_bytes":2111948,"source_identity_sha256":"fda71627ce0755beed9c993c9a9b1d16c4c326b8d5609d61b55aa53daba8dd35","online_peak_rss_mib":70.297,"offline_peak_rss_mib":3.906,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"task-36 exact Cargo dependency-fetch and deny-network replay mechanics only; all 32 crate checksums and source immutability hold, but no build repository evaluator task VCM or model result is established","next_boundary":"independently rederive the task-36 lock checksum denominator, retained Cargo home, source, commands, deny-network phase, and storage evidence before any build or repository runner"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

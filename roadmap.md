@@ -876,8 +876,10 @@ no-declaration, 11 incompatible, and zero unresolved. Seal task 36's exact
 Cargo-lock dependency-only canary is prospectively sealed at zero execution.
 Parent and target dependency identities match and all 32 registry checksums are
 bound. Execute only one `cargo fetch --locked` plus one deny-network offline
-replay; compilation, build scripts, tests, runners, evaluators, and models stay
-closed.
+replay. Both are GREEN: all 32 crate archives match the lock, 851 source files
+stay immutable, and the bounded Cargo home retains 1,302 files/57,161,658 bytes.
+Compilation, build scripts, tests, runners, evaluators, and models stayed closed.
+Independently audit the closure before expanding.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
