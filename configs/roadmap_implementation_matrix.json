@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_3_CANARY_V1_INCONCLUSIVE_INSTRUMENT_FSIZE_REPAIR",
+      "state": "VCM_V3_TASK_3_DEPENDENCY_CANARY_V2_PROSPECTIVELY_SEALED",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -908,7 +908,31 @@
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "the v1 canary is INCONCLUSIVE_INSTRUMENT because a canary-owner file-size limit terminated legitimate dependency extraction; it is not task, evaluator, VCM, model, or mechanism evidence",
-        "next_boundary": "preserve v1 RED and prospectively separate the 8 MiB captured-log boundary from a per-file dependency safety boundary no larger than the existing 4 GiB task-retention ceiling"
+        "next_boundary": "execute only the prospectively sealed v2 owner that separates captured-output monitoring from the existing 4 GiB per-task dependency-file and retention boundary"
+      },
+      "vcm_dependency_prefetch_canary_v2": {
+        "config": "configs/theseus_vcm_dependency_prefetch_canary_v2.json",
+        "owner": "scripts/theseus_vcm_dependency_prefetch_canary_v2.py",
+        "test": "tests/test_theseus_vcm_dependency_prefetch_canary_v2.py",
+        "report": "reports/theseus_vcm_dependency_prefetch_canary_v2.json",
+        "owner_sha256": "7a13f397a6859d4ef2d3a02c73930a686a931582dd4f4c6262ec41ac2776e14a",
+        "config_sha256": "fd4058e8bc53d4066293fbdde13834007dac73342fac36d6231601abd641ea1f",
+        "report_sha256": "1891d834cdd23adb355aa1e961a4826123af70e557e349078c1e269642c38c0f",
+        "state": "PAUSED_READY_FOR_V2_TASK_3_DEPENDENCY_CANARY",
+        "predecessor_report_sha256": "39b892cede02b13e0115984d960ffb4c95844fd7a44abb60f6f5a945bd0f2a42",
+        "scientific_task_lock_runtime_commands_and_authority_changed": false,
+        "captured_output_mib": 8,
+        "captured_output_monitored_independently": true,
+        "maximum_single_written_file_mib": 4096,
+        "maximum_retained_bytes": 4294967296,
+        "online_installations": 0,
+        "network_denied_offline_installations": 0,
+        "repository_runner_executions": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "prospective owner-only physical-boundary repair against the unchanged task lock runtime commands and authority; no dependency repository evaluator task or model result",
+        "next_boundary": "execute v2 once and require online acquisition, network-denied offline replay, exact lock-integrity cache closure, unchanged repository bytes, and physical-boundary compliance"
       }
     },
     "claim_selection_policy": {

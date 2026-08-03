@@ -815,6 +815,13 @@ The successor may change only this resource-owner defect: keep captured logs at
 physical ceiling no larger than the already frozen 4 GiB per-task retention
 limit.
 
+The v2 owner-only repair is now prospectively sealed. Task identity, parent and
+target archives, manifest, lock, two integrity artifacts, Node/npm runtime,
+commands, lifecycle suppression, network/offline phases, retention target, and
+all downstream denials are unchanged. Captured stdout and stderr remain limited
+to 8 MiB through direct monitoring; dependency files now inherit the already
+frozen 4 GiB per-task physical ceiling. One v2 execution is authorized.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
