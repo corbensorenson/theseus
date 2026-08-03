@@ -1,0 +1,86 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_v1",
+  "state": "PREREGISTERED_METADATA_ACQUISITION_ONLY",
+  "purpose": "Independently determine whether the repaired Semantic-IR production implementation is mechanically adequate before any fresh claim campaign opens.",
+  "source_commit": "1dbb146c4339d910e8b24bcd4a1933d3bc8c3e18",
+  "production_owner": "scripts/theseus_semantic_ir_production.py",
+  "production_owner_sha256": "6a48cbd5b763343f7edbb65292881f186fd4714ae2ab6d12092d6bc2b4295f20",
+  "production_config": "configs/theseus_semantic_ir_production.json",
+  "production_config_sha256": "c1af8d4dc5399934d170a8125a6273dfe848884b1b7865ca5aa468a8864585c3",
+  "bounded_canary_report": "reports/theseus_semantic_ir_production_non_claim_canary.json",
+  "bounded_canary_report_sha256": "839eb11662043ab02f0a1cb40e5f1aac579363fefdec5118c8933d5996553592",
+  "frozen_model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225"
+  },
+  "temporal_guard": {
+    "model_snapshot_observed_utc": "2026-07-30T12:35:41.833397Z",
+    "require_merged_strictly_after_snapshot": true,
+    "complete_UTC_intervals_only": true
+  },
+  "competence_design": {
+    "test": "one_sided_exact_binomial",
+    "panel_size": 18,
+    "minimum_successes": 13,
+    "null_mechanics_probability": 0.5,
+    "adequate_mechanics_probability": 0.8,
+    "one_sided_alpha": 0.05,
+    "minimum_power": 0.8,
+    "strata": [
+      {"id": "single_expression_replacement", "task_count": 3},
+      {"id": "branch_or_predicate_replacement", "task_count": 3},
+      {"id": "collection_or_data_shape_change", "task_count": 3},
+      {"id": "insert_guard_or_setup_before", "task_count": 3},
+      {"id": "insert_action_or_cleanup_after", "task_count": 3},
+      {"id": "multi_unit_dependency_local_repair", "task_count": 3}
+    ],
+    "minimum_successes_per_stratum": 2,
+    "all_tasks_require_known_negative_parent_and_known_positive_target": true,
+    "all_corruption_and_identity_controls_must_pass": true,
+    "unsafe_or_unauthorized_effect_tolerance": 0,
+    "physical_context_boundary_hit_tolerance": 0
+  },
+  "source_eligibility": {
+    "provider": "GitHub public repositories and merged pull requests",
+    "distinct_repository_per_task": true,
+    "license_allowlist": ["Apache-2.0", "BSD-2-Clause", "BSD-3-Clause", "MIT", "ISC", "MPL-2.0", "PSF-2.0", "CC0-1.0"],
+    "api_NOASSERTION_requires_archive_license_file_and_manual_SPDX_mapping": true,
+    "programming_language": "Python",
+    "candidate_visible_natural_language": "English",
+    "public_benchmark": false,
+    "development_task_eligible_for_training_D1_or_D2": false,
+    "task_selection_uses_candidate_or_control_outcomes": false,
+    "user_task_or_label_dependency": false
+  },
+  "excluded_repositories": [
+    "agronholm/anyio", "agronholm/apscheduler", "aio-libs/aiohttp", "aio-libs/yarl", "celery/celery", "django/asgiref", "django/django", "encode/django-rest-framework", "encode/httpcore", "encode/httpx", "encode/uvicorn", "fastapi/fastapi", "fastapi/typer", "guilatrova/tryceratops", "hynek/structlog", "hypothesisworks/hypothesis", "jd/tenacity", "kludex/starlette", "kludex/uvicorn", "marshmallow-code/marshmallow", "more-itertools/more-itertools", "pallets/click", "pallets/flask", "pallets/itsdangerous", "pallets/jinja", "pallets/markupsafe", "pallets/werkzeug", "prompt-toolkit/python-prompt-toolkit", "psf/black", "psf/requests", "pycqa/isort", "pycqa/pycodestyle", "pycqa/pyflakes", "pydantic/pydantic", "pydantic/pydantic-ai", "pydata/xarray", "pygments/pygments", "pypa/installer", "pypa/packaging", "pypa/pip", "pytest-dev/pluggy", "pytest-dev/pytest", "python-attrs/attrs", "python-hyper/h11", "python-hyper/h2", "python-lsp/python-lsp-server", "python-pillow/pillow", "python-poetry/poetry", "python-poetry/tomlkit", "python-trio/trio", "python/typing_extensions", "scrapy/scrapy", "textualize/rich", "textualize/textual", "tkem/cachetools", "tox-dev/filelock", "tox-dev/platformdirs", "tox-dev/tox", "urllib3/urllib3"
+  ],
+  "generation_completion": {
+    "normal_completion": ["parser_complete", "model_eos"],
+    "project_selected_quality_token_cap": null,
+    "numeric_boundary": "pinned_model_declared_context_minus_exact_prompt_tokens",
+    "physical_boundary_hit_invalidates_observation": true,
+    "host_safety_activation_is_not_mechanism_failure": true
+  },
+  "information_flow": {
+    "candidate_may_see": ["natural_request", "callable_signature", "explicitly_allowed_source_context", "obligation_text_and_dependency_edges"],
+    "candidate_may_not_see": ["repository", "pull_request", "source_task_id", "target_revision", "target_patch", "tests", "hidden_tests", "expected", "answer", "oracle", "stratum", "return_shape", "required_constructs"],
+    "candidate_integrity_recomputed_independently": true,
+    "candidate_emitted_eligibility_flags_trusted": false
+  },
+  "authority": {
+    "public_source_metadata_and_archive_acquisition_authorized": true,
+    "local_model_calls_authorized_after_pool_seal": true,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "terminal_states": ["ADEQUATE_FOR_ONE_FRESH_CLAIM_CAMPAIGN", "INCONCLUSIVE_IMPLEMENTATION", "INCONCLUSIVE_EXPERIMENT", "INVALID_INFORMATION_FLOW", "BLOCKED_INFRASTRUCTURE"],
+  "maximum_inference": "This design can qualify only the exact repaired production implementation as adequate for one fresh matched claim campaign. It cannot establish a subsystem treatment effect, consume D1 or D2, authorize serving or training, or move ASI Stack book support."
+}

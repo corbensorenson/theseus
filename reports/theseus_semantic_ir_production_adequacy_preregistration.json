@@ -1,0 +1,29 @@
+{
+  "auditor_sha256": "74e8fdea0d0c19399821c755fa10ce2a3e89eefa199ea751f09048f7f08e3bc5",
+  "config_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "local_model_calls": 0,
+    "network_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "design_recomputation": {
+    "adequate_mechanics_probability": 0.8,
+    "minimum_successes": 13,
+    "null_mechanics_probability": 0.5,
+    "one_sided_false_positive_probability": 0.048126220703125,
+    "panel_size": 18,
+    "power_at_adequate_probability": 0.867083665757176
+  },
+  "faults": [],
+  "maximum_inference": "A GREEN preregistration audit establishes only that the independent adequacy design is internally consistent and source-bound. A GREEN pool audit additionally establishes source, license, temporal, and information-flow eligibility before generation. Only a terminal results audit can disposition this exact implementation as adequate; none of these states is a subsystem treatment effect, D1, D2, or book support.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_audit_v1",
+  "pool_audit": null,
+  "result_audit": null,
+  "stage": "preregistration_audit",
+  "trigger_state": "GREEN"
+}

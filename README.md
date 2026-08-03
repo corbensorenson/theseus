@@ -100,8 +100,10 @@ The active claim is `cognitive-compilation-and-semantic-ir.core`. The immediate
 production mechanics repair is complete: one canonical role-aware schema now
 passes deterministic conformance, corruption rejection, and an exact-route
 model-produced non-claim canary. The active work is the independent adequacy
-audit. One easy project-authored canary is not task-distribution competence, a
-subsystem effect, or authority to open D1.
+audit. Its prospective design is frozen at 18 distinct post-snapshot
+repositories with a 13/18 overall floor and 2/3 weak-tail floor in each of six
+edit strata. One easy project-authored canary is not task-distribution
+competence, a subsystem effect, or authority to open D1.
 
 ## Repository Map
 

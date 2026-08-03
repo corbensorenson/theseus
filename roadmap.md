@@ -201,6 +201,16 @@ competence or a treatment effect. The independent adequacy owner must now:
 5. derive the competence floor and panel size from the planned observable
    effect rather than copying a ten-task tradition.
 
+The prospective design is now frozen before source materialization or model
+calls: 18 distinct repositories, six edit strata with three tasks each, at
+least 13/18 overall and 2/3 in every stratum, all identity/corruption and
+known-positive controls, and zero unsafe or physical-context-boundary events.
+For the one-sided exact binomial design, the false-positive probability under
+an inadequate 0.50 mechanics rate is 0.048126220703125 and power at an adequate
+0.80 rate is 0.867083665757176. Source acquisition is restricted to licensed
+public changes merged strictly after the frozen model was observed; no model or
+reference call is authorized until the complete panel is sealed.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

@@ -5436,7 +5436,14 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "active",
+        "status": "active_preregistration_green_source_acquisition_open",
+        "source_bindings": {
+          "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
+          "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
+          "auditor_test": "tests/test_theseus_semantic_ir_production_adequacy.py",
+          "preregistration_audit": "reports/theseus_semantic_ir_production_adequacy_preregistration.json"
+        },
+        "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },
       {
