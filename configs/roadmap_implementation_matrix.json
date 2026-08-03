@@ -642,17 +642,20 @@
         "test": "tests/test_theseus_vcm_repository_closure_materialization_v2.py",
         "report": "reports/theseus_vcm_repository_closure_materialization_v2.json",
         "config_sha256": "2fc8b19cd31d863a14585b93b6122dfa438b32f009b39d7f154d7f7dfa5fde8f",
-        "report_sha256": "25f13a02fd4c232e7cf2c510129862c2aaecad5037fed40b6658e2a823c69ec3",
-        "state": "GREEN_PREFLIGHT_V3_EXACT_124_CLOSURE_SET_INCREMENTAL_REUSE_READY",
+        "report_sha256": "0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df",
+        "state": "GREEN_V3_EXACT_124_PARENT_HEAD_CLOSURES_MATERIALIZED",
         "planned_archive_count": 124,
         "planned_new_archive_fetch_count": 14,
         "planned_reused_archive_count": 110,
+        "actual_new_archive_fetch_count": 14,
+        "archive_artifacts": 124,
+        "independent_archive_hash_fault_count": 0,
         "superseded_v1_derivatives_preserved": true,
         "parent_target_or_evaluator_executions": 0,
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "incremental closure transport readiness only; no evaluator task model VCM mechanism or book claim",
-        "next_boundary": "fetch and normalize only fourteen missing exact replacement archives then independently verify the complete current 124-archive set"
+        "next_boundary": "regenerate static manifest lock and independently sourced runner inventory against the v3 closure report"
       }
     },
     "claim_selection_policy": {

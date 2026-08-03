@@ -720,6 +720,10 @@ panel hash, reuses 110 unchanged exact derivatives, plans only 14 new parent/hea
 fetches, preserves all superseded v1 closures, retains the 10 GiB physical
 reserve, and opens no execution or model authority.
 
+The v3 closure transaction is GREEN: 110 unchanged exact derivatives reused,
+14 replacement parent/head archives fetched, 124/124 current artifacts admitted,
+and zero independent hash or physical-boundary faults. No repository code ran.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
