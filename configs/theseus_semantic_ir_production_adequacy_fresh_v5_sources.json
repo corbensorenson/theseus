@@ -1,0 +1,82 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v5_sources_v1",
+  "state": "FIXED_BEFORE_V5_SOURCE_RETRIEVAL",
+  "purpose": "Replace only consumed v4 Task 1 with a smaller post-model-snapshot licensed repair in the same stratum before evaluator qualification or candidate packet creation.",
+  "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41Z",
+  "prior_task_pool": "reports/theseus_semantic_ir_production_adequacy_fresh_v4_task_pool.json",
+  "prior_task_pool_sha256": "23533c38b0b57164bdd2f3e46bc493e128e2136d7fe855781672236fc779f0f6",
+  "consumed_evidence": {
+    "candidate_report": "reports/theseus_semantic_ir_production_adequacy_candidates_v4.json",
+    "candidate_report_sha256": "7d491a0e803040219bc1f040285ba516f486d1c6b1fe8bae9cafe766929027d9",
+    "journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v4_journal.json",
+    "journal_sha256": "263073fe06e8aeab45a29d266af9fbdf1b4232b0b4d8163f5a0fea1949096974",
+    "runtime_receipt": "runtime/p2a/p2a_semantic_ir_adequacy_fresh_v4_01_direct_local_model_1.json",
+    "runtime_receipt_sha256": "25e7ede6ecd92310ee92cdb078d1a7bffee654f29c64095a8da359cb7b1a40ea",
+    "consumed_indices": [1],
+    "rerun_authorized": false
+  },
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v5",
+  "sources": [
+    {
+      "index": 1,
+      "opaque_task_id": "semantic-ir-adequacy-01r3",
+      "repository": "dknowles2/pytboss",
+      "pull_request": 546,
+      "title": "Treat a silent grill as unreachable, and fix the discovery snippet",
+      "merged_utc": "2026-08-03T05:54:19Z",
+      "base_revision": "5b5317b30ac0b258d34e8e8b7b5be95c606b4998",
+      "head_revision": "9a8409edf0a23f705ede0d8af2d2262016602664",
+      "merge_revision": "6e8510edcbb12e2a98471efbd37f5cb5873f22cc",
+      "changed_paths": [
+        "pytboss/http.py",
+        "tests/test_http.py"
+      ],
+      "selected_source_paths": [
+        "pytboss/http.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "license": {
+        "spdx": "Apache-2.0",
+        "path": "LICENSE",
+        "required_notice": "Apache License"
+      },
+      "parent_fragments": [
+        "except ClientError as ex:"
+      ],
+      "target_fragments": [
+        "except (ClientError, TimeoutError) as ex:"
+      ],
+      "natural_request": "Treat both connection-client failures and silent connection timeouts as an unreachable grill, preserving the existing disconnect state and NotConnectedError translation. Modify only pytboss/http.py.",
+      "obligations": [
+        {
+          "id": "O1",
+          "kind": "require",
+          "text": "The HTTP command path translates both client connection errors and silent timeouts into the existing unreachable-grill behavior."
+        },
+        {
+          "id": "O2",
+          "kind": "preserve",
+          "text": "The failure path still marks the connection disconnected and raises NotConnectedError with the original exception chained."
+        },
+        {
+          "id": "O3",
+          "kind": "non_goal",
+          "text": "Modify only the declared allowed effect path; do not alter unrelated behavior or files."
+        }
+      ]
+    }
+  ],
+  "authority": {
+    "public_source_file_retrieval_authorized": true,
+    "candidate_or_model_calls_authorized": false,
+    "hidden_evaluator_execution_authorized": false,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "This binding authorizes only public retrieval and deterministic freezing of one smaller source pair for consumed v4 Task 1. It authorizes no evaluator execution, candidate packet, model call, hidden evaluation, claim, D1, D2, training, serving, or book support."
+}

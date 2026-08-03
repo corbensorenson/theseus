@@ -55,7 +55,7 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
-| Semantic-IR independent adequacy | `V4_INFRASTRUCTURE_INVALID_V5_REPLACEMENT_PENDING` | V4 removed the demonstrated 433-line target-span defect, but exact context fit did not prove host throughput adequacy. Fresh Task 1 call 1 spent the full 600-second host wall ingesting a 124,138-token prompt and generated zero tokens. It hit neither the physical context boundary nor an arbitrary answer cap. The run stopped with zero candidates and zero hidden evaluation, so no model or mechanism negative is authorized. Task 1 is consumed and requires one smaller licensed post-snapshot replacement; Tasks 2-18 remain unexposed and may be rebound unchanged. Luna, teacher, training, claim development, D1, and D2 remain closed |
+| Semantic-IR independent adequacy | `FRESH_V5_DENOMINATOR_SEALED_MODEL_RUN_PENDING` | V4 removed the demonstrated 433-line target-span defect, but its 124,138-token Task 1 prompt generated zero tokens before the host wall. V5 replaces only that consumed surface with an Apache-2.0 post-snapshot repair from a new repository. Its independent async evaluator passes parent/target, benign, mechanism-removal, missing-path, and unauthorized-path controls before packet creation. Exact Task 1 prompt size falls to 9,165 tokens; Tasks 2-18 keep byte-identical prompts, all 18 repositories remain unique, and six strata remain balanced. The v5 audit is GREEN and call-free, prospectively authorizing exactly 36 frozen-local calls with no arbitrary quality token cap. Hidden evaluation remains closed until all candidates seal; Luna, teacher, training, claim development, D1, and D2 remain closed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -74,11 +74,11 @@ Those interruptions exposed a representation defect rather than establishing
 a model or mechanism negative.
 
 The fresh v4 non-claim campaign was sealed correctly, then stopped correctly on
-its first call. Task 1 proved physically addressable but operationally unusable
-on this host: no generation token appeared before the host wall. The next work
-is one bounded v5 replacement transaction for that consumed surface, followed
-by rebinding the seventeen unexposed tasks and a new call-free campaign audit.
-A host watchdog is infrastructure evidence and cannot be scored as incompetence.
+its first call. V5 has now replaced that one consumed surface and rebound the
+seventeen unexposed tasks under a new prospective transaction. The next work is
+the 18-task v5 candidate run, followed by independent hidden scoring only after
+all candidates seal. A host watchdog is infrastructure evidence and cannot be
+scored as incompetence.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -236,10 +236,10 @@ authorize regenerating historical reports or reopening neural work.
    contract, and campaign-derived cost authority with zero reference calls.
 3. **Complete:** repair Semantic-IR identity/coverage/target/unit mechanics on
    bounded non-claim evidence through the exact production path.
-4. **Active:** replace only consumed v4 Task 1 with a smaller licensed
+4. **Complete:** replace only consumed v4 Task 1 with a smaller licensed
    post-snapshot source in the same stratum, qualify its hidden evaluator before
    packet creation, rebind unexposed Tasks 2-18, and seal a fresh v5 campaign.
-5. Run v5 and independently score only after all 18 candidates are sealed. A
+5. **Active:** run v5 and independently score only after all 18 candidates are sealed. A
    watchdog or abnormal completion consumes its surface and pauses for
    replacement without capability inference.
 6. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit

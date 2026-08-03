@@ -1,0 +1,1403 @@
+{
+  "authority": {
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "external_inference_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized_after_green_campaign_binding": 36,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "completion_boundary": {
+    "addressability_measure": "exact frozen tokenizer chat-template token count",
+    "host_watchdog_activation_invalidates_observation": true,
+    "model_declared_context_window_tokens": 262144,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "physical_context_boundary_hit_invalidates_observation": true,
+    "project_selected_quality_token_cap": null,
+    "v4_host_throughput_evidence_retained": true
+  },
+  "consumed_v4_prompt_sha256_reused": false,
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T06:46:21.198332Z",
+  "faults": [],
+  "fresh_evaluator_qualification": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_fresh_v5_evaluator.json",
+    "sha256": "2da5f5da77d39301e089622af5051e3d667086997cabda0a7d2241cd7526e052"
+  },
+  "fresh_source_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_fresh_v5_sources.json",
+    "sha256": "af9b65f34a7f153f5491e5e1ed4550b7a2616d68b5040084e008ed44784085e9"
+  },
+  "information_flow": {
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_receives_exact_serialized_prompt_only": true,
+    "parent_source_only": true,
+    "recursive_forbidden_key_audit_required": true,
+    "target_source_archive_revision_pr_evaluator_or_oracle_candidate_visible": false
+  },
+  "maximum_inference": "A GREEN seal establishes only a fresh 18-repository, six-stratum, parent-only statement-granular denominator after replacing consumed v4 Task 1 and rebinding unexposed Tasks 2-18. It authorizes no model call until a separate v5 campaign binding is green and provides no implementation-adequacy, subsystem-effect, D1, D2, training, serving, or book-support evidence.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v5_task_pool_v1",
+  "prior_unexposed_pool": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_fresh_v4_task_pool.json",
+    "sha256": "23533c38b0b57164bdd2f3e46bc493e128e2136d7fe855781672236fc779f0f6"
+  },
+  "rebound_unexposed_indices": [
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "replacement_indices": [
+    1
+  ],
+  "repository_count": 18,
+  "rows": [
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_01.json",
+      "candidate_packet_sha256": "5c001ccf43c603f16404ea6be38f23dc3b892607302b1be9d93735679c701d57",
+      "conservative_minimum_residual_tokens": 240731,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 252979,
+      "exact_prompt_tokens": 9165,
+      "faults": [],
+      "index": 1,
+      "opaque_task_id": "semantic-ir-adequacy-01r3",
+      "semantic_scope_node_count": 61,
+      "serialized_prompt_sha256": "6e0460c2231bc3a123d80c26d1ca45709a6a807262d2ada53b972b32949ea13d",
+      "serialized_prompt_utf8_bytes": 21413,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 123,
+        "node_count": 61,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 36
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_01.json",
+      "task_manifest_sha256": "8e14b31dd3fb9e47e53989051cc92521b7154584c8d1a39ca45543865e4f8bdf",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_02.json",
+      "candidate_packet_sha256": "5fe8987c111a2b3ae92b1f5a079e94dc03599bbad8e4c8e715090dcc087a1918",
+      "conservative_minimum_residual_tokens": 228783,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 245724,
+      "exact_prompt_tokens": 16420,
+      "faults": [],
+      "index": 2,
+      "opaque_task_id": "semantic-ir-adequacy-02r2",
+      "semantic_scope_node_count": 123,
+      "serialized_prompt_sha256": "400c9ab8650b768c4eaa16cc1a14f2e70fdde48ef68a0e1e67a9d607d50e0156",
+      "serialized_prompt_utf8_bytes": 33361,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 119,
+        "node_count": 123,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 71
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_02.json",
+      "task_manifest_sha256": "6f2125c4fab7287b781344506e5cedd3ac9484336f9a616e47c00ccb2c7a7b8e",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_03.json",
+      "candidate_packet_sha256": "f205757f40bff42d596143641ee71aca5947918a728ab8b3b861705a45eddd75",
+      "conservative_minimum_residual_tokens": 255176,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 259353,
+      "exact_prompt_tokens": 2791,
+      "faults": [],
+      "index": 3,
+      "opaque_task_id": "semantic-ir-adequacy-03r2",
+      "semantic_scope_node_count": 14,
+      "serialized_prompt_sha256": "a44abeccb61ca7fdaca44cacf9f6d332067bd48025d1897a58c14b3b0628054e",
+      "serialized_prompt_utf8_bytes": 6968,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 33,
+        "node_count": 14,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 8
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_03.json",
+      "task_manifest_sha256": "9035b498865f2d2d06fa2cb72e0ceac95834b209c836a8beeacd6fe097434a8e",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_04.json",
+      "candidate_packet_sha256": "46c00580c55236a887c5a3d8ab0379d2e12dfdef184db700f73fdbcbf71d018d",
+      "conservative_minimum_residual_tokens": 114104,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 187518,
+      "exact_prompt_tokens": 74626,
+      "faults": [],
+      "index": 4,
+      "opaque_task_id": "semantic-ir-adequacy-04r2",
+      "semantic_scope_node_count": 577,
+      "serialized_prompt_sha256": "e7a050a3811d58e815fb2355d001d3745833a7370de5c6b01d0f3291984674fe",
+      "serialized_prompt_utf8_bytes": 148040,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 249,
+        "node_count": 577,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 313
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_04.json",
+      "task_manifest_sha256": "1cb963321ff5c1fd0521114b531b687f11b58fc018d80d515a003aa660d88230",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_05.json",
+      "candidate_packet_sha256": "76d8e1efaf13a2a2f6dad1185d241f80e53735dae525a3702e2c6d85ac6f5e6c",
+      "conservative_minimum_residual_tokens": 80965,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 185591,
+      "exact_prompt_tokens": 76553,
+      "faults": [],
+      "index": 5,
+      "opaque_task_id": "semantic-ir-adequacy-05",
+      "semantic_scope_node_count": 510,
+      "serialized_prompt_sha256": "7be6a624c65c60ef7e3721c27ebf49b31e95f5f118b2b78094995d876279ecbd",
+      "serialized_prompt_utf8_bytes": 181179,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 145,
+        "node_count": 510,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 285
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_05.json",
+      "task_manifest_sha256": "a9007b4cf6f60447d4a38a603bb96b85ea57e66a96b6c4c9d130a0f03537ca30",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_06.json",
+      "candidate_packet_sha256": "5438f81364db1470cfd3e72d149ba1df62dac51e91ef8d4224b3750761e27975",
+      "conservative_minimum_residual_tokens": 114621,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 183719,
+      "exact_prompt_tokens": 78425,
+      "faults": [],
+      "index": 6,
+      "opaque_task_id": "semantic-ir-adequacy-06",
+      "semantic_scope_node_count": 607,
+      "serialized_prompt_sha256": "0ce52d3c81704130e3ad217bb6c55161cb85fcf43a1e4b8f5951c773d4b4f359",
+      "serialized_prompt_utf8_bytes": 147523,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 68,
+        "node_count": 607,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 293
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_06.json",
+      "task_manifest_sha256": "778850d2acc649a93eab331279dd87c8d560de0a69a4f80a96501b20926a7dc3",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_07.json",
+      "candidate_packet_sha256": "24c6d04c04c89e9974bd6a13c6d201e8ff719863fb7f591b108e3f91d58c523d",
+      "conservative_minimum_residual_tokens": 195285,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 235655,
+      "exact_prompt_tokens": 26489,
+      "faults": [],
+      "index": 7,
+      "opaque_task_id": "semantic-ir-adequacy-07",
+      "semantic_scope_node_count": 162,
+      "serialized_prompt_sha256": "83cc67256d82bab9052b45a7c7a0c77bbe48397fa6e0a24ea7f1c5370d308536",
+      "serialized_prompt_utf8_bytes": 66859,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 686,
+        "node_count": 162,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 97
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_07.json",
+      "task_manifest_sha256": "a80696123d9109cced6111abc5274e9f7ab8e25499e2a98f88eb492d6b0677cd",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_08.json",
+      "candidate_packet_sha256": "a49e18919ca3da5a8d6905f89b813fa776cfa64d76f4f74ce884dd3260654563",
+      "conservative_minimum_residual_tokens": 60896,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 169686,
+      "exact_prompt_tokens": 92458,
+      "faults": [],
+      "index": 8,
+      "opaque_task_id": "semantic-ir-adequacy-08",
+      "semantic_scope_node_count": 672,
+      "serialized_prompt_sha256": "39023b2c796118db3a57563fd88c271f3a96414c3af65c43656f938a601b0467",
+      "serialized_prompt_utf8_bytes": 201248,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 1414,
+        "node_count": 672,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 436
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_08.json",
+      "task_manifest_sha256": "8c8148bcd30b5fa44762574cdc20787e5dac3efe9768b69e7cbc8ed920b7deea",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_09.json",
+      "candidate_packet_sha256": "2b682fc42d7a6ea2db52d82076b8b952d4b6133035785901878917d998c068d4",
+      "conservative_minimum_residual_tokens": 172962,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 218362,
+      "exact_prompt_tokens": 43782,
+      "faults": [],
+      "index": 9,
+      "opaque_task_id": "semantic-ir-adequacy-09",
+      "semantic_scope_node_count": 320,
+      "serialized_prompt_sha256": "897b14babf314fdbe81b8c59cbc1a7d0cecce61eb9da3d7a04244de30e4448f7",
+      "serialized_prompt_utf8_bytes": 89182,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 60,
+        "node_count": 320,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 197
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_09.json",
+      "task_manifest_sha256": "1ce6a2412aef9882cb71759563275d540c28eff3d11850ed9b36d1601f930d80",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_10.json",
+      "candidate_packet_sha256": "a92baf892b5717472995420601676b252d0be875775b50119fcb47589b22cef7",
+      "conservative_minimum_residual_tokens": 210943,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 238695,
+      "exact_prompt_tokens": 23449,
+      "faults": [],
+      "index": 10,
+      "opaque_task_id": "semantic-ir-adequacy-10",
+      "semantic_scope_node_count": 175,
+      "serialized_prompt_sha256": "d2c3ad0b0c65d6e181be2fbea16907f5d0da90c4ca6b4fe38907a0e1f78b5cb5",
+      "serialized_prompt_utf8_bytes": 51201,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 52,
+        "node_count": 175,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 106
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_10.json",
+      "task_manifest_sha256": "484fd12794746cfb6648326c475904538c8126ff44a5ade773ae671f687d777b",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_11.json",
+      "candidate_packet_sha256": "7361cf0335dfaa87811947741f4ea133829c4934a9d8d54c2b2c38406bf60bde",
+      "conservative_minimum_residual_tokens": 249075,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 256398,
+      "exact_prompt_tokens": 5746,
+      "faults": [],
+      "index": 11,
+      "opaque_task_id": "semantic-ir-adequacy-11",
+      "semantic_scope_node_count": 40,
+      "serialized_prompt_sha256": "db9983ac8b365a9b821b29340631909cc07d284ee27a7af2b0d5816e73f39857",
+      "serialized_prompt_utf8_bytes": 13069,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 49,
+        "node_count": 40,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 28
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_11.json",
+      "task_manifest_sha256": "d62a6ca8a5cd1c3be01e5be9f6d3b06480afff0d85b3e6b8947db6afb827b644",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_12.json",
+      "candidate_packet_sha256": "7daf75b482798e3dc5b8f3698b9f78d17e70a0da845e9e2c5af74b31a4b57d2d",
+      "conservative_minimum_residual_tokens": 183361,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 224802,
+      "exact_prompt_tokens": 37342,
+      "faults": [],
+      "index": 12,
+      "opaque_task_id": "semantic-ir-adequacy-12",
+      "semantic_scope_node_count": 277,
+      "serialized_prompt_sha256": "e836ff855ab6d9d411e1c29c0fd5a4d4a0603a3a054b6755818153ce2d894ba5",
+      "serialized_prompt_utf8_bytes": 78783,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 117,
+        "node_count": 277,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 186
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_12.json",
+      "task_manifest_sha256": "85e714dfba13ed552d3c852176b0cd10680eb3ae619e7cb3c518a9cdc7d83107",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_13.json",
+      "candidate_packet_sha256": "8321c9a1aa026d5fe2e404da9383669176aa529dadd9e46d2e25f41d94a77f41",
+      "conservative_minimum_residual_tokens": 242700,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 254278,
+      "exact_prompt_tokens": 7866,
+      "faults": [],
+      "index": 13,
+      "opaque_task_id": "semantic-ir-adequacy-13",
+      "semantic_scope_node_count": 51,
+      "serialized_prompt_sha256": "ea657e79ded748af631e0aa32e9bf6ba499f178c720e0d38774315f39b31368f",
+      "serialized_prompt_utf8_bytes": 19444,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 24,
+        "node_count": 51,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 25
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_13.json",
+      "task_manifest_sha256": "a9b947eb0e7207b6f16e19906d74cc1465604644cf9f936465130e849f080441",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_14.json",
+      "candidate_packet_sha256": "b0c2c29522aa2cb7d7abea4dca1c26cc9818e8f1e49e4501503ffa4aa320b4e7",
+      "conservative_minimum_residual_tokens": 194220,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 235517,
+      "exact_prompt_tokens": 26627,
+      "faults": [],
+      "index": 14,
+      "opaque_task_id": "semantic-ir-adequacy-14",
+      "semantic_scope_node_count": 181,
+      "serialized_prompt_sha256": "dd025652d3b72293ab3cbe80876a30a91a7307f3e27e64d552c64a664e821f5a",
+      "serialized_prompt_utf8_bytes": 67924,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 375,
+        "node_count": 181,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 96
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_14.json",
+      "task_manifest_sha256": "648ec646143fa00e0879ad4f8f8359bcd6f5a725275d2def9360a708aff35291",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_15.json",
+      "candidate_packet_sha256": "38b27bf7a50e127a95f116ed1fa2ab112a9e72d8d7bb4a2a1be5928f05ed28a1",
+      "conservative_minimum_residual_tokens": 159685,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 215135,
+      "exact_prompt_tokens": 47009,
+      "faults": [],
+      "index": 15,
+      "opaque_task_id": "semantic-ir-adequacy-15",
+      "semantic_scope_node_count": 353,
+      "serialized_prompt_sha256": "cef08e0ee38b8958837ea00fe8527e4e0d3522c2491eee984ddae7013074c6d3",
+      "serialized_prompt_utf8_bytes": 102459,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 154,
+        "node_count": 353,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 187
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_15.json",
+      "task_manifest_sha256": "c363b18df525fcc29cd770d397666880f0f32359c06f7603519eb6e5b4d93196",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_16.json",
+      "candidate_packet_sha256": "6bee519989fdc830ee32d4b07c117b1bd32707f9bc09330214276bd514d867b6",
+      "conservative_minimum_residual_tokens": 243923,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 253739,
+      "exact_prompt_tokens": 8405,
+      "faults": [],
+      "index": 16,
+      "opaque_task_id": "semantic-ir-adequacy-16",
+      "semantic_scope_node_count": 61,
+      "serialized_prompt_sha256": "4d1afd5097b50cafb4040ae985fcc7d93737aa4fe3f2574aa6b575e71c5cebe0",
+      "serialized_prompt_utf8_bytes": 18221,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 41,
+        "node_count": 61,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 43
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_16.json",
+      "task_manifest_sha256": "96b57ee0251b4d532dd8ef65db818bbc5fa109ceb851e78020f1bb61f5d057c3",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_17.json",
+      "candidate_packet_sha256": "b16f11e3a1a6e532a0bd9cea81128819e9eb1ae5ce21d116a141706f86931e29",
+      "conservative_minimum_residual_tokens": 206595,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 235783,
+      "exact_prompt_tokens": 26361,
+      "faults": [],
+      "index": 17,
+      "opaque_task_id": "semantic-ir-adequacy-17",
+      "semantic_scope_node_count": 197,
+      "serialized_prompt_sha256": "0b49d31f240fb2d4d5199d98213904687f95fc481fcbeee81db0151684a3a67d",
+      "serialized_prompt_utf8_bytes": 55549,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 58,
+        "node_count": 197,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 128
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_17.json",
+      "task_manifest_sha256": "8b4b1b33ddffcecf56b5d63de332eb5b813e5a98d07195719570d456a349dbdc",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    },
+    {
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_candidate_packet_18.json",
+      "candidate_packet_sha256": "6ac461e79c4345c796ad383e396a9490f45eb4d35aab72dae2c4584e18dd7eb5",
+      "conservative_minimum_residual_tokens": 61921,
+      "evaluator_identity_or_output_visible": false,
+      "exact_context_residual_tokens": 176406,
+      "exact_prompt_tokens": 85738,
+      "faults": [],
+      "index": 18,
+      "opaque_task_id": "semantic-ir-adequacy-18",
+      "semantic_scope_node_count": 570,
+      "serialized_prompt_sha256": "e957737bd144a10428c4d5f1c3e1f6a6762de81070191ea37ee9290c1567247c",
+      "serialized_prompt_utf8_bytes": 200223,
+      "statement_scope_metrics": {
+        "maximum_node_line_span": 289,
+        "node_count": 570,
+        "project_selected_node_cap_applied": false,
+        "single_line_node_count": 308
+      },
+      "target_archive_or_source_visible": false,
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_task_18.json",
+      "task_manifest_sha256": "145a84e42746c876701078005ac58e7a850563b1afe7047b80041b3ff44d4703",
+      "trigger_state": "GREEN",
+      "utf8_byte_upper_bound_exceeds_context": false
+    }
+  ],
+  "sealed_packet_count": 18,
+  "source_denominator": [
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 11357,
+              "path": "LICENSE",
+              "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+            },
+            {
+              "bytes": 6933,
+              "path": "pytboss/http.py",
+              "sha256": "e7dd3756a3aa4fbda9151610eafd08cbb34e35a0771bebf0bd3bccdbb5b67396"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v5/semantic-adequacy-01r2-parent.tar.gz",
+          "root": "semantic-adequacy-01r2",
+          "sha256": "8136bce53504d50cb1cf0e2c490c70801c8b676e5662782f5d68ac09fd84e072"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 11357,
+              "path": "LICENSE",
+              "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+            },
+            {
+              "bytes": 7335,
+              "path": "pytboss/http.py",
+              "sha256": "874ff8be46594d42bd42d2ac4f654ee834a7c92bc3f20d3bf91cfc8121e43db3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v5/semantic-adequacy-01r2-target.tar.gz",
+          "root": "semantic-adequacy-01r2",
+          "sha256": "1d482fe76d391feeb37aea96f5cc900344cedb654580c401f40cecdfd19453ba"
+        }
+      },
+      "index": 1,
+      "parent_revision": "5b5317b30ac0b258d34e8e8b7b5be95c606b4998",
+      "repository": "dknowles2/pytboss",
+      "selected_source_paths": [
+        "pytboss/http.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "9a8409edf0a23f705ede0d8af2d2262016602664"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1552,
+              "path": "LICENSE",
+              "sha256": "b846415d1b514e9c1dff14a22deb906d794bc546ca6129f950a18cd091e2a669"
+            },
+            {
+              "bytes": 7289,
+              "path": "django/contrib/gis/gdal/field.py",
+              "sha256": "16dda7c558e69160798c8ac6a6dddec907d2ef6781e5b9daca95439aed314851"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-02r2-parent.tar.gz",
+          "root": "semantic-adequacy-02r2",
+          "sha256": "9ab2624238b99b7d61cd9635226f6f005e3dba4f2951fb8c389578c560371d0d"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1552,
+              "path": "LICENSE",
+              "sha256": "b846415d1b514e9c1dff14a22deb906d794bc546ca6129f950a18cd091e2a669"
+            },
+            {
+              "bytes": 7300,
+              "path": "django/contrib/gis/gdal/field.py",
+              "sha256": "54815d18963161f7e71e634074750467ad865cc7426a5e28bc9a849e1d42df0d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-02r2-target.tar.gz",
+          "root": "semantic-adequacy-02r2",
+          "sha256": "4c8e86e51fe0086206d1db00ee26e343ae1a91c83f6a9e0849e896b5f0665c3c"
+        }
+      },
+      "index": 2,
+      "parent_revision": "60121939f6b225c7a719dd561e372e1d8e5e2c4a",
+      "repository": "django/django",
+      "selected_source_paths": [
+        "django/contrib/gis/gdal/field.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "f616f0d17c544789034607c64ccb5dabc0fc06a7"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1763,
+              "path": "LICENSE.txt",
+              "sha256": "6025f323ea29dc2f0ee0abd9523bf910186f55b0e148e6ebf646c55566278e2e"
+            },
+            {
+              "bytes": 1795,
+              "path": "networkx/algorithms/operators/unary.py",
+              "sha256": "128db279383e179b8e0c6592591fe29b955a29943decbc804c8b8a65c005411f"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-03r2-parent.tar.gz",
+          "root": "semantic-adequacy-03r2",
+          "sha256": "ec393269db86d482be9b3cf22d2ef70dbde85e5380059bb523a60d5a00cd9c42"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1763,
+              "path": "LICENSE.txt",
+              "sha256": "6025f323ea29dc2f0ee0abd9523bf910186f55b0e148e6ebf646c55566278e2e"
+            },
+            {
+              "bytes": 1820,
+              "path": "networkx/algorithms/operators/unary.py",
+              "sha256": "eb472d58d52b58f6c9fe6a1a0beceb23eea73fabe30f06baac6aba696de58f8d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-03r2-target.tar.gz",
+          "root": "semantic-adequacy-03r2",
+          "sha256": "e8f52396a38a014839d33c7205a91bc7decee7b33a18b9a7f7ecc4a29fe3911d"
+        }
+      },
+      "index": 3,
+      "parent_revision": "e1193f66d97d45f814616562c052af36526d97af",
+      "repository": "networkx/networkx",
+      "selected_source_paths": [
+        "networkx/algorithms/operators/unary.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "36a8c7255416c82fcc3a0e5f69be2d50bdf2d903"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00"
+            },
+            {
+              "bytes": 33812,
+              "path": "src/black/nodes.py",
+              "sha256": "49a9fc02ac8bc08baf398c54b0a8e76c24813f3c064910ba3214e5f76b27ef74"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-04r2-parent.tar.gz",
+          "root": "semantic-adequacy-04r2",
+          "sha256": "170fa19ffd08dc43ce4dee7dde31e10b5e6a23e16bb71f0da8e174b9768c5c8d"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "9c0428f0c3b4779850cf5bd96e11aaa8afc72d4a86d4a36223d7aba2e58d6e00"
+            },
+            {
+              "bytes": 33943,
+              "path": "src/black/nodes.py",
+              "sha256": "27f7c45ea5de8ef3a32856b72d569683173c424912d5319470300961a1c31bee"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v4/semantic-adequacy-04r2-target.tar.gz",
+          "root": "semantic-adequacy-04r2",
+          "sha256": "860fd5ce7b5962d90cc7b83003ac38595215f2d286ef6c46c4fbda87718209f4"
+        }
+      },
+      "index": 4,
+      "parent_revision": "c7801d9e24fe28b9c85742722cdcb97e1582a94d",
+      "repository": "psf/black",
+      "selected_source_paths": [
+        "src/black/nodes.py"
+      ],
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "df7827587593988e3f51ee71a6d9926de6730a84"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 10770,
+              "path": "LICENSE",
+              "sha256": "d63ab42292ab0bc25c6ac83923020530a9ba4fa03fb7e78308586575bc79cf66"
+            },
+            {
+              "bytes": 59190,
+              "path": "backend/app/modules/catalog/maps/style_json.py",
+              "sha256": "6d43c1448a12338259d9f0ff7e88e1c2ee16ff1f9803690193feff9c3cff3606"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-05-parent.tar.gz",
+          "root": "semantic-adequacy-05",
+          "sha256": "50610c96ad9261455d247bf0a856e39f4dceacf6820efb95e8aa1b9eeeb94525"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 10770,
+              "path": "LICENSE",
+              "sha256": "d63ab42292ab0bc25c6ac83923020530a9ba4fa03fb7e78308586575bc79cf66"
+            },
+            {
+              "bytes": 62251,
+              "path": "backend/app/modules/catalog/maps/style_json.py",
+              "sha256": "6ac85d8e1a5e3d6b9b196ce485a458aa9e6d5a37a771073a9659dbd93f820caa"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-05-target.tar.gz",
+          "root": "semantic-adequacy-05",
+          "sha256": "a5ad32294c2295f14da04a82e58f051a78de6c2e4bcca8a53f42c107ce1e0079"
+        }
+      },
+      "index": 5,
+      "parent_revision": "142c65c5f3eb7191485bab2522fdd97357b3475e",
+      "repository": "geolens-io/geolens",
+      "selected_source_paths": [
+        "backend/app/modules/catalog/maps/style_json.py"
+      ],
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "f8a754a93383a741b5f2444151e71a160acfae41"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1543,
+              "path": "LICENSE.txt",
+              "sha256": "1be1df33863f97a7bc1c4d67980bd6c69c9a6fef0a5ee76e6ad6cb91e56e8491"
+            },
+            {
+              "bytes": 26935,
+              "path": "numpy/f2py/auxfuncs.py",
+              "sha256": "32eec0653dc31d69707d3f409a4485a47f81399d13bb7202cef480e85c16f3f0"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-06-parent.tar.gz",
+          "root": "semantic-adequacy-06",
+          "sha256": "d459f9bcf1aee94a2c3550b81e0a89deb07b199cfe86f70cddda610b9db74131"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1543,
+              "path": "LICENSE.txt",
+              "sha256": "1be1df33863f97a7bc1c4d67980bd6c69c9a6fef0a5ee76e6ad6cb91e56e8491"
+            },
+            {
+              "bytes": 27807,
+              "path": "numpy/f2py/auxfuncs.py",
+              "sha256": "5e42511f6cbcfb526af24f94d2d7a9b4644b957f1f74c859064351f5c56a6b1b"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-06-target.tar.gz",
+          "root": "semantic-adequacy-06",
+          "sha256": "4d76f67dff464f266798c441f06c6053bf432e8992419ce5f8566ed7b1464089"
+        }
+      },
+      "index": 6,
+      "parent_revision": "941bc425f97347315349d76a0815fb8559340332",
+      "repository": "numpy/numpy",
+      "selected_source_paths": [
+        "numpy/f2py/auxfuncs.py"
+      ],
+      "stratum": "branch_or_predicate_replacement",
+      "target_revision": "21542c6a31b835b690d2fc32b640f91356895220"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1063,
+              "path": "LICENSE",
+              "sha256": "620ff3c20bc64cd2b59513ebaf49ca8d65be7b0115eb4bfee41ba690e1120067"
+            },
+            {
+              "bytes": 29332,
+              "path": "pyranges1/range_frame/range_frame.py",
+              "sha256": "44c665fb18e5170836bd143f88cf7c95b22061e37361cf4ca7e1edf5322e90ce"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-07-parent.tar.gz",
+          "root": "semantic-adequacy-07",
+          "sha256": "50a9ac19abe033b07cde08c86969131b95cf9a1321ecf81d49e00d09ab10e7d7"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1063,
+              "path": "LICENSE",
+              "sha256": "620ff3c20bc64cd2b59513ebaf49ca8d65be7b0115eb4bfee41ba690e1120067"
+            },
+            {
+              "bytes": 33021,
+              "path": "pyranges1/range_frame/range_frame.py",
+              "sha256": "abbb1ecfe7f0cd502f636ff56082a03b0abb8b4f130efb888f12afa8abf03489"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-07-target.tar.gz",
+          "root": "semantic-adequacy-07",
+          "sha256": "0296b98599617905e9b1858a015c95541baeea08ccb999980770220cf0689e00"
+        }
+      },
+      "index": 7,
+      "parent_revision": "1fc429b864f0630c0606bea9399ad4f94d734dd9",
+      "repository": "pyranges/pyranges1",
+      "selected_source_paths": [
+        "pyranges1/range_frame/range_frame.py"
+      ],
+      "stratum": "collection_or_data_shape_change",
+      "target_revision": "6727f380878de816f54d7e9e3cb8c80d709974ed"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1076,
+              "path": "LICENSE",
+              "sha256": "a4017f531ab8da04814a30dc9f3685430bc27fea1065ce36b7447cbb6ee9f679"
+            },
+            {
+              "bytes": 52855,
+              "path": "src/qplot/tools/worker.py",
+              "sha256": "1a7ace8d5d05b1a4521acfeb6d8c48f32869b75a3a9303b350f488673bbb3b99"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-08-parent.tar.gz",
+          "root": "semantic-adequacy-08",
+          "sha256": "86eb9ff599bd45888ed1b3b9ffc75fec74f9d6eee588e8ab92c0744586880bff"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1076,
+              "path": "LICENSE",
+              "sha256": "a4017f531ab8da04814a30dc9f3685430bc27fea1065ce36b7447cbb6ee9f679"
+            },
+            {
+              "bytes": 53430,
+              "path": "src/qplot/tools/worker.py",
+              "sha256": "418deae37529e7589043d3d7cb5ac6eb11d7fd0524448c67119cc16b9f4e9d2b"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-08-target.tar.gz",
+          "root": "semantic-adequacy-08",
+          "sha256": "7977210add6f175b45a50001817a1cb5f9d3b8e49b7c6411519bafcdd0ce7a8a"
+        }
+      },
+      "index": 8,
+      "parent_revision": "1d1bb2b5c53d2821115164c59ce50c3d4bf87d90",
+      "repository": "lairdgrouplancaster/QCoDeS-Plotter",
+      "selected_source_paths": [
+        "src/qplot/tools/worker.py"
+      ],
+      "stratum": "collection_or_data_shape_change",
+      "target_revision": "5c3d2e9d2cd9ef254e824c310f2d4bda892c01d3"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1067,
+              "path": "LICENSE",
+              "sha256": "47fa74c34a76f7adf44139d41ed9145a5536efda8fa45eefce5059f48c8a11f1"
+            },
+            {
+              "bytes": 22887,
+              "path": "linafish/ingest.py",
+              "sha256": "4df8ef2e2639cf3c55dc637feb11b8eda349e95e0a68b54850adeda43f93d087"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-09-parent.tar.gz",
+          "root": "semantic-adequacy-09",
+          "sha256": "232f75282afcf72414dd8ae0b304e9805e0d68b77f65ad652cf95175c9258702"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1067,
+              "path": "LICENSE",
+              "sha256": "47fa74c34a76f7adf44139d41ed9145a5536efda8fa45eefce5059f48c8a11f1"
+            },
+            {
+              "bytes": 25439,
+              "path": "linafish/ingest.py",
+              "sha256": "7bcb000d46c570162aaab95b994691ebf4b2a948c3cab979f4e2222d49b34ebc"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-09-target.tar.gz",
+          "root": "semantic-adequacy-09",
+          "sha256": "023aee4ff7064b4e9a43b8192611961dd24b4023ae8852e34a3cf2b9cd912cf4"
+        }
+      },
+      "index": 9,
+      "parent_revision": "d52d8e4a5e33d21cabc36836dd80835c1e383541",
+      "repository": "sdill1973a/linafish",
+      "selected_source_paths": [
+        "linafish/ingest.py"
+      ],
+      "stratum": "collection_or_data_shape_change",
+      "target_revision": "4f628f8490bd2d2b6512afae9a77e6bf5c582cd1"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 11550,
+              "path": "LICENSE",
+              "sha256": "40e0b458a68b557560def38b106a1a0da1aac57685536dcb882f1c78c647e4d3"
+            },
+            {
+              "bytes": 12367,
+              "path": "studio/backend/utils/utils.py",
+              "sha256": "0c7a2c3013afab3217d4aafbf84bbd96b543fbf21dc42d619f461cd36b5e64a5"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-10-parent.tar.gz",
+          "root": "semantic-adequacy-10",
+          "sha256": "93317f5538d115a5625df7c1f3dad086ac56e70e0bbac2b8d33cf65403d31ce6"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 11550,
+              "path": "LICENSE",
+              "sha256": "40e0b458a68b557560def38b106a1a0da1aac57685536dcb882f1c78c647e4d3"
+            },
+            {
+              "bytes": 27968,
+              "path": "studio/backend/utils/utils.py",
+              "sha256": "e7203021aff4cd0c6ee22e435ce13d0c7129961cddfd20b583d18d2ab5f064cd"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-10-target.tar.gz",
+          "root": "semantic-adequacy-10",
+          "sha256": "e259e42f8b68e78ad1d26db32a125fa6839252654d206f6c8b3b2a25e888d89a"
+        }
+      },
+      "index": 10,
+      "parent_revision": "c670340ee59bd0b120a75f3e698da91f448deb99",
+      "repository": "unslothai/unsloth",
+      "selected_source_paths": [
+        "studio/backend/utils/utils.py"
+      ],
+      "stratum": "insert_guard_or_setup_before",
+      "target_revision": "a77a9f8e5c2ebac6a14178fde12c7085c862b5b2"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1075,
+              "path": "LICENSE",
+              "sha256": "7abc1ff97b2ebeb16bd1b8b5ffc6936c293bc2eef3bb17095aa4e89dd6c2be10"
+            },
+            {
+              "bytes": 2265,
+              "path": "src/mdfetch/fallback.py",
+              "sha256": "388d08746e765a9e5a37ace1429a130331d115af5d71900e2962aeb74201c0f0"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-11-parent.tar.gz",
+          "root": "semantic-adequacy-11",
+          "sha256": "acf0086ed7aa75cb56612a65a973cd5a5ebba9329b54a7d036e047d6ae5f47b7"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1075,
+              "path": "LICENSE",
+              "sha256": "7abc1ff97b2ebeb16bd1b8b5ffc6936c293bc2eef3bb17095aa4e89dd6c2be10"
+            },
+            {
+              "bytes": 2483,
+              "path": "src/mdfetch/fallback.py",
+              "sha256": "5e49e825e23bae65609181ce7147d65dcac7414188f00a913192c2da8912d9e3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-11-target.tar.gz",
+          "root": "semantic-adequacy-11",
+          "sha256": "9f4818da3103a069bdedd85c118603a83dc224f6db248288010e0d713736d2dc"
+        }
+      },
+      "index": 11,
+      "parent_revision": "9396bd1d14b37552b4de3bae528e3e9f45fd0302",
+      "repository": "stn1slv/md-fetch",
+      "selected_source_paths": [
+        "src/mdfetch/fallback.py"
+      ],
+      "stratum": "insert_guard_or_setup_before",
+      "target_revision": "e8a97267ab169fba49f1d08fe56aca2e686169ca"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE",
+              "sha256": "cc9ff5bb9850669703f447938fe1cdf3c155ef2ca98fef49ea29007cc5dd873b"
+            },
+            {
+              "bytes": 20329,
+              "path": "ed_push.py",
+              "sha256": "2f3defb867abd6604980cff9991e6f6271e2e7aafca65d182dde325365c321b2"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-12-parent.tar.gz",
+          "root": "semantic-adequacy-12",
+          "sha256": "54ba66172f21de8111f9e7e8928dafcea060f46b4d37fb154e0a06f4558fcf99"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE",
+              "sha256": "cc9ff5bb9850669703f447938fe1cdf3c155ef2ca98fef49ea29007cc5dd873b"
+            },
+            {
+              "bytes": 20636,
+              "path": "ed_push.py",
+              "sha256": "a78199c04f5b94ddf6cb2584783c2c1b4b4947cbe1912cadc9194da979cfe5a2"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-12-target.tar.gz",
+          "root": "semantic-adequacy-12",
+          "sha256": "72518ea60269c7d2b0948dcb39918a113b5cead3cb4afd7491c086c6d232c9ab"
+        }
+      },
+      "index": 12,
+      "parent_revision": "9700c0f184cce8703fc6f98ee90d53abaf4f17b8",
+      "repository": "purduecsbridge/ed-push",
+      "selected_source_paths": [
+        "ed_push.py"
+      ],
+      "stratum": "insert_guard_or_setup_before",
+      "target_revision": "e2b05b61ff358e78205c4b69f992e8b0f5f5c0be"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE",
+              "sha256": "7c77a44a8acd9b41fdc209864a8016b3d430b5d0e09309818d5b7444336df744"
+            },
+            {
+              "bytes": 4332,
+              "path": "sdk/servicebus/azure-servicebus/azure/servicebus/_common/mgmt_handlers.py",
+              "sha256": "a7a651ab50cbc13d9e6a47d43e7c7d891c4947aea1b6492f44b42e306cce4830"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-13-parent.tar.gz",
+          "root": "semantic-adequacy-13",
+          "sha256": "a82af3cb0cd5c1d333026f4fd003717374b20d4f5a2533cb0643ce8f3a4d3568"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE",
+              "sha256": "7c77a44a8acd9b41fdc209864a8016b3d430b5d0e09309818d5b7444336df744"
+            },
+            {
+              "bytes": 4934,
+              "path": "sdk/servicebus/azure-servicebus/azure/servicebus/_common/mgmt_handlers.py",
+              "sha256": "511156d876c6eff868d64e20c97e7dcce41c5d7cbe42f0150d6fd891db775941"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-13-target.tar.gz",
+          "root": "semantic-adequacy-13",
+          "sha256": "efbd0e34d9b821a32cd8f1964090bc6aaeb1cb731ea139bca57c5604b57d5b16"
+        }
+      },
+      "index": 13,
+      "parent_revision": "5d74b4b92f93d0ffdc500038f2836d7752d37c13",
+      "repository": "Azure/azure-sdk-for-python",
+      "selected_source_paths": [
+        "sdk/servicebus/azure-servicebus/azure/servicebus/_common/mgmt_handlers.py"
+      ],
+      "stratum": "insert_action_or_cleanup_after",
+      "target_revision": "3b8f21efe30792eee28667f0e86e8b4d19bf8f8d"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 10173,
+              "path": "LICENSE",
+              "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+            },
+            {
+              "bytes": 19072,
+              "path": "src/dd_license_attribution/artifact_management/source_code_manager.py",
+              "sha256": "ebfbc3009708ae91a30474cef387017c4f97fb1395791fe909a265a60f3d2c2d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-14-parent.tar.gz",
+          "root": "semantic-adequacy-14",
+          "sha256": "69e00d9b0f139cabf36fc8865e3f4da06cf7d41e08ef915c008d23e04a056a39"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 10173,
+              "path": "LICENSE",
+              "sha256": "a6cba85bc92e0cff7a450b1d873c0eaa2e9fc96bf472df0247a26bec77bf3ff9"
+            },
+            {
+              "bytes": 21316,
+              "path": "src/dd_license_attribution/artifact_management/source_code_manager.py",
+              "sha256": "8fe53006b62a8b2fa4f8de9015e1cb8cffb4d9d7225f606e9419ec9393f2a386"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-14-target.tar.gz",
+          "root": "semantic-adequacy-14",
+          "sha256": "6d3ab99ef0ca2bb262e3a2f944241309ed99ff31f5fc12ba418605f4b1ef9e2a"
+        }
+      },
+      "index": 14,
+      "parent_revision": "8fb798d61c06185eb3c2fbcbf7e06e865b436592",
+      "repository": "DataDog/dd-license-attribution",
+      "selected_source_paths": [
+        "src/dd_license_attribution/artifact_management/source_code_manager.py"
+      ],
+      "stratum": "insert_action_or_cleanup_after",
+      "target_revision": "26f857f91ddab5cc29e8ac12313e9037c1637495"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 11315,
+              "path": "LICENSE",
+              "sha256": "be6a7ce74b58586ac920acf4a3da663980dcb5eb49509bc2ad545407e3d1459b"
+            },
+            {
+              "bytes": 28901,
+              "path": "aiobotocore/utils.py",
+              "sha256": "88e44216fd8b1056a1503438f21d384b06b1917d4b199055994f92b3a1eac12d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-15-parent.tar.gz",
+          "root": "semantic-adequacy-15",
+          "sha256": "03aee180a6bc3df4c12938daaa64871589c98c8a4f89a6a6e472d90b7cb264ad"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 11315,
+              "path": "LICENSE",
+              "sha256": "be6a7ce74b58586ac920acf4a3da663980dcb5eb49509bc2ad545407e3d1459b"
+            },
+            {
+              "bytes": 31854,
+              "path": "aiobotocore/utils.py",
+              "sha256": "8b7f72a0f737aa7e3b3c1bde7d9e91a8d784efc5a56a05ad924540d194613ce5"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-15-target.tar.gz",
+          "root": "semantic-adequacy-15",
+          "sha256": "850607c5fefbf9858744e3e2a9db1913e2fe4201ccfb1cdf8a095b283d35d74d"
+        }
+      },
+      "index": 15,
+      "parent_revision": "67579a1649f80ccd495c9ff26980144cde00cf8a",
+      "repository": "aio-libs/aiobotocore",
+      "selected_source_paths": [
+        "aiobotocore/utils.py"
+      ],
+      "stratum": "insert_action_or_cleanup_after",
+      "target_revision": "3d3873339ff6ccf3e860c885a4cf85d027785dbe"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 11340,
+              "path": "LICENSE",
+              "sha256": "aef3d7883963999082757a215102abdf7037b40d2b417560b1fe0641c423a40d"
+            },
+            {
+              "bytes": 2938,
+              "path": "src/openframe/recognize/locator.py",
+              "sha256": "81f01620121cf54cfef5c7d004671ea87cb4f58d834c03cd138f3998ed45b172"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-16-parent.tar.gz",
+          "root": "semantic-adequacy-16",
+          "sha256": "7d596278ae6c48fa9f7864b0b8eaac16d9d43eaf8f9db72cdae3b97a1d6924a9"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 11340,
+              "path": "LICENSE",
+              "sha256": "aef3d7883963999082757a215102abdf7037b40d2b417560b1fe0641c423a40d"
+            },
+            {
+              "bytes": 955,
+              "path": "src/openframe/recognize/coords.py",
+              "sha256": "d502c813062d76c9a98f013bbeb60573217c731d0fb6df4abd09869b000f91e8"
+            },
+            {
+              "bytes": 3470,
+              "path": "src/openframe/recognize/locator.py",
+              "sha256": "5ce3e9866e3678cccdb26c5fb55290e43c5f67cb6c1a651b064bc1479a0696aa"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-16-target.tar.gz",
+          "root": "semantic-adequacy-16",
+          "sha256": "f423bfc5994eab7077ec47193e481dbe9ed27a1a2ece913ffbaa024fa849788c"
+        }
+      },
+      "index": 16,
+      "parent_revision": "a1db770e2f136110f375a9d9637236e3120b224d",
+      "repository": "Off-Camber/open-frame",
+      "selected_source_paths": [
+        "src/openframe/recognize/coords.py",
+        "src/openframe/recognize/locator.py"
+      ],
+      "stratum": "multi_unit_dependency_local_repair",
+      "target_revision": "4a7052658886945375ac7405c5cba76fedc329ab"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1075,
+              "path": "LICENSE",
+              "sha256": "c70ba0234bfd57f18db39670b4aa39ed3234a81cae7c9cba3fd947b41f3c9e6e"
+            },
+            {
+              "bytes": 12478,
+              "path": "src/funcsort/sorter.py",
+              "sha256": "b085eded872f57136cd8fe4d2e04f9a316c479c2a944b1b42e9ca41f020bc781"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-17-parent.tar.gz",
+          "root": "semantic-adequacy-17",
+          "sha256": "61e4734d4aaf02c10c04ec2800d29c60386dd075ecfb0e58c08518b2b1b9d23e"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1075,
+              "path": "LICENSE",
+              "sha256": "c70ba0234bfd57f18db39670b4aa39ed3234a81cae7c9cba3fd947b41f3c9e6e"
+            },
+            {
+              "bytes": 11259,
+              "path": "src/funcsort/ordering.py",
+              "sha256": "343c76bb73e22f62926e43515119585ac46a15a79730ab824b34be46c0ba47a9"
+            },
+            {
+              "bytes": 19613,
+              "path": "src/funcsort/sorter.py",
+              "sha256": "00a3f58cdf0065de3fd6026633dfc0e046cf9936ba099223f460077b2e1edd3a"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-17-target.tar.gz",
+          "root": "semantic-adequacy-17",
+          "sha256": "4abf03296ece063584a0f30bf04ba4d9567b9b8422702708bf73cc9f367face2"
+        }
+      },
+      "index": 17,
+      "parent_revision": "0177376ca4de7d4bce610c3147f3d1fbb9fc1d81",
+      "repository": "HEROgold/funcsort",
+      "selected_source_paths": [
+        "src/funcsort/ordering.py",
+        "src/funcsort/sorter.py"
+      ],
+      "stratum": "multi_unit_dependency_local_repair",
+      "target_revision": "2d0b0e2a17b31de6858a01948661208f9e7cde12"
+    },
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 1066,
+              "path": "LICENSE",
+              "sha256": "b7acfa70f1343b9f9a22343042f733030eae80ce5e6613397cc71e41ed0f46ae"
+            },
+            {
+              "bytes": 25697,
+              "path": "librae/config/symbols.py",
+              "sha256": "6f9f98b7ff090536e9346009ded6e20552ec462ad35ca7b8cc1be78ab910607c"
+            },
+            {
+              "bytes": 47464,
+              "path": "librae/db/timescale_writer.py",
+              "sha256": "a3d56c8f92d3268f6491fe089e92efa13e622f4a6d5d880b18edf91b7ab62c27"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-18-parent.tar.gz",
+          "root": "semantic-adequacy-18",
+          "sha256": "5674ed19acf2c592a7f5b6a5311d4eb291340c417177ca83c910e171736ab90a"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 1066,
+              "path": "LICENSE",
+              "sha256": "b7acfa70f1343b9f9a22343042f733030eae80ce5e6613397cc71e41ed0f46ae"
+            },
+            {
+              "bytes": 26202,
+              "path": "librae/config/symbols.py",
+              "sha256": "346a06fa360d04d3180343f0020fdd8e78bb52a42e4a94f2018f25898a2a6666"
+            },
+            {
+              "bytes": 47707,
+              "path": "librae/db/timescale_writer.py",
+              "sha256": "541acbd019333aff0c827efc4ab816e9438a6e8d6ecaa51d40fb3f25de92dcca"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-18-target.tar.gz",
+          "root": "semantic-adequacy-18",
+          "sha256": "b5a221e99626b089ae0208e2f9b5525f74b546972364f0bb2f74691c5ce171c6"
+        }
+      },
+      "index": 18,
+      "parent_revision": "1edb58addc5583f5a3dc5421236c42eb503d3c56",
+      "repository": "awwesomeman/librae",
+      "selected_source_paths": [
+        "librae/config/symbols.py",
+        "librae/db/timescale_writer.py"
+      ],
+      "stratum": "multi_unit_dependency_local_repair",
+      "target_revision": "7fa1befcca67e1cad91523d1232d67ddf0610794"
+    }
+  ],
+  "state": "SEALED_FRESH_V5_STATEMENT_GRANULAR_DENOMINATOR_BEFORE_CANDIDATE_GENERATION",
+  "statement_granular_runtime": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_runtime_v4.py",
+    "sha256": "a3d42c6816fe2964a223d7d1209fa12122c06a4ce0c73bcbb48f11d77936624c"
+  },
+  "stratum_counts": {
+    "branch_or_predicate_replacement": 3,
+    "collection_or_data_shape_change": 3,
+    "insert_action_or_cleanup_after": 3,
+    "insert_guard_or_setup_before": 3,
+    "multi_unit_dependency_local_repair": 3,
+    "single_expression_replacement": 3
+  },
+  "task_count": 18,
+  "trigger_state": "GREEN"
+}

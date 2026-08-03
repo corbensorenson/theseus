@@ -1,0 +1,95 @@
+{
+  "candidate_packet_materialized": false,
+  "config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_fresh_v5_sources.json",
+    "sha256": "2156964992ad9bd4811ff00775cc464e3b3b3fe8eadbcab3dd454c6374f9789a"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "network_source_calls": 7,
+    "parent_target_evaluator_executions": 0,
+    "source_archives_materialized": 2,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T06:42:43.239927Z",
+  "faults": [],
+  "maximum_inference": "This binding authorizes only public retrieval and deterministic freezing of one smaller source pair for consumed v4 Task 1. It authorizes no evaluator execution, candidate packet, model call, hidden evaluation, claim, D1, D2, training, serving, or book support.",
+  "policy": "project_theseus_semantic_ir_production_adequacy_fresh_v5_sources_v1",
+  "rows": [
+    {
+      "archives": {
+        "parent": {
+          "members": [
+            {
+              "bytes": 11357,
+              "path": "LICENSE",
+              "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+            },
+            {
+              "bytes": 6933,
+              "path": "pytboss/http.py",
+              "sha256": "e7dd3756a3aa4fbda9151610eafd08cbb34e35a0771bebf0bd3bccdbb5b67396"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v5/semantic-adequacy-01r2-parent.tar.gz",
+          "root": "semantic-adequacy-01r2",
+          "sha256": "8136bce53504d50cb1cf0e2c490c70801c8b676e5662782f5d68ac09fd84e072"
+        },
+        "target": {
+          "members": [
+            {
+              "bytes": 11357,
+              "path": "LICENSE",
+              "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+            },
+            {
+              "bytes": 7335,
+              "path": "pytboss/http.py",
+              "sha256": "874ff8be46594d42bd42d2ac4f654ee834a7c92bc3f20d3bf91cfc8121e43db3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_semantic_ir_production_adequacy_fresh_v5/semantic-adequacy-01r2-target.tar.gz",
+          "root": "semantic-adequacy-01r2",
+          "sha256": "1d482fe76d391feeb37aea96f5cc900344cedb654580c401f40cecdfd19453ba"
+        }
+      },
+      "changed_paths": [
+        "pytboss/http.py",
+        "tests/test_http.py"
+      ],
+      "faults": [],
+      "index": 1,
+      "license_spdx": "Apache-2.0",
+      "merge_first_parent_revision": "5b5317b30ac0b258d34e8e8b7b5be95c606b4998",
+      "merge_revision": "6e8510edcbb12e2a98471efbd37f5cb5873f22cc",
+      "merged_utc": "2026-08-03T05:54:19Z",
+      "opaque_task_id": "semantic-ir-adequacy-01r3",
+      "parent_revision": "5b5317b30ac0b258d34e8e8b7b5be95c606b4998",
+      "pull_request": 546,
+      "pull_request_url": "https://github.com/dknowles2/pytboss/pull/546",
+      "repository": "dknowles2/pytboss",
+      "selected_source_paths": [
+        "pytboss/http.py"
+      ],
+      "stratum": "single_expression_replacement",
+      "target_revision": "9a8409edf0a23f705ede0d8af2d2262016602664",
+      "title": "Treat a silent grill as unreachable, and fix the discovery snippet",
+      "trigger_state": "GREEN"
+    }
+  ],
+  "source_pairs_admitted": true,
+  "state": "ONE_SOURCE_PAIR_FROZEN_BEFORE_V5_EVALUATOR_QUALIFICATION",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_API_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "request_count": 7,
+    "response_digest_chain_sha256": "abf03531e39d4de57cc784341a0e0df92bc9b3f92ab0cbf8c857123406ebcc4b"
+  },
+  "trigger_state": "GREEN"
+}

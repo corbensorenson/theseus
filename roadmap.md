@@ -299,6 +299,18 @@ Acquire one smaller licensed post-snapshot source in the same stratum, qualify
 its evaluator before packet creation, rebind unexposed Tasks 2-18 unchanged,
 and seal a fresh v5 campaign before any further model call.
 
+That v5 replacement transaction is now sealed. Apache-2.0
+`dknowles2/pytboss#546` supplies the new Task 1 exception-translation repair;
+its exact source and license bytes were frozen before the independent async
+behavior evaluator ran. Parent is negative, target and benign controls are
+positive, and mechanism-removal, missing-path, and unauthorized-path controls
+are negative. The exact Task 1 prompt falls from 124,138 to 9,165 tokens. Tasks
+2-18 retain byte-identical serialized prompts under new v5 custody paths, the
+18 repositories remain unique, and every stratum still contains three tasks.
+The v5 campaign audit is GREEN and call-free, prospectively authorizing exactly
+36 frozen-local calls. Hidden evaluation remains closed until all candidates
+seal.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

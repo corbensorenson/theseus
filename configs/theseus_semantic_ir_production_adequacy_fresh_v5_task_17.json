@@ -1,0 +1,92 @@
+{
+  "allowed_effect_paths": [
+    "src/funcsort/ordering.py",
+    "src/funcsort/sorter.py"
+  ],
+  "campaign_index": 17,
+  "candidate_visible_context": {
+    "full_selected_parent_sources": true,
+    "missing_allowed_effect_paths": [
+      "src/funcsort/ordering.py"
+    ],
+    "project_selected_character_or_token_cap": null,
+    "reads": [
+      {
+        "end_line": 339,
+        "path": "src/funcsort/sorter.py",
+        "start_line": 1
+      }
+    ],
+    "searches": []
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "licensed_source_disjoint_python_causal_repair",
+  "maximum_inference": "One implementation-adequacy observation only; no treatment, D1, D2, serving, training, or book-support claim.",
+  "natural_request": "Add dependency-aware definition ordering so the sorter cannot move a definition below a decorator, default expression, or other import-time read that depends on it. Add src/funcsort/ordering.py and integrate it into src/funcsort/sorter.py; preserve deterministic content and safe behavior for dependency cycles.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "The sorter respects load-time definition dependencies while fitting its preferred ordering."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Dependency cycles or infeasible constraints retain a deterministic safe order without changing statement content."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Modify only the declared allowed effect paths; do not alter unrelated behavior or files."
+    }
+  ],
+  "opaque_task_id": "semantic-ir-adequacy-17",
+  "partition": "semantic_ir_production_implementation_adequacy",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "create_file_allowed_only_for_declared_missing_effect_paths": true,
+    "inventory_truncation_allowed": false,
+    "maximum_semantic_scope_nodes": 197,
+    "maximum_symbol_nodes": 197,
+    "role_partition_source_target_loss_and_dependency_identity_required": true,
+    "statement_scope_policy": "all_candidate_visible_python_statements_v1",
+    "version": "THESEUS_SEMANTIC_IR_V3"
+  },
+  "source_archive": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-17-parent.tar.gz",
+  "source_archive_root": "semantic-adequacy-17",
+  "source_archive_sha256": "61e4734d4aaf02c10c04ec2800d29c60386dd075ecfb0e58c08518b2b1b9d23e",
+  "source_provenance": {
+    "license_spdx": "MIT",
+    "revision": "0177376ca4de7d4bce610c3147f3d1fbb9fc1d81",
+    "url": "https://github.com/HEROgold/funcsort"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "SyntaxError",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": false,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import ast,sys; [ast.parse(open(p, encoding='utf-8').read(), filename=p) for p in sys.argv[1:]]",
+      "src/funcsort/ordering.py",
+      "src/funcsort/sorter.py"
+    ],
+    "timeout_seconds": 60
+  }
+}
