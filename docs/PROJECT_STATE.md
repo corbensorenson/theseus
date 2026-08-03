@@ -169,9 +169,11 @@ the REST search node ID resolves as a GraphQL pull request, and the exact nodes
 query returned the expected metadata shape for the already
 consumed denylisted `urllib3/urllib3#5102` surface without body, patch, review,
 or source content. V6 batches 40 nodes through one request at a time, preserves
-the REST search population and all scientific selection rules, and independently
+the REST search population while pacing its 40 calls by 2.1 seconds against the
+observed 30-per-minute quota, preserves all scientific selection rules, and independently
 rejects a commit identity that does not match the PR head. The full run may not
-start before `2026-08-03T10:43:25Z`; every downstream authority remains closed.
+start before `2026-08-03T10:43:25Z`; pacing is transport-only and every
+downstream authority remains closed.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve

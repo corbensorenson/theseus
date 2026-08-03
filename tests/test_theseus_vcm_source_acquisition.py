@@ -164,6 +164,7 @@ def test_vcm_source_acquisition_v6_batches_transport_only() -> None:
     assert v6["authority"] == v5["authority"]
     assert v6["graphql_transport"]["node_batch_size"] == 40
     assert v6["graphql_transport"]["maximum_parallel_graphql_requests"] == 1
+    assert v6["graphql_transport"]["rest_search_minimum_interval_seconds"] == 2.1
     assert v6["graphql_transport"]["live_schema_qualification"][
         "required_schema_fields_missing"
     ] == []
@@ -369,6 +370,7 @@ def test_v6_full_selector_rehearsal_seals_exact_disjoint_panels(
 
     monkeypatch.setattr(acquisition_v6.v1, "api_json", fake_rest)
     monkeypatch.setattr(acquisition_v6, "graphql_api", fake_graphql)
+    monkeypatch.setattr(acquisition_v6.time, "sleep", lambda _seconds: None)
     retry_policy = config["transport_retry_policy"]
     ledger = acquisition_v5.RequestLedger(
         tmp_path / "checkpoint.json",
@@ -399,6 +401,7 @@ def test_v6_full_selector_rehearsal_seals_exact_disjoint_panels(
             for row in rows
         ) == quota
     assert report["metadata_transport"]["rest_search_requests"] == 40
+    assert report["metadata_transport"]["rest_search_minimum_interval_seconds"] == 2.1
     assert report["metadata_transport"]["graphql_node_batch_size"] == 40
     assert ledger.summary()["logical_request_count"] == 44
     assert ledger.summary()["physical_attempt_count"] == 44

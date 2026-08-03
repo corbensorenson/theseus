@@ -217,6 +217,8 @@
         "v6_transport_repair_boundary": "batch identical PR repository file and commit metadata through GitHub GraphQL nodes while preserving REST search population rank order and all scientific selection rules",
         "v6_node_batch_size": 40,
         "v6_maximum_parallel_graphql_requests": 1,
+        "v6_observed_rest_search_limit_per_minute": 30,
+        "v6_rest_search_minimum_interval_seconds": 2.1,
         "v6_execution_not_before_utc": "2026-08-03T10:43:25Z",
         "v6_required_schema_fields_missing": [],
         "v6_consumed_pr_query_shape_green": true,

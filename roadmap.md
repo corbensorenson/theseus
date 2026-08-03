@@ -478,10 +478,12 @@ GraphQL pull request, and the exact `nodes(ids:)` query returned the expected
 PR, repository, file-path, and commit metadata for an already
 consumed denylisted pull request without requesting body, patch, or review
 content. It batches at most 40 nodes through one GraphQL request at a time,
-keeps the 40-call REST search population unchanged, and rejects a last-commit
+keeps the 40-call REST search population unchanged, spaces those calls by at
+least 2.1 seconds against the observed 30-per-minute search quota, and rejects a last-commit
 identity that does not match the PR head. The full metadata run is bound not to
 start before `2026-08-03T10:43:25Z`; source retrieval, evaluators, local and
-Luna inference, training, D1/D2, serving, and book promotion remain closed.
+Luna inference, training, D1/D2, serving, and book promotion remain closed. The
+search pacing is a host-transport condition, never a task or mechanism outcome.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

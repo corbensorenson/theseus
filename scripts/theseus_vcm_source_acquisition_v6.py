@@ -7,6 +7,7 @@ import argparse
 import hashlib
 import json
 import subprocess
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
@@ -118,6 +119,8 @@ def preflight(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         transport.get("rest_search_population_unchanged") is not True
         or int(transport.get("node_batch_size") or 0) != 40
         or int(transport.get("maximum_parallel_graphql_requests") or 0) != 1
+        or float(transport.get("rest_search_minimum_interval_seconds") or 0.0)
+        != 2.1
         or transport.get("rank_order_consumption_required") is not True
         or transport.get("query_may_request_body_patch_or_review_content") is not False
         or transport.get("candidate_identities_in_checkpoint") is not False
@@ -166,10 +169,21 @@ def acquire(
     rest_client = v5.RetryingClient(v1.api_json, ledger, retry_policy)
     graphql_client = v5.RetryingClient(graphql_api, ledger, retry_policy)
     response_digests: list[str] = []
+    search_interval = float(
+        transport.get("rest_search_minimum_interval_seconds") or 0.0
+    )
+    last_search_started: float | None = None
+    # Thirty authenticated search requests per minute were observed live. Keep
+    # the frozen forty-page population, but space starts so no sixty-second
+    # interval can contain more than thirty requests.
     search_rows: dict[tuple[str, int], dict[str, Any]] = {}
     pages = int(search.get("pages_per_language") or 0)
     for language in p2a.strings(search.get("languages")):
         for page in range(1, pages + 1):
+            now = time.monotonic()
+            if last_search_started is not None:
+                time.sleep(max(0.0, last_search_started + search_interval - now))
+            last_search_started = time.monotonic()
             payload, digest = rest_client.call(
                 "search/issues",
                 {
@@ -324,6 +338,7 @@ def acquire(
     )
     report["metadata_transport"] = {
         "rest_search_requests": pages * len(p2a.strings(search.get("languages"))),
+        "rest_search_minimum_interval_seconds": search_interval,
         "graphql_node_batching": True,
         "graphql_node_batch_size": batch_size,
         "maximum_parallel_graphql_requests": 1,

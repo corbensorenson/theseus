@@ -24,7 +24,7 @@
     ]
   },
   "source_bindings": [
-    {"id": "acquisition_owner_v6", "path": "scripts/theseus_vcm_source_acquisition_v6.py", "sha256": "599c8d43f3775a4726ee2c152acba43d99fec4a0b397d08bdf007fab1f636434"},
+    {"id": "acquisition_owner_v6", "path": "scripts/theseus_vcm_source_acquisition_v6.py", "sha256": "319b4958e9b7559b8676281a59a09acc2f8323570d80273216cc033fc9a35798"},
     {"id": "retry_checkpoint_owner_v5", "path": "scripts/theseus_vcm_source_acquisition_v5.py", "sha256": "a2cb6c0bddda3c98b506d48f55990abe07ade6bf31359481122fc5d1e5aa2087"},
     {"id": "eligibility_owner", "path": "scripts/theseus_vcm_source_acquisition.py", "sha256": "8754306311cd5b064ba7896705b51ed22edcd3319c79372cdc8f46e51a7f1ca9"},
     {"id": "vcm_claim_instrument", "path": "configs/theseus_vcm_claim_instrument.json", "sha256": "b991705c9d41c9660810dc7a877d0e33e55810eb3dec1e0a1f1d711569a52947"},
@@ -63,6 +63,9 @@
     "rest_search_population_unchanged": true,
     "node_batch_size": 40,
     "maximum_parallel_graphql_requests": 1,
+    "observed_authenticated_rest_search_limit_per_minute": 30,
+    "rest_search_minimum_interval_seconds": 2.1,
+    "search_pacing_is_transport_not_task_or_mechanism_outcome": true,
     "rank_order_consumption_required": true,
     "requested_metadata": [
       "search-returned pull request title digest without raw title retention",
