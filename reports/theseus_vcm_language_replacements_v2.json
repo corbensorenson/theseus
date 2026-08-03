@@ -1,5 +1,16 @@
 {
+  "attempted_request_role_accounting": {
+    "metadata": 114,
+    "source_content": 48,
+    "sum_equals_checkpoint_logical_requests": true,
+    "title": 14
+  },
   "candidate_packet_materialization_opened": false,
+  "checkpoint": {
+    "path": "reports/theseus_vcm_language_replacements_v2_checkpoint.json",
+    "sha256": "0d77d8873a2aa2bdeecb36008de82c2dc406854a9d18a475eea7ea9d9543eeae"
+  },
+  "checkpoint_artifact_hash_verified_final": true,
   "config": {
     "path": "configs/theseus_vcm_language_replacements_v2.json",
     "sha256": "cfbc930cbdbba06932520ea4c39c70def845fe38ec83e2bc1d01ef03bf8fc370"
@@ -9,35 +20,748 @@
     "D2_cases_consumed": 0,
     "candidate_or_control_calls": 0,
     "external_inference_calls": 0,
-    "local_language_scope_classification_calls": 0,
+    "local_language_scope_classification_calls": 8,
     "local_model_calls": 0,
     "parent_target_or_evaluator_executions": 0,
-    "public_metadata_selection_requests": 0,
-    "public_metadata_title_requests": 0,
-    "public_source_content_requests": 0,
-    "source_archives_materialized": 0,
-    "source_bytes_materialized": 0,
+    "public_metadata_selection_requests": 114,
+    "public_metadata_title_requests": 14,
+    "public_source_content_requests": 48,
+    "source_archives_materialized": 24,
+    "source_bytes_materialized": 987062,
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T15:11:40.396498Z",
+  "created_utc": "2026-08-03T15:20:06.932958Z",
   "faults": [],
   "hidden_evaluation_opened": false,
+  "language_classification_receipts": [
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "8d644a1059d45b195f7bae9a13b35dad161e5be8f44fa5badff3df8ff5a0ff00",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 1,
+      "repository": "endoftheline818/opensourcesai-cmdcenter",
+      "title_sha256": "6539edeb629bb491b1379e4e97c634047acc4cec4604885b58dde3272d476dfd"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "9c803139f66fe86db8d24399d3e617890c607c9893dbf96bc86fb22bee9853a3",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 12,
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "title_sha256": "05c31f3b1fdf5fd47c89a8d9b76841c2eddaeb29549521b051eea10af1617958"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "f95d99b9fbabc79a80677472baaa30de0d9277adc4a2c7ab3c9cb5771419cdbd",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 19,
+      "repository": "Ganesh-403/semantic-plagiarism-detector",
+      "title_sha256": "922ecbecb502fbb9cead43a7b70d766931f39c0304d881167f4185a615faf597"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "dbbdddaaf913e378a158ad53a242a9055392817e024c23b4f17ae9af926823a2",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 56,
+      "repository": "AbsoluteMode/session-recall",
+      "title_sha256": "ff4e4272e57b673664c8319ac234d9c216c4809f303329e3f08690f713888b19"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "f29c21fc173c06aa5db72f2ce2e05677d968c86e9707dd6306b3b406e832bbfa",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 48,
+      "repository": "pokle/glidecomp",
+      "title_sha256": "a4dc16b3502492b62f9f5805060f794e9a4005b2c03bdcb3677777a3735949eb"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "46c2112b78b074e8ba865abd246352dd9c5fded56b93b4f81c0e7bb148ea5ea0",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 51,
+      "repository": "inkeep/open-knowledge",
+      "title_sha256": "11c5cab44491d18c834de27c9b35307cc3d5f45e4889d115fff93688d0d391c7"
+    }
+  ],
   "maximum_inference": "A GREEN v2 report proves only that the exact six frozen-rule English replacements succeeded under smaller GraphQL transport batches and complete attempted-role accounting. It does not admit the combined panel until independent audit, execute repositories, qualify evaluators, authorize local/Luna candidate calls, or establish a VCM, D1, D2, training, serving, or book-support claim.",
   "policy": "project_theseus_vcm_language_replacements_v2",
   "predecessor_report": {
     "path": "reports/theseus_vcm_language_replacements.json",
     "sha256": "c53d014d98b88e5af53e01eb5b3ebe4ef13ebb25f1799a644c787432fce8bfc6"
   },
-  "replacement_set_admitted": false,
-  "selected_repository_count": 0,
-  "source_content_retrieval_opened": false,
-  "state": "SIX_LANGUAGE_REPLACEMENT_V2_TRANSPORT_PREFLIGHT_GREEN",
+  "rejection_counts": {
+    "bot_author": 77,
+    "changed_file_count": 712,
+    "changed_line_count": 393,
+    "chronology": 12,
+    "generated_vendor_lock_only": 21,
+    "head_commit_metadata_unavailable": 1,
+    "license_not_allowlisted": 1092,
+    "natural_language_out_of_scope": 2,
+    "no_machine_verifier_change": 1177,
+    "no_non_test_source_change": 660,
+    "not_merged_closed_nondraft": 6,
+    "primary_language_mismatch": 19,
+    "prior_or_duplicate_repository": 63,
+    "repository_below_star_floor": 1197,
+    "repository_state": 233
+  },
+  "replacement_rows": [
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1070,
+              "path": "LICENSE",
+              "sha256": "051912b580d944ed0dd12424907ad886f88e3e6793639efa481106d8f8871fbd"
+            },
+            {
+              "bytes": 43432,
+              "path": "src/serve/ui.js",
+              "sha256": "a6844e0513f7bfa418e186061a13e55142f58c8ce0a31f23bf6dcad1b30c712e"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-01-parent_source.tar.gz",
+          "root": "vcm-claim-01",
+          "sha256": "be9a4ac4d9dc9e451e18196655756fe2923114dc52fc0c97e51b7ba8b637f4af"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1070,
+              "path": "LICENSE",
+              "sha256": "051912b580d944ed0dd12424907ad886f88e3e6793639efa481106d8f8871fbd"
+            },
+            {
+              "bytes": 8911,
+              "path": "test/design.test.js",
+              "sha256": "3a18e4c404034602f6e8769261170f410d6d4b4b4b4dec515928161b256d9537"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-01-parent_verifier.tar.gz",
+          "root": "vcm-claim-01",
+          "sha256": "929a35a04a3faff8e07369fc1478fba7bf37d0e85feb3b13f91a113d5f471774"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1070,
+              "path": "LICENSE",
+              "sha256": "051912b580d944ed0dd12424907ad886f88e3e6793639efa481106d8f8871fbd"
+            },
+            {
+              "bytes": 54441,
+              "path": "src/serve/ui.js",
+              "sha256": "3d286524a1682237e6631fdd4ed9636def165344205af983ba6887a5cd89531e"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-01-target_source.tar.gz",
+          "root": "vcm-claim-01",
+          "sha256": "94c8e54be1df6dd84a516369fa5d87668eb9b8f854bc3eda3b7052dd20a4456d"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1070,
+              "path": "LICENSE",
+              "sha256": "051912b580d944ed0dd12424907ad886f88e3e6793639efa481106d8f8871fbd"
+            },
+            {
+              "bytes": 11312,
+              "path": "test/design.test.js",
+              "sha256": "740063e240034afc9adf490f863fabd750cdb69b79dc544dfdd66c51ce15e352"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-01-target_verifier.tar.gz",
+          "root": "vcm-claim-01",
+          "sha256": "166e8cbd0af5349e51412d39114055f4e6422593ab1fe11dfe8be5589eb9db8f"
+        }
+      },
+      "base_revision": "7a7dc5a93937c23c0dc3b371f53056f1aea4ab57",
+      "faults": [],
+      "head_revision": "9649c2b954a8ea6aca912f1db28667ee90f02851",
+      "index": 1,
+      "license_spdx": "MIT",
+      "natural_language_request": "Refresh dashboard UI for public readiness",
+      "natural_language_request_sha256": "6539edeb629bb491b1379e4e97c634047acc4cec4604885b58dde3272d476dfd",
+      "opaque_source_id": "5c8a47132e08ef1bea2c9aa825a3726f208e87c300216788a77ada3d4950230e",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 10,
+      "query_language": "JavaScript",
+      "replacement_for_title_sha256": "8373ec830c03bdd165b274ef7d982e6ed272d34bc0736f1b98c68b30b33313a8",
+      "repository": "endoftheline818/opensourcesai-cmdcenter",
+      "selected_source_paths": [
+        "src/serve/ui.js"
+      ],
+      "selected_verifier_paths": [
+        "test/design.test.js"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1077,
+              "path": "LICENSE",
+              "sha256": "cadf312a49a1f1684c227f9511a75014b616484f0171640a1d37b08ccec73546"
+            },
+            {
+              "bytes": 3943,
+              "path": "scripts/foundation_audit.py",
+              "sha256": "277080af0b847d774a0eef3af0a9b75fb3de70a33be93c776c4a8f782ab4a043"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-12-parent_source.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "3fb6936fb542363beb86e031b48a35777fb63ec483aad97934472f0d8959711b"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1077,
+              "path": "LICENSE",
+              "sha256": "cadf312a49a1f1684c227f9511a75014b616484f0171640a1d37b08ccec73546"
+            },
+            {
+              "bytes": 5690,
+              "path": "tests/test_packaging.py",
+              "sha256": "973bc9696f0b412e7ac58a002ed371a3c7cb84bb7c807e38c72e97ab681bb17a"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-12-parent_verifier.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "6c862e637d55e44eb117bd766355f43ec43073e6c4e523ddeea792297d9a86f5"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1077,
+              "path": "LICENSE",
+              "sha256": "cadf312a49a1f1684c227f9511a75014b616484f0171640a1d37b08ccec73546"
+            },
+            {
+              "bytes": 5695,
+              "path": "scripts/capture_readme_screenshot.py",
+              "sha256": "ca9fa4f94b90bdcf77f8a18ef0076a70fa4b443bc5e8b7191b45d9d574a86a26"
+            },
+            {
+              "bytes": 4330,
+              "path": "scripts/foundation_audit.py",
+              "sha256": "27a456a250ad5467623a3051f77b7bdae6371dc52945385734fde686442bdc8e"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-12-target_source.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "9360920405940095b1ceb1611fda5db544b42d4e2f9ddae6c22c641dabd96bd8"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1077,
+              "path": "LICENSE",
+              "sha256": "cadf312a49a1f1684c227f9511a75014b616484f0171640a1d37b08ccec73546"
+            },
+            {
+              "bytes": 6924,
+              "path": "tests/test_packaging.py",
+              "sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-12-target_verifier.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "7d702c0eb34eaf0c16e4f132031ceac9d0b9eaf6d7c8749a40532aa04d840495"
+        }
+      },
+      "base_revision": "9d8928512151942cd516e9eab4dde89b435804bf",
+      "faults": [],
+      "head_revision": "82aab22b9788d402dd2b32cd8f2bd5818f7a0176",
+      "index": 12,
+      "license_spdx": "MIT",
+      "natural_language_request": "Add reproducible result evidence",
+      "natural_language_request_sha256": "05c31f3b1fdf5fd47c89a8d9b76841c2eddaeb29549521b051eea10af1617958",
+      "opaque_source_id": "64626d1f76b751db01db06071e580bcfc0e86e50a8421cd6027d7cd7787bd154",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 10,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "f2bd5e776ad087dfb225f9cd258a58d9acbdbb91d0cce32fd94553280d786f64",
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "selected_source_paths": [
+        "scripts/capture_readme_screenshot.py",
+        "scripts/foundation_audit.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/test_packaging.py"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "ee11607e79e6b851f7168612ca777c359aa23b49ed05152d643f878ec38c8cb3"
+            },
+            {
+              "bytes": 10740,
+              "path": "src/core/text_chunking.py",
+              "sha256": "580992561ba74c597d53a0f67922eb761a17524ad45662b3b434257a8f1c2697"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-19-parent_source.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "5fe60c70ddb8a6eafcca256d96506da93068129f566ca1447fdaa6a5759754b5"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "ee11607e79e6b851f7168612ca777c359aa23b49ed05152d643f878ec38c8cb3"
+            },
+            {
+              "bytes": 7035,
+              "path": "tests/core/test_text_chunking.py",
+              "sha256": "20b681d0866a9e34e9c5e0a4b9af3e2ab179ef4b2c23fd9b17cb2f795b8505d1"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-19-parent_verifier.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "280d8a95c39056141ee8817203667d8c1bf46ed77aa5279571235ae31ca58af4"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "ee11607e79e6b851f7168612ca777c359aa23b49ed05152d643f878ec38c8cb3"
+            },
+            {
+              "bytes": 11528,
+              "path": "src/core/text_chunking.py",
+              "sha256": "e56104eeefbb18e11980ec7fc4445e79c4475be51c766efe7055d9d8dae594f7"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-19-target_source.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "d6bd03b8a20121e0fa69b98dff1e9c4947e57b1f6d82cf534610264c8332844c"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "ee11607e79e6b851f7168612ca777c359aa23b49ed05152d643f878ec38c8cb3"
+            },
+            {
+              "bytes": 11217,
+              "path": "tests/core/test_text_chunking.py",
+              "sha256": "c52dfa056792e626b121b22a682dc1dc2b9ff89d0dd413d60dedf1ee3d0dd72e"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-19-target_verifier.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "5a26395e1a41b1488acf54369208c0ac18914cd9f08f0079fe3ad0242a073ca1"
+        }
+      },
+      "base_revision": "3636ba5fb80b21997c9abb39b6c99e00cb40fcaa",
+      "faults": [],
+      "head_revision": "bfc2a2f6776eb9c26b8917719831b231a443ee7b",
+      "index": 19,
+      "license_spdx": "MIT",
+      "natural_language_request": "feat: log truncation warning when text exceeds chunk capacity",
+      "natural_language_request_sha256": "922ecbecb502fbb9cead43a7b70d766931f39c0304d881167f4185a615faf597",
+      "opaque_source_id": "74026bc71db606f38a8e3ae28210f47f935323c2ebef55d05de53a5cdaa96128",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 1440,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "f87b37636ee190a09d386c6e90042c8fd9d59c0e3435d139d1dbf50e3234b16a",
+      "repository": "Ganesh-403/semantic-plagiarism-detector",
+      "selected_source_paths": [
+        "src/core/text_chunking.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/core/test_text_chunking.py"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1093,
+              "path": "LICENSE",
+              "sha256": "0ad65662596931871267d1f6afcf6fee1f97588c9c68c898e3dbbb8e17b9bc41"
+            },
+            {
+              "bytes": 86880,
+              "path": "web/frontend/src/analysis/analysis-panel.ts",
+              "sha256": "d9ac5a681c772f5152208ed0f2a3cd45aeae256d93e3e994dd77f62b01d556ba"
+            },
+            {
+              "bytes": 134260,
+              "path": "web/frontend/src/analysis/mapbox-provider.ts",
+              "sha256": "fe71db283ba56437ab87b3cdb9312a439c38071010539266f7319f602d1c878a"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-48-parent_source.tar.gz",
+          "root": "vcm-claim-48",
+          "sha256": "6da103db64bd859b9076aa679b55ea9d2f0f5c2d64248f9cf97ed9cece95bf5e"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1093,
+              "path": "LICENSE",
+              "sha256": "0ad65662596931871267d1f6afcf6fee1f97588c9c68c898e3dbbb8e17b9bc41"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-48-parent_verifier.tar.gz",
+          "root": "vcm-claim-48",
+          "sha256": "0fbae56d02c3d5150379909596166c7f13f0458302ca5f6ec011ce612626e9b6"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1093,
+              "path": "LICENSE",
+              "sha256": "0ad65662596931871267d1f6afcf6fee1f97588c9c68c898e3dbbb8e17b9bc41"
+            },
+            {
+              "bytes": 86781,
+              "path": "web/frontend/src/analysis/analysis-panel.ts",
+              "sha256": "d80317cb983fd7e39e4c7894d143821d70dd6fcccd9b52bdde8e532c021110b9"
+            },
+            {
+              "bytes": 135015,
+              "path": "web/frontend/src/analysis/mapbox-provider.ts",
+              "sha256": "16898ddd323d1ed82b84ad44bd7335c5dd7ad51419b405a9257ab9164127890d"
+            },
+            {
+              "bytes": 1723,
+              "path": "web/frontend/src/analysis/panel-tab.ts",
+              "sha256": "37524924b1fbe5748e9d6da0719b9df58295500e3f9fbc42adfef0e0e6e813c6"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-48-target_source.tar.gz",
+          "root": "vcm-claim-48",
+          "sha256": "54cfda89d8c4f725c1afde48273b8bba9e8c5eec1570c596453a0b2973e4c784"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1093,
+              "path": "LICENSE",
+              "sha256": "0ad65662596931871267d1f6afcf6fee1f97588c9c68c898e3dbbb8e17b9bc41"
+            },
+            {
+              "bytes": 1920,
+              "path": "web/frontend/src/analysis/panel-tab.test.ts",
+              "sha256": "def2f35515765885d6d74b23e4a0268cbe585a38e880027e5c2e0a19720d0728"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-48-target_verifier.tar.gz",
+          "root": "vcm-claim-48",
+          "sha256": "a6220dda125ea3d2cd801aa0f7bacfa854df8d6ebd45315e9f1679f63e43984d"
+        }
+      },
+      "base_revision": "7a5539bfd16bd70ef6c4b25c40547b1d10915951",
+      "faults": [],
+      "head_revision": "69f6b594fd7fbbfa6ae2589d75fda5a62528edba",
+      "index": 48,
+      "license_spdx": "MIT",
+      "natural_language_request": "Two bugs the doc sync turned up: a leaking scrubber, and a tab that went away",
+      "natural_language_request_sha256": "a4dc16b3502492b62f9f5805060f794e9a4005b2c03bdcb3677777a3735949eb",
+      "opaque_source_id": "767b0cd016e710d7d0e4dc4503917bda86aaa59956e72e574482b06661c71de8",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 543,
+      "query_language": "TypeScript",
+      "replacement_for_title_sha256": "f069b082e55761692277658a62924f18b196d0f64cdc173995f47721d989802b",
+      "repository": "pokle/glidecomp",
+      "selected_source_paths": [
+        "web/frontend/src/analysis/analysis-panel.ts",
+        "web/frontend/src/analysis/mapbox-provider.ts",
+        "web/frontend/src/analysis/panel-tab.ts"
+      ],
+      "selected_verifier_paths": [
+        "web/frontend/src/analysis/panel-tab.test.ts"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 18060,
+              "path": "packages/app/src/components/navigation-targets.ts",
+              "sha256": "57165ef45e147f61f00982027fc1be7e24f9208cb923d9f31fbdec0aadda1ff6"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-51-parent_source.tar.gz",
+          "root": "vcm-claim-51",
+          "sha256": "cf71c7917fc308eaa944c51d9f7420a149ceb96526d99387a0ce2ecf69cb72aa"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 20388,
+              "path": "packages/app/src/App.dom.test.tsx",
+              "sha256": "8b11b5b970bc8997f2bffa79329ac4bd1767fb2f5bbad614308c432b7d7c76f5"
+            },
+            {
+              "bytes": 24351,
+              "path": "packages/app/src/components/navigation-targets.test.ts",
+              "sha256": "0de94f2d01f112d8eee824d7de3132b28039b5e3580b08ddaa1d435b7d0452ff"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-51-parent_verifier.tar.gz",
+          "root": "vcm-claim-51",
+          "sha256": "528fa61fa9cbe6514231096ab830716ed9d19ae02e9e1347190ad9f4810b6b4a"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 18776,
+              "path": "packages/app/src/components/navigation-targets.ts",
+              "sha256": "f8e671402dae2964c0188712c6a91ea7ea691d188841157938bfa137a4099c3e"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-51-target_source.tar.gz",
+          "root": "vcm-claim-51",
+          "sha256": "05befc902c0319b164f0a5724877af0768cc26b639b96319375e25480c48ffd6"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 21568,
+              "path": "packages/app/src/App.dom.test.tsx",
+              "sha256": "c18f3c4eca00887749b9cff33895d3fdabb02b5b8171c848400cff0148c53ae8"
+            },
+            {
+              "bytes": 27987,
+              "path": "packages/app/src/components/navigation-targets.test.ts",
+              "sha256": "61fcc24dd03866e355a22e2674ee53c3fe984bb5167c966849a5de095ab9ef2d"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-51-target_verifier.tar.gz",
+          "root": "vcm-claim-51",
+          "sha256": "b489b4f9c412d080327fa9263b8d31059a86fe23497a9b5e3f5e095717ddfdda"
+        }
+      },
+      "base_revision": "8c126bfa13d3fc7b8be33cecf72981bf9aa0dda4",
+      "faults": [],
+      "head_revision": "395579f3158acbe2efafe4a58ef4eee870e70acc",
+      "index": 51,
+      "license_spdx": "GPL-3.0",
+      "natural_language_request": "fix(open-knowledge): stop .ok folder rows opening a phantom <dir>.md (PRD-7633) (#3001)",
+      "natural_language_request_sha256": "11c5cab44491d18c834de27c9b35307cc3d5f45e4889d115fff93688d0d391c7",
+      "opaque_source_id": "74dad37f8a00b299aefca24bc6b90c76a0d53d047d1e1d0c93d87c20c6a975e2",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 979,
+      "query_language": "TypeScript",
+      "replacement_for_title_sha256": "bbc0a469422ac5362da26fcd9999148ff71e5dfa987b092ddcb721fce07d4cee",
+      "repository": "inkeep/open-knowledge",
+      "selected_source_paths": [
+        "packages/app/src/components/navigation-targets.ts"
+      ],
+      "selected_verifier_paths": [
+        "packages/app/src/App.dom.test.tsx",
+        "packages/app/src/components/navigation-targets.test.ts"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1068,
+              "path": "LICENSE",
+              "sha256": "4a9262677ffda5b8626b1dd30acf23d0665d08a2aa103c1c3165515698e0bf9e"
+            },
+            {
+              "bytes": 20002,
+              "path": "src/session_recall/share/cli.py",
+              "sha256": "886213d652899faa2cb39403a421473f1fc8cd241ad0ec28600a069c1eac11ba"
+            },
+            {
+              "bytes": 5720,
+              "path": "src/session_recall/share/transport.py",
+              "sha256": "ef8849516f5b42e21ed1c18b831b4f9adfd4c930964d562ea845bf71357cbc16"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-56-parent_source.tar.gz",
+          "root": "vcm-claim-56",
+          "sha256": "da2f0ff693142e35b972dd6b4fbe8db8ec43f5646c7f21eb37fff55474c1c780"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1068,
+              "path": "LICENSE",
+              "sha256": "4a9262677ffda5b8626b1dd30acf23d0665d08a2aa103c1c3165515698e0bf9e"
+            },
+            {
+              "bytes": 4105,
+              "path": "tests/test_share_cli.py",
+              "sha256": "ba35d98eab7679d8c65e4445d57d2fc2450ad492c7da238ae1c3315c000628ef"
+            },
+            {
+              "bytes": 1242,
+              "path": "tests/test_share_transport.py",
+              "sha256": "d27746e22cd8175242c9ba433aa0aad458dce5f86d1c8fe5f3b7b066bbcf0aae"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-56-parent_verifier.tar.gz",
+          "root": "vcm-claim-56",
+          "sha256": "4dabcaeef290276e3e99cfcad31a8d54d68a59579e95286398047144d80db3df"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1068,
+              "path": "LICENSE",
+              "sha256": "4a9262677ffda5b8626b1dd30acf23d0665d08a2aa103c1c3165515698e0bf9e"
+            },
+            {
+              "bytes": 20091,
+              "path": "src/session_recall/share/cli.py",
+              "sha256": "74476e0d55e39b6eca75041b608d29aee0ca622bdcdc1843f1a49fff02632544"
+            },
+            {
+              "bytes": 5492,
+              "path": "src/session_recall/share/transport.py",
+              "sha256": "117ae0294349dbdf5bb12937aad8c0b01f95394bf685d36a3e681a2a685353b3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-56-target_source.tar.gz",
+          "root": "vcm-claim-56",
+          "sha256": "a217f051f725532343cb5829db2a1965e087cd1181cc5335641eabbaa101010a"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1068,
+              "path": "LICENSE",
+              "sha256": "4a9262677ffda5b8626b1dd30acf23d0665d08a2aa103c1c3165515698e0bf9e"
+            },
+            {
+              "bytes": 4204,
+              "path": "tests/test_share_cli.py",
+              "sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280"
+            },
+            {
+              "bytes": 1195,
+              "path": "tests/test_share_transport.py",
+              "sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_language_replacements_v1/vcm-claim-56-target_verifier.tar.gz",
+          "root": "vcm-claim-56",
+          "sha256": "0e9d3038d9b397640d5cca2d53c7548fc0e1b8001ed93e7be610abfdad076410"
+        }
+      },
+      "base_revision": "e9b86bc20db00efef894f9c23eed38fd55c9b3b4",
+      "faults": [],
+      "head_revision": "8f2beafd775613953cf6607c5448aad0625505d6",
+      "index": 56,
+      "license_spdx": "MIT",
+      "natural_language_request": "feat(share): no baked-in relay \u2014 transport is the peers' explicit choice",
+      "natural_language_request_sha256": "ff4e4272e57b673664c8319ac234d9c216c4809f303329e3f08690f713888b19",
+      "opaque_source_id": "b83dc5719f7acdf4da85297f0db0a14bdd463105d1ac02401545b67a98acc8a1",
+      "panel": "control_qualification",
+      "parent_license_path": "LICENSE",
+      "pull_request": 41,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "c149c1c170d7532b365a4322d1b0580e98d94e96b839c6d3523dd12c8f1589eb",
+      "repository": "AbsoluteMode/session-recall",
+      "selected_source_paths": [
+        "src/session_recall/share/cli.py",
+        "src/session_recall/share/transport.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/test_share_cli.py",
+        "tests/test_share_transport.py"
+      ],
+      "target_license_path": "LICENSE"
+    }
+  ],
+  "replacement_set_admitted": true,
+  "selected_repository_count": 6,
+  "source_content_retrieval_opened": true,
+  "source_panel_audit": {
+    "path": "reports/theseus_vcm_source_panel_audit.json",
+    "sha256": "64c2f667f6542a950315f4a92154cb6c2c27caa0af20a88a9649161345a34f83"
+  },
+  "state": "SIX_ENGLISH_SOURCE_REPLACEMENTS_BOUND",
+  "transport": {
+    "credentials_retained": false,
+    "logical_request_count": 176,
+    "physical_attempt_count": 176,
+    "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "retry_attempt_count": 0,
+    "source_content_requests": 48,
+    "title_requests": 14
+  },
   "transport_repair": {
     "attempted_role_accounting_required": true,
     "predecessor_graphql_node_batch_size": 40,
     "scientific_selection_rules_changed": false,
     "successor_graphql_node_batch_size": 20
+  },
+  "transport_retry_accounting": {
+    "attempt_endpoint_hash_chain_sha256": "197509715d23d28d73ab2748dabdf0672a1162c39d4fa750eeb295cd5279f60a",
+    "logical_request_count": 176,
+    "permanent_candidate_failure_count": 3,
+    "physical_attempt_count": 176,
+    "response_digest_chain_sha256": "42e834432eb7f26c0bea087d85431c123a7daae5284a159a6bb4146067d14ac9",
+    "retry_attempt_count": 0,
+    "state": "SIX_ENGLISH_SOURCE_REPLACEMENTS_BOUND",
+    "status_counts": {
+      "200": 173,
+      "404": 3
+    },
+    "successful_request_count": 173,
+    "transport_failure_count": 0
   },
   "trigger_state": "GREEN"
 }

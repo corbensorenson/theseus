@@ -590,6 +590,18 @@ attempted metadata, title, and source logical request and requires their sum to
 equal the final checkpoint. Retry horizon, search/rank/eligibility, language
 scope, six slots, all-or-none staging, content gates, and authority are unchanged.
 
+V2 completed GREEN and independently passed receipt audit. It selected six
+unique repositories outside the prior 87, frozen 62, and Task 28 replacement;
+preserved the exact slot/panel/programming-language assignments; rejected two
+additional non-English titles; and published 24 normalized archives only after
+all six passed. The run made 176 logical/physical attempts: 114 metadata, 14
+title, and 48 source; 173 succeeded and three were stable path 404s, with zero
+retries or terminal failures. All six selected source pairs and verifier pairs
+change, 57 member receipts cover 987,062 bytes, and the final checkpoint hash
+matches. Repository execution, candidate/model calls, training, D1, and D2 all
+remain zero. The next owner must independently reassemble the 62-task panel,
+substituting only slots 1, 12, 19, 28, 48, 51, and 56, before evaluator work.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

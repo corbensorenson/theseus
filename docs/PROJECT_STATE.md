@@ -263,6 +263,16 @@ proves the remaining scientific replacement contract is unchanged. All model,
 execution, packet, evaluator, training, serving, D1/D2, and book authority stays
 closed.
 
+V2 completed GREEN. Six unique, prior-disjoint English replacements now cover
+slots 1, 12, 19, 48, 51, and 56; two other non-English candidates were rejected.
+The all-or-none barrier published exactly 24 normalized archives with 57 member
+receipts and 987,062 bytes only after all six changed-source and changed-verifier
+gates passed. Attempted roles sum exactly to the 176-request checkpoint (114
+metadata, 14 title, 48 source); 173 requests succeeded, three were stable 404s,
+and no retry or terminal transport failure occurred. The final report/checkpoint
+and every archive passed independent hash and safety audit. No repository,
+evaluator, candidate, local/Luna, teacher, D1, or D2 execution occurred.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
