@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_source_acquisition as acquisition  # noqa: E402
 import theseus_vcm_source_acquisition_v3 as acquisition_v3  # noqa: E402
+import theseus_vcm_source_acquisition_v4 as acquisition_v4  # noqa: E402
 
 
 def test_vcm_source_acquisition_preflight_is_green_and_call_free() -> None:
@@ -47,6 +48,22 @@ def test_vcm_source_acquisition_v3_expands_pool_without_relaxing_filters() -> No
     assert v3["panels"] == v2["panels"]
     assert v3["chronology"] == v2["chronology"]
     assert v3["authority"] == v2["authority"]
+    assert report["metadata_selection_opened"] is False
+    assert all(value == 0 for value in report["counters"].values())
+
+
+def test_vcm_source_acquisition_v4_repairs_transport_only() -> None:
+    report = acquisition_v4.preflight()
+    v3 = p2a.read_json(acquisition_v3.DEFAULT_CONFIG)
+    v4 = p2a.read_json(acquisition_v4.DEFAULT_CONFIG)
+    assert report["trigger_state"] == "GREEN"
+    assert report["state"] == "METADATA_SELECTION_V4_FORK_SAFE_PREFLIGHT_GREEN"
+    assert v4["search"]["pages_per_language"] == v3["search"]["pages_per_language"]
+    assert v4["search"]["qualification_workers"] == v3["search"]["qualification_workers"]
+    assert v4["selection"] == v3["selection"]
+    assert v4["panels"] == v3["panels"]
+    assert v4["chronology"] == v3["chronology"]
+    assert v4["authority"] == v3["authority"]
     assert report["metadata_selection_opened"] is False
     assert all(value == 0 for value in report["counters"].values())
 

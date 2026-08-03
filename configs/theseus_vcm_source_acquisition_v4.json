@@ -1,0 +1,109 @@
+{
+  "policy": "project_theseus_vcm_source_acquisition_v1",
+  "state": "PROSPECTIVE_METADATA_SELECTION_ZERO_CANDIDATE_CONTENT",
+  "purpose": "Repair only v3 fork-head chronology transport by using the base PR commit-list endpoint and fail-paused exception custody while preserving the complete v3 pool and eligibility contract.",
+  "repair": {
+    "predecessor_config": "configs/theseus_vcm_source_acquisition_v3.json",
+    "predecessor_config_sha256": "5e5ff4f6b8afabff841ad0f02b91ba3fbe89b8c1acace36f1b324d9e7422f1ca",
+    "predecessor_interruption": "reports/theseus_vcm_source_acquisition_v3_interruption.json",
+    "predecessor_interruption_sha256": "cbab552a26f370289519337bd858efb2a2eeb969c6fe431c020cf8c593aa2c68",
+    "predecessor_state": "TRANSPORT_OWNER_REPLACEMENT_REQUIRED_NO_SOURCE_OR_MODEL_EXPOSURE",
+    "changes": [
+      "resolve head commit chronology through repos/{base}/pulls/{number}/commits rather than repos/{base}/commits/{fork_head}",
+      "catch transport subprocess failures and emit a PAUSED report instead of an uncaught traceback"
+    ],
+    "unchanged": [
+      "search head query window language and created-desc ordering",
+      "selection and panel-assignment seeds",
+      "all eligibility and license criteria",
+      "bounded worker count batch size and rank-order consumption",
+      "all source-content candidate evaluator model training serving D1 D2 and book closures"
+    ]
+  },
+  "source_bindings": [
+    {"id": "acquisition_owner_v4", "path": "scripts/theseus_vcm_source_acquisition_v4.py", "sha256": "379b6efccb3bb5b5eee5d1a114664500487b4ac9f23c870687dde2fc2461d38d"},
+    {"id": "pool_owner_v3", "path": "scripts/theseus_vcm_source_acquisition_v3.py", "sha256": "6a4930e06b4a8bda47fe5a7efff42347be238e23e7e8ea44a8eff0ff9cd33790"},
+    {"id": "eligibility_owner", "path": "scripts/theseus_vcm_source_acquisition.py", "sha256": "8754306311cd5b064ba7896705b51ed22edcd3319c79372cdc8f46e51a7f1ca9"},
+    {"id": "vcm_claim_instrument", "path": "configs/theseus_vcm_claim_instrument.json", "sha256": "b991705c9d41c9660810dc7a877d0e33e55810eb3dec1e0a1f1d711569a52947"},
+    {"id": "vcm_claim_instrument_audit", "path": "reports/theseus_vcm_claim_instrument_audit.json", "sha256": "dbb47e3eda37491513e6f0f07d3310b55f2b393297e02656f28eaa4574d172dc"},
+    {"id": "predecessor_config", "path": "configs/theseus_vcm_source_acquisition_v3.json", "sha256": "5e5ff4f6b8afabff841ad0f02b91ba3fbe89b8c1acace36f1b324d9e7422f1ca"},
+    {"id": "predecessor_interruption", "path": "reports/theseus_vcm_source_acquisition_v3_interruption.json", "sha256": "cbab552a26f370289519337bd858efb2a2eeb969c6fe431c020cf8c593aa2c68"}
+  ],
+  "chronology": {
+    "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+    "search_window_start_utc": "2026-07-30T12:35:42Z",
+    "search_window_end_utc": "2026-08-03T08:54:12Z",
+    "pr_created_after_snapshot_required": true,
+    "pr_merged_in_window_required": true,
+    "head_commit_after_snapshot_required": true
+  },
+  "search": {
+    "provider": "GitHub public REST API via authenticated gh CLI",
+    "resource": "search/issues plus pull/repository/files/PR-commit metadata",
+    "qualifiers": ["is:pr", "is:merged", "archived:false"],
+    "languages": ["Python", "TypeScript", "JavaScript", "Rust"],
+    "sort": "created",
+    "order": "desc",
+    "pages_per_language": 10,
+    "items_per_page": 100,
+    "maximum_search_metadata_rows": 4000,
+    "qualification_workers": 8,
+    "qualification_batch_size": 40,
+    "rank_order_consumption_required": true,
+    "raw_response_bodies_retained": false,
+    "response_digest_chain_required": true
+  },
+  "selection": {
+    "ranking": "ascending sha256(selection_seed + normalized_repository + '#' + pull_request_number)",
+    "selection_seed": "theseus-vcm-source-selection-v1-2026-08-03",
+    "one_pull_request_per_repository": true,
+    "prior_repository_denylist_source": "all tracked configs/*.json repository fields matching owner/name before this config was created",
+    "prior_repository_denylist_count": 87,
+    "prior_repository_denylist_sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774",
+    "minimum_repository_stars": 1,
+    "repository_must_not_be_fork_archived_or_disabled": true,
+    "draft_pull_requests_forbidden": true,
+    "bot_authors_forbidden": true,
+    "changed_file_count_min": 2,
+    "changed_file_count_max": 12,
+    "changed_line_count_min": 2,
+    "changed_line_count_max": 800,
+    "require_non_test_source_change": true,
+    "require_machine_verifier_change": true,
+    "deleted_only_source_changes_forbidden": true,
+    "lockfile_generated_vendor_only_changes_forbidden": true,
+    "license_spdx_allowlist": [
+      "0BSD", "AGPL-3.0", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause",
+      "BSL-1.0", "EPL-2.0", "EUPL-1.2", "GPL-2.0", "GPL-3.0", "ISC",
+      "LGPL-2.1", "LGPL-3.0", "MIT", "MPL-2.0", "PSF-2.0", "Unlicense", "Zlib"
+    ],
+    "eligibility_is_computed_without_model_outputs": true,
+    "candidate_visible_packet_materialization_authorized": false,
+    "target_source_content_retrieval_authorized": false
+  },
+  "panels": {
+    "control_qualification": {"task_count": 9, "language_quotas": {"Python": 3, "TypeScript": 2, "JavaScript": 2, "Rust": 2}},
+    "claim": {"task_count": 53, "language_quotas": {"Python": 17, "TypeScript": 14, "JavaScript": 11, "Rust": 11}},
+    "total_task_count": 62,
+    "source_disjoint": true,
+    "assignment": "Within each language, take the prospectively ranked eligible total, then assign the lowest independent panel hashes to the control quota and the remainder to claim.",
+    "assignment_seed": "theseus-vcm-panel-assignment-v1-2026-08-03",
+    "reference_outputs_may_select_or_assign_tasks": false
+  },
+  "authority": {
+    "public_metadata_queries_authorized_after_green_preflight": true,
+    "public_source_content_retrieval_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": 0,
+    "external_reference_calls_authorized": 0,
+    "hidden_evaluation_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output": "reports/theseus_vcm_source_acquisition_v4.json",
+  "maximum_inference": "A GREEN v4 preflight authorizes one fork-safe public metadata run only. A GREEN acquisition report proves only that 62 fresh, licensed, structurally machine-verifiable, mutually source-disjoint repository/PR identities were selected by the frozen rule. It does not authorize source-content retrieval, task packets, candidate generation, local or Luna calls, hidden evaluation, D1, D2, training, serving, book support movement, or a VCM usefulness claim."
+}

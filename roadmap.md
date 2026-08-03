@@ -445,6 +445,11 @@ zero source, evaluator, or model exposure. V4 may only use the PR commit-list
 endpoint for chronology and fail paused on transport errors; the pool,
 eligibility, randomization, panels, and authority must remain unchanged.
 
+V4 is prospectively sealed and GREEN at zero queries. It resolves chronology
+through the base PR's commit list, including fork-origin PRs, and converts any
+transport exception into a PAUSED receipt. Pool, eligibility, rank order,
+panels, and authority are unchanged. One v4 run is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -632,7 +637,8 @@ Use existing owners; create no new cleanup or report family.
    claim panels. Attempt 1 failed closed with an insufficient Python pool;
    v2 improved eligibility but still failed closed. Preserve both; seal and run
    the pool-expansion v3 exposed a fork-head transport bug. Preserve it, repair
-   only that owner, rerun once, then bind exact sources and packets,
+   only that owner; v4 is green at zero queries. Run it once, then bind exact
+   sources and packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim

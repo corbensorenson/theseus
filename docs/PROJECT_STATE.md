@@ -135,6 +135,11 @@ zero source-content/evaluator/model calls, and no source-pool adequacy inference
 V4 may only resolve chronology through the PR commit-list endpoint and add a
 fail-paused transport receipt; pool and eligibility changes are forbidden.
 
+The v4 fork-safe transport repair is now prospectively sealed and GREEN at zero
+queries. It resolves head chronology through the base PR's commit list and turns
+transport exceptions into PAUSED receipts. The v3 pool, rank order, filters,
+panels, and authority are unchanged. One v4 metadata run is active.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -314,7 +319,8 @@ authorize regenerating historical reports or reopening neural work.
    the v2 repair improved eligibility but still failed closed. Preserve it; V3
    now has a green zero-query preflight that expands only the deterministic
    search pool and batches transport, but its run exposed a fork-head transport
-   bug before any identity sealed. Preserve it; repair only that owner. Then
+   bug before any identity sealed. It is preserved and v4's owner-only repair is
+   green at zero queries. Run it once. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.
