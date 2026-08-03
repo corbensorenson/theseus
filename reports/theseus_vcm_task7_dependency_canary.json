@@ -4,14 +4,14 @@
     "path": "configs/theseus_vcm_task7_dependency_canary.json",
     "sha256": "974344944cf2ebcaac56c0032c9d9cf3f8faf6b575d04237114e5dd7b684d617"
   },
-  "created_utc": "2026-08-03T18:48:29.533044Z",
-  "dependency_installations": 0,
-  "execution_performed": false,
+  "created_utc": "2026-08-03T18:49:41.000972Z",
+  "dependency_installations": 2,
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN canary proves only that task 7's identical parent/target pnpm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a content-addressed store while exact dependency versions and source immutability hold. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim.",
-  "network_denied_dependency_installations": 0,
-  "network_enabled_dependency_installations": 0,
+  "network_denied_dependency_installations": 1,
+  "network_enabled_dependency_installations": 1,
   "observed_parent_target_dependency_identities": {
     "parent": {
       "lock": {
@@ -40,7 +40,113 @@
   },
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_task7_dependency_canary_v1",
+  "receipts": {
+    "free_bytes_after": 36766502912,
+    "free_bytes_before": 36763705344,
+    "offline_installed_dependencies": {
+      "faults": [],
+      "observed": {
+        "@moshcoder/moshpit-dns": {
+          "package_json_sha256": "0a43efb0ee430119c00ec568f32dd37eb9898adbe4437378c876967a59f94c69",
+          "version": "0.2.2"
+        }
+      }
+    },
+    "offline_replay": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/pnpm-10.32.1/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--reporter=silent",
+        "--offline",
+        "--store-dir",
+        "/private/tmp/theseus-vcm-task7-deps-geim_14c/store"
+      ],
+      "duration_ms": 366.397,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 119.312,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "online_acquisition": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/pnpm-10.32.1/bin/pnpm.cjs",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--reporter=silent",
+        "--store-dir",
+        "/private/tmp/theseus-vcm-task7-deps-geim_14c/store"
+      ],
+      "duration_ms": 1054.205,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 158.062,
+      "network_denied": false,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "online_installed_dependencies": {
+      "faults": [],
+      "observed": {
+        "@moshcoder/moshpit-dns": {
+          "package_json_sha256": "0a43efb0ee430119c00ec568f32dd37eb9898adbe4437378c876967a59f94c69",
+          "version": "0.2.2"
+        }
+      }
+    },
+    "repository_extraction": {
+      "member_receipts_sha256": "29564cd2656ec2551872162a8558ff4125b189759769bb4854cfe1ff0cabf94b",
+      "regular_file_bytes": 1717748,
+      "regular_file_count": 244
+    },
+    "repository_source_after": {
+      "bytes": 1717748,
+      "file_count": 244,
+      "identity_sha256": "29564cd2656ec2551872162a8558ff4125b189759769bb4854cfe1ff0cabf94b"
+    },
+    "repository_source_before": {
+      "bytes": 1717748,
+      "file_count": 244,
+      "identity_sha256": "29564cd2656ec2551872162a8558ff4125b189759769bb4854cfe1ff0cabf94b"
+    },
+    "retained_store": {
+      "bound_lock_integrity_sha512_hex": "c68080573157ec229e0848003b9f1523c78756276ec0416288c6cf5aa135e18c8fc25b64f5f93c5c8e2fd732fd8da537b496152bfc91502b8a7f8061246d6d1a",
+      "bytes": 56759,
+      "file_count": 9,
+      "files_identity_sha256": "07d55efddf6c0caea823638b5624cae4a514c5d21169ab362aab9a65f2654b96",
+      "path": "runtime/vcm_evaluator/dependency_store/pnpm/task-07"
+    },
+    "store": {
+      "bound_lock_integrity_sha512_hex": "c68080573157ec229e0848003b9f1523c78756276ec0416288c6cf5aa135e18c8fc25b64f5f93c5c8e2fd732fd8da537b496152bfc91502b8a7f8061246d6d1a",
+      "bytes": 56759,
+      "file_count": 9,
+      "files_identity_sha256": "07d55efddf6c0caea823638b5624cae4a514c5d21169ab362aab9a65f2654b96",
+      "path": "/private/tmp/theseus-vcm-task7-deps-geim_14c/store"
+    }
+  },
   "repository_runner_executions": 0,
-  "state": "READY_FOR_TASK_7_EXACT_PNPM_DEPENDENCY_CANARY",
-  "trigger_state": "PAUSED"
+  "state": "TASK_7_EXACT_PNPM_DEPENDENCY_CACHE_ACQUIRED_AND_OFFLINE_REPLAY_QUALIFIED",
+  "trigger_state": "GREEN"
 }
