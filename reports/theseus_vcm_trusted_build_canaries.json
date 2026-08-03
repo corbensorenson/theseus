@@ -1,0 +1,359 @@
+{
+  "candidate_or_control_calls": 0,
+  "command_receipt_count": 16,
+  "config": {
+    "path": "configs/theseus_vcm_trusted_build_canaries.json",
+    "sha256": "495fbf6d667f07d90fbfd2635a00496708698d79406756d4750b07d1673e4e17"
+  },
+  "created_utc": "2026-08-03T16:58:59.149112Z",
+  "dependency_prefetch_authorized": false,
+  "explicitly_unqualified_scopes": [
+    "yarn_runtime",
+    "remote_dependency_prefetch",
+    "real_lock_resolution",
+    "untrusted_install_scripts",
+    "untrusted_repository_transpilation",
+    "untrusted_rust_or_build_script_compilation",
+    "repository_runner_adequacy"
+  ],
+  "external_reference_calls": 0,
+  "faults": [
+    "canary_failed:deno_typescript_check",
+    "canary_failed:rust_binary_run",
+    "canary_failed:rust_compile"
+  ],
+  "maximum_inference": "A GREEN report qualifies only trusted local offline fixtures for exact pip, npm, pnpm, Bun, Deno/TypeScript, and rustc mechanics under the declared network and write sandbox. It does not qualify Yarn, remote prefetch, real repository locks, untrusted install/build scripts, repository compilation, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_trusted_build_canaries_v1",
+  "qualification_executed": true,
+  "qualified_scopes": [],
+  "receipts": {
+    "bun_lifecycle_script_suppression": {
+      "passed": true,
+      "sentinel_hits": []
+    },
+    "bun_local_import": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "-e",
+        "const d=require('trusted-dep');if(d.value!==7)process.exit(2)"
+      ],
+      "cwd_leaf": "bun",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "bun_offline_install": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "cwd_leaf": "bun",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 79,
+      "stdout_sha256": "af0941f8d2311b77d6e865e6920c07e8cd952006b600906bb6e6e6a2ff842758"
+    },
+    "bun_offline_lock": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "install",
+        "--lockfile-only",
+        "--offline",
+        "--ignore-scripts"
+      ],
+      "cwd_leaf": "bun",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 15,
+      "stderr_sha256": "47f54b390e29cf9d23c0e13e15bbff6224c42e067872d642b63deb38a8c5152c",
+      "stderr_tail": "Saved lockfile\n",
+      "stdout_bytes": 67,
+      "stdout_sha256": "b9ea163ae5f1bfd1732fd541017db73a6d6ac0b2399a0bc08d43a98608c437f1"
+    },
+    "deno_typescript_check": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Users/corbensorenson/miniforge3/bin/deno",
+        "check",
+        "--cached-only",
+        "--no-config",
+        "/private/tmp/theseus-vcm-build-tmuarf0k/typescript/canary.ts"
+      ],
+      "cwd_leaf": "typescript",
+      "project_selected_quality_token_cap": null,
+      "returncode": 1,
+      "stderr_bytes": 138,
+      "stderr_sha256": "7eab595100a4e2e8fbc95cda77c27338b0ee168657d49a2aa5190f786b8aafa8",
+      "stderr_tail": "error: unexpected argument '--cached-only' found\n\n  tip: a similar argument exists: '--doc-only'\n\nUsage: deno check --doc-only [file]...\n\n",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "deno_typescript_run": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Users/corbensorenson/miniforge3/bin/deno",
+        "run",
+        "--cached-only",
+        "--no-config",
+        "/private/tmp/theseus-vcm-build-tmuarf0k/typescript/canary.ts"
+      ],
+      "cwd_leaf": "typescript",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "npm_lifecycle_script_suppression": {
+      "passed": true,
+      "sentinel_hits": []
+    },
+    "npm_local_import": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "-e",
+        "const d=require('trusted-dep');if(d.value!==7)process.exit(2)"
+      ],
+      "cwd_leaf": "npm",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "npm_offline_install": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
+        "ci",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cwd_leaf": "npm",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 26,
+      "stdout_sha256": "24603d8ffa4e9a3453c487a93ee79c232922189532a33a5133869f2bf6e85166"
+    },
+    "npm_offline_lock": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/opt/homebrew/Cellar/node@22/22.15.0/lib/node_modules/npm/bin/npm-cli.js",
+        "install",
+        "--package-lock-only",
+        "--offline",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund"
+      ],
+      "cwd_leaf": "npm",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 21,
+      "stdout_sha256": "1052e194dd8e3d2edb19ae94a2bd19b6239cac306c36dfa757cfc4b0986df55c"
+    },
+    "pip_import": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "-c",
+        "import trusted_dep; assert trusted_dep.VALUE == 7"
+      ],
+      "cwd_leaf": "pip",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pip_offline_install": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "-m",
+        "pip",
+        "install",
+        "--disable-pip-version-check",
+        "--no-index",
+        "--find-links",
+        "/private/tmp/theseus-vcm-build-tmuarf0k/pip/wheelhouse",
+        "--target",
+        "/private/tmp/theseus-vcm-build-tmuarf0k/pip/site",
+        "trusted-dep==1.0.0"
+      ],
+      "cwd_leaf": "pip",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 216,
+      "stdout_sha256": "e89a430fc3a3ec6e64cb04cc36f4407510186c216bb81e32de34177101c94f56"
+    },
+    "pnpm_lifecycle_script_suppression": {
+      "passed": true,
+      "sentinel_hits": []
+    },
+    "pnpm_local_import": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "-e",
+        "const d=require('trusted-dep');if(d.value!==7)process.exit(2)"
+      ],
+      "cwd_leaf": "pnpm",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "pnpm_offline_install": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs",
+        "install",
+        "--offline",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "cwd_leaf": "pnpm",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 244,
+      "stdout_sha256": "8d393fc299ff5ef475a580ef1ac1f499577e9d310721cbe917030e525b7765da"
+    },
+    "pnpm_offline_lock": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
+        "/opt/homebrew/lib/node_modules/pnpm/bin/pnpm.cjs",
+        "install",
+        "--lockfile-only",
+        "--offline",
+        "--ignore-scripts"
+      ],
+      "cwd_leaf": "pnpm",
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 149,
+      "stdout_sha256": "53dbd61fce324891af75fe2d9f7557c8aefddf2ffdec3860cf59419cbc33abe0"
+    },
+    "rust_binary_run": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary"
+      ],
+      "cwd_leaf": "rust",
+      "project_selected_quality_token_cap": null,
+      "returncode": 71,
+      "stderr_bytes": 114,
+      "stderr_sha256": "a73812f573922f7797d54353613a949f7b03e9e51a53eaba0e06c9bb0c38d102",
+      "stderr_tail": "sandbox-exec: execvp() of '/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary' failed: No such file or directory\n",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "rust_compile": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc",
+        "--edition=2021",
+        "/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary.rs",
+        "-o",
+        "/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary"
+      ],
+      "cwd_leaf": "rust",
+      "project_selected_quality_token_cap": null,
+      "returncode": 1,
+      "stderr_bytes": 3548,
+      "stderr_sha256": "3cd416f86feeb550922607eec523e2adf5702a3893b3730e31fc9c00976d70d8",
+      "stderr_tail": "4-apple-darwin/lib/librustc_demangle-861081a9059d47df.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libstd_detect-4360eaf6e1c31c57.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libhashbrown-89036b6978d8ce69.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_std_workspace_alloc-254a7ed22f26dd9e.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libminiz_oxide-335753488e82bec9.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libadler2-7473a65ef0be1013.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libunwind-752134edb4592c89.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcfg_if-f157901651a0fbf7.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/liblibc-97c97923a97d61ff.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/librustc_std_workspace_core-99d3baad06697c99.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/liballoc-0d39bbe8d4a88c82.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcore-fab9fe95ee4975fc.rlib\" \"/Users/corbensorenson/.rustup/toolchains/stable-aarch64-apple-darwin/lib/rustlib/aarch64-apple-darwin/lib/libcompiler_builtins-d4cfd55d1b455f62.rlib\" \"-lSystem\" \"-lc\" \"-lm\" \"-arch\" \"arm64\" \"-mmacosx-version-min=11.0.0\" \"-o\" \"/private/tmp/theseus-vcm-build-tmuarf0k/rust/canary\" \"-Wl,-dead_strip\" \"-nodefaultlibs\"\n\nerror: aborting due to 1 previous error\n\n",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "sandbox_denials": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "command": [
+        "/Library/Frameworks/Python.framework/Versions/3.12/bin/python3.12",
+        "-c",
+        "import json,pathlib,socket\no=pathlib.Path('/Users/corbensorenson/Documents/Theseus-Hive/runtime/control/vcm_trusted_build_escape');r={}\ntry:o.write_text('x');r['outside_write_denied']=False\nexcept OSError:r['outside_write_denied']=True\ns=socket.socket();s.settimeout(.2)\ntry:s.connect(('127.0.0.1',9));r['network_denied']=False\nexcept OSError:r['network_denied']=True\nprint(json.dumps(r,sort_keys=True))\n"
+      ],
+      "cwd_leaf": "theseus-vcm-build-tmuarf0k",
+      "expected_denials": [
+        "network_denied",
+        "outside_write_denied"
+      ],
+      "passed": true,
+      "project_selected_quality_token_cap": null,
+      "returncode": 0,
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_tail": "",
+      "stdout_bytes": 55,
+      "stdout_sha256": "d23a414460f4b0861013af68a12fdc99606eb692107a330883215762e1291d0b"
+    }
+  },
+  "repository_execution_authorized": false,
+  "state": "TRUSTED_OFFLINE_BUILD_CANARIES_FAILED",
+  "toolchain_identity_report": {
+    "path": "reports/theseus_vcm_toolchain_identity_audit.json",
+    "sha256": "76a137b68d047c0bc1c1b2ad4913f8ee622605b5493cf516ef22997e5e624d68"
+  },
+  "trigger_state": "RED"
+}
