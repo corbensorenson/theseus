@@ -1,0 +1,67 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_source_candidates_v3",
+  "state": "AMENDED_AFTER_CONSTRUCT_REVIEW_BEFORE_EVALUATOR_OR_MODEL",
+  "adequacy_preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
+  "adequacy_preregistration_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
+  "predecessor_registry": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v2.json",
+  "predecessor_registry_sha256": "a9d406faa639ed4d1b7939a0eb7ccf6ba777fc89006dac63f9dc670f7dea5359",
+  "trigger_construct_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review.json",
+  "trigger_construct_review_sha256": "4f3e6023d5ec55ea47c44d89dc0810675de7f7abf53e74e85abfe9bef40aa11c",
+  "replacement_selection": "reports/theseus_semantic_ir_production_adequacy_task11_replacement_selection.json",
+  "replacement_selection_sha256": "7f3de66c6b9390b4fedb622ee74a18b13070ab745da1ac1dfe4245fca1911004",
+  "selection_method": "One source-only task replacement after evaluator-custody construct review invalidated task 11 before task-packet construction or any evaluator/model execution. The replacement used only public metadata, changed-file patches, and license evidence under the frozen stratum and panel design.",
+  "replacement": {
+    "index": 11,
+    "from": {
+      "index": 11,
+      "repository": "OregonDigital/od2_md_scripts",
+      "pull_request": 45,
+      "title": "Validation bug fixes",
+      "merged_utc": "2026-08-01T20:20:26Z",
+      "merge_revision": "a6a9e1ace0796a4c930602b4d4e191a2ea0410a3",
+      "declared_license_spdx": "CC0-1.0",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "stratum": "insert_guard_or_setup_before",
+      "selected_source_paths": [
+        "od2validation.py"
+      ]
+    },
+    "to": {
+      "index": 11,
+      "repository": "stn1slv/md-fetch",
+      "pull_request": 27,
+      "title": "fix(core): lazy load tavily to prevent ModuleNotFoundError when uninstalled",
+      "merged_utc": "2026-08-01T15:49:44Z",
+      "merge_revision": "88edf455e3a015de4bbd9a1e2c3b6101a0c031d0",
+      "declared_license_spdx": "MIT",
+      "license_paths": [
+        "LICENSE"
+      ],
+      "stratum": "insert_guard_or_setup_before",
+      "selected_source_paths": [
+        "src/mdfetch/fallback.py"
+      ]
+    },
+    "statistical_design_changed": false,
+    "model_or_evaluator_observed": false,
+    "user_or_operator_gate": false
+  },
+  "task_count": 18,
+  "boundaries": {
+    "public_metadata_and_patch_calls_after_source_seal": 34,
+    "prior_network_source_calls": 78,
+    "prior_source_archives_materialized": 36,
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "This overlay replaces one construct-invalid source row before evaluator or model execution. It preserves the other 17 candidates and the frozen 18-task statistical design; it provides no evaluator, mechanics, capability, claim, D1, D2, training, or book evidence."
+}

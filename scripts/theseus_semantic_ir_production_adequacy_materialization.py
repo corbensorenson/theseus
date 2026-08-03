@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_semantic_ir_production_adequacy as adequacy  # noqa: E402
+import theseus_semantic_ir_production_adequacy_acquisition as acquisition  # noqa: E402
 
 
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_materialization.json"
@@ -176,7 +177,9 @@ def materialize(config_path: Path, *, client: ContentClient) -> dict[str, Any]:
     if before["trigger_state"] != "GREEN":
         return before
     config = read_json(config_path)
-    candidates = read_json(resolve(str(config["source_candidates"])))
+    candidates = acquisition.load_candidate_registry(
+        resolve(str(config["source_candidates"]))
+    )
     metadata = read_json(resolve(str(config["metadata_report"])))
     metadata_by_index = {
         int(row["index"]): row for row in adequacy.dictionaries(metadata.get("rows"))

@@ -21,12 +21,13 @@ import theseus_d1_online_metadata_acquisition as github_metadata  # noqa: E402
 import theseus_semantic_ir_production_adequacy as adequacy  # noqa: E402
 
 
-DEFAULT_CANDIDATES = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_candidates_v2.json"
+DEFAULT_CANDIDATES = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_candidates_v3.json"
 DEFAULT_REVISION_POLICY = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_revision_policy.json"
 DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_metadata.json"
 POLICY = "project_theseus_semantic_ir_production_adequacy_acquisition_v1"
 CANDIDATE_POLICY_V1 = "project_theseus_semantic_ir_production_adequacy_source_candidates_v1"
 CANDIDATE_POLICY_V2 = "project_theseus_semantic_ir_production_adequacy_source_candidates_v2"
+CANDIDATE_POLICY_V3 = "project_theseus_semantic_ir_production_adequacy_source_candidates_v3"
 HEX40 = set("0123456789abcdef")
 
 
@@ -103,7 +104,7 @@ def preflight(
     path: Path = DEFAULT_CANDIDATES,
     revision_policy_path: Path = DEFAULT_REVISION_POLICY,
 ) -> dict[str, Any]:
-    candidates = read_json(path)
+    candidates = load_candidate_registry(path)
     adequacy_path = resolve(str(candidates.get("adequacy_preregistration") or ""))
     config = read_json(adequacy_path) if adequacy_path.is_file() else {}
     faults = audit_candidate_registry(candidates, config)
@@ -145,7 +146,7 @@ def acquire(
     before = preflight(path, revision_policy_path)
     if before["trigger_state"] != "GREEN":
         return before
-    candidates = read_json(path)
+    candidates = load_candidate_registry(path)
     rows: list[dict[str, Any]] = []
     faults: list[str] = []
     for selected in dictionaries(candidates.get("candidates")):
@@ -267,13 +268,13 @@ def audit_candidate_registry(
 ) -> list[str]:
     faults: list[str] = []
     policy = registry.get("policy")
-    if policy not in {CANDIDATE_POLICY_V1, CANDIDATE_POLICY_V2}:
+    if policy not in {CANDIDATE_POLICY_V1, CANDIDATE_POLICY_V2, CANDIDATE_POLICY_V3}:
         faults.append("candidate_registry_policy_invalid")
-    expected_state = (
-        "FIXED_BEFORE_SOURCE_MATERIALIZATION_OR_EVALUATOR_EXECUTION"
-        if policy == CANDIDATE_POLICY_V1
-        else "AMENDED_AFTER_SOURCE_ONLY_FAILURE_BEFORE_EVALUATOR_OR_MODEL"
-    )
+    expected_state = {
+        CANDIDATE_POLICY_V1: "FIXED_BEFORE_SOURCE_MATERIALIZATION_OR_EVALUATOR_EXECUTION",
+        CANDIDATE_POLICY_V2: "AMENDED_AFTER_SOURCE_ONLY_FAILURE_BEFORE_EVALUATOR_OR_MODEL",
+        CANDIDATE_POLICY_V3: "AMENDED_AFTER_CONSTRUCT_REVIEW_BEFORE_EVALUATOR_OR_MODEL",
+    }.get(policy)
     if registry.get("state") != expected_state:
         faults.append("candidate_registry_state_invalid")
     rows = dictionaries(registry.get("candidates"))
@@ -311,7 +312,9 @@ def audit_candidate_registry(
             observed[stratum] += 1
     if observed != expected_strata:
         faults.append("candidate_strata_not_balanced")
-    if policy == CANDIDATE_POLICY_V2:
+    if policy == CANDIDATE_POLICY_V3:
+        faults.extend(audit_construct_replacement(registry))
+    elif policy == CANDIDATE_POLICY_V2:
         faults.extend(audit_source_only_amendment(registry))
     else:
         boundaries = mapping(registry.get("boundaries"))
@@ -401,6 +404,115 @@ def audit_source_only_amendment(registry: dict[str, Any]) -> list[str]:
     return faults
 
 
+def audit_construct_replacement(registry: dict[str, Any]) -> list[str]:
+    faults: list[str] = []
+    predecessor_path = resolve(str(registry.get("predecessor_registry") or ""))
+    review_path = resolve(str(registry.get("trigger_construct_review") or ""))
+    selection_path = resolve(str(registry.get("replacement_selection") or ""))
+    if (
+        not predecessor_path.is_file()
+        or sha256_file(predecessor_path)
+        != str(registry.get("predecessor_registry_sha256") or "")
+    ):
+        faults.append("construct_replacement_predecessor_binding_invalid")
+        predecessor = {}
+    else:
+        predecessor = read_json(predecessor_path)
+    if (
+        not review_path.is_file()
+        or sha256_file(review_path)
+        != str(registry.get("trigger_construct_review_sha256") or "")
+    ):
+        faults.append("construct_replacement_review_binding_invalid")
+        review = {}
+    else:
+        review = read_json(review_path)
+    if (
+        review.get("trigger_state") != "RED"
+        or review.get("panel_admitted_for_evaluator_qualification") is not False
+        or [integer(row.get("index")) for row in dictionaries(review.get("invalid_tasks"))]
+        != [11]
+    ):
+        faults.append("construct_replacement_review_invalid")
+    if (
+        not selection_path.is_file()
+        or sha256_file(selection_path)
+        != str(registry.get("replacement_selection_sha256") or "")
+    ):
+        faults.append("construct_replacement_selection_binding_invalid")
+        selection = {}
+    else:
+        selection = read_json(selection_path)
+    replacement = mapping(registry.get("replacement"))
+    before_expected = mapping(replacement.get("from"))
+    after_expected = mapping(replacement.get("to"))
+    if (
+        selection.get("trigger_state") != "GREEN"
+        or mapping(selection.get("selected")) != {
+            **after_expected,
+            "observed_base_revision": "9396bd1d14b37552b4de3bae528e3e9f45fd0302",
+            "observed_head_revision": "e8a97267ab169fba49f1d08fe56aca2e686169ca",
+            "license_file_blob_sha": "204efd1fbaecd9c16ea9d5c7573d58683be51e53",
+            "construct_basis": "The parent imports the optional Tavily dependency at module import. The target removes that eager import and inserts a local try/except ImportError setup guard before TavilyClient construction, preserving importability when the optional dependency is absent.",
+            "selection_disposition": "ADMIT_FOR_INDEPENDENT_METADATA_AND_SOURCE_REPLAY_ONLY",
+        }
+    ):
+        faults.append("construct_replacement_selection_invalid")
+    predecessor_rows = dictionaries(predecessor.get("candidates"))
+    current_rows = dictionaries(registry.get("candidates"))
+    changes = [
+        (before, after)
+        for before, after in zip(predecessor_rows, current_rows, strict=False)
+        if before != after
+    ]
+    if (
+        predecessor.get("policy") != CANDIDATE_POLICY_V2
+        or len(predecessor_rows) != len(current_rows)
+        or len(changes) != 1
+        or changes[0][0] != before_expected
+        or changes[0][1] != after_expected
+        or integer(replacement.get("index")) != 11
+        or integer(before_expected.get("index")) != 11
+        or integer(after_expected.get("index")) != 11
+        or before_expected.get("stratum") != "insert_guard_or_setup_before"
+        or after_expected.get("stratum") != before_expected.get("stratum")
+    ):
+        faults.append("construct_replacement_scope_invalid")
+    predecessor_repositories = {
+        str(row.get("repository") or "").lower() for row in predecessor_rows
+    }
+    if (
+        str(after_expected.get("repository") or "").lower() in predecessor_repositories
+        or replacement.get("statistical_design_changed") is not False
+        or replacement.get("model_or_evaluator_observed") is not False
+        or replacement.get("user_or_operator_gate") is not False
+    ):
+        faults.append("construct_replacement_contract_invalid")
+    prohibited = (
+        "parent_target_evaluator_executions",
+        "candidate_or_control_calls",
+        "local_model_calls",
+        "external_inference_calls",
+        "teacher_calls",
+        "training_rows_written",
+        "D1_cases_consumed",
+        "D2_cases_consumed",
+    )
+    selection_counters = mapping(selection.get("prohibited_counters"))
+    boundaries = mapping(registry.get("boundaries"))
+    if any(integer(selection_counters.get(key)) != 0 for key in prohibited):
+        faults.append("construct_replacement_selection_crossed_prohibited_boundary")
+    if (
+        integer(boundaries.get("public_metadata_and_patch_calls_after_source_seal")) != 34
+        or integer(boundaries.get("prior_network_source_calls")) != 78
+        or integer(boundaries.get("prior_source_archives_materialized")) != 36
+        or boundaries.get("user_or_operator_gate") is not False
+        or any(integer(boundaries.get(key)) != 0 for key in prohibited)
+    ):
+        faults.append("construct_replacement_boundary_invalid")
+    return faults
+
+
 def audit_revision_policy(policy_path: Path, candidate_path: Path) -> list[str]:
     if not policy_path.is_file():
         return ["source_revision_policy_missing"]
@@ -410,9 +522,15 @@ def audit_revision_policy(policy_path: Path, candidate_path: Path) -> list[str]:
         faults.append("source_revision_policy_invalid")
     if policy.get("state") != "FIXED_AFTER_SOURCE_ONLY_REVISION_FAILURE_BEFORE_EVALUATOR_OR_MODEL":
         faults.append("source_revision_policy_state_invalid")
+    candidate = read_json(candidate_path)
+    binding_path = candidate_path
+    binding_sha256 = sha256_file(candidate_path)
+    if candidate.get("policy") == CANDIDATE_POLICY_V3:
+        binding_path = resolve(str(candidate.get("predecessor_registry") or ""))
+        binding_sha256 = str(candidate.get("predecessor_registry_sha256") or "")
     if (
-        resolve(str(policy.get("candidate_registry") or "")) != candidate_path
-        or sha256_file(candidate_path) != str(policy.get("candidate_registry_sha256") or "")
+        resolve(str(policy.get("candidate_registry") or "")) != binding_path
+        or binding_sha256 != str(policy.get("candidate_registry_sha256") or "")
     ):
         faults.append("source_revision_candidate_binding_invalid")
     failures = adequacy.dictionaries(policy.get("trigger_failure_reports"))
@@ -494,6 +612,20 @@ def integer(value: Any) -> int:
 
 def read_json(path: Path) -> dict[str, Any]:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def load_candidate_registry(path: Path) -> dict[str, Any]:
+    registry = read_json(path)
+    if registry.get("policy") != CANDIDATE_POLICY_V3:
+        return registry
+    predecessor_path = resolve(str(registry.get("predecessor_registry") or ""))
+    predecessor = read_json(predecessor_path) if predecessor_path.is_file() else {}
+    rows = [dict(row) for row in dictionaries(predecessor.get("candidates"))]
+    replacement = mapping(registry.get("replacement"))
+    index = integer(replacement.get("index"))
+    if 1 <= index <= len(rows):
+        rows[index - 1] = dict(mapping(replacement.get("to")))
+    return {**registry, "candidates": rows}
 
 
 def write_json(path: Path, value: dict[str, Any]) -> None:

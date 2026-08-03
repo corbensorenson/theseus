@@ -1,0 +1,89 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_task11_replacement_selection_v1",
+  "trigger_state": "GREEN",
+  "purpose": "Replace the construct-invalid task 11 before evaluator qualification without changing the frozen stratum or statistical design.",
+  "trigger_construct_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review.json",
+  "trigger_construct_review_sha256": "4f3e6023d5ec55ea47c44d89dc0810675de7f7abf53e74e85abfe9bef40aa11c",
+  "selection_method": "Public GitHub search, repository metadata, pull-request metadata, changed-file patches, and license metadata only. No parent/target evaluator, candidate, control, local-model, reference-model, teacher, training, D1, D2, or user outcome informed selection.",
+  "frozen_contract": {
+    "replacement_index": 11,
+    "required_stratum": "insert_guard_or_setup_before",
+    "distinct_repository": true,
+    "merged_strictly_after_model_snapshot_utc": "2026-07-30T12:35:41.833397Z",
+    "programming_language": "Python",
+    "license_allowlist": [
+      "Apache-2.0",
+      "BSD-2-Clause",
+      "BSD-3-Clause",
+      "MIT",
+      "ISC",
+      "MPL-2.0",
+      "PSF-2.0",
+      "CC0-1.0"
+    ],
+    "statistical_design_changed": false,
+    "user_or_operator_gate": false
+  },
+  "selected": {
+    "index": 11,
+    "repository": "stn1slv/md-fetch",
+    "pull_request": 27,
+    "title": "fix(core): lazy load tavily to prevent ModuleNotFoundError when uninstalled",
+    "merged_utc": "2026-08-01T15:49:44Z",
+    "merge_revision": "88edf455e3a015de4bbd9a1e2c3b6101a0c031d0",
+    "observed_base_revision": "9396bd1d14b37552b4de3bae528e3e9f45fd0302",
+    "observed_head_revision": "e8a97267ab169fba49f1d08fe56aca2e686169ca",
+    "declared_license_spdx": "MIT",
+    "license_paths": [
+      "LICENSE"
+    ],
+    "license_file_blob_sha": "204efd1fbaecd9c16ea9d5c7573d58683be51e53",
+    "stratum": "insert_guard_or_setup_before",
+    "selected_source_paths": [
+      "src/mdfetch/fallback.py"
+    ],
+    "construct_basis": "The parent imports the optional Tavily dependency at module import. The target removes that eager import and inserts a local try/except ImportError setup guard before TavilyClient construction, preserving importability when the optional dependency is absent.",
+    "selection_disposition": "ADMIT_FOR_INDEPENDENT_METADATA_AND_SOURCE_REPLAY_ONLY"
+  },
+  "inspected_not_selected": [
+    {
+      "repository": "DEFRA/nrf-impact-assessor",
+      "pull_request": 115,
+      "reason": "The guard is embedded in a broad multi-unit refactor; a smaller same-stratum eligible source change was available."
+    },
+    {
+      "repository": "HKUDS/LightRAG",
+      "pull_request": 3529,
+      "reason": "The production delta introduces several validation and aggregation mechanisms; it is less construct-isolated than the selected optional-import guard."
+    },
+    {
+      "repository": "PowerGridModel/power-grid-model-ds",
+      "pull_request": 303,
+      "reason": "The change is a serialization expression/helper replacement, not the frozen insert-guard-or-setup-before stratum."
+    },
+    {
+      "repository": "RunestoneInteractive/rs",
+      "pull_request": 1331,
+      "reason": "Repository metadata reports NOASSERTION and license-file eligibility was not established during this bounded search."
+    }
+  ],
+  "search_receipt": {
+    "prior_calls_recorded_by_trigger_review": 14,
+    "new_search_queries": 4,
+    "new_candidate_metadata_patch_calls": 15,
+    "new_selected_license_file_calls": 1,
+    "public_metadata_and_patch_calls_after_source_seal_total": 34,
+    "failed_local_shell_expansions_before_transport": 1
+  },
+  "prohibited_counters": {
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "maximum_inference": "This source-only selection identifies one eligible replacement for independent metadata and source replay. It does not establish parent failure, target success, evaluator adequacy, Semantic-IR mechanics, a treatment effect, D1, D2, training value, or book support."
+}

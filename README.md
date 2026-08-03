@@ -121,8 +121,11 @@ normalization, safe membership, and selected-source differences for every task.
 No evaluator or model call informed either repair. Evaluator-custody construct
 review then failed the panel closed: task 11's selected-source delta is only a
 blank line and cannot represent its guard/setup stratum. Its RED receipt is
-preserved and autonomous licensed replacement search is active. The panel is not
-sealed and no adequacy observation is yet authorized.
+preserved. Autonomous source-only search selected MIT-licensed
+`stn1slv/md-fetch#27`, whose production delta inserts an optional-dependency
+setup guard before client construction. The unchanged 18-task registry passes
+zero-call preflight; metadata and source replay remain required before the panel
+can seal, and no adequacy observation is yet authorized.
 
 ## Repository Map
 

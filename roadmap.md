@@ -228,9 +228,12 @@ the active boundary; no model or reference call is yet authorized.
 
 Evaluator-custody construct review then found that task 11's selected source
 diff is only one blank line. The archive layer remains valid, but the task panel
-is RED because a byte difference is not a causal guard/setup mechanism. Replace
-that task from a distinct licensed post-snapshot repository under the unchanged
-stratum and statistical design before any evaluator or model call.
+is RED because a byte difference is not a causal guard/setup mechanism. A
+source-only search selected MIT-licensed `stn1slv/md-fetch#27` as the replacement:
+its production delta removes an eager optional import and inserts a bounded
+ImportError setup guard before client construction. The other 17 tasks, stratum
+balance, and statistical design are unchanged. Replay all 18 metadata and source
+pairs before evaluator admission or any model call.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

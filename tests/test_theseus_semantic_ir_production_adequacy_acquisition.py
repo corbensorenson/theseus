@@ -62,20 +62,20 @@ def test_candidate_registry_preflight_is_green_and_zero_call() -> None:
 
 
 def test_source_only_amendment_is_exactly_one_path_and_pre_model() -> None:
-    registry = json.loads(acquisition.DEFAULT_CANDIDATES.read_text())
+    registry = acquisition.load_candidate_registry(acquisition.DEFAULT_CANDIDATES)
     config = json.loads(
         (ROOT / registry["adequacy_preregistration"]).read_text()
     )
     assert acquisition.audit_candidate_registry(registry, config) == []
     tampered = json.loads(json.dumps(registry))
     tampered["candidates"][4]["selected_source_paths"] = ["another.py"]
-    assert "amendment_scope_not_single_candidate" in acquisition.audit_candidate_registry(
+    assert "construct_replacement_scope_invalid" in acquisition.audit_candidate_registry(
         tampered, config
     )
 
 
 def test_independent_metadata_row_recomputes_parent_files_and_license() -> None:
-    registry = json.loads(acquisition.DEFAULT_CANDIDATES.read_text())
+    registry = acquisition.load_candidate_registry(acquisition.DEFAULT_CANDIDATES)
     selected = registry["candidates"][0]
     row, faults = acquisition.fetch_and_audit_candidate(
         FakeClient(selected), selected
@@ -89,7 +89,7 @@ def test_independent_metadata_row_recomputes_parent_files_and_license() -> None:
 
 
 def test_metadata_row_rejects_source_and_license_mismatch() -> None:
-    registry = json.loads(acquisition.DEFAULT_CANDIDATES.read_text())
+    registry = acquisition.load_candidate_registry(acquisition.DEFAULT_CANDIDATES)
     selected = dict(registry["candidates"][0])
     selected["selected_source_paths"] = ["missing.py"]
     selected["license_paths"] = ["WRONG"]
