@@ -131,7 +131,10 @@ separate v4 directory, and passes zero-call preflight. Its source replay is now
 GREEN for 18/18 pairs and 36 archives; an explicit-hash network-free audit
 verified all receipts and selected-source differences. Renewed construct review
 names one causal slice per task and opens evaluator qualification only. The pool
-is not sealed and no adequacy observation is yet authorized.
+is not sealed and no adequacy observation is yet authorized. Independent
+dependency-stubbed evaluator qualification is now GREEN for all 18 slices across
+36 parent/target observations and 72 controls. Candidate-visible packet
+materialization and a recursive anti-cheating audit remain before any model call.
 
 ## Repository Map
 

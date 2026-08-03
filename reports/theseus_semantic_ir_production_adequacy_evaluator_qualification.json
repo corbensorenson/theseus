@@ -1,0 +1,835 @@
+{
+  "candidate_or_model_exposure_authorized": false,
+  "construct_review": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_source_construct_review_v2.json",
+    "sha256": "bf2780ba8e38e2d9959aaee4603ca3e7d67907e9f8dda855291a72827476e053"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "evaluator_control_executions": 72,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "parent_target_evaluator_executions": 36,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "evaluator_owner": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_evaluator_qualification.py",
+    "sha256": "0a5f6bdf5cdccbb99cb5484851df4568786efa62a096f3ef89320080f9bd007e"
+  },
+  "faults": [],
+  "green_task_count": 18,
+  "materialization_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_materialization_v4.json",
+    "sha256": "7572e6ebb82ae6b16575298c42450a31d7c50ce2823fd5fc6346b12d6216f122"
+  },
+  "maximum_inference": "A GREEN report establishes only that each independent causal-slice evaluator rejects the frozen parent, accepts the frozen target and a benign-equivalent variant, and rejects required-mechanism, missing-path, and unauthorized-path controls. It does not establish candidate competence, a Semantic-IR treatment effect, full upstream repository correctness, D1, D2, training value, serving, or ASI Stack book support.",
+  "panel_admitted_for_task_packet_materialization": true,
+  "policy": "project_theseus_semantic_ir_production_adequacy_evaluator_qualification_v1",
+  "qualification_method": "Evaluator-custody AST extraction plus dependency-stubbed behavioral micro-harnesses for the named causal slice. Checks are source-disjoint from upstream tests and accept a benign comment variant rather than exact bytes.",
+  "rows": [
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 1,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-01",
+      "selected_source_paths": [
+        "src/prioris_mcp/storage.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 2,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-02",
+      "selected_source_paths": [
+        "sktime/transformations/tsfresh.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 3,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-03",
+      "selected_source_paths": [
+        "tests/components/compit/conftest.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 4,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": "AssertionError:expected one ._resolved_path, found 0",
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-04",
+      "selected_source_paths": [
+        "src/lintle/cli.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 5,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-05",
+      "selected_source_paths": [
+        "backend/app/modules/catalog/maps/style_json.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 6,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-06",
+      "selected_source_paths": [
+        "numpy/f2py/auxfuncs.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 7,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-07",
+      "selected_source_paths": [
+        "pyranges1/range_frame/range_frame.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 8,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-08",
+      "selected_source_paths": [
+        "src/qplot/tools/worker.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 9,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": "AssertionError:expected one ._split_oversized, found 0",
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-09",
+      "selected_source_paths": [
+        "linafish/ingest.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 10,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-10",
+      "selected_source_paths": [
+        "studio/backend/utils/utils.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 11,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-11",
+      "selected_source_paths": [
+        "src/mdfetch/fallback.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 12,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-12",
+      "selected_source_paths": [
+        "ed_push.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 13,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-13",
+      "selected_source_paths": [
+        "sdk/servicebus/azure-servicebus/azure/servicebus/_common/mgmt_handlers.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 14,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-14",
+      "selected_source_paths": [
+        "src/dd_license_attribution/artifact_management/source_code_manager.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 15,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-15",
+      "selected_source_paths": [
+        "aiobotocore/utils.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 16,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-16",
+      "selected_source_paths": [
+        "src/openframe/recognize/coords.py",
+        "src/openframe/recognize/locator.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 17,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": null,
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-17",
+      "selected_source_paths": [
+        "src/funcsort/ordering.py",
+        "src/funcsort/sorter.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    },
+    {
+      "checks": {
+        "benign_equivalent_positive": true,
+        "missing_required_path_rejected": true,
+        "parent_negative": true,
+        "required_mechanism_mutation_rejected": true,
+        "target_positive": true,
+        "unauthorized_path_rejected": true
+      },
+      "faults": [],
+      "index": 18,
+      "observations": {
+        "benign_equivalent": {
+          "fault": null,
+          "passed": true
+        },
+        "missing_required_path": {
+          "fault": null,
+          "passed": false
+        },
+        "parent": {
+          "fault": null,
+          "passed": false
+        },
+        "required_mechanism_mutation": {
+          "fault": "AssertionError:expected one .validate_instrument_type, found 0",
+          "passed": false
+        },
+        "target": {
+          "fault": null,
+          "passed": true
+        },
+        "unauthorized_path": {
+          "fault": null,
+          "passed": false
+        }
+      },
+      "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-18",
+      "selected_source_paths": [
+        "librae/config/symbols.py",
+        "librae/db/timescale_writer.py"
+      ],
+      "trigger_state": "GREEN",
+      "verification_kind": "isolated_behavior_plus_ast_dataflow"
+    }
+  ],
+  "runtime": {
+    "python_implementation": "cpython",
+    "python_version": "3.12.5"
+  },
+  "task_count": 18,
+  "trigger_state": "GREEN"
+}
