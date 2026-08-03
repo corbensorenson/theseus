@@ -142,6 +142,23 @@
         "external_reference_calls_authorized": 0,
         "task_source_acquisition_requires_user_input": false,
         "project_selected_quality_token_cap": null
+      },
+      "vcm_source_acquisition": {
+        "config": "configs/theseus_vcm_source_acquisition.json",
+        "preflight": "reports/theseus_vcm_source_acquisition.json",
+        "owner": "scripts/theseus_vcm_source_acquisition.py",
+        "state": "GREEN_METADATA_ONLY_SELECTION_PREFLIGHT_ZERO_QUERIES",
+        "control_qualification_repository_count": 9,
+        "claim_repository_count": 53,
+        "total_repository_count": 62,
+        "prior_repository_denylist_count": 87,
+        "ranking_and_panel_assignment_hash_bound": true,
+        "public_metadata_queries_authorized_after_green_preflight": true,
+        "public_source_content_retrieval_authorized": false,
+        "candidate_packet_materialization_authorized": false,
+        "local_model_calls_authorized": 0,
+        "external_reference_calls_authorized": 0,
+        "user_or_operator_gate": false
       }
     },
     "claim_selection_policy": {

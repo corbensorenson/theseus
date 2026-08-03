@@ -92,6 +92,14 @@ worst-case exact paired power for the 35-point minimum useful effect. Autonomous
 licensed source and evaluator acquisition is active. Model and Luna authority
 remain zero until the complete campaign is sealed.
 
+The metadata-selection preflight is also GREEN before any candidate identity is
+retained. It binds four in-scope language quotas, 87 prior-repository
+exclusions, a permissive-license allowlist, post-snapshot PR/head chronology,
+source-plus-test change structure, one PR per repository, and independent
+hash-based selection and panel assignment. Its current counters are zero. The
+next authorized action is bounded public metadata retrieval only; source
+contents and task packets remain closed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -266,8 +274,10 @@ authorize regenerating historical reports or reopening neural work.
    mechanics bench, 9-task control qualification, 53-task powered claim design,
    separate Luna denominator, and zero-call authority.
 10. **Active:** acquire and independently qualify the two source-disjoint
-   licensed panels, then seal packets, host canaries, runners, scorers, calls,
-   spend, and stop rules without user gates.
+   licensed panels. The metadata-only selection rule is prospectively sealed
+   and green; execute it, then separately authorize source contents and
+   evaluator qualification before sealing packets, host canaries, runners,
+   scorers, calls, spend, and stop rules without user gates.
 11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
 12. Qualify a development survivor once on fresh D1.

@@ -407,6 +407,13 @@ as a separately denominated measurement reference. Source acquisition and
 evaluator qualification are now active, but every model and Luna call remains
 closed.
 
+The first acquisition boundary is sealed and GREEN before candidate inspection.
+It authorizes a bounded public-metadata query only, excludes 87 repositories
+already named in tracked experiment configs, requires fresh PR and head-commit
+chronology plus a licensed in-scope source change and machine-verifier change,
+and uses independent hashes for selection and control/claim assignment. Source
+contents, task packets, hidden evaluation, TMax, and Luna remain closed.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -591,8 +598,9 @@ Use existing owners; create no new cleanup or report family.
    panel, separate Luna denominator, and zero-inference authority.
 6. **Active:** autonomously acquire and independently evaluator-qualify 62
    licensed repositories split into source-disjoint 9-task control and 53-task
-   claim panels; then bind exact packets, host-operability canaries, runners,
-   blind scorers, calls, spend, and stop conditions before inference.
+   claim panels. The metadata selection preflight is green at zero queries;
+   execute it, then bind exact sources, packets, host-operability canaries,
+   runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
    sealed before the first arm opened.
