@@ -55,9 +55,9 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | D1 | `CLOSED_NO_SURVIVOR` | The failed implementation cannot consume the prepared fresh qualification surface |
-| Luna reference | `DEFINED_TRANSPORT_NOT_BOUND_ZERO_CALLS` | `gpt-5.6-luna` at fixed `xhigh` effort is a future measurement-only reference, not a serving model, teacher row source, task selector, or local denominator |
+| Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
-| Repository state | `SOURCE_TRANSACTION_ACTIVE_REGISTRY_REBIND_PENDING` | This recentering transaction changes roadmap, policy, state, and tests together. The roadmap gate has zero hard gaps, while the content-bound project registry is expectedly RED on four stale route outputs plus source/AIBOM drift until a coherent source boundary can be rebound |
+| Repository state | `SOURCE_BOUND_REGISTRY_GREEN` | The recenter and registry repairs are committed. The last complete registry gate reported zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities, with 11 eligible routes source-bound |
 
 ## Active Claim And Residual
 
@@ -224,20 +224,19 @@ evidence deletion is authorized.
 
 The latest roadmap audit is `YELLOW` with zero hard gaps because pretraining is
 deliberately not current or authorized and the living book differs from the
-experiment pin. The documentation link audit is GREEN. The project-registry
-audit is RED during this uncommitted recentering transaction: four route
-evidence outputs are content-stale, four AIBOM identities are missing, and nine
-cleanup rows lack current steward coverage. Those are rebind/steward walls to
-resolve at a coherent source boundary, not permission to regenerate every
-historical report or reopen neural work.
+experiment pin. The documentation link audit is GREEN. The coherent registry
+repair is committed: its complete gate reports zero abstraction gaps, route
+blockers, hard governance failures, or missing AIBOM identities. This does not
+authorize regenerating historical reports or reopening neural work.
 
 ## Immediate Execution Order
 
-1. Finish and verify this source-controlled program recentering.
-2. Bind the Luna adapter, exact receipt, completion telemetry, no-serving and
-   no-training boundary, evaluator contract, and campaign-derived cost
-   authority without making a reference call.
-3. Repair Semantic-IR identity/coverage/target/unit mechanics on non-claim
+1. **Complete:** install and verify the source-controlled program recentering,
+   neural hold, route bindings, and registry repair.
+2. **Complete:** source-bind and offline-qualify the Luna adapter, exact
+   receipt, completion telemetry, no-serving/no-training boundary, evaluator
+   contract, and campaign-derived cost authority with zero reference calls.
+3. **Active:** repair Semantic-IR identity/coverage/target/unit mechanics on non-claim
    evidence through the exact production path.
 4. Run an independent adequacy audit and either admit one fresh campaign or
    freeze the implementation.

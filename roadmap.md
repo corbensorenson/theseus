@@ -54,9 +54,9 @@ therefore preserved but inactive.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Ten matched tasks yielded direct 1/10 useful and integrated 1/10 useful, with parseability 5/10 versus 9/10 and zero unsafe outcomes. Its project-selected 1,536-token ceiling makes it historical bounded evidence, not current claim proof. |
 | Cognitive-compilation P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | The source-locked run completed 10 tasks, 60 learned calls, 10 evaluator replays, and zero physical-boundary hits. Direct was useful on 3/10, plan control on 1/10, and Semantic IR on 0/10; Semantic IR parsed/lowered only 2/10 against the frozen 8/10 mechanics floor. The implementation is inadequate, so no treatment-effect or broad negative inference is authorized. |
 | D1 | `CLOSED_NO_SURVIVOR` | No fresh qualification is allowed for the failed Semantic-IR implementation. The prepared D1 machinery remains unconsumed. |
-| OpenAI reference | `DEFINED_TRANSPORT_NOT_BOUND` | `gpt-5.6-luna` with fixed `xhigh` effort is the intended cost-efficient measurement-only reference. It has made zero project calls and must be source-bound before a future claim pool opens. |
+| OpenAI reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort is source-bound and passes offline positive and negative controls. Calls remain disabled; it has made zero project calls and cannot open until a future four-cell claim pool is prospectively sealed. |
 | Neural checkpoint | `HELD_STEP_11992_NOT_EVALUATED` | Nine transactional 64-step segments advanced the preserved shared trunk from step 11,416 to 11,992 and from 87,441,996 to 91,869,446 optimizer positions. D2 remains sealed and capability remains `NOT_EVALUATED`. |
-| Repository | `RECENTER_SOURCE_TRANSACTION_ACTIVE_REBIND_PENDING` | The earlier 88-file mixed transaction is historical and the review began from a clean Theseus worktree. This roadmap/policy/test transaction intentionally makes prior content-bound route and AIBOM receipts stale; do not refresh them piecemeal before a coherent source boundary exists. The large generated surface remains real: about 41 GiB/250,030 runtime files, 2.1 GiB/10,790 report files, and 9.0 GiB of checkpoints. |
+| Repository | `SOURCE_BOUND_REGISTRY_GREEN` | The earlier 88-file mixed transaction is historical. The recenter and registry repair are committed, and the complete registry gate reports zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities with 11 eligible routes source-bound. The large generated surface remains real: about 41 GiB/250,030 runtime files, 2.1 GiB/10,790 report files, and 9.0 GiB of checkpoints. |
 
 ## Scientific Contract
 
@@ -369,13 +369,12 @@ Use existing owners; create no new cleanup or report family.
 
 ## Immediate Execution Order
 
-1. Install the source-controlled neural hold and synchronize the roadmap,
-   project state, matrix, README, and active flagship identity. **This is the
-   current transaction.**
-2. Bind the Luna measurement adapter, exact model/effort receipt, no-serving and
-   no-training boundary, completion telemetry, evaluator interface, and
-   campaign-derived cost authority. Make no reference calls yet.
-3. Repair the exact Semantic-IR identity/coverage/target/unit mechanics on
+1. **Complete:** install the source-controlled neural hold and synchronize the
+   roadmap, project state, matrix, README, and active flagship identity.
+2. **Complete:** bind and offline-qualify the Luna measurement adapter, exact
+   model/effort receipt, no-serving/no-training boundary, completion telemetry,
+   evaluator interface, and campaign-derived cost authority with zero calls.
+3. **Active:** repair the exact Semantic-IR identity/coverage/target/unit mechanics on
    non-claim evidence through the production path.
 4. Run an independent adequacy audit. If it fails, freeze the implementation
    and select the next architecture-shaping residual; do not open fresh tasks.

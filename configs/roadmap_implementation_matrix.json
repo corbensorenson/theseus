@@ -59,10 +59,12 @@
     "openai_reference_control": {
       "model": "gpt-5.6-luna",
       "reasoning_effort": "xhigh",
-      "state": "PROSPECTIVELY_DEFINED_TRANSPORT_NOT_BOUND_ZERO_CALLS",
+      "state": "TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS",
       "role": "SEPARATELY_DENOMINATED_MEASUREMENT_ONLY_REFERENCE",
       "contract": "configs/theseus_external_reference_control.json",
-      "rule": "Bind before any future claim arm opens; omit rather than backfill after local outcomes; never serve, train, select tasks, write source, or enter the local denominator."
+      "adapter": "scripts/theseus_openai_reference_adapter.py",
+      "qualification_receipt": "reports/theseus_openai_reference_adapter_qualification.json",
+      "rule": "Keep calls disabled until every four-cell future claim arm, task hash, evaluator interface, custody path, call count, and spend authority is prospectively sealed; omit rather than backfill after local outcomes; never serve, train, select tasks, write source, or enter the local denominator."
     },
     "neural_hold": {
       "state": "HOLD_SUBSYSTEM_PROOF_FIRST",
@@ -88,9 +90,9 @@
       ]
     },
     "immediate_execution_order": [
-      "finish_source_controlled_program_recenter_and_neural_hold",
-      "bind_luna_transport_receipts_completion_evaluator_and_campaign_cost_authority_without_calls",
-      "repair_semantic_ir_production_path_mechanics_on_non_claim_evidence",
+      "complete_source_controlled_program_recenter_neural_hold_and_registry_rebind",
+      "complete_luna_transport_offline_qualification_with_zero_calls",
+      "active_repair_semantic_ir_production_path_mechanics_on_non_claim_evidence",
       "run_independent_mechanics_adequacy_audit",
       "open_at_most_one_fresh_source_disjoint_claim_campaign_only_after_adequacy",
       "qualify_a_development_survivor_once_on_fresh_D1",
@@ -4933,7 +4935,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-08-02",
-    "recommendation": "Make ASI Stack subsystem causal proof the sole active research lane. Preserve terminal P3 as historical bounded evidence and P4V2R2R3 as INCONCLUSIVE_IMPLEMENTATION with D1 closed and no reseal. Hold the neural seed at ledgered step 11,992 until the Subsystem Architecture Freeze. Source-bind the Luna-xhigh measurement-only adapter without making calls, then repair the exact Semantic-IR identity/coverage/target/unit mechanics owner on non-claim production-path evidence. Open at most one fresh source-disjoint claim campaign only after an independent adequacy audit. Return every terminal claim packet to governed book review with support unchanged. Use existing retention and registry owners only when they remove a concrete evidence, replay, source, or storage blocker.",
+    "recommendation": "Make ASI Stack subsystem causal proof the sole active research lane. Preserve terminal P3 as historical bounded evidence and P4V2R2R3 as INCONCLUSIVE_IMPLEMENTATION with D1 closed and no reseal. Hold the neural seed at ledgered step 11,992 until the Subsystem Architecture Freeze. Preserve the source-bound, offline-qualified, zero-call Luna-xhigh measurement-only adapter, and repair the exact Semantic-IR identity/coverage/target/unit mechanics owner on non-claim production-path evidence. Open at most one fresh source-disjoint claim campaign only after an independent adequacy audit. Return every terminal claim packet to governed book review with support unchanged. Use existing retention and registry owners only when they remove a concrete evidence, replay, source, or storage blocker.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4950,7 +4952,7 @@
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
       "enforce_the_source_controlled_neural_hold_at_step_11992_until_subsystem_architecture_freeze",
       "preserve_modular_dense_active_and_dense_total_D2_without_training_or_consumption",
-      "bind_the_Luna_xhigh_measurement_only_transport_before_any_future_claim_arm_opens_without_making_calls",
+      "preserve_the_source_bound_offline_qualified_Luna_xhigh_measurement_only_transport_at_zero_calls_until_a_prospective_four_cell_seal",
       "repair_semantic_IR_identity_coverage_target_and_unit_mechanics_on_non_claim_production_path_evidence",
       "run_one_independent_adequacy_audit_before_any_new_claim_denominator",
       "preserve_the_clean_transaction_boundary_and_keep_unrelated_neural_Rust_release_and_cleanup_work_outside_P4_source_binding",

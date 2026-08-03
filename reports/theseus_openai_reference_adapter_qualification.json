@@ -1,0 +1,66 @@
+{
+  "adapter": "scripts/theseus_openai_reference_adapter.py",
+  "adapter_sha256": "e7d96ac75d5fed179ab2926f4637d449c77119d0eb6daaf118b56d70b9239917",
+  "checks": {
+    "adapter_source_hash_bound": true,
+    "all_negative_controls_rejected": true,
+    "current_turn_reasoning_context": true,
+    "measurement_role_bound": true,
+    "policy_source_hash_recorded": true,
+    "preactivation_counters_zero": true,
+    "project_output_token_cap_absent": true,
+    "reference_calls_remain_unauthorized": true,
+    "responses_api_bound": true,
+    "store_disabled": true,
+    "tools_disabled": true,
+    "valid_sealed_packet_accepted": true,
+    "worst_case_cost_positive": true,
+    "xhigh_bound": true
+  },
+  "counters": {
+    "accepted_training_rows": 0,
+    "external_source_effects": 0,
+    "reference_calls_made": 0,
+    "tasks_selected_with_reference_outputs": 0,
+    "user_facing_serving_tokens": 0
+  },
+  "created_utc": "2026-08-03T00:35:27.653208Z",
+  "hard_gaps": [],
+  "maximum_inference": "The exact Luna Responses API adapter is offline-qualified and remains unable to call until a future campaign is prospectively sealed and explicitly activated.",
+  "negative_controls": {
+    "execution_without_activation": true,
+    "hidden_answer_metadata": true,
+    "insufficient_spend_authority": true,
+    "reference_output_visible_to_local": true,
+    "unsealed_campaign": true
+  },
+  "non_claims": [
+    "No Luna call was made.",
+    "This does not establish task quality, subsystem transfer, serving eligibility, or training-data eligibility."
+  ],
+  "policy": "project_theseus_openai_reference_adapter_qualification_v1",
+  "policy_path": "configs/theseus_external_reference_control.json",
+  "policy_sha256": "977685d756aa469e52756ab6d690c25dae764e256333b8d4d3568a961ad2c8fc",
+  "price_basis": {
+    "basis": "official_OpenAI_GPT_5_6_Luna_model_card_2026_08_02",
+    "cache_write_multiplier": 1.25,
+    "cached_input_usd_per_million": 0.02,
+    "currency": "USD",
+    "documentation_url": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+    "input_usd_per_million": 0.2,
+    "long_context_input_multiplier": 2.0,
+    "long_context_output_multiplier": 1.5,
+    "long_context_threshold_tokens": 272000,
+    "output_usd_per_million": 1.2,
+    "per_million_tokens": true,
+    "physical_limits": {
+      "context_window_tokens": 1050000,
+      "maximum_output_tokens": 128000
+    },
+    "worst_case_role": "spend_preflight_only_not_a_generated_token_or_quality_cap",
+    "worst_case_uncapped_physical_call_usd": 0.6504
+  },
+  "request_shape_sha256": "69e41986c20a4561a97e115129b638ac639d7638af921954b62b4bb185265787",
+  "trigger_state": "GREEN",
+  "worst_case_physical_call_cost_usd": 0.6504
+}

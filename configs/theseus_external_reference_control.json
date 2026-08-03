@@ -1,13 +1,13 @@
 {
   "policy": "project_theseus_openai_measurement_reference_v2",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-  "state": "PROSPECTIVELY_DEFINED_TRANSPORT_NOT_BOUND",
+  "state": "TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS",
   "purpose": "Measure whether an ASI Stack subsystem effect transfers to a separately denominated hosted OpenAI reference without changing the local-model causal estimand, serving boundary, training data, or task-selection process.",
   "activation_scope": {
     "current_claim_id": "cognitive-compilation-and-semantic-ir.core",
     "current_claim_pool_open": false,
     "reference_calls_authorized": false,
-    "next_pool_rule": "Bind this transport and freeze every local and reference arm before the first candidate call in a future source-disjoint claim-development pool.",
+    "next_pool_rule": "Freeze every local and reference arm, task digest, evaluator interface, information-flow boundary, call count, and spend authority before the first candidate call in a future source-disjoint claim-development pool.",
     "missing_transport_disposition": "Omit the reference cells and record MISSING_PROSPECTIVE_REFERENCE; never backfill after any local outcome is visible."
   },
   "reference_model": {
@@ -19,6 +19,45 @@
     "selection_rationale": "A lower-cost high-volume OpenAI reference that supports xhigh reasoning; xhigh is frozen as a quality-oriented control setting, not presumed cost-optimal and not tuned after outcomes.",
     "current_official_guidance": "OpenAI describes GPT-5.6 Luna as optimized for cost-sensitive, high-volume workloads and lists xhigh among its supported reasoning efforts; effort choice should be validated on the use case rather than assumed universally best.",
     "documentation_url": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
+  },
+  "transport": {
+    "provider": "OpenAI",
+    "api": "responses",
+    "endpoint": "https://api.openai.com/v1/responses",
+    "method": "POST",
+    "adapter": "scripts/theseus_openai_reference_adapter.py",
+    "adapter_sha256": "e7d96ac75d5fed179ab2926f4637d449c77119d0eb6daaf118b56d70b9239917",
+    "qualification_receipt": "reports/theseus_openai_reference_adapter_qualification.json",
+    "credential_environment_variable": "OPENAI_API_KEY",
+    "timeout_seconds": 900,
+    "store": false,
+    "tools": [],
+    "parallel_tool_calls": false,
+    "reasoning_context": "current_turn",
+    "max_output_tokens": "OMITTED_NO_PROJECT_QUALITY_CAP",
+    "system_instructions": "You are a prospectively sealed measurement-only reference candidate. Produce only the complete task artifact requested by the candidate-visible packet. Do not select tasks, alter evaluation, serve a user, create training data, invoke tools, perform source effects, or infer hidden evaluator data. If the visible packet is insufficient, state the insufficiency in the artifact.",
+    "candidate_custody": "mode_0600_evaluator_only_file_receipt_contains_hash_not_output",
+    "retry_policy": "zero_automatic_retries_one_sealed_call_is_one_observation",
+    "network_policy": "disabled_unless_reference_calls_authorized_and_campaign_seal_passes"
+  },
+  "price_basis": {
+    "currency": "USD",
+    "basis": "official_OpenAI_GPT_5_6_Luna_model_card_2026_08_02",
+    "documentation_url": "https://developers.openai.com/api/docs/models/gpt-5.6-luna",
+    "per_million_tokens": true,
+    "input_usd_per_million": 0.2,
+    "cached_input_usd_per_million": 0.02,
+    "output_usd_per_million": 1.2,
+    "long_context_threshold_tokens": 272000,
+    "long_context_input_multiplier": 2.0,
+    "long_context_output_multiplier": 1.5,
+    "cache_write_multiplier": 1.25,
+    "physical_limits": {
+      "context_window_tokens": 1050000,
+      "maximum_output_tokens": 128000
+    },
+    "worst_case_uncapped_physical_call_usd": 0.6504,
+    "worst_case_role": "spend_preflight_only_not_a_generated_token_or_quality_cap"
   },
   "factorial": {
     "models": [
@@ -103,5 +142,5 @@
     "external_source_effects": 0,
     "tasks_selected_with_reference_outputs": 0
   },
-  "current_blocker": "No exact gpt-5.6-luna transport, response receipt, completion telemetry, evaluator adapter, price basis, or campaign-derived spend authority is source-bound in the experiment harness."
+  "current_blocker": "The adapter is source-bound and offline-qualified, but reference calls remain disabled until a future source-disjoint campaign prospectively seals all four cells, task and evaluator hashes, candidate custody, call authority, and sufficient worst-case spend authority before any outcome is visible."
 }

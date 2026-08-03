@@ -46,7 +46,8 @@ availability alone cannot resume neural training.
   allowed and D1 remains closed.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
   separately denominated OpenAI measurement-only reference. Its exact
-  transport is not yet bound and it has made zero project calls.
+  Responses API adapter is source-bound and offline-qualified; calls remain
+  disabled and it has made zero project calls.
 - The 57.3M neural shared trunk is preserved at optimizer step 11,992 with
   append-only checkpoint, optimizer, RNG, and cursor custody. D2 remains
   unconsumed and capability remains `NOT_EVALUATED`.
@@ -176,7 +177,9 @@ and autonomous resource and rollback readiness. D2 remains sealed until then.
 - No ASI Stack mechanism has yet earned source-disjoint D1 qualification.
 - The exact Semantic-IR implementation failed its mechanics floor; the broader
   cognitive-compilation claim remains unresolved.
-- The Luna transport is not bound, so no hosted reference call is authorized.
+- The Luna transport is bound but no future four-cell claim pool, independent
+  evaluator, custody path, and spend authority are prospectively sealed, so no
+  hosted reference call is authorized.
 - The neural checkpoint has no capability result, both matched dense controls
   are incomplete, and D2 is unconsumed.
 - Large generated surfaces and broad script/config ownership remain a real

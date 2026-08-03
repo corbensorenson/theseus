@@ -1,10 +1,12 @@
-"""Audit that external provider inference is teacher-only.
+"""Audit that external provider inference is teacher-only or measurement-only.
 
 The project may fetch benchmark/data metadata under license gates, but it must
 not use outside intelligence for training, scoring, synthesis, routing, or
 normal autonomy. Local model libraries are allowed for local training/runtime;
-approved OpenAI inference is allowed only through the sparse teacher wrapper
-in ``scripts/teacher_oracle.py``. Anthropic and Claude are forbidden.
+approved OpenAI inference is allowed through the sparse teacher wrapper in
+``scripts/teacher_oracle.py`` or the sealed measurement-only reference adapter
+in ``scripts/theseus_openai_reference_adapter.py``. Anthropic and Claude are
+forbidden.
 """
 
 from __future__ import annotations
@@ -35,6 +37,11 @@ TEACHER_FILES = {
     Path("scripts/teacher_oracle.py"),
     Path("configs/teacher_policy.json"),
     Path("configs/teacher_response_schema.json"),
+}
+
+MEASUREMENT_REFERENCE_FILES = {
+    Path("scripts/theseus_openai_reference_adapter.py"),
+    Path("configs/theseus_external_reference_control.json"),
 }
 
 TEACHER_DELEGATE_FILES = {
@@ -153,6 +160,9 @@ def main() -> int:
     )
     all_violations = violations + report_violations + teacher_receipt_violations
     allowed_teacher_hits = [hit for hit in code_hits if hit["classification"] == "allowed_teacher"]
+    allowed_measurement_reference_hits = [
+        hit for hit in code_hits if hit["classification"] == "allowed_measurement_reference"
+    ]
     benign_hits = [hit for hit in code_hits if hit["classification"].startswith("benign")]
 
     payload = {
@@ -162,8 +172,9 @@ def main() -> int:
         "teacher_only_invariant": not all_violations,
         "rule": (
             "Approved OpenAI inference is allowed only through "
-            "scripts/teacher_oracle.py in sparse teacher mode; Anthropic and "
-            "Claude are forbidden. Local model "
+            "scripts/teacher_oracle.py in sparse teacher mode or the prospectively "
+            "sealed scripts/theseus_openai_reference_adapter.py measurement-only "
+            "control; Anthropic and Claude are forbidden. Local model "
             "libraries are allowed for local training/runtime. Network data, "
             "benchmark, and RL source discovery is not inference and remains "
             "governed by license/fetch policy."
@@ -172,6 +183,7 @@ def main() -> int:
             "scanned_files": len(files),
             "active_inference_hits": len(code_hits),
             "allowed_teacher_hits": len(allowed_teacher_hits),
+            "allowed_measurement_reference_hits": len(allowed_measurement_reference_hits),
             "teacher_delegate_hits": len(delegate_hits),
             "benign_metadata_or_policy_hits": len(benign_hits),
             "code_violations": len(violations),
@@ -188,8 +200,16 @@ def main() -> int:
             }
             for path in sorted(TEACHER_FILES | TEACHER_DELEGATE_FILES, key=as_posix)
         ],
+        "allowed_measurement_reference_surfaces": [
+            {
+                "path": as_posix(path),
+                "role": "prospectively_sealed_measurement_only_reference",
+            }
+            for path in sorted(MEASUREMENT_REFERENCE_FILES, key=as_posix)
+        ],
         "teacher_delegate_hits": delegate_hits,
         "allowed_teacher_hits": allowed_teacher_hits,
+        "allowed_measurement_reference_hits": allowed_measurement_reference_hits,
         "benign_metadata_or_policy_hits": benign_hits[:100],
         "violations": all_violations,
     }
@@ -313,6 +333,13 @@ def classify(rel: Path, pattern_name: str) -> str:
         return "ignored_self"
     if rel in TEACHER_FILES:
         return "allowed_teacher"
+    if rel in MEASUREMENT_REFERENCE_FILES and pattern_name in {
+        "openai_sdk_import",
+        "openai_api_endpoint",
+        "openai_api_key",
+        "generic_bearer_auth",
+    }:
+        return "allowed_measurement_reference"
     if rel in TEACHER_POLICY_OBSERVER_FILES and pattern_name == "codex_cli_policy":
         return "benign_teacher_policy_observer"
     if rel in LOCAL_COMPAT_FILES and pattern_name in {
@@ -324,6 +351,8 @@ def classify(rel: Path, pattern_name: str) -> str:
         return "benign_local_secret_redaction_pattern"
     if rel == Path("scripts/hive_rented_compute.py") and pattern_name == "generic_bearer_auth":
         return "benign_cloud_compute_auth_template"
+    if rel == Path("scripts/theseus_d1_online_metadata_acquisition.py") and pattern_name == "generic_bearer_auth":
+        return "benign_public_repository_metadata_auth"
     if rel == Path("configs/autonomy_policy.json") and pattern_name in {
         "ollama_local_model",
         "vllm_local_model",

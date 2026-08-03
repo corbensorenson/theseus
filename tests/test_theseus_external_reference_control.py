@@ -12,7 +12,7 @@ def test_luna_reference_is_a_separate_measurement_only_factorial() -> None:
         (ROOT / "configs" / "theseus_external_reference_control.json").read_text(encoding="utf-8")
     )
 
-    assert policy["state"] == "PROSPECTIVELY_DEFINED_TRANSPORT_NOT_BOUND"
+    assert policy["state"] == "TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS"
     assert policy["reference_model"]["requested_model"] == "gpt-5.6-luna"
     assert policy["reference_model"]["reasoning_effort"] == "xhigh"
     assert policy["factorial"]["models"] == [
@@ -21,6 +21,11 @@ def test_luna_reference_is_a_separate_measurement_only_factorial() -> None:
     ]
     assert policy["factorial"]["system_conditions"] == ["direct", "theseus_integrated"]
     assert policy["factorial"]["cross_model_rank_is_not_a_subsystem_causal_claim"] is True
+    assert policy["transport"]["api"] == "responses"
+    assert policy["transport"]["endpoint"] == "https://api.openai.com/v1/responses"
+    assert policy["transport"]["max_output_tokens"] == "OMITTED_NO_PROJECT_QUALITY_CAP"
+    assert policy["transport"]["store"] is False
+    assert policy["transport"]["tools"] == []
 
 
 def test_reference_cannot_serve_train_select_tasks_or_write_external_source() -> None:
@@ -47,6 +52,7 @@ def test_reference_cannot_serve_train_select_tasks_or_write_external_source() ->
     assert policy["counters"]["reference_calls_made"] == 0
     assert policy["counters"]["accepted_training_rows"] == 0
     assert policy["counters"]["user_facing_serving_tokens"] == 0
+    assert policy["activation_scope"]["reference_calls_authorized"] is False
 
 
 def test_reference_completion_has_no_project_selected_quality_cap() -> None:
@@ -61,6 +67,23 @@ def test_reference_completion_has_no_project_selected_quality_cap() -> None:
     assert completion["project_selected_generated_token_quality_cap"] is None
     assert completion["boundary_hit_counts_as_model_or_mechanism_failure"] is False
     assert completion["boundary_hit_enters_treatment_effect_denominator"] is False
+
+
+def test_luna_price_basis_and_physical_limits_are_explicit() -> None:
+    policy = json.loads(
+        (ROOT / "configs" / "theseus_external_reference_control.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    price = policy["price_basis"]
+
+    assert price["input_usd_per_million"] == 0.2
+    assert price["cached_input_usd_per_million"] == 0.02
+    assert price["output_usd_per_million"] == 1.2
+    assert price["long_context_threshold_tokens"] == 272000
+    assert price["physical_limits"]["context_window_tokens"] == 1050000
+    assert price["physical_limits"]["maximum_output_tokens"] == 128000
+    assert price["worst_case_uncapped_physical_call_usd"] == 0.6504
 
 
 def test_charter_and_roadmap_bind_the_measurement_only_exception() -> None:
