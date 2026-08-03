@@ -1,0 +1,71 @@
+{
+  "candidate_or_model_exposure_authorized": false,
+  "candidate_packet_materialized": false,
+  "checks": {
+    "benign_equivalent_positive": true,
+    "missing_required_path_rejected": true,
+    "parent_negative": true,
+    "required_dataflow_mutation_rejected": true,
+    "required_mechanism_mutation_rejected": true,
+    "target_positive": true,
+    "unauthorized_path_rejected": true
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "parent_target_evaluator_executions": 7,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "evaluator_owner": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_replacement_02_evaluator.py",
+    "sha256": "982a8ddae9ab798744ad1339785cdc99c80282e9f5098de8dc4f19a39f72e8ba"
+  },
+  "faults": [],
+  "maximum_inference": "A GREEN report establishes only that the replacement evaluator rejects the frozen parent, accepts the frozen target and a benign variant, and rejects mechanism, dataflow, missing-path, and unauthorized-path controls. It does not establish candidate competence, Semantic-IR adequacy or treatment effect, D1, D2, training value, serving, or book support.",
+  "observations": {
+    "benign_equivalent": {
+      "fault": null,
+      "passed": true
+    },
+    "missing_required_path": {
+      "fault": null,
+      "passed": false
+    },
+    "parent": {
+      "fault": null,
+      "passed": false
+    },
+    "required_dataflow_mutation": {
+      "fault": null,
+      "passed": false
+    },
+    "required_mechanism_mutation": {
+      "fault": null,
+      "passed": false
+    },
+    "target": {
+      "fault": null,
+      "passed": true
+    },
+    "unauthorized_path": {
+      "fault": null,
+      "passed": false
+    }
+  },
+  "opaque_evaluator_id": "semantic-ir-adequacy-evaluator-02r1",
+  "policy": "project_theseus_semantic_ir_production_adequacy_replacement_evaluator_v1",
+  "selected_source_paths": [
+    "business_logic_test.py"
+  ],
+  "source_report": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
+    "sha256": "b6a92bd9c8d73eae5f48f1ddf47eac8abce80a9b0dba926bcb18d3df27382680"
+  },
+  "state": "QUALIFIED_BEFORE_CANDIDATE_PACKET_MATERIALIZATION",
+  "trigger_state": "GREEN",
+  "verification_kind": "independent_ast_dataflow_and_assertion_binding"
+}
