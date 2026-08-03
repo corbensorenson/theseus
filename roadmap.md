@@ -698,6 +698,15 @@ and verifier byte scans. All seven must succeed or none are admitted. It opens
 only public metadata/source retrieval and local language classification; model,
 repository, dependency, evaluator, D1, D2, and book effects remain closed.
 
+The live all-or-none replacement transaction is GREEN. It bound seven unique
+same-panel/same-programming-language repositories, materialized 28 deterministic
+changed-file archives (927,095 selected bytes), rejected one additional
+non-English candidate, and passed an independent archive/hash/content rescan.
+There were 75 metadata, 15 exact-title, and 58 source-content requests, with zero
+repository, evaluator, local-model, reference-control, D1, or D2 calls. The
+combined panel is still not admitted until a v3 assembly and independent content
+audit substitute exactly these seven rows.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

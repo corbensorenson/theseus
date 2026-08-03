@@ -1,33 +1,922 @@
 {
   "candidate_packet_materialization_opened": false,
+  "checkpoint": {
+    "path": "reports/theseus_vcm_content_language_replacements_checkpoint.json",
+    "sha256": "fd46d3c22e120dc83b5c228f3a7cd55c71a941072c41c0ce2b06c5036b503a23"
+  },
+  "checkpoint_artifact_hash_verified_final": true,
   "config": {
     "path": "configs/theseus_vcm_content_language_replacements.json",
     "sha256": "bb5e281fcea066421d88416af951a9cde107ea586765a35f05f201646bd7f51c"
   },
+  "content_language_receipts": [
+    {
+      "index": 14,
+      "repository": "scrape-badger/scrapebadger-python",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 19,
+      "repository": "cs0lar/treelang",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 21,
+      "repository": "ctsdownloads/easyspeak",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 28,
+      "repository": "microsoft/winml-cli",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 32,
+      "repository": "Rul1an/assay",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 54,
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 60,
+      "repository": "tsz-org/tsz",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    }
+  ],
   "counters": {
     "D1_cases_consumed": 0,
     "D2_cases_consumed": 0,
     "candidate_or_control_calls": 0,
     "external_inference_calls": 0,
-    "local_language_scope_classification_calls": 0,
+    "local_language_scope_classification_calls": 8,
     "local_model_calls": 0,
     "parent_target_or_evaluator_executions": 0,
-    "public_metadata_selection_requests": 0,
-    "public_metadata_title_requests": 0,
-    "public_source_content_requests": 0,
-    "source_archives_materialized": 0,
-    "source_bytes_materialized": 0,
+    "public_metadata_selection_requests": 75,
+    "public_metadata_title_requests": 15,
+    "public_source_content_requests": 58,
+    "source_archives_materialized": 28,
+    "source_bytes_materialized": 927095,
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T16:13:49.348607Z",
+  "created_utc": "2026-08-03T16:22:20.099416Z",
   "faults": [],
   "hidden_evaluation_opened": false,
+  "language_classification_receipts": [
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "aa86579fce9a76cdaa9c048b25368e78658bbf9c94dc9c5ec0be9046151e203f",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 14,
+      "repository": "scrape-badger/scrapebadger-python",
+      "title_sha256": "f041b837d0b8135c157920efaab839da377a6d292b3f40fdb2e74b5e8f295e6b"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "d8c4d0f12f90d00da1a8f15ed470420e7df81284b1dbd9c297bad5bbe8903c85",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 19,
+      "repository": "cs0lar/treelang",
+      "title_sha256": "d1a652dee4349f3f97d1dd0833984f3f0e21b340716d02016bc3166fd733eef3"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "261a9e720eb09511ffcbd9679df8f5e34b60237cdbfb5026bbc74c77bea554d1",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 21,
+      "repository": "ctsdownloads/easyspeak",
+      "title_sha256": "0e2134ef6ffe2c933eb2b3198f461d305232c6533691cc1e4dd7ee2d1d4dedf3"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "f10e91b038749014d6ea092b15fc0aed1ad591683c141b0496ab1bca38a9a0e9",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 28,
+      "repository": "microsoft/winml-cli",
+      "title_sha256": "6aee39349ab7928c1a69a1e6f1a98d9911dbfc7bef4855dd019c6473cc4b4a55"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "823dc41766897186a91fd781402115acbae541edfa3f8d8df1eaf89ff66576be",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 32,
+      "repository": "Rul1an/assay",
+      "title_sha256": "9a82ac1f8f546dde928416d028866e62a17e231ae49816c97fcfd276177c1f79"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "f98bf3bf5a495c3c14edcd80a3164a6f2e0cd2b8c9d7a460b60ae50b78aacd08",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 60,
+      "repository": "tsz-org/tsz",
+      "title_sha256": "43e015c1bc64929c1d009fe3fd58f3ee360ad38959999d77ae3f4ec5662b6cf4"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "e46ea6e49d949cb35833209344c5b37a0227294df0d0d36855211656d836f3a6",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 54,
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "title_sha256": "0a2c07c26dbc023a9f3e3ccc1c5ceee52d735f3b26f7a83544a009e3adca0f8a"
+    }
+  ],
   "maximum_inference": "A GREEN report proves only seven same-panel same-programming-language replacement tasks whose PR titles and selected source/verifier text contain no forbidden non-English scripts. It does not admit the combined panel until independent audit or authorize repository, evaluator, local-model, Luna, training, D1, D2, serving, or book-support effects.",
   "policy": "project_theseus_vcm_content_language_replacements_v1",
-  "replacement_set_admitted": false,
-  "selected_repository_count": 0,
-  "source_content_retrieval_opened": false,
-  "state": "SEVEN_CONTENT_LANGUAGE_REPLACEMENT_PREFLIGHT_GREEN",
+  "rejection_counts": {
+    "bot_author": 64,
+    "changed_file_count": 737,
+    "changed_line_count": 363,
+    "chronology": 14,
+    "deleted_only_source": 2,
+    "generated_vendor_lock_only": 23,
+    "head_commit_metadata_unavailable": 4,
+    "license_not_allowlisted": 1069,
+    "natural_language_out_of_scope": 1,
+    "no_machine_verifier_change": 1257,
+    "no_non_test_source_change": 763,
+    "not_merged_closed_nondraft": 6,
+    "primary_language_mismatch": 23,
+    "prior_or_duplicate_repository": 105,
+    "repository_below_star_floor": 1184,
+    "repository_state": 248
+  },
+  "replacement_rows": [
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "d248a9f8968af3d1513dfd5a51b6d27c470fb72c5bf75679feabff85a343879b"
+            },
+            {
+              "bytes": 34041,
+              "path": "src/scrapebadger/__init__.py",
+              "sha256": "7f7a20f9420e8bc5fc4cdea5466b00306484336094d675ea3aba219a675e8bb1"
+            },
+            {
+              "bytes": 11800,
+              "path": "src/scrapebadger/_internal/client.py",
+              "sha256": "62e4a5c63ffd5f79066ddf272c47916a3a832a0989b943fe6dd22dcdcc3ca73a"
+            },
+            {
+              "bytes": 3160,
+              "path": "src/scrapebadger/_internal/config.py",
+              "sha256": "1dfa3da3ce37b8c16c151764a7acf895eccb3e728686e0136441f3d649e24a5f"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-14-parent_source.tar.gz",
+          "root": "vcm-claim-14",
+          "sha256": "71159f300643fe4df1e0ae1a4590881b0b4103069a0f94e28a7593f66212380f"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "d248a9f8968af3d1513dfd5a51b6d27c470fb72c5bf75679feabff85a343879b"
+            },
+            {
+              "bytes": 3557,
+              "path": "tests/test_config.py",
+              "sha256": "37e09d33fe5c5f54bc2fae77423f0c0b603647af702a91650540ce501e0d864f"
+            },
+            {
+              "bytes": 9649,
+              "path": "tests/test_retry_warnings.py",
+              "sha256": "e074828f93c2874fe42e201eae52d847e1985c9f11fc944a7f6002d1c1f294a0"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-14-parent_verifier.tar.gz",
+          "root": "vcm-claim-14",
+          "sha256": "d9297311ca0de5ac56badfc76b77ff93eba06d083d25f06ccdd6dbcfe198dae2"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "d248a9f8968af3d1513dfd5a51b6d27c470fb72c5bf75679feabff85a343879b"
+            },
+            {
+              "bytes": 34041,
+              "path": "src/scrapebadger/__init__.py",
+              "sha256": "9b42134fb8fc7f7ee01394122a2eda24f8fcbd6de3c0b2aff3e97aa14de063a8"
+            },
+            {
+              "bytes": 12216,
+              "path": "src/scrapebadger/_internal/client.py",
+              "sha256": "ef0a24c9ff77fa1f555f7e1a685502678d74c07f8ca4cf8677bf14c8f2a7ea28"
+            },
+            {
+              "bytes": 3409,
+              "path": "src/scrapebadger/_internal/config.py",
+              "sha256": "2986604b671af0e4bd36b4fb91ffb84347e8b85a02467cf94f7e7861cb235fba"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-14-target_source.tar.gz",
+          "root": "vcm-claim-14",
+          "sha256": "ad3ac4bc5f22df850cb86795a39941d53e3e6834214814756df119e3804d3b0c"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1069,
+              "path": "LICENSE",
+              "sha256": "d248a9f8968af3d1513dfd5a51b6d27c470fb72c5bf75679feabff85a343879b"
+            },
+            {
+              "bytes": 3562,
+              "path": "tests/test_config.py",
+              "sha256": "56f80dbf638a3fa1542d81ebeb79f846cad32e22db095ecf9d23f7d66127af09"
+            },
+            {
+              "bytes": 13551,
+              "path": "tests/test_retry_warnings.py",
+              "sha256": "444f6332bb3ccc31b2bd0df5f77c11cbacdcf9e7b19f7536b641decd8cdc4b02"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-14-target_verifier.tar.gz",
+          "root": "vcm-claim-14",
+          "sha256": "a393aa0d5338e2d530a1090b731069d8ee3d6ce20bdd612507f93af0ca5588bb"
+        }
+      },
+      "base_revision": "c4af14b091201b5cdb1a209513a684ab89582b41",
+      "faults": [],
+      "head_revision": "42cdac4c7e4a94ad785523e905eb1f37f24b55b8",
+      "index": 14,
+      "license_spdx": "MIT",
+      "natural_language_request": "fix: retry transient 500s and every transient transport failure (0.24.2)",
+      "natural_language_request_sha256": "f041b837d0b8135c157920efaab839da377a6d292b3f40fdb2e74b5e8f295e6b",
+      "opaque_source_id": "082ebfa1462e80271df11cac7ad53f0de1acfd0789a0aa3b12ae96c6db1afc7f",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 22,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "b7ff8097dffa9512d8bbcb5103702edd527a17aa2b7f29348506a1b2c8a9f2c3",
+      "repository": "scrape-badger/scrapebadger-python",
+      "selected_source_paths": [
+        "src/scrapebadger/__init__.py",
+        "src/scrapebadger/_internal/client.py",
+        "src/scrapebadger/_internal/config.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/test_config.py",
+        "tests/test_retry_warnings.py"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1063,
+              "path": "LICENSE",
+              "sha256": "382f47728362a3b605173880cec898a2929d3b7f32eb1424f33b86781e2eef5c"
+            },
+            {
+              "bytes": 2864,
+              "path": "scripts/generate_json_schemas.py",
+              "sha256": "f07ec3bc31358ceee78bfe64ae77f061a7f0d3a303dae816fb4549d90317f5e6"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-19-parent_source.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "d68b75033a733d80015f714fd75ef98a0621629454d05f4cbc0a1e4c136ae396"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1063,
+              "path": "LICENSE",
+              "sha256": "382f47728362a3b605173880cec898a2929d3b7f32eb1424f33b86781e2eef5c"
+            },
+            {
+              "bytes": 4155,
+              "path": "tests/test_documentation.py",
+              "sha256": "8e7915eff79946d1ff0d6cca4e054638ea750f72a270404c3e118f83b5b1e7f9"
+            },
+            {
+              "bytes": 2578,
+              "path": "tests/test_schema_artifacts.py",
+              "sha256": "f88f1a27d4379294e12130e9f9c5ee1437e4261c9c49b6b9a4a42267bdd9e4be"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-19-parent_verifier.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "6b97df83b1bcf3b72d747759cbe46acbb17a89d1a8d58be72064d32b42f9974d"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1063,
+              "path": "LICENSE",
+              "sha256": "382f47728362a3b605173880cec898a2929d3b7f32eb1424f33b86781e2eef5c"
+            },
+            {
+              "bytes": 2864,
+              "path": "scripts/generate_json_schemas.py",
+              "sha256": "14077d36cb78796147d7e7e0403b2f0fe4f1fca76fb987ac7255f96857320858"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-19-target_source.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "58c897217bbbfb557a84f8fbd96925d0423ab4d4ddf6bdf6c53dbb947ff98fc2"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1063,
+              "path": "LICENSE",
+              "sha256": "382f47728362a3b605173880cec898a2929d3b7f32eb1424f33b86781e2eef5c"
+            },
+            {
+              "bytes": 4155,
+              "path": "tests/test_documentation.py",
+              "sha256": "f39ff1a23c1f0b1b85230a200b505d0f31a5203619386e33257e696aa2869c91"
+            },
+            {
+              "bytes": 2578,
+              "path": "tests/test_schema_artifacts.py",
+              "sha256": "4806fb9f74947b4df1fc5432c67faab642a1821d1dcd018c558bddc6df406c09"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-19-target_verifier.tar.gz",
+          "root": "vcm-claim-19",
+          "sha256": "427d7f37f96193f20ae03a4438dffdf4659f415af6e43af76eaa5effa05f5e71"
+        }
+      },
+      "base_revision": "03f2338cfc423c633a0b2834f41eba7443b515e7",
+      "faults": [],
+      "head_revision": "5a6910355ebc60250d2185c1d0137660347b4669",
+      "index": 19,
+      "license_spdx": "MIT",
+      "natural_language_request": "fix(docs): correct documentation site URL",
+      "natural_language_request_sha256": "d1a652dee4349f3f97d1dd0833984f3f0e21b340716d02016bc3166fd733eef3",
+      "opaque_source_id": "86b19c27439540650cf987cef501c0a13ed1bad406798b7df8202ef937a6f91b",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 143,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "922ecbecb502fbb9cead43a7b70d766931f39c0304d881167f4185a615faf597",
+      "repository": "cs0lar/treelang",
+      "selected_source_paths": [
+        "scripts/generate_json_schemas.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/test_documentation.py",
+        "tests/test_schema_artifacts.py"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 5269,
+              "path": "src/core/config.py",
+              "sha256": "eb663656661b7bc190439ef0d67ddbb684507f3b32e14d0c0644796665df722a"
+            },
+            {
+              "bytes": 33352,
+              "path": "src/core/main.py",
+              "sha256": "c795cf5b56e2b42191ed4d58f0f85063f404da58652633c6c2e5bf8abafb4820"
+            },
+            {
+              "bytes": 31610,
+              "path": "src/plugins/browser.py",
+              "sha256": "9ac0e44e6444db4ba95f20171ff6d135f908eda709a5cda252ace06f3b11b9b3"
+            },
+            {
+              "bytes": 1774,
+              "path": "src/plugins/zz_base.py",
+              "sha256": "d23cf9eaf8062ccdd2426039f239b5ae44e36458a59136d379bf4e646b3e0e04"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-21-parent_source.tar.gz",
+          "root": "vcm-claim-21",
+          "sha256": "04e107a4ef6f487332022d996d7a3b074c0073146216d05a62094bb728cfa894"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 24788,
+              "path": "tests/unit/core/test_listen_modal.py",
+              "sha256": "6e2c8f78f97bcc22d6bef921e5ad2d1a809946dc3978df9690048cf2d39737e6"
+            },
+            {
+              "bytes": 5223,
+              "path": "tests/unit/plugins/test_zz_base.py",
+              "sha256": "272ffd52793e45b49aabc9f4cdac8387fdff1a08791128c78bf3394cebdb946e"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-21-parent_verifier.tar.gz",
+          "root": "vcm-claim-21",
+          "sha256": "7d5fa382f76e8cb9c1b29064edced964a60ee1bd3cd41786cf896a084382d673"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 5572,
+              "path": "src/core/config.py",
+              "sha256": "ac6f2de2eaeb7e42218d2e7f0c34f742a84236c1a900b812082593c5482fa9cf"
+            },
+            {
+              "bytes": 33848,
+              "path": "src/core/main.py",
+              "sha256": "0f65f8dbc35c442669b644196973adfff42f7e131ea0e1f2f92d54ce466010d2"
+            },
+            {
+              "bytes": 31610,
+              "path": "src/plugins/browser.py",
+              "sha256": "89177a207f4f1b351b7da31464cb8801f0ec5acd3d812af4f03b25462ea5cdbb"
+            },
+            {
+              "bytes": 2260,
+              "path": "src/plugins/zz_base.py",
+              "sha256": "403291a3f01f211eb6965511f3f973f27c7c44a615a83bfa924f6f086744ee54"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-21-target_source.tar.gz",
+          "root": "vcm-claim-21",
+          "sha256": "30d3230f517a8fcd6f2e2c952df56f297b1ed102f561637bc42e5846318dc4fe"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 35149,
+              "path": "LICENSE",
+              "sha256": "3972dc9744f6499f0f9b2dbf76696f2ae7ad8af9b23dde66d6af86c9dfb36986"
+            },
+            {
+              "bytes": 26048,
+              "path": "tests/unit/core/test_listen_modal.py",
+              "sha256": "c2e4a01464c58e2d978d91ffe638d2f2b5f4667132da25011cee5ef78aaa981b"
+            },
+            {
+              "bytes": 5701,
+              "path": "tests/unit/plugins/test_zz_base.py",
+              "sha256": "4efd4a08a423d8a0d9ae3d6833250349aaf9fc5835b441c236e656da72f90821"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-21-target_verifier.tar.gz",
+          "root": "vcm-claim-21",
+          "sha256": "97e4c0ceda9021dce11b0b8d141c04abd4af24a1a46f9eca06ba029e2c7a0376"
+        }
+      },
+      "base_revision": "c52f57647c42b915aacfb91486026c475ae92ce8",
+      "faults": [],
+      "head_revision": "bc78b85703fbe97abcd801f05401947ee2040904",
+      "index": 21,
+      "license_spdx": "GPL-3.0",
+      "natural_language_request": "feat: option to require the wake word inside modes",
+      "natural_language_request_sha256": "0e2134ef6ffe2c933eb2b3198f461d305232c6533691cc1e4dd7ee2d1d4dedf3",
+      "opaque_source_id": "b29c2605caa5d1b5e21ecd2a36838c1264da8c6cccfe4a46b0307334dc50e8a8",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 147,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "afc197525334eb44950f59e80533124ed90068dd0588cc0d9a095a497a4769f0",
+      "repository": "ctsdownloads/easyspeak",
+      "selected_source_paths": [
+        "src/core/config.py",
+        "src/core/main.py",
+        "src/plugins/browser.py",
+        "src/plugins/zz_base.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/unit/core/test_listen_modal.py",
+        "tests/unit/plugins/test_zz_base.py"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE.txt",
+              "sha256": "7df20dcdf9197e9945c14858d41c60f11b52b93e5b69e2b63416b874d598d322"
+            },
+            {
+              "bytes": 11699,
+              "path": "src/winml/modelkit/telemetry/utils.py",
+              "sha256": "9ae1a0a2fd80741d89e1c6a2b3d68a1f7d610bb8bf7dc5fc19a7f0f4d12681f8"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-28-parent_source.tar.gz",
+          "root": "vcm-claim-28",
+          "sha256": "1dfee91e0f83f5437e9b8b47d4fbbef2e93b26af04abf093c1231e6aafeb74f5"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE.txt",
+              "sha256": "7df20dcdf9197e9945c14858d41c60f11b52b93e5b69e2b63416b874d598d322"
+            },
+            {
+              "bytes": 10640,
+              "path": "tests/unit/telemetry/test_click_group.py",
+              "sha256": "ec72c534c45d46226be486daf0b47fff76680ed5e8ed327796ed2e9505a0deb3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-28-parent_verifier.tar.gz",
+          "root": "vcm-claim-28",
+          "sha256": "d53c4c765274120aa337ef0d6f7ff56f9cf0e2ae6c4b8629329f877d5681ca8b"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE.txt",
+              "sha256": "7df20dcdf9197e9945c14858d41c60f11b52b93e5b69e2b63416b874d598d322"
+            },
+            {
+              "bytes": 11773,
+              "path": "src/winml/modelkit/telemetry/utils.py",
+              "sha256": "ba871c2705f68d9d00c72de8c646cd1f203db3a4c2a278e6bad17cf779f8ecf6"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-28-target_source.tar.gz",
+          "root": "vcm-claim-28",
+          "sha256": "cf32f45dbcee7f5208a1e5773d8489fe63b6377dfbe51b700eb088103faa14fa"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1074,
+              "path": "LICENSE.txt",
+              "sha256": "7df20dcdf9197e9945c14858d41c60f11b52b93e5b69e2b63416b874d598d322"
+            },
+            {
+              "bytes": 11433,
+              "path": "tests/unit/telemetry/test_click_group.py",
+              "sha256": "5df05b7ace276a5b19657b374a703d792c141fd3a57c7ce34000e58f5a001851"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-28-target_verifier.tar.gz",
+          "root": "vcm-claim-28",
+          "sha256": "5b35ea31e0bf0b96e8c2eb0695e1f1edf895e8e83ea9b25d8a8bd25294b54076"
+        }
+      },
+      "base_revision": "b538ce3878534b38e6269d98800ec9e1c862ed7f",
+      "faults": [],
+      "head_revision": "de4331d92e5369eaabc9233a22a9d061770c6938",
+      "index": 28,
+      "license_spdx": "MIT",
+      "natural_language_request": "Fix telemetry handling for local model paths",
+      "natural_language_request_sha256": "6aee39349ab7928c1a69a1e6f1a98d9911dbfc7bef4855dd019c6473cc4b4a55",
+      "opaque_source_id": "9193fb1f9295258920da7fff3bd25c723f30e79eccdd61d874cd669e6057a315",
+      "panel": "claim",
+      "parent_license_path": "LICENSE.txt",
+      "pull_request": 1273,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "ab7320b14dca9a10dc81b80a8c083b5e3414d7738cc3a21aa9bca8260fb026c6",
+      "repository": "microsoft/winml-cli",
+      "selected_source_paths": [
+        "src/winml/modelkit/telemetry/utils.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/unit/telemetry/test_click_group.py"
+      ],
+      "target_license_path": "LICENSE.txt"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "fa103e85c81b02db33f34ea4c59b1a4a7f18e0052042879906ce82f9597b1b7c"
+            },
+            {
+              "bytes": 17640,
+              "path": "crates/assay-cli/src/cli/commands/evidence/mcp_tunnel_observed.rs",
+              "sha256": "46fb48cccfefe29995abbe5b5a9b0c60f8a6e15051130a2704637953b241e5af"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-32-parent_source.tar.gz",
+          "root": "vcm-claim-32",
+          "sha256": "ebf4cf70da4c4b2f9887e6ca7f488a2e2f097d17532bdcd55dce7087af072875"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "fa103e85c81b02db33f34ea4c59b1a4a7f18e0052042879906ce82f9597b1b7c"
+            },
+            {
+              "bytes": 5011,
+              "path": "crates/assay-cli/tests/evidence_test/mcp_tunnel_observed.rs",
+              "sha256": "a120ddb4948ac05682d228daf060165f434e4bd3fe9aae1de953962bbc80d1af"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-32-parent_verifier.tar.gz",
+          "root": "vcm-claim-32",
+          "sha256": "34d43d49635a15fe9b312ee89c44353159de5dd786e5ccc3bdcaf8233c76937d"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "fa103e85c81b02db33f34ea4c59b1a4a7f18e0052042879906ce82f9597b1b7c"
+            },
+            {
+              "bytes": 18870,
+              "path": "crates/assay-cli/src/cli/commands/evidence/mcp_tunnel_observed.rs",
+              "sha256": "c58ec231b33eaccf9493b9f126aa79afcaf5aa10c4a3aaeca3c6a268334a0a6a"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-32-target_source.tar.gz",
+          "root": "vcm-claim-32",
+          "sha256": "f19a42f710c85ee46a40a5b932599d37da566daf93f7dc157dfe6d6001325610"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1080,
+              "path": "LICENSE",
+              "sha256": "fa103e85c81b02db33f34ea4c59b1a4a7f18e0052042879906ce82f9597b1b7c"
+            },
+            {
+              "bytes": 8451,
+              "path": "crates/assay-cli/tests/evidence_test/mcp_tunnel_observed.rs",
+              "sha256": "1e1c8edde7dfb7451e518d2a2a94c51cb3027e83e3a595e44427561fffe02238"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-32-target_verifier.tar.gz",
+          "root": "vcm-claim-32",
+          "sha256": "62407e1d9d4856b52fbe3dfc52f763885367530f47193b3cd0b22b624f3dc249"
+        }
+      },
+      "base_revision": "688641ba193c081ad85a068b476010ca52727d7d",
+      "faults": [],
+      "head_revision": "1b256c9145c5e531f01889e8ec1c965269b36886",
+      "index": 32,
+      "license_spdx": "MIT",
+      "natural_language_request": "Count the strong join that was established, not the one declared",
+      "natural_language_request_sha256": "9a82ac1f8f546dde928416d028866e62a17e231ae49816c97fcfd276177c1f79",
+      "opaque_source_id": "02ea5702d9a3fd598b36d5c632ef148c0f58a1b25b154a7382e279e9d7bc4596",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 1954,
+      "query_language": "Rust",
+      "replacement_for_title_sha256": "029edfb2647da078a0d724a8845411a3418e9641ebe3723c185e9846de270926",
+      "repository": "Rul1an/assay",
+      "selected_source_paths": [
+        "crates/assay-cli/src/cli/commands/evidence/mcp_tunnel_observed.rs"
+      ],
+      "selected_verifier_paths": [
+        "crates/assay-cli/tests/evidence_test/mcp_tunnel_observed.rs"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1071,
+              "path": "LICENSE",
+              "sha256": "174e6bd32dbe52b593985f6104aeaea125d0c2dcf71728256e77d776c798259b"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-54-parent_source.tar.gz",
+          "root": "vcm-claim-54",
+          "sha256": "2b2c01e6dc38d80762b6f6cf1f8d4adf4ed109ea66026b0522a4ba3f693b7c91"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1071,
+              "path": "LICENSE",
+              "sha256": "174e6bd32dbe52b593985f6104aeaea125d0c2dcf71728256e77d776c798259b"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-54-parent_verifier.tar.gz",
+          "root": "vcm-claim-54",
+          "sha256": "2b2c01e6dc38d80762b6f6cf1f8d4adf4ed109ea66026b0522a4ba3f693b7c91"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1071,
+              "path": "LICENSE",
+              "sha256": "174e6bd32dbe52b593985f6104aeaea125d0c2dcf71728256e77d776c798259b"
+            },
+            {
+              "bytes": 3968,
+              "path": "scripts/migrate-runtime-secrets.mjs",
+              "sha256": "6d19d47fa746c4972e10e9c9c408eba3c298cf05b0983f5ff562103f3aab7fdd"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-54-target_source.tar.gz",
+          "root": "vcm-claim-54",
+          "sha256": "96d18c0e84fc9dffe9532d94f5444b56ac42cc768ef59658ffc567eeda984ad5"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1071,
+              "path": "LICENSE",
+              "sha256": "174e6bd32dbe52b593985f6104aeaea125d0c2dcf71728256e77d776c798259b"
+            },
+            {
+              "bytes": 4780,
+              "path": "tests/unit/js/migrate-runtime-secrets.test.js",
+              "sha256": "d753e58cb8eec1b63724b82cf571da5469a82acdcd89b3ddcf95d47c0f5ce709"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-54-target_verifier.tar.gz",
+          "root": "vcm-claim-54",
+          "sha256": "6b68d5c7456ed734e239b52f90c040c2f6cbf0e1cc12ccdb30a27eff2cd18dde"
+        }
+      },
+      "base_revision": "5551bb03b8ea980dd709e6d0bcf20fff9ffe5678",
+      "faults": [],
+      "head_revision": "67dd8204af1bb8aafc2bb7049ba1ee20b43fe594",
+      "index": 54,
+      "license_spdx": "MIT",
+      "natural_language_request": "fix: add safe migration for plaintext runtime keys",
+      "natural_language_request_sha256": "0a2c07c26dbc023a9f3e3ccc1c5ceee52d735f3b26f7a83544a009e3adca0f8a",
+      "opaque_source_id": "aeb1a6f6af7b65d39b75837afaf72571c03cf9734cb82c8aab5b8bf85524267b",
+      "panel": "control_qualification",
+      "parent_license_path": "LICENSE",
+      "pull_request": 16,
+      "query_language": "JavaScript",
+      "replacement_for_title_sha256": "051f61f8c5150097a2c167741711abce971e86ae429ead5034ba905023869d9f",
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "selected_source_paths": [
+        "scripts/migrate-runtime-secrets.mjs"
+      ],
+      "selected_verifier_paths": [
+        "tests/unit/js/migrate-runtime-secrets.test.js"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 9197,
+              "path": "LICENSE.txt",
+              "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+            },
+            {
+              "bytes": 69429,
+              "path": "crates/tsz-cli/src/driver/check_utils.rs",
+              "sha256": "1924cf7cf3f6725c057483fed6ef3d7c0f3e3583cdce833ab83ec7c066605bd4"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-60-parent_source.tar.gz",
+          "root": "vcm-claim-60",
+          "sha256": "10cb0a04d42034da0a69a33c8de1a82d1530163a7bd8fc96398a300aa24204f0"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 9197,
+              "path": "LICENSE.txt",
+              "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+            },
+            {
+              "bytes": 61472,
+              "path": "crates/tsz-cli/src/driver/check_utils/tests.rs",
+              "sha256": "924ada0cc370571dad79934b8bc13e637fd4b7ee3761fa0ab1e41f32f7d471c3"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-60-parent_verifier.tar.gz",
+          "root": "vcm-claim-60",
+          "sha256": "8ea5d5a205bb157c10e2e96ebbdf36807b59ef5f2c75fc285379ab449c87c6dd"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 9197,
+              "path": "LICENSE.txt",
+              "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+            },
+            {
+              "bytes": 70380,
+              "path": "crates/tsz-cli/src/driver/check_utils.rs",
+              "sha256": "f7c912dade928b7ddaf19ed048b726e3ce2f70a4f1f1ae7cb5b1a1e3c992ab01"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-60-target_source.tar.gz",
+          "root": "vcm-claim-60",
+          "sha256": "7d2991ad01f48c0caf9b1fdc11cb27c60d07500e183728b2f90df8ab662dcffb"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 9197,
+              "path": "LICENSE.txt",
+              "sha256": "a7d00bfd54525bc694b6e32f64c7ebcf5e6b7ae3657be5cc12767bce74654a47"
+            },
+            {
+              "bytes": 67502,
+              "path": "crates/tsz-cli/src/driver/check_utils/tests.rs",
+              "sha256": "383cb1d9d2c44d98ac38b79d2fae5120bcd3b7659874551cb06049b44a9434f6"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_content_language_replacements_v1/vcm-claim-60-target_verifier.tar.gz",
+          "root": "vcm-claim-60",
+          "sha256": "c28893da3432318a5cd3aadaffae46f6bfa58eff613af303a6f71437907bc455"
+        }
+      },
+      "base_revision": "63c9863c98f579bcbadf43b39222e057641cfa10",
+      "faults": [],
+      "head_revision": "9f26e9bc151c4cb5dee9109f54bd4b739a5fb04c",
+      "index": 60,
+      "license_spdx": "Apache-2.0",
+      "natural_language_request": "fix(cli): the accessor grammar family is all-in or all-out of the parse-diagnostic filter",
+      "natural_language_request_sha256": "43e015c1bc64929c1d009fe3fd58f3ee360ad38959999d77ae3f4ec5662b6cf4",
+      "opaque_source_id": "5b5823263d19050eb3d3b6288774ee9cda626b5dd7ed7a59f659fc9b26ce449e",
+      "panel": "control_qualification",
+      "parent_license_path": "LICENSE.txt",
+      "pull_request": 16278,
+      "query_language": "Rust",
+      "replacement_for_title_sha256": "f45889491b65169d50a1a772cfbb55a988c7c74bd3bfb016ef1979465638a71e",
+      "repository": "tsz-org/tsz",
+      "selected_source_paths": [
+        "crates/tsz-cli/src/driver/check_utils.rs"
+      ],
+      "selected_verifier_paths": [
+        "crates/tsz-cli/src/driver/check_utils/tests.rs"
+      ],
+      "target_license_path": "LICENSE.txt"
+    }
+  ],
+  "replacement_set_admitted": true,
+  "selected_repository_count": 7,
+  "source_content_retrieval_opened": true,
+  "state": "SEVEN_ENGLISH_TITLE_AND_SELECTED_CONTENT_REPLACEMENTS_BOUND",
+  "transport": {
+    "credentials_retained": false,
+    "logical_request_count": 148,
+    "physical_attempt_count": 149,
+    "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "retry_attempt_count": 1,
+    "source_content_requests": 58,
+    "title_requests": 15
+  },
+  "transport_retry_accounting": {
+    "attempt_endpoint_hash_chain_sha256": "42c786f52edfcb1472d55791e8278673c8aa4c2c92d9418929b9b1e1e3b455fa",
+    "logical_request_count": 148,
+    "permanent_candidate_failure_count": 2,
+    "physical_attempt_count": 149,
+    "response_digest_chain_sha256": "3d541faa1eee75008e5aabebca2973f2f66d42cce25a6b7fc809b5f2caa85654",
+    "retry_attempt_count": 1,
+    "state": "SEVEN_ENGLISH_TITLE_AND_SELECTED_CONTENT_REPLACEMENTS_BOUND",
+    "status_counts": {
+      "200": 146,
+      "404": 2,
+      "502": 1
+    },
+    "successful_request_count": 146,
+    "transport_failure_count": 0
+  },
   "trigger_state": "GREEN"
 }

@@ -349,6 +349,12 @@ denies all current repositories, and requires both English title classification
 and zero forbidden scripts in selected source/verifier text before all-or-none
 admission. No execution or model authority is present.
 
+The seven replacements are now bound all-or-none: Python claim slots 14, 19, 21,
+and 28; Rust claim slot 32; JavaScript control slot 54; and Rust control slot 60.
+Every exact title and selected text archive passed English scope, and all archive
+hashes were independently rechecked. The combined panel remains closed pending
+exact v3 assembly and a fresh independent selected-byte audit.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
