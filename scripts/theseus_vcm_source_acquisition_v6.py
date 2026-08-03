@@ -193,6 +193,9 @@ def acquire(
                         "pull_request": number,
                         "query_language": language,
                         "node_id": node_id,
+                        "title_sha256": hashlib.sha256(
+                            str(item.get("title") or "").encode()
+                        ).hexdigest(),
                         "rank": v1.rank(
                             selection.get("selection_seed"), repository, number
                         ),
@@ -363,6 +366,7 @@ def qualify_node(
         "pull_request": number,
         "query_language": candidate.get("query_language"),
         "selection_rank_sha256": candidate.get("rank"),
+        "title_sha256": candidate.get("title_sha256"),
         "candidate_content_retrieved": False,
         "candidate_packet_materialized": False,
     }

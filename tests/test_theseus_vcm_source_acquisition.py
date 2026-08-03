@@ -185,6 +185,7 @@ def test_v6_graphql_fixture_preserves_existing_eligibility() -> None:
         "pull_request": 7,
         "query_language": "Python",
         "node_id": "PR_fixture",
+        "title_sha256": "e" * 64,
         "rank": "f" * 64,
     }
     node = {
@@ -225,6 +226,7 @@ def test_v6_graphql_fixture_preserves_existing_eligibility() -> None:
     assert reasons == []
     assert row["metadata_qualified"] is True
     assert row["head_chronology_source"] == "graphql_pull_request_commit_connection"
+    assert row["title_sha256"] == "e" * 64
     assert row["source_paths"] == ["src/module.py"]
     assert row["verifier_paths"] == ["tests/test_module.py"]
     assert row["candidate_content_retrieved"] is False
@@ -236,6 +238,7 @@ def test_v6_graphql_fixture_rejects_head_commit_identity_mismatch() -> None:
         "pull_request": 7,
         "query_language": "Python",
         "node_id": "PR_fixture",
+        "title_sha256": "e" * 64,
         "rank": "f" * 64,
     }
     node = {
@@ -310,6 +313,7 @@ def test_v6_full_selector_rehearsal_seals_exact_disjoint_panels(
                     "repository_url": f"https://api.github.com/repos/{repository}",
                     "number": number,
                     "node_id": node_id,
+                    "title": f"Fixture change {language} {page} {index}",
                 }
             )
             suffix = language_suffix[language]
@@ -401,6 +405,7 @@ def test_v6_full_selector_rehearsal_seals_exact_disjoint_panels(
     assert report["source_content_retrieval_opened"] is False
     assert report["candidate_packet_materialization_opened"] is False
     assert all(row["candidate_content_retrieved"] is False for row in rows)
+    assert all(len(row["title_sha256"]) == 64 for row in rows)
 
 
 def test_panel_quotas_are_exact_and_source_disjoint_by_construction() -> None:

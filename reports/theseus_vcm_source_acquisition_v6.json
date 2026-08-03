@@ -2,7 +2,7 @@
   "candidate_packet_materialization_opened": false,
   "config": {
     "path": "configs/theseus_vcm_source_acquisition_v6.json",
-    "sha256": "2930126b8303056e47de5fb7977f0e5f602591c9a833e5e4fc094d6195bfb053"
+    "sha256": "fdaa0cb2c84bcf1a15c4592e921eab7eee14aee9c537e4c4e8cce40d989a80a4"
   },
   "counters": {
     "D1_cases_consumed": 0,
@@ -17,7 +17,7 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T10:26:21.375662Z",
+  "created_utc": "2026-08-03T10:28:54.612678Z",
   "faults": [],
   "live_schema_qualification": {
     "body_patch_or_review_content_returned": false,
@@ -42,7 +42,7 @@
     "identities_retained": false,
     "sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774"
   },
-  "runtime_ms": 135.471,
+  "runtime_ms": 178.695,
   "selected_repository_count": 0,
   "source_content_retrieval_opened": false,
   "state": "METADATA_SELECTION_V6_GRAPHQL_BATCH_LIVE_SCHEMA_QUALIFIED",
