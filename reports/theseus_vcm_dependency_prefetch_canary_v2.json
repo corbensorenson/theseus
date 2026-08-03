@@ -10,14 +10,14 @@
     "path": "configs/theseus_vcm_dependency_prefetch_canary_v2.json",
     "sha256": "fd4058e8bc53d4066293fbdde13834007dac73342fac36d6231601abd641ea1f"
   },
-  "created_utc": "2026-08-03T18:19:21.444567Z",
-  "dependency_installations": 0,
-  "execution_performed": false,
+  "created_utc": "2026-08-03T18:21:25.879629Z",
+  "dependency_installations": 2,
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN v2 canary proves only that task 3's identical parent/target npm lock can be acquired once with lifecycle scripts disabled, replayed with network denied, and retained as a cache whose SHA-512 content includes both exact lock artifacts. V2 changes only the owner defect: captured output remains independently monitored at 8 MiB while a dependency file is bounded by the existing 4 GiB per-task retention ceiling. It does not execute or qualify the repository runner, parent/target behavior, evaluator construct, task, VCM mechanism, model, D1, D2, or book claim.",
-  "network_denied_dependency_installations": 0,
-  "network_enabled_dependency_installations": 0,
+  "network_denied_dependency_installations": 1,
+  "network_enabled_dependency_installations": 1,
   "network_request_count_exact": null,
   "observed_parent_target_dependency_identities": {
     "parent": {
@@ -51,7 +51,137 @@
     "path": "reports/theseus_vcm_dependency_prefetch_canary.json",
     "sha256": "39b892cede02b13e0115984d960ffb4c95844fd7a44abb60f6f5a945bd0f2a42"
   },
+  "receipts": {
+    "cache": {
+      "content_blob_bytes": 5906247,
+      "content_blob_count": 2,
+      "content_blobs_sha256": "60e8e5af98c2f87b1878c56df4dbc5592fe7d2e794ac1c76d2f544bc7662b1d6",
+      "expected_lock_integrity_count": 2,
+      "matched_lock_integrity_count": 2,
+      "missing_lock_integrity_packages": [],
+      "total_cache_bytes": 5912042,
+      "total_cache_file_count": 6
+    },
+    "free_bytes_after": 36903067648,
+    "free_bytes_before": 36908994560,
+    "offline_installed_dependencies": {
+      "expected": {
+        "@vscode/tree-sitter-wasm": "0.3.1",
+        "esbuild-wasm": "0.28.1"
+      },
+      "faults": [],
+      "observed": {
+        "@vscode/tree-sitter-wasm": {
+          "package_json_sha256": "3773c325392fbd572180c856039b6c75c31c71b6110f277d6c1ae9ede157c05d",
+          "version": "0.3.1"
+        },
+        "esbuild-wasm": {
+          "package_json_sha256": "6c60cdc2a997fc9ef220c94277bf5b813437a088c5aefc4763f46aafcec2d246",
+          "version": "0.28.1"
+        }
+      }
+    },
+    "offline_replay": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--offline",
+        "--cache",
+        "/private/tmp/theseus-vcm-dependency-canary-v2-ayyreisk/cache"
+      ],
+      "duration_ms": 358.274,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 118.391,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 27,
+      "stdout_sha256": "b49f0f44f49147bf18db5901f4fe90ac6ebbda8ebc33ad115d2fe27a675ba0e6"
+    },
+    "online_acquisition": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/lib/node_modules/npm/bin/npm-cli.js",
+        "ci",
+        "--ignore-scripts",
+        "--no-audit",
+        "--no-fund",
+        "--cache",
+        "/private/tmp/theseus-vcm-dependency-canary-v2-ayyreisk/cache"
+      ],
+      "duration_ms": 1674.923,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 124.234,
+      "network_denied": false,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 24,
+      "stdout_sha256": "4aaef3acc3c4b16766abf61c4f4aa2d3bd413e2fe822d3edd6cfa9d7e7334efa"
+    },
+    "online_installed_dependencies": {
+      "expected": {
+        "@vscode/tree-sitter-wasm": "0.3.1",
+        "esbuild-wasm": "0.28.1"
+      },
+      "faults": [],
+      "observed": {
+        "@vscode/tree-sitter-wasm": {
+          "package_json_sha256": "3773c325392fbd572180c856039b6c75c31c71b6110f277d6c1ae9ede157c05d",
+          "version": "0.3.1"
+        },
+        "esbuild-wasm": {
+          "package_json_sha256": "6c60cdc2a997fc9ef220c94277bf5b813437a088c5aefc4763f46aafcec2d246",
+          "version": "0.28.1"
+        }
+      }
+    },
+    "repository_extraction": {
+      "member_receipts_sha256": "8e5334b29e2b751f65e0fb3921ae9f5187a78b30d896ce20e05919e00de14904",
+      "regular_file_bytes": 7862760,
+      "regular_file_count": 560
+    },
+    "repository_source_after": {
+      "bytes": 7862760,
+      "file_count": 560,
+      "identity_sha256": "273b51c63694c555e84961dd2bca174316d0b7a558b28ff3b539444f00b673c5"
+    },
+    "repository_source_before": {
+      "bytes": 7862760,
+      "file_count": 560,
+      "identity_sha256": "273b51c63694c555e84961dd2bca174316d0b7a558b28ff3b539444f00b673c5"
+    },
+    "retained_store": {
+      "content_blob_bytes": 5906247,
+      "content_blob_count": 2,
+      "content_blobs_sha256": "60e8e5af98c2f87b1878c56df4dbc5592fe7d2e794ac1c76d2f544bc7662b1d6",
+      "expected_lock_integrity_count": 2,
+      "faults": [],
+      "matched_lock_integrity_count": 2,
+      "missing_lock_integrity_packages": [],
+      "path": "runtime/vcm_evaluator/dependency_store/npm/task-03",
+      "total_cache_bytes": 5912042,
+      "total_cache_file_count": 6
+    }
+  },
   "repository_runner_executions": 0,
-  "state": "READY_FOR_V2_TASK_3_DEPENDENCY_CANARY",
-  "trigger_state": "PAUSED"
+  "state": "V2_TASK_3_DEPENDENCY_CACHE_ACQUIRED_AND_OFFLINE_REPLAY_QUALIFIED",
+  "trigger_state": "GREEN"
 }

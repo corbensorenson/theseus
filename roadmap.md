@@ -822,6 +822,16 @@ all downstream denials are unchanged. Captured stdout and stderr remain limited
 to 8 MiB through direct monitoring; dependency files now inherit the already
 frozen 4 GiB per-task physical ceiling. One v2 execution is authorized.
 
+V2 is GREEN. The lifecycle-disabled online install and separately sandboxed
+network-denied offline replay both returned zero with exact dependency versions.
+The repository's 560 non-`node_modules` files retained the same identity. The
+retained cache is 5,912,042 bytes across six files and its two content blobs
+match both lockfile SHA-512 artifacts; peak process-group RSS was 124.234 MiB
+online and 118.391 MiB offline. No runner, evaluator, candidate, local model, or
+Luna call occurred. Before expanding to task 7 or any wider batch, a separate
+static owner must rederive the cache, command, network-denial, source, and
+storage conclusions without trusting the v2 owner's GREEN flag.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_3_DEPENDENCY_CANARY_V2_PROSPECTIVELY_SEALED` | V1's owner-side file-limit fault is preserved. V2 changes only boundary implementation: 8 MiB captured-output monitoring is separate from the existing 4 GiB per-task dependency-file ceiling. One v2 acquisition/offline replay is authorized; runners, evaluators, local models, and Luna remain closed |
+| Active VCM claim | `VCM_V3_TASK_3_DEPENDENCY_CANARY_V2_GREEN_INDEPENDENT_AUDIT_NEXT` | Task 3's exact dependencies were acquired once and replayed offline with network denied; both lock blobs and dependency versions match, source bytes are unchanged, and the 5.9 MiB cache is retained. This is dependency-instrument evidence only. A separate static audit must pass before task 7 or wider expansion |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -437,6 +437,13 @@ the 8 MiB captured-output boundary through direct file monitoring and assigns
 dependency writes the existing 4 GiB per-task physical ceiling. One successor
 execution is authorized; repository runners and models remain closed.
 
+V2 is GREEN. Both the lifecycle-disabled online install and network-denied
+offline replay returned zero with the two exact dependency versions. The 560
+repository files outside temporary `node_modules` remained byte-identical. The
+retained cache is 5,912,042 bytes and contains both exact lock integrity blobs;
+peak RSS stayed below 125 MiB. A separate static audit is next before any second
+task is allowed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -617,8 +624,8 @@ authorize regenerating historical reports or reopening neural work.
    lock tasks and schedules task 3 first. First materialize and version-qualify
    its exact checksum-bound Node 22.20.0/npm 10.9.3 runtime. **Complete:** that
    runtime is GREEN. Preserve the v1 `SIGXFSZ` instrument failure. **Complete:**
-   v2 is sealed with separate captured-output and dependency-file limits.
-   Execute only that successor and independently audit its retained closure,
+   v2 is sealed with separate captured-output and dependency-file limits, and
+   its acquisition/offline replay is GREEN. Independently audit its retained closure,
    network boundary, script suppression, and storage accounting, then expand
    sequentially only if the canary passes. Resolve the six immutable-resolution
    tasks separately, qualify TypeScript and untrusted Rust builds, and only then
