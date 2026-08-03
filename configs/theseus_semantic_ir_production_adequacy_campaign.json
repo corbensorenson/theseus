@@ -1,0 +1,71 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_campaign_v1",
+  "state": "PROSPECTIVELY_BOUND_AFTER_POOL_SEAL_BEFORE_MODEL_EXPOSURE",
+  "purpose": "Run the independently qualified 18-task implementation-adequacy panel through the exact frozen local TMax model and versioned production Semantic-IR runtime, then seal candidates before independent hidden evaluation.",
+  "adequacy_preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
+  "adequacy_preregistration_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
+  "sealed_task_pool": "reports/theseus_semantic_ir_production_adequacy_task_pool.json",
+  "sealed_task_pool_sha256": "1586f73c5dde60d8568cac8dad539fc25c50b647e940982d0fbc2ace3e0bae35",
+  "adequacy_runtime": "scripts/theseus_semantic_ir_production_adequacy_runtime.py",
+  "adequacy_runtime_sha256": "9d9bd856c57623ac6b2653dad2cbfb384fd11812a1838f880c368bb582e47f81",
+  "candidate_runner": "scripts/theseus_semantic_ir_production_adequacy_campaign.py",
+  "candidate_runner_sha256": "9370da050d64a3a6a74a924adf98adb78802278f84a62f3e8036d32f567688ed",
+  "independent_scorer": "scripts/theseus_semantic_ir_production_adequacy_scorer.py",
+  "independent_scorer_sha256": "628d3bf91252cb7f4032019f6cd95e3970c34be7bdeee3d9040adb6c1e6f3097",
+  "evaluator_owner": "scripts/theseus_semantic_ir_production_adequacy_evaluator_qualification.py",
+  "evaluator_owner_sha256": "0a5f6bdf5cdccbb99cb5484851df4568786efa62a096f3ef89320080f9bd007e",
+  "base_local_instrument": "configs/theseus_p4v2r2r3_local_instrument.json",
+  "base_local_instrument_sha256": "98ca21e5c7ddbb4987a6faf51093af29e8b17ac27a2ddb61a3121384740bd16f",
+  "frozen_model": {
+    "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+    "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+    "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+    "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+    "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+    "temperature": 0.0
+  },
+  "generation_completion": {
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "model_declared_context_window_tokens": 262144,
+    "project_selected_quality_token_cap": null,
+    "physical_context_boundary_hit_invalidates_observation": true,
+    "host_safety_activation_is_not_model_or_mechanism_failure": true
+  },
+  "adequacy_design": {
+    "task_count": 18,
+    "model_calls_per_task": 2,
+    "first_call": "complete production Semantic-IR artifact from the exact sealed candidate prompt",
+    "second_call": "complete replacement artifact against the original snapshot using only complete provisional output plus parse, apply, and syntax-visible feedback",
+    "minimum_successes": 13,
+    "minimum_successes_per_stratum": 2,
+    "stratum_count": 6,
+    "zero_unsafe_effects_required": true,
+    "zero_physical_context_boundary_hits_required": true,
+    "hidden_evaluation_after_candidate_seal": true,
+    "candidate_integrity_recomputed_independently": true,
+    "route_labels_hidden_from_scoring": true
+  },
+  "information_flow": {
+    "candidate_input": "exact serialized_prompt from the sealed candidate packet",
+    "execution_manifest_candidate_visible": false,
+    "target_revision_patch_archive_tests_expected_answer_oracle_stratum_candidate_visible": false,
+    "repair_feedback_answer_bearing": false,
+    "hidden_evaluator_imported_or_called_by_candidate_runner": false,
+    "candidate_flags_trusted_by_scorer": false
+  },
+  "authority": {
+    "user_or_operator_gate": false,
+    "local_model_calls_authorized_after_green_audit": true,
+    "external_inference_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false
+  },
+  "maximum_inference": "A GREEN audit authorizes only the 36 frozen-local-model calls needed to produce and seal 18 candidates before independent scoring. It does not establish implementation adequacy, a subsystem effect, D1, D2, training value, serving, or ASI Stack support."
+}

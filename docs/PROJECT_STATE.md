@@ -55,7 +55,7 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
-| Semantic-IR independent adequacy | `TASK_POOL_SEALED_ADEQUACY_RUNNER_BINDING_ACTIVE` | The task-11 construct failure, sandbox transport pause, and missing-file representation failure remain preserved. A versioned adequacy runtime added narrowly authorized `CREATE_FILE` units without changing the historical production-owner SHA. All 18 exact candidate prompts are sealed with complete selected parent sources, role-aware obligations, semantic identities, recursive forbidden-field and target/revision exclusion checks, and at least 173,548 conservative residual context tokens. No local-model, Luna, teacher, training, D1, or D2 call occurred. The next gate is a source-bound call-free adequacy runner and scoring audit before candidate generation opens |
+| Semantic-IR independent adequacy | `CAMPAIGN_AUDIT_GREEN_LOCAL_CANDIDATE_RUN_AUTHORIZED` | The task-11 construct failure, sandbox transport pause, and missing-file representation failure remain preserved. A versioned adequacy runtime added narrowly authorized `CREATE_FILE` units without changing the historical production-owner SHA. All 18 exact candidate prompts are sealed with complete selected parent sources, role-aware obligations, semantic identities, recursive forbidden-field and target/revision exclusion checks, and at least 173,548 conservative residual context tokens. The prospectively source-bound campaign audit is GREEN: it freezes the TMax identity, two-call completion custody, 13/18 overall and 2/3-per-stratum floors, candidate sealing, and independent post-seal scoring. No local-model, Luna, teacher, training, D1, or D2 call had occurred at authorization. The next action is the authorized 36-call local candidate run, followed by independent scoring |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -240,8 +240,10 @@ authorize regenerating historical reports or reopening neural work.
    contract, and campaign-derived cost authority with zero reference calls.
 3. **Complete:** repair Semantic-IR identity/coverage/target/unit mechanics on
    bounded non-claim evidence through the exact production path.
-4. **Active:** run an independent adequacy audit and either admit one fresh campaign or
-   freeze the implementation.
+4. **Active:** run the prospectively audited 18-task, 36-call frozen-local
+   implementation-adequacy campaign, independently score only after all
+   candidates are sealed, and either admit one fresh claim campaign or freeze
+   this implementation.
 5. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
 6. Qualify a development survivor once on fresh D1.

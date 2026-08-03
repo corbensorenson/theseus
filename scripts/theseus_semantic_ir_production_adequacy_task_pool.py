@@ -378,8 +378,8 @@ def archive_sources(receipt: dict[str, Any], selected: list[str]) -> dict[str, s
 def license_spdx(index: int) -> str:
     candidates = read_json(ROOT / "configs" / "theseus_semantic_ir_production_adequacy_source_candidates_v3.json")
     rows = flatten_candidate_rows(candidates)
-    row = next((value for value in rows if integer(value.get("campaign_index")) == index), {})
-    return str(row.get("license_spdx") or "UNKNOWN")
+    row = next((value for value in rows if integer(value.get("index")) == index), {})
+    return str(row.get("declared_license_spdx") or "UNKNOWN")
 
 
 def flatten_candidate_rows(value: dict[str, Any]) -> list[dict[str, Any]]:
@@ -387,12 +387,12 @@ def flatten_candidate_rows(value: dict[str, Any]) -> list[dict[str, Any]]:
     predecessor = value.get("predecessor_registry")
     if predecessor:
         rows = [*flatten_candidate_rows(read_json(p2a.resolve(str(predecessor)))), *rows]
-    replacement = mapping(value.get("replacement_candidate"))
+    replacement = mapping(mapping(value.get("replacement")).get("to"))
     if replacement:
-        replace_index = integer(replacement.get("campaign_index"))
-        rows = [row for row in rows if integer(row.get("campaign_index")) != replace_index]
+        replace_index = integer(replacement.get("index"))
+        rows = [row for row in rows if integer(row.get("index")) != replace_index]
         rows.append(replacement)
-    return sorted(rows, key=lambda row: integer(row.get("campaign_index")))
+    return sorted(rows, key=lambda row: integer(row.get("index")))
 
 
 def recursive_keys(value: Any, prefix: str = "$") -> list[tuple[str, str]]:

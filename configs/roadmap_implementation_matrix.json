@@ -12,12 +12,24 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "cognitive-compilation-and-semantic-ir.core",
-      "state": "PRODUCTION_MECHANICS_REPAIRED_INDEPENDENT_ADEQUACY_ACTIVE",
+    "state": "PRODUCTION_MECHANICS_REPAIRED_ADEQUACY_CAMPAIGN_AUDIT_GREEN",
       "observed_residual": "implementation_adequacy_power_diversity_independence",
       "next_evidence_class": "INDEPENDENT_SOURCE_DISJOINT_NON_CLAIM_ADEQUACY",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact frozen TMax plus Semantic-IR v2r2 implementation missed its mechanics floor; cognitive compilation generally remains unresolved."
+    "maximum_inference": "The exact frozen TMax plus Semantic-IR v2r2 implementation missed its mechanics floor; the replacement production mechanics and prospective campaign audit are GREEN, but model-produced implementation adequacy and cognitive compilation generally remain unresolved.",
+    "adequacy_campaign_binding": {
+      "config": "configs/theseus_semantic_ir_production_adequacy_campaign.json",
+      "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit.json",
+      "candidate_runner": "scripts/theseus_semantic_ir_production_adequacy_campaign.py",
+      "independent_scorer": "scripts/theseus_semantic_ir_production_adequacy_scorer.py",
+      "state": "GREEN_CALL_FREE_PROSPECTIVE_BINDING_LOCAL_RUN_AUTHORIZED",
+      "task_count": 18,
+      "local_model_calls_authorized": 36,
+      "external_reference_calls_authorized": 0,
+      "hidden_evaluation_before_candidate_seal_authorized": false,
+      "project_selected_quality_token_cap": null
+    }
     },
     "claim_selection_policy": {
       "maximum_simultaneously_active_claims": 1,
@@ -93,7 +105,8 @@
       "complete_source_controlled_program_recenter_neural_hold_and_registry_rebind",
       "complete_luna_transport_offline_qualification_with_zero_calls",
       "complete_semantic_ir_production_path_mechanics_repair_on_bounded_non_claim_evidence",
-      "active_independent_mechanics_adequacy_audit",
+    "complete_independent_mechanics_adequacy_campaign_binding_and_call_free_audit",
+    "active_run_and_independently_score_18_task_frozen_local_adequacy_campaign",
       "open_at_most_one_fresh_source_disjoint_claim_campaign_only_after_adequacy",
       "qualify_a_development_survivor_once_on_fresh_D1",
       "return_claim_packet_to_book_review_without_support_movement",
