@@ -330,6 +330,19 @@ then seal one uniform fresh denominator. Every v5-exposed source is consumed;
 unexposed sources may be rebound only under the same compact protocol. No model
 call may precede the call-free audit.
 
+That compact ABI is now mechanics-GREEN. Every statement receives a unique,
+collision-checked 128-bit handle derived from path, type, exact coordinates, and
+the full node digest. Candidate context groups handles by path and omits repeated
+labels and full digests; the parser resolves the full digest independently before
+the unchanged lowerer runs. All 18 prior sources retain identical statement
+cardinality, complete parent context, and zero inventory truncation. Exact frozen-
+tokenizer prompts remain physically addressable; the largest is 44,325 tokens,
+and consumed Task 4 falls from 74,626 to 35,917 tokens. The audit used zero model,
+hidden-evaluator, external, teacher, training, D1, or D2 calls. This is only
+representation-mechanics evidence. Acquire and evaluator-qualify four new
+post-snapshot sources for consumed indices 1-4, uniformly rebind unexposed 5-18,
+and seal the fresh campaign before testing host operability.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

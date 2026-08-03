@@ -5535,7 +5535,7 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "v5_infrastructure_invalid_compact_statement_protocol_active",
+        "status": "compact_statement_protocol_mechanics_green_fresh_denominator_active",
         "source_bindings": {
           "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
           "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
@@ -5583,9 +5583,11 @@
           "candidate_task_manifests": "configs/theseus_semantic_ir_production_adequacy_task_*.json",
           "candidate_packet_manifests": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_*.json",
           "v5_candidate_evidence": "reports/theseus_semantic_ir_production_adequacy_candidates_v5.json",
-          "v5_campaign_journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v5_journal.json"
+          "v5_campaign_journal": "reports/theseus_semantic_ir_production_adequacy_campaign_v5_journal.json",
+          "compact_statement_runtime": "scripts/theseus_semantic_ir_production_adequacy_runtime_v5.py",
+          "compact_protocol_audit": "reports/theseus_semantic_ir_compact_protocol_audit.json"
         },
-        "current_boundary": "V5 sealed three candidates through six admitted frozen-local calls, then Task 4 call 1 reached the prospectively declared 600-second host wall after a 74,626-token prompt and generated zero tokens. The physical context boundary and project-selected quality cap were not touched; hidden evaluator, reference, teacher, training, D1, and D2 counters remain zero. The seven receipts and three candidates are preserved without scoring. Reproduction of the v4 prefill-scale wall localizes the active instrument defect to redundant per-statement path, full-digest, and label presentation. The next owner is a uniform compact integrity-bound statement ABI with complete addressability, independent collision/integrity resolution, exact parse/lower/apply parity, frozen-tokenizer measurement, and fresh replacement of every exposed v5 surface. No further model call is authorized before its call-free audit.",
+        "current_boundary": "V5 preserves three unscored candidates and one zero-token Task 4 prefill-watchdog receipt; hidden evaluation remains zero. The compact successor assigns every statement a unique collision-checked 128-bit handle derived from path, type, exact span, and full digest; groups handles by path; retains complete parent source; and resolves the full digest independently before unchanged lowering. The call-free audit is GREEN on all 18 prior sources with identical statement cardinality, zero truncation, a 44,325-token maximum exact prompt, and Task 4 reduced from 74,626 to 35,917 tokens. This is representation-mechanics evidence only. Exposed indices 1-4 remain consumed and require fresh post-snapshot licensed sources and independently qualified evaluators; unexposed indices 5-18 may be uniformly rebound. No model call is authorized before the fresh pool and campaign audits are GREEN.",
         "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },

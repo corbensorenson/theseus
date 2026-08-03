@@ -55,7 +55,7 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
-| Semantic-IR independent adequacy | `V5_INFRASTRUCTURE_INVALID_COMPACT_PROTOCOL_REQUIRED` | V5 sealed Tasks 1-3 through six frozen-local calls, then Task 4 call 1 reached the 600-second host wall after a 74,626-token prompt and generated zero tokens. The context boundary and project-selected quality cap were not touched; hidden evaluation remained at zero. The same prefill-scale failure as v4 localizes the active defect to redundant statement-address presentation, not source size alone. Preserve all seven receipts, retire the consumed surfaces, and bind one uniform compact, integrity-preserving statement protocol on a fresh denominator before another model call. Luna, teacher, training, claim development, D1, and D2 remain closed |
+| Semantic-IR independent adequacy | `COMPACT_ABI_MECHANICS_GREEN_FRESH_DENOMINATOR_REQUIRED` | V5 preserved three candidates and one zero-token Task 4 prefill watchdog with hidden evaluation at zero. The compact successor keeps every statement and full parent source, replaces repeated path/label/full-digest rows with collision-checked 128-bit handles grouped by path, and independently resolves full digests before unchanged lowering. A call-free audit is GREEN on all 18 prior sources: largest exact prompt 44,325 tokens; consumed Task 4 falls from 74,626 to 35,917. Exposed indices 1-4 remain consumed and must be replaced; indices 5-18 may be uniformly rebound. No model call is authorized before fresh source/evaluator/pool/campaign seals. Luna, teacher, training, claim development, D1, and D2 remain closed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -238,16 +238,17 @@ authorize regenerating historical reports or reopening neural work.
    bounded non-claim evidence through the exact production path.
 4. **Complete:** preserve v5 Tasks 1-3 and the Task 4 prefill-watchdog receipt;
    record six admitted local calls, one invalid call, and zero hidden evaluation.
-5. **Active:** replace the redundant label/full-hash statement inventory with a
-   compact integrity-bound protocol, independently prove complete addressability
-   and exact lowering, retire every v5-exposed source, and seal a uniform fresh
-   denominator before another model call. No one-off large-source swap can exit
-   this stage.
-6. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
+5. **Complete:** replace the redundant label/full-hash statement inventory with
+   a compact integrity-bound protocol and independently prove complete
+   addressability, exact lowering, and prompt reduction without truncation.
+6. **Active:** acquire and evaluator-qualify four fresh post-snapshot sources for
+   consumed indices 1-4, uniformly rebind unexposed indices 5-18, and seal the
+   fresh denominator and campaign before another model call.
+7. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
-7. Qualify a development survivor once on fresh D1.
-8. Return the claim packet to book review with support unchanged.
-9. Repeat one claim at a time until the Subsystem Architecture Freeze can make
+8. Qualify a development survivor once on fresh D1.
+9. Return the claim packet to book review with support unchanged.
+10. Repeat one claim at a time until the Subsystem Architecture Freeze can make
    an evidence-based neural re-entry decision.
 
 ## Work That Is Not Active
