@@ -1,0 +1,19 @@
+{
+  "acquisition_executed": false,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_pnpm_bootstrap.json",
+    "sha256": "ae09fe8a6c18c3bca7fdebe48a5b71dba3eef51945da63beb3e72eedc884ea0f"
+  },
+  "created_utc": "2026-08-03T18:36:35.211838Z",
+  "dependency_installations": 0,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN report proves only that registry-digest-bound pnpm 10.32.1 was safely materialized and version-probed under exact Node 22.20.0 for VCM task 7. It does not qualify dependency acquisition, repository execution, evaluators, task validity, VCM, models, D1, D2, or book support.",
+  "network_requests": 0,
+  "policy": "project_theseus_vcm_pnpm_bootstrap_v1",
+  "repository_executions": 0,
+  "state": "READY_FOR_EXACT_PNPM_10_32_1_ACQUISITION",
+  "tool_version_probes": 0,
+  "trigger_state": "PAUSED"
+}

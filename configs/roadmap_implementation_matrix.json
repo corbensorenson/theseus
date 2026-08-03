@@ -12,12 +12,12 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TOOLCHAIN_COMPATIBILITY_CLASSIFIED_TASK_7_PNPM_10_32_1_BOOTSTRAP_NEXT",
+      "state": "VCM_V3_TASK_7_PNPM_10_32_1_BOOTSTRAP_PROSPECTIVELY_SEALED",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired 62-task English source panel, 124 exact parent/head closures, source-bound runner candidates, dependency classes, trusted offline build mechanics, and static 48-lock prefetch schedule are GREEN. The first scheduled task's exact Node >=22.20.0/npm >=10.9.3 requirement is now met by a checksum-bound Node 22.20.0/npm 10.9.3 runtime. This remains evaluator-instrument materialization only: real dependency closure, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired 62-task English source panel, 124 exact parent/head closures, source-bound runner candidates, dependency classes, trusted offline build mechanics, static 48-lock prefetch schedule, first npm dependency closure, and independent closure audit are GREEN. The exact pnpm 10.32.1 bootstrap required by schedule-ordinal-2 task 7 is prospectively sealed against registry digests and exact Node 22.20.0, but its archive has not yet been acquired. This remains evaluator-instrument materialization only: task-7 dependencies, repository runners, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
       "adequacy_campaign_binding": {
       "config": "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v6.json",
@@ -1000,6 +1000,27 @@
         "external_reference_calls": 0,
         "maximum_inference": "static declared-version compatibility classification only; compatible declarations and absent declarations are separate and no dependency repository evaluator task or model result is established",
         "next_boundary": "acquire and hash-qualify pnpm 10.32.1 for task 7 without dependency or repository execution, then regenerate compatibility before sealing the second dependency canary"
+      },
+      "vcm_pnpm_bootstrap": {
+        "config": "configs/theseus_vcm_pnpm_bootstrap.json",
+        "owner": "scripts/theseus_vcm_pnpm_bootstrap.py",
+        "test": "tests/test_theseus_vcm_pnpm_bootstrap.py",
+        "report": "reports/theseus_vcm_pnpm_bootstrap.json",
+        "owner_sha256": "f3978ed4602abe3c03dd85059d95328c6196325b7c511d05a09b0e31fd287900",
+        "config_sha256": "ae09fe8a6c18c3bca7fdebe48a5b71dba3eef51945da63beb3e72eedc884ea0f",
+        "test_sha256": "b36fac142656a217efa28d3beef6e5aade0d6ff2c899d85932d382c972c05143",
+        "report_sha256": "ba3e1e5766474605f2d1304fb40b246eca4c00a6265436b4425d94bd42793e8c",
+        "state": "PAUSED_READY_FOR_EXACT_PNPM_10_32_1_ACQUISITION",
+        "task_index": 7,
+        "schedule_ordinal": 2,
+        "registry_metadata_requests_before_contract": 1,
+        "archive_acquisition_requests": 0,
+        "dependency_installations": 0,
+        "repository_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "prospective identity and authority seal only; pnpm 10.32.1 has not yet been acquired and no dependency repository evaluator task VCM or model result is established",
+        "next_boundary": "perform the one authorized exact registry archive acquisition, verify both bound digests, safely materialize the package, and version-probe it under exact Node 22.20.0"
       }
     },
     "claim_selection_policy": {

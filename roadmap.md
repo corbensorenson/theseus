@@ -848,8 +848,10 @@ version and remain a weaker separate class, 14 are explicitly incompatible,
 and zero requirement expressions are unresolved. The incompatible indices are
 7, 36, 46, 6, 28, 29, 9, 47, 5, 49, 44, 52, 50, and 51. Schedule ordinal 2,
 task 7, pins pnpm 10.32.1 while the prior bound CLI is 10.13.1. Do not skip the
-frozen order or tolerate version drift: bind and acquire exact pnpm 10.32.1,
-qualify only its identity, then regenerate compatibility before sealing task 7.
+frozen order or tolerate version drift. The exact pnpm archive URL, registry
+SHA-1/SHA-512, Node 22.20.0 probe, storage reserve, and zero downstream authority
+are now prospectively sealed. Perform only that acquisition and identity probe,
+then regenerate compatibility before sealing task 7's dependency canary.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

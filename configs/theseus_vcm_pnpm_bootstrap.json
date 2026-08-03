@@ -1,0 +1,54 @@
+{
+  "policy": "project_theseus_vcm_pnpm_bootstrap_v1",
+  "state": "PROSPECTIVE_EXACT_PNPM_10_32_1_FOR_VCM_TASK_7_ONLY",
+  "owner": "scripts/theseus_vcm_pnpm_bootstrap.py",
+  "owner_sha256": "f3978ed4602abe3c03dd85059d95328c6196325b7c511d05a09b0e31fd287900",
+  "artifact": {
+    "name": "pnpm",
+    "version": "10.32.1",
+    "url": "https://registry.npmjs.org/pnpm/-/pnpm-10.32.1.tgz",
+    "sha1": "3d0200745a9faf35ca009ea7fde8d6592ff17c4c",
+    "sha512_base64": "pwaTjw6JrBRWtlY+q07fHR+vM2jRGR/FxZeQ6W3JGORFarLmfWE94QQ9LoyB+HMD5rQNT/7KnfFe8a1Wc0jyvg==",
+    "metadata_query": "npm view pnpm@10.32.1 dist.integrity dist.shasum dist.tarball --json",
+    "metadata_requests_before_contract": 1
+  },
+  "task_binding": {
+    "index": 7,
+    "schedule_ordinal": 2,
+    "repository": "moshcoder/moshcode",
+    "manifest_package_manager": "pnpm@10.32.1",
+    "prior_pnpm_version": "10.13.1",
+    "prior_identity_compatible": false
+  },
+  "node": {
+    "path": "runtime/vcm_evaluator/toolchains/node-v22.20.0-darwin-arm64/bin/node",
+    "sha256": "49161ba4e67afda85c25b2daa1f0e91d1bffc023d2dbc4886eda7a9ba38bca62",
+    "version": "22.20.0"
+  },
+  "target": "runtime/vcm_evaluator/toolchains/pnpm-10.32.1",
+  "ca_bundle": "/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/site-packages/certifi/cacert.pem",
+  "ca_bundle_sha256": "4f3975ff30abbf35443b486064ae8bcb41dff707ffdf576c76d292fb458aa0a9",
+  "maximum_archive_bytes": 33554432,
+  "minimum_free_bytes_after_acquisition": 10737418240,
+  "timeout_seconds": 120,
+  "report": "reports/theseus_vcm_pnpm_bootstrap.json",
+  "authority": {
+    "exact_artifact_download_authorized": true,
+    "safe_extraction_authorized": true,
+    "exact_version_probe_authorized": true,
+    "dependency_prefetch_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report proves only that registry-digest-bound pnpm 10.32.1 was safely materialized and version-probed under exact Node 22.20.0 for VCM task 7. It does not qualify dependency acquisition, repository execution, evaluators, task validity, VCM, models, D1, D2, or book support."
+}
