@@ -1,5 +1,10 @@
 {
   "candidate_packet_materialization_opened": false,
+  "checkpoint": {
+    "path": "reports/theseus_vcm_source_replacement_28_checkpoint.json",
+    "sha256": "0584e30b23a1bca3bfe25c254b84ebdd42a37ef921765c1de94124a4ab4e4579"
+  },
+  "checkpoint_artifact_hash_verified_final": true,
   "config": {
     "path": "configs/theseus_vcm_source_replacement_28.json",
     "sha256": "1cb30b7e9d61880abad01944c188272b322989e0ee91fce044de9054e2a321eb"
@@ -11,14 +16,15 @@
     "external_inference_calls": 0,
     "local_model_calls": 0,
     "parent_target_or_evaluator_executions": 0,
-    "public_metadata_title_requests": 0,
-    "public_source_content_requests": 0,
-    "source_archives_materialized": 0,
-    "source_bytes_materialized": 0,
+    "public_metadata_selection_requests": 20,
+    "public_metadata_title_requests": 1,
+    "public_source_content_requests": 6,
+    "source_archives_materialized": 4,
+    "source_bytes_materialized": 383700,
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T11:29:21.839151Z",
+  "created_utc": "2026-08-03T11:31:44.734954Z",
   "failed_materialization": {
     "path": "reports/theseus_vcm_source_materialization.json",
     "sha256": "d38e58eccf4fd9a103a921018a9f7c6b20f460f71011d2fe36771f8af6206f18"
@@ -31,9 +37,167 @@
     "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"
   },
   "policy": "project_theseus_vcm_source_replacement_28_v1",
-  "replacement_admitted": false,
-  "selected_repository_count": 0,
-  "source_content_retrieval_opened": false,
-  "state": "TASK_28_PYTHON_CLAIM_REPLACEMENT_PREFLIGHT_GREEN",
+  "rejection_counts": {
+    "bot_author": 8,
+    "changed_file_count": 176,
+    "changed_line_count": 90,
+    "chronology": 1,
+    "generated_vendor_lock_only": 4,
+    "license_not_allowlisted": 214,
+    "no_machine_verifier_change": 258,
+    "no_non_test_source_change": 176,
+    "not_merged_closed_nondraft": 4,
+    "primary_language_mismatch": 3,
+    "prior_or_duplicate_repository": 30,
+    "repository_below_star_floor": 250,
+    "repository_state": 74
+  },
+  "replacement_admitted": true,
+  "replacement_materialization": {
+    "archives": {
+      "parent_source": {
+        "members": [
+          {
+            "bytes": 1067,
+            "path": "LICENSE",
+            "sha256": "a6c0e6b2002ab48deb46e2d2371063b0989fdb3d111dfabfee73b0f0fe3c1145"
+          },
+          {
+            "bytes": 181960,
+            "path": "fixed_truth_ai_gm_mvp.py",
+            "sha256": "dcf4d2a19a9a213f92b0ff46298c6318fe96afd6e8d3e2d798e35d898df01d0d"
+          }
+        ],
+        "path": "tests/fixtures/theseus_vcm_claim_sources_v1/vcm-claim-28-parent_source.tar.gz",
+        "root": "vcm-claim-28",
+        "sha256": "17411127cdc9f16dbba042058ecea251c58679aa2c28910416d8d792a94ec001"
+      },
+      "parent_verifier": {
+        "members": [
+          {
+            "bytes": 1067,
+            "path": "LICENSE",
+            "sha256": "a6c0e6b2002ab48deb46e2d2371063b0989fdb3d111dfabfee73b0f0fe3c1145"
+          }
+        ],
+        "path": "tests/fixtures/theseus_vcm_claim_sources_v1/vcm-claim-28-parent_verifier.tar.gz",
+        "root": "vcm-claim-28",
+        "sha256": "140cfb592731189ed622e26be67b7823e89e56ac218491353a8e45afd46baa14"
+      },
+      "target_source": {
+        "members": [
+          {
+            "bytes": 1067,
+            "path": "LICENSE",
+            "sha256": "a6c0e6b2002ab48deb46e2d2371063b0989fdb3d111dfabfee73b0f0fe3c1145"
+          },
+          {
+            "bytes": 195561,
+            "path": "fixed_truth_ai_gm_mvp.py",
+            "sha256": "1c214aae7b9eccd8363d6055f8013b42f0888fef93b5aac87c0d015614fd124f"
+          }
+        ],
+        "path": "tests/fixtures/theseus_vcm_claim_sources_v1/vcm-claim-28-target_source.tar.gz",
+        "root": "vcm-claim-28",
+        "sha256": "0a62fa615e093c4b54aceca2b60d7cae39fc4f6544bc8ea2f52675007494881e"
+      },
+      "target_verifier": {
+        "members": [
+          {
+            "bytes": 1067,
+            "path": "LICENSE",
+            "sha256": "a6c0e6b2002ab48deb46e2d2371063b0989fdb3d111dfabfee73b0f0fe3c1145"
+          },
+          {
+            "bytes": 1911,
+            "path": "tests/test_opening_geography.py",
+            "sha256": "f1f5e1d0b1aeec92cc749c74da204d27cec27a039464af6db79dd4177ef7e007"
+          }
+        ],
+        "path": "tests/fixtures/theseus_vcm_claim_sources_v1/vcm-claim-28-target_verifier.tar.gz",
+        "root": "vcm-claim-28",
+        "sha256": "0d354e6d7e03b8133e03644f7b3d68a9fd3eba9a9494f0757b77730d8f755c3d"
+      }
+    },
+    "base_revision": "20d46cb1fe3ede0fb4d33d1c0db3c2073adae02a",
+    "faults": [],
+    "head_revision": "fa85897d9053a82db4045b3f098007fa8c17f5e4",
+    "index": 28,
+    "license_spdx": "MIT",
+    "natural_language_request": "Companion conversation diagnostics, continuation handling, and opening geography guide",
+    "natural_language_request_sha256": "ab7320b14dca9a10dc81b80a8c083b5e3414d7738cc3a21aa9bca8260fb026c6",
+    "opaque_source_id": "05e4cc36038bcee3cdcf40ca8bc2ba29eec662ea909f76279909554ee5ee1656",
+    "panel": "claim",
+    "parent_license_path": "LICENSE",
+    "pull_request": 30,
+    "query_language": "Python",
+    "repository": "moritan777/chat-trpg-gm-mvp",
+    "selected_source_paths": [
+      "fixed_truth_ai_gm_mvp.py"
+    ],
+    "selected_verifier_paths": [
+      "tests/test_opening_geography.py"
+    ],
+    "target_license_path": "LICENSE"
+  },
+  "replacement_metadata": {
+    "base_revision": "20d46cb1fe3ede0fb4d33d1c0db3c2073adae02a",
+    "candidate_content_retrieved": false,
+    "candidate_packet_materialized": false,
+    "changed_file_count": 5,
+    "changed_line_count": 329,
+    "created_utc": "2026-08-03T08:39:49Z",
+    "head_chronology_source": "graphql_pull_request_commit_connection",
+    "head_commit_utc": "2026-08-03T08:41:19Z",
+    "head_revision": "fa85897d9053a82db4045b3f098007fa8c17f5e4",
+    "license_spdx": "MIT",
+    "merge_revision": "e2d3d5070be3112a71d8c202bd28de18a5dcbeb9",
+    "merged_utc": "2026-08-03T08:41:31Z",
+    "metadata_qualified": true,
+    "opaque_source_id": "05e4cc36038bcee3cdcf40ca8bc2ba29eec662ea909f76279909554ee5ee1656",
+    "panel": "claim",
+    "pull_request": 30,
+    "pull_request_url": "https://github.com/moritan777/chat-trpg-gm-mvp/pull/30",
+    "query_language": "Python",
+    "repository": "moritan777/chat-trpg-gm-mvp",
+    "repository_stars": 1,
+    "selection_rank_sha256": "6b150f70db028f5ba6b820d0a3bda335a97b2d803fe8459e954aa8319c4c52ba",
+    "source_paths": [
+      "fixed_truth_ai_gm_mvp.py"
+    ],
+    "title_sha256": "ab7320b14dca9a10dc81b80a8c083b5e3414d7738cc3a21aa9bca8260fb026c6",
+    "verifier_paths": [
+      "tests/test_opening_geography.py"
+    ]
+  },
+  "replacement_selection_rank_sha256": "6b150f70db028f5ba6b820d0a3bda335a97b2d803fe8459e954aa8319c4c52ba",
+  "selected_repository_count": 1,
+  "source_content_retrieval_opened": true,
+  "state": "TASK_28_PYTHON_CLAIM_REPLACEMENT_SOURCE_BOUND",
+  "transport": {
+    "credentials_retained": false,
+    "logical_request_count": 27,
+    "physical_attempt_count": 27,
+    "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "retry_attempt_count": 0,
+    "source_content_requests": 6,
+    "title_requests": 1
+  },
+  "transport_retry_accounting": {
+    "attempt_endpoint_hash_chain_sha256": "979d94ab0a8cd9058c88d3252089f3619a117fafb2ca7e427a40e4720bd7bf8d",
+    "logical_request_count": 27,
+    "permanent_candidate_failure_count": 1,
+    "physical_attempt_count": 27,
+    "response_digest_chain_sha256": "d601b2b7658c858328e45481755e43b5f883e8e50a8f86452503ab81a7e641fc",
+    "retry_attempt_count": 0,
+    "state": "TASK_28_PYTHON_CLAIM_REPLACEMENT_SOURCE_BOUND",
+    "status_counts": {
+      "200": 26,
+      "404": 1
+    },
+    "successful_request_count": 26,
+    "transport_failure_count": 0
+  },
   "trigger_state": "GREEN"
 }
