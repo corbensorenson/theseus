@@ -282,12 +282,17 @@ def evaluate_policy(
     lifecycle_receipt = find_by_candidate(procedural_asset_report.get("lifecycle_receipts"), candidate_id)
     canary_execution = find_execution(canary, route_id, candidate_id, fixture_id)
     work_contract = find_by_id(steward.get("project_work_contracts"), str(policy.get("required_steward_work_contract") or ""))
+    registry_scope = registry_ready_except_procedural_receipt(registry)
 
     checks = [
         check("adoption_policy_present", bool(policy_id), policy_id),
         check("toolification_gate_green", toolification.get("trigger_state") == "GREEN", toolification.get("trigger_state")),
         check("canary_execution_green", canary.get("trigger_state") == "GREEN", canary.get("trigger_state")),
-        check("registry_gate_green", registry.get("trigger_state") == "GREEN", registry.get("trigger_state")),
+        check(
+            "registry_ready_except_procedural_receipt",
+            registry_scope["ready"],
+            registry_scope,
+        ),
         check("route_validator_ready", get_path(registry, ["summary", "route_validator_viea_spine_view_ready"], False) is True, get_path(registry, ["summary", "route_validator_viea_spine_record_count"], 0)),
         check("steward_contract_present", bool(work_contract), policy.get("required_steward_work_contract")),
         check("steward_contract_blocks_unqualified_default_route", "no_default_route_without_registry_eligibility" in str(work_contract.get("authority_ceiling") or ""), work_contract.get("authority_ceiling")),
@@ -337,7 +342,8 @@ def evaluate_policy(
             "toolification": stable_hash(compact_dependency(toolification)),
             "canary_execution": stable_hash(compact_dependency(canary)),
             "registry": stable_hash({
-                "trigger_state": registry.get("trigger_state"),
+                "scoped_ready": registry_scope["ready"],
+                "non_procedural_blockers": registry_scope["non_procedural_blockers"],
                 "route_validator_ready": get_path(registry, ["summary", "route_validator_viea_spine_view_ready"], False),
                 "route_validator_records": get_path(registry, ["summary", "route_validator_viea_spine_record_count"], 0),
             }),
@@ -391,6 +397,84 @@ def evaluate_policy(
         "public_training_rows_written": 0,
         "external_inference_calls": 0,
         "fallback_return_count": 0,
+    }
+
+
+def registry_ready_except_procedural_receipt(registry: dict[str, Any]) -> dict[str, Any]:
+    """Break the route-receipt self-dependency without weakening other gates.
+
+    The project registry cannot be globally GREEN until this gate publishes a
+    current accepted receipt. This gate therefore accepts only the exact two
+    registry violations caused by its own missing/rejected receipt. Every other
+    abstraction, route, source, supply-chain, steward, and hard-governance fault
+    remains blocking.
+    """
+
+    procedural_impl = "impl.procedural_memory_route.v1"
+    procedural_report = "reports/procedural_memory_route_adoption.json"
+    blockers: list[dict[str, Any]] = []
+    summary = dict_value(registry.get("summary"))
+    required_zero = (
+        "abstraction_registry_gap_count",
+        "stable_capability_field_gap_count",
+        "stable_capability_field_health_red_count",
+        "unregistered_active_source_count",
+        "generated_source_artifact_count",
+        "aibom_missing_identity_count",
+    )
+    for field in required_zero:
+        value = int_or(summary.get(field), 0)
+        if value != 0:
+            blockers.append({"kind": "summary_counter_nonzero", "field": field, "value": value})
+    if summary.get("route_validator_viea_spine_view_ready") is not True:
+        blockers.append({"kind": "route_validator_not_ready"})
+    if summary.get("project_steward_status") != "GREEN":
+        blockers.append({"kind": "project_steward_not_green", "value": summary.get("project_steward_status")})
+
+    for health in list_dicts(registry.get("implementation_health")):
+        if health.get("routing_required") is not True or health.get("routing_eligible") is True:
+            continue
+        implementation_id = str(health.get("implementation_id") or "")
+        evidence_blockers = sorted(str(value) for value in list_values(health.get("evidence_blockers")))
+        if implementation_id == procedural_impl and evidence_blockers and set(evidence_blockers) <= {
+            "route_evidence_missing",
+            "route_evidence_acceptance_rejected",
+            "route_evidence_source_changed",
+            "route_evidence_ttl_expired",
+        }:
+            continue
+        blockers.append(
+            {
+                "kind": "non_procedural_implementation_blocker",
+                "implementation_id": implementation_id,
+                "evidence_blockers": evidence_blockers,
+            }
+        )
+
+    for violation in list_dicts(registry.get("governance_violations")):
+        if str(violation.get("severity") or "") != "hard":
+            continue
+        kind = str(violation.get("kind") or "")
+        scope = {str(value) for value in list_values(violation.get("scope"))}
+        self_block = (
+            kind == "blocked_route_evidence" and scope == {procedural_report}
+        ) or (
+            kind == "implementation_routing_health_gaps" and scope == {procedural_impl}
+        )
+        if not self_block:
+            blockers.append(
+                {
+                    "kind": "non_procedural_hard_governance_violation",
+                    "violation": kind,
+                    "scope": sorted(scope),
+                }
+            )
+    return {
+        "policy": "project_theseus_registry_ready_except_procedural_receipt_v1",
+        "ready": not blockers,
+        "global_trigger_state": registry.get("trigger_state"),
+        "allowed_self_blockers": [procedural_impl, procedural_report],
+        "non_procedural_blockers": blockers,
     }
 
 

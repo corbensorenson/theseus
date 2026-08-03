@@ -70,6 +70,59 @@ class AIBOMTests(unittest.TestCase):
             {"source", "implementation", "checkpoint", "release"},
         )
 
+    def test_dependency_glob_resolves_to_concrete_content_bound_members(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "configs").mkdir()
+            (root / "scripts").mkdir()
+            (root / "scripts" / "worker.py").write_text("VALUE = 1\n", encoding="utf-8")
+            (root / "configs" / "task_alpha.json").write_text('{"task": "alpha"}\n', encoding="utf-8")
+            (root / "configs" / "task_beta.json").write_text('{"task": "beta"}\n', encoding="utf-8")
+            policy = {
+                "surfaces": [],
+                "implementations": [
+                    {
+                        "id": "impl.worker",
+                        "canonical_entrypoint": "scripts/worker.py",
+                        "dependencies": ["configs/task_*.json"],
+                    }
+                ],
+            }
+
+            report = supply_chain.build_aibom(root, policy, [])
+            rows = [
+                row
+                for row in report["artifacts"]
+                if row.get("requested_identity", {}).get("locator") == "configs/task_*.json"
+            ]
+
+            self.assertEqual(report["summary"]["missing_identity_count"], 0)
+            self.assertEqual(
+                {row["resolved_identity"]["locator"] for row in rows},
+                {"configs/task_alpha.json", "configs/task_beta.json"},
+            )
+            self.assertTrue(all(row["identity_state"] == "observed" for row in rows))
+
+    def test_unmatched_dependency_glob_remains_a_missing_identity(self) -> None:
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "scripts").mkdir()
+            (root / "scripts" / "worker.py").write_text("VALUE = 1\n", encoding="utf-8")
+            policy = {
+                "surfaces": [],
+                "implementations": [
+                    {
+                        "id": "impl.worker",
+                        "canonical_entrypoint": "scripts/worker.py",
+                        "dependencies": ["configs/missing_*.json"],
+                    }
+                ],
+            }
+
+            report = supply_chain.build_aibom(root, policy, [])
+
+            self.assertEqual(report["summary"]["missing_identity_count"], 1)
+
     def test_unknown_descendant_fails_closure(self) -> None:
         record = supply_chain.descendant_invalidation(
             {"source"},

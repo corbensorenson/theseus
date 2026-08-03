@@ -290,7 +290,7 @@
         },
         "fresh_functional_utility_config": {
           "path": "configs/neural_seed_functional_utility.json",
-          "sha256": "a8d14f0311d3f343eb4a2f785623ec34b886d59aab5d690c5210495b04705442"
+          "sha256": "dfb1cc13ce7be0f5e31183666c2871e39add1fe8fe689290cafa52100e1a7fd2"
         },
         "historical_functional_packet": {
           "path": "configs/evaluation_history/neural_seed_v8_candidate_packet.json",
@@ -302,19 +302,19 @@
         },
         "functional_generation_wrapper": {
           "path": "scripts/neural_seed_functional_generate.py",
-          "sha256": "9a87fd998f7affd4a32582806c44968bbfd46c1891f2558e5d33208dac36635b"
+          "sha256": "f80db0ac58189111e66055ec963499f5537457cab9b2168fa925e13238054523"
         },
         "functional_utility_implementation": {
           "path": "scripts/neural_seed_functional_utility.py",
-          "sha256": "27f3889d787b4aa04df6d2aab199b4acf1eebc5defe90f717f32fa6c1bf033a3"
+          "sha256": "3c4f7d9b6825f08a33b0dc9005a241c7adc29df82e7b59637e08737e19039090"
         },
         "functional_utility_tests": {
           "path": "tests/test_neural_seed_functional_utility.py",
-          "sha256": "384d5c49e7b28b82f8c7a95a87188bd569bb586395a684175d5a4cec9ea0537c"
+          "sha256": "4d21d944ffc3fc973b73437bb4bfe3b1bef360bf0f678d6e0c1cea8c45614278"
         },
       "moecot_training_config": {
         "path": "configs/moecot_language_arm_training.json",
-        "sha256": "334428e567a7c10173f793b5e10cdd55eb5861af8146554caf47b32c2d0b7eee"
+        "sha256": "8e9a059c5d01cae9bcc9f31132489d7d2c34390d1960f66d866226a059510d0f"
       },
       "moecot_training_implementation": {
         "path": "scripts/moecot_language_arm_training.py",
@@ -338,11 +338,11 @@
         },
         "neural_seed_resident_runtime": {
           "path": "scripts/neural_seed_resident_runtime.py",
-          "sha256": "b2fb0ee2b050c5113ef0f82b33b2578dd85adecabff38d67ad985cca8a43aadc"
+          "sha256": "661455d966ebfb1e3b9d0328d67282040a15ecba8ccfc3a5970f267258a42b48"
         },
         "neural_seed_resident_runtime_tests": {
           "path": "tests/test_neural_seed_resident_runtime.py",
-          "sha256": "83cf58509dd527c5fd52e46e7e9f5a33116215bb3614f1f8d11be8fc87557d92"
+          "sha256": "6290f6652c394ae101e938386499ecc612a1aa9acc5f4e8be98836991c951433"
         },
         "resource_acceleration_qualification": {
           "path": "scripts/resource_acceleration_qualification.py",
@@ -354,11 +354,11 @@
         },
         "openai_compat_server": {
           "path": "scripts/openai_compat_server.py",
-          "sha256": "5d7cee2e6f01421f2494c0c3885bf9e8e33692111576a607eae045fad78dd2b3"
+          "sha256": "763cb798ac31033306348c76042395ccd021f727998c6d0e1ad370fb41e6c384"
         },
         "openai_compat_policy": {
           "path": "configs/openai_compat_policy.json",
-          "sha256": "5607221fab2682c0409f481ac2049f975791047d9536faf155bab870d6e35242"
+          "sha256": "9e52605e8ccc3b3fda64992fbd01bc539fb12541eb72b14a83a035cea76ea35a"
         },
         "moecot_source_conditioned_implementation": {
           "path": "scripts/moecot_source_conditioned_pretraining.py",
@@ -1341,14 +1341,15 @@
       "requirements": [
         {
           "id": "assistant_live_local_model_route_integrity",
-          "path": "reports/theseus_assistant_p1_live_route_integrity_r2.json",
+          "path": "reports/theseus_assistant_live_route_integrity.json",
           "freshness_mode": "source_bound",
           "source_paths": [
             "configs/theseus_assistant_runtime.json",
-            "configs/core_evidence_tmax_9b_worker_control_v3.json",
+            "configs/core_evidence_tmax_9b_completion_worker.json",
             "scripts/theseus_assistant_runtime.py",
             "scripts/theseus_assistant_route_integrity.py",
-            "scripts/theseus_local_inference_backend.py",
+            "scripts/theseus_assistant_route_integrity_v2.py",
+            "scripts/theseus_local_inference_backend_v2.py",
             "reports/core_evidence_tmax_9b_runtime_preflight.json"
           ],
           "acceptance": {
@@ -6830,6 +6831,7 @@
         "reports/theseus_assistant_state_report.md",
         "reports/theseus_assistant_product_lane_gate.json",
         "reports/theseus_assistant_p1_live_route_integrity_r2.json",
+        "reports/theseus_assistant_live_route_integrity.json",
         "reports/theseus_assistant_p2a_instrument_audit.json"
       ],
       "attd_hooks": {
@@ -9623,6 +9625,7 @@
         "reports/theseus_assistant_state_report.md",
         "reports/theseus_assistant_product_lane_gate.json",
         "reports/theseus_assistant_p1_live_route_integrity_r2.json",
+        "reports/theseus_assistant_live_route_integrity.json",
         "reports/theseus_assistant_p2a_instrument_audit.json",
         "reports/theseus_p2a_typing_extensions_677_evaluator_audit.json",
         "reports/theseus_assistant_p2a_typing_extensions_677_run.json",

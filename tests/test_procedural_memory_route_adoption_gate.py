@@ -139,3 +139,74 @@ def test_procedural_route_cannot_replace_effect_authority_route() -> None:
     )
     assert result["valid"] is False
     assert "effect_transaction_valid" in result["hard_gaps"]
+
+
+def test_registry_scope_allows_only_the_procedural_receipt_self_blocker() -> None:
+    registry = {
+        "trigger_state": "RED",
+        "summary": {
+            "abstraction_registry_gap_count": 0,
+            "stable_capability_field_gap_count": 0,
+            "stable_capability_field_health_red_count": 0,
+            "unregistered_active_source_count": 0,
+            "generated_source_artifact_count": 0,
+            "aibom_missing_identity_count": 0,
+            "route_validator_viea_spine_view_ready": True,
+            "project_steward_status": "GREEN",
+        },
+        "implementation_health": [
+            {
+                "implementation_id": "impl.procedural_memory_route.v1",
+                "routing_required": True,
+                "routing_eligible": False,
+                "evidence_blockers": ["route_evidence_acceptance_rejected"],
+            }
+        ],
+        "governance_violations": [
+            {
+                "kind": "blocked_route_evidence",
+                "severity": "hard",
+                "scope": ["reports/procedural_memory_route_adoption.json"],
+            },
+            {
+                "kind": "implementation_routing_health_gaps",
+                "severity": "hard",
+                "scope": ["impl.procedural_memory_route.v1"],
+            },
+        ],
+    }
+
+    result = adoption.registry_ready_except_procedural_receipt(registry)
+
+    assert result["ready"] is True
+    assert result["global_trigger_state"] == "RED"
+
+
+def test_registry_scope_rejects_any_other_route_blocker() -> None:
+    registry = {
+        "trigger_state": "RED",
+        "summary": {
+            "abstraction_registry_gap_count": 0,
+            "stable_capability_field_gap_count": 0,
+            "stable_capability_field_health_red_count": 0,
+            "unregistered_active_source_count": 0,
+            "generated_source_artifact_count": 0,
+            "aibom_missing_identity_count": 0,
+            "route_validator_viea_spine_view_ready": True,
+            "project_steward_status": "GREEN",
+        },
+        "implementation_health": [
+            {
+                "implementation_id": "impl.theseus_assistant_runtime.v1",
+                "routing_required": True,
+                "routing_eligible": False,
+                "evidence_blockers": ["route_evidence_missing"],
+            }
+        ],
+        "governance_violations": [],
+    }
+
+    result = adoption.registry_ready_except_procedural_receipt(registry)
+
+    assert result["ready"] is False
+    assert result["non_procedural_blockers"]

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import ast
+import glob
 import hashlib
 import importlib.metadata
 import importlib.util
@@ -76,6 +77,43 @@ def _file_identity(root: Path, raw_path: str, *, requested_by: str, kind: str) -
         "advisory_state": "not_checked_offline",
         "license_state": "registry_or_source_metadata_required",
     }
+
+
+def _file_identities(root: Path, raw_path: str, *, requested_by: str, kind: str) -> list[dict[str, Any]]:
+    """Resolve registry globs to their concrete, content-bound members.
+
+    Registry dependency locators may deliberately describe a frozen task family.
+    Treating those locators as literal filenames creates false missing-identity
+    failures and, more importantly, omits the concrete members from the AIBOM.
+    An unmatched pattern still returns one missing identity so the supply-chain
+    gate continues to fail closed.
+    """
+
+    if not glob.has_magic(raw_path):
+        return [_file_identity(root, raw_path, requested_by=requested_by, kind=kind)]
+    pattern = str(root / raw_path) if not Path(raw_path).is_absolute() else raw_path
+    matches = sorted(
+        {
+            path.resolve()
+            for value in glob.glob(pattern, recursive=True)
+            if (path := Path(value)).is_file()
+        }
+    )
+    if not matches:
+        return [_file_identity(root, raw_path, requested_by=requested_by, kind=kind)]
+    rows = []
+    resolved_root = root.resolve()
+    for path in matches:
+        concrete = (
+            str(path.relative_to(resolved_root)).replace("\\", "/")
+            if path.is_relative_to(resolved_root)
+            else str(path)
+        )
+        row = _file_identity(root, concrete, requested_by=requested_by, kind=kind)
+        row["requested_identity"]["locator"] = raw_path
+        row["requested_identity"]["constraint"] = "registry_glob_member"
+        rows.append(row)
+    return rows
 
 
 def _python_imports(path: Path) -> set[str]:
@@ -256,15 +294,15 @@ def build_aibom(root: Path, policy: dict[str, Any], entries: list[dict[str, Any]
         for raw in sorted({str(value) for value in paths if value}):
             suffix = Path(raw).suffix.lower()
             kind = "configuration" if suffix in {".json", ".toml", ".yaml", ".yml"} else "code"
-            row = _file_identity(root, raw, requested_by=impl_id, kind=kind)
-            artifacts[row["artifact_id"]] = row
-            dependencies.append(
-                {
-                    "dependency_artifact_id": row["artifact_id"],
-                    "dependent_artifact_id": impl_artifact_id,
-                    "relation": "required_by_implementation",
-                }
-            )
+            for row in _file_identities(root, raw, requested_by=impl_id, kind=kind):
+                artifacts[row["artifact_id"]] = row
+                dependencies.append(
+                    {
+                        "dependency_artifact_id": row["artifact_id"],
+                        "dependent_artifact_id": impl_artifact_id,
+                        "relation": "required_by_implementation",
+                    }
+                )
         for raw in implementation.get("evidence_outputs", []) or []:
             row = _file_identity(root, str(raw), requested_by=impl_id, kind="derived_evidence")
             artifacts[row["artifact_id"]] = row
