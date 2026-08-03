@@ -504,6 +504,18 @@ and fails if the embedded and final file hashes differ. All source-content,
 evaluator, local/Luna, training, D1/D2, serving, and book authority remains
 closed. One unchanged metadata run is active.
 
+V7 then completed GREEN. It froze 62 unique repositories with zero prior-source
+overlap and exact panel quotas: 9 control-qualification tasks (Python 3,
+TypeScript 2, JavaScript 2, Rust 2) and 53 claim tasks (17, 14, 11, 11).
+The run used 92 logical requests and 100 attempts; all 92 completed, seven
+unknown-network failures and one HTTP 502 recovered, and no terminal transport
+failure occurred. The final checkpoint hash is independently verified against
+the report. No raw title, body, patch, review, answer, test, or node-ID field
+entered the selected rows. Source retrieval, packet materialization,
+evaluators, local/Luna inference, training, D1/D2, serving, and book promotion
+remain closed. The next transaction must separately bind immutable source
+retrieval and independent evaluator qualification to this exact report.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -695,9 +707,10 @@ Use existing owners; create no new cleanup or report family.
    V5 paused on secondary throttling with exact checkpoint accounting. V6
    passed live schema, node-bridge, quota pacing, and full selector rehearsal,
    then failed closed on a rapid unknown-network exhaustion after 57 successful
-   requests. Preserve it. V7 now seals the bounded 108-second recovery horizon
-   and final checkpoint hash verification at zero queries; run the unchanged
-   batched metadata selector. If it seals, bind exact sources and
+   requests. Preserve it. V7's bounded recovery succeeded and froze all 62
+   unique repositories with exact 9/53 source-disjoint panels and a verified
+   final checkpoint hash. Bind immutable source retrieval and independent
+   evaluator qualification to that exact report, then bind
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.

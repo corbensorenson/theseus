@@ -192,6 +192,16 @@ attempts over at most 108 seconds. The checkpoint is finalized before its
 artifact hash enters the report, and the owner verifies the embedded hash
 against the final file. All downstream authority remains closed.
 
+V7 then completed GREEN with 62 unique repositories, zero prior-source overlap,
+and exact panel quotas: 9 control-qualification tasks (Python 3, TypeScript 2,
+JavaScript 2, Rust 2) and 53 claim tasks (17, 14, 11, 11). It completed 92
+logical requests in 100 attempts; seven unknown-network failures and one HTTP
+502 recovered with no terminal transport failure. The embedded checkpoint hash
+matches the final file. Selected rows contain no raw title, body, patch, review,
+answer, tests, or node IDs. Source retrieval, packets, evaluators, local/Luna
+calls, training, D1/D2, serving, and book promotion remain closed. Next bind
+immutable source retrieval and independent evaluator qualification separately.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -377,9 +387,9 @@ authorize regenerating historical reports or reopening neural work.
    zero identities. V6's single-request GraphQL node batches passed live schema,
    node-bridge, pacing, and full-selector rehearsal, then paused on a rapid
    unknown-network exhaustion after 57 successes. Preserve it; repair only the
-   bounded retry horizon and final checkpoint hash ordering. V7 now seals both
-   repairs at zero queries; run its unchanged metadata selector, and then
-   separately authorize source contents and evaluator qualification before
+   bounded retry horizon and final checkpoint hash ordering. V7 completed GREEN
+   with all 62 exact-panel identities and a verified final checkpoint hash.
+   Separately authorize immutable source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.
 11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
