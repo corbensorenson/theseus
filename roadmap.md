@@ -707,6 +707,14 @@ repository, evaluator, local-model, reference-control, D1, or D2 calls. The
 combined panel is still not admitted until a v3 assembly and independent content
 audit substitute exactly these seven rows.
 
+The independent v3 assembly is now GREEN: exactly 62 unique repositories, the
+same 53 claim/9 control and language quotas, 248 deterministic changed-file
+archives, 678 member receipts, 62/62 source differences, 62/62 verifier
+differences, and zero selected-content language violations. Only indices 14,
+19, 21, 28, 32, 54, and 60 changed from v2. This re-admits source membership;
+the seven new full repository closures and downstream inventory still must be
+materialized before evaluator work resumes.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

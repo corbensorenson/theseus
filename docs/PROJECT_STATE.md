@@ -355,6 +355,12 @@ Every exact title and selected text archive passed English scope, and all archiv
 hashes were independently rechecked. The combined panel remains closed pending
 exact v3 assembly and a fresh independent selected-byte audit.
 
+The v3 panel is now independently admitted with 62 unique repositories, exact
+quotas, complete archive/hash/license receipts, changed source and verifier bytes
+for every slot, and zero forbidden-script hits across selected text. The next
+owner must replace only seven full parent/head closures and then regenerate the
+manifest/lock/runner and feasibility reports; no evaluator execution is open yet.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

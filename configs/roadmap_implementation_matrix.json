@@ -612,6 +612,29 @@
         "external_reference_calls": 0,
         "maximum_inference": "replacement instrument readiness only; no replacement panel evaluator task model VCM mechanism or book claim",
         "next_boundary": "independently assemble a v3 62-task panel substituting only the seven rows then rerun selected-byte language admission exact closure materialization runner inventory and evaluator feasibility"
+      },
+      "vcm_source_panel_audit_v3": {
+        "config": "configs/theseus_vcm_source_panel_audit_v3.json",
+        "owner": "scripts/theseus_vcm_source_panel_audit_v3.py",
+        "test": "tests/test_theseus_vcm_source_panel_audit_v3.py",
+        "report": "reports/theseus_vcm_source_panel_audit_v3.json",
+        "owner_sha256": "0ef3b307b5235ab38b23ce5e1127c7c153343600ac3f5284fa7b870747786bb3",
+        "config_sha256": "8cbfc3eb1665c635d50038f30e1b76a59f392fde7c986df35b59987b8645e1df",
+        "report_sha256": "867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff",
+        "state": "GREEN_SIXTY_TWO_ENGLISH_TITLE_AND_SELECTED_CONTENT_TASKS_ADMITTED",
+        "source_panel_admitted": true,
+        "assembled_task_count": 62,
+        "unique_repository_count": 62,
+        "archive_receipt_count": 248,
+        "member_receipt_count": 678,
+        "selected_source_difference_count": 62,
+        "selected_verifier_difference_count": 62,
+        "selected_content_language_violation_count": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "exact source-panel admission only; no evaluator task model VCM mechanism or book claim",
+        "next_boundary": "materialize exact parent and head full closures for only the seven new repositories then regenerate runner inventory and evaluator feasibility against v3"
       }
     },
     "claim_selection_policy": {

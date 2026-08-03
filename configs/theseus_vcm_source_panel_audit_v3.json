@@ -1,0 +1,16 @@
+{
+  "policy":"project_theseus_vcm_source_panel_audit_v3",
+  "state":"INDEPENDENT_V3_ASSEMBLY_AFTER_SEVEN_SELECTED_CONTENT_REPLACEMENTS",
+  "reports":{
+    "prior_panel_v2":{"path":"reports/theseus_vcm_source_panel_audit_v2.json","sha256":"a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
+    "content_language_failure":{"path":"reports/theseus_vcm_content_language_audit.json","sha256":"0888a4e8277c36bd86f2e6876d4484c63a8c50c11a1afa7180c484910c92a19d"},
+    "content_replacements":{"path":"reports/theseus_vcm_content_language_replacements.json","sha256":"946599ef491e4b60db6ca138e96a59b0ed3a8f480d09ac4b4990fcc977ac30ba"}
+  },
+  "replacement_indices":[14,19,21,28,32,54,60],
+  "forbidden_unicode_scripts":[{"name":"Cyrillic","start":"0400","end":"052F"},{"name":"Hebrew","start":"0590","end":"05FF"},{"name":"Arabic","start":"0600","end":"06FF"},{"name":"Devanagari","start":"0900","end":"097F"},{"name":"Thai","start":"0E00","end":"0E7F"},{"name":"Hiragana","start":"3040","end":"309F"},{"name":"Katakana","start":"30A0","end":"30FF"},{"name":"CJK","start":"3400","end":"9FFF"},{"name":"Hangul","start":"AC00","end":"D7AF"}],
+  "binary_extensions":[".png",".jpg",".jpeg",".gif",".webp",".ico",".pdf",".zip",".gz",".wasm",".bin"],
+  "expected_quotas":[{"panel":"claim","query_language":"JavaScript","count":11},{"panel":"claim","query_language":"Python","count":17},{"panel":"claim","query_language":"Rust","count":11},{"panel":"claim","query_language":"TypeScript","count":14},{"panel":"control_qualification","query_language":"JavaScript","count":2},{"panel":"control_qualification","query_language":"Python","count":3},{"panel":"control_qualification","query_language":"Rust","count":2},{"panel":"control_qualification","query_language":"TypeScript","count":2}],
+  "authority":{"network_calls_authorized":false,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "report":"reports/theseus_vcm_source_panel_audit_v3.json",
+  "maximum_inference":"A GREEN v3 report proves only that exactly 62 unique same-quota tasks have English titles and selected text, complete deterministic license-bound parent/target source and verifier archives, and changed selected source/verifier bytes. It authorizes evaluator materialization work only, not repository execution, candidate calls, local or Luna competence, VCM effects, D1, D2, training, serving, or ASI Stack support."
+}
