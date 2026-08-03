@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_36_RUST_1_97_1_QUALIFIED_COMPATIBILITY_REGENERATION_NEXT` | Exact minimal Rust 1.97.1 is GREEN for task 36. Regenerate the frozen compatibility classification before any Cargo dependency fetch |
+| Active VCM claim | `VCM_V3_TASK_36_COMPATIBILITY_GREEN_DEPENDENCY_CANARY_SEAL_NEXT` | Exact Rust 1.97.1 makes tasks 36 and 29 compatible; the other 46 states are preserved. Seal task 36's Cargo dependency-only canary next |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -480,7 +480,10 @@ official manifest and minimal Apple ARM64 `rustc`, `cargo`, and `rust-std`
 component hashes were bound. The isolated minimal acquisition is GREEN: rustc
 and Cargo both report 1.97.1 on Apple ARM64, 153 files/567,822,045 bytes are
 retained, and 34 GiB free remains. No Cargo dependency fetch or repository run
-occurred. Regenerate compatibility before task 36 advances.
+occurred. The source-bound successor audit is GREEN: tasks 36 and 29 change to
+compatible and the other 46 states are preserved. Counts are now 21 compatible,
+16 no-declaration, 11 incompatible, and zero unresolved. Seal task 36's exact
+Cargo-lock dependency-only canary next.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -675,7 +678,9 @@ authorize regenerating historical reports or reopening neural work.
    parity and immutable source. **Complete:** its independent audit rederives all
    8 pnpm-index content files and every closure invariant. Exact minimal Rust
    1.97.1 for task 36 is **Complete:** the bound minimal toolchain is GREEN with
-   exact rustc/Cargo probes. Regenerate compatibility before expanding.
+   exact rustc/Cargo probes. **Complete:** successor compatibility changes only
+   tasks 36 and 29, producing 21/16/11/0 classes. Seal task 36's dependency-only
+   Cargo canary before expanding.
    Resolve the six immutable-resolution
    tasks separately, qualify TypeScript and untrusted Rust builds, and only then
    run parent-fail/target-pass evaluator canaries before packets, scorers, calls,

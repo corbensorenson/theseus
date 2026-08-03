@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_36_RUST_1_97_1_QUALIFIED_COMPATIBILITY_REGENERATION_NEXT",
+      "state": "VCM_V3_TASK_36_COMPATIBILITY_GREEN_DEPENDENCY_CANARY_SEAL_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1024,6 +1024,12 @@
         "external_reference_calls": 0,
         "maximum_inference": "source-bound static reclassification only; exact pnpm 10.32.1 changes task 7 to declared-compatible while the other 47 states are preserved, but no dependency repository evaluator task VCM or model result is established",
         "next_boundary": "prospectively seal task 7 exact-lock dependency acquisition and network-denied offline replay without repository-runner execution"
+      },
+      "vcm_toolchain_compatibility_audit_v3": {
+        "config":"configs/theseus_vcm_toolchain_compatibility_audit_v3.json","owner":"scripts/theseus_vcm_toolchain_compatibility_audit_v3.py","test":"tests/test_theseus_vcm_toolchain_compatibility_audit_v3.py","report":"reports/theseus_vcm_toolchain_compatibility_audit_v3.json",
+        "owner_sha256":"469101a4c3ae6d5241b8f1eaf4ed942b94b92a02e49b64ee5529101b62e3006b","config_sha256":"a2f423a9999985af7c87013d221a4e67b1c16123974380f77cebbed88ddb6618","test_sha256":"6b09a6258a71d174f373f05a41a3439e83687c00181096142b81e849e627e182","report_sha256":"f0f78210d2d9c05c6e95c5edbb3b3bdf051584547617688958d5eb3b8d4c320d",
+        "state":"GREEN_FORTY_EIGHT_LOCKED_TASK_COMPATIBILITY_RECLASSIFIED_WITH_EXACT_RUST_1_97_1","locked_task_count":48,"compatible_declared_requirement_task_count":21,"no_declared_version_requirement_task_count":16,"incompatible_declared_requirement_task_count":11,"unresolved_requirement_syntax_task_count":0,"changed_task_indices":[29,36],"task_36_compatible_profile":"cargo1_97_1_rustc1_97_1","dependency_prefetch_executions":0,"repository_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"source-bound static reclassification only; exact Rust/Cargo 1.97.1 changes tasks 29 and 36 to declared-compatible while the other 46 states are preserved, but no dependency repository evaluator task VCM or model result is established","next_boundary":"prospectively seal task 36 exact Cargo-lock dependency acquisition and network-denied offline replay without repository-runner execution"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

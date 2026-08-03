@@ -870,7 +870,10 @@ miscompilation. The official manifest plus minimal Apple ARM64 `rustc`, `cargo`,
 and `rust-std` hashes were bound before acquisition. The isolated minimal
 toolchain is GREEN: rustc and Cargo report 1.97.1 on Apple ARM64, retaining 153
 files/567,822,045 bytes. No Cargo dependency fetch or repository runner ran.
-Regenerate compatibility before task 36 advances.
+The source-bound successor audit is GREEN: tasks 36 and 29 change to compatible,
+the other 46 states are preserved, and counts become 21 compatible, 16
+no-declaration, 11 incompatible, and zero unresolved. Seal task 36's exact
+Cargo-lock dependency-only canary before any fetch.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
