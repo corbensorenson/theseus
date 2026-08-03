@@ -99,6 +99,7 @@ def preflight(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "FIXED_BEFORE_SOURCE_BYTE_RETRIEVAL",
         "AMENDED_AND_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
         "REVISION_POLICY_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
+        "CONSTRUCT_REPLACEMENT_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
     }:
         faults.append("config_state_invalid")
     loaded: dict[str, dict[str, Any]] = {}
@@ -120,6 +121,7 @@ def preflight(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     if state in {
         "AMENDED_AND_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
         "REVISION_POLICY_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
+        "CONSTRUCT_REPLACEMENT_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
     }:
         for path_key, hash_key in (
             ("prior_source_failure_report", "prior_source_failure_report_sha256"),
@@ -128,10 +130,23 @@ def preflight(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             path = resolve(str(config.get(path_key) or ""))
             if not path.is_file() or sha256_file(path) != str(config.get(hash_key) or ""):
                 faults.append(f"binding_invalid:{path_key}")
-    if state == "REVISION_POLICY_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL":
+    if state in {
+        "REVISION_POLICY_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
+        "CONSTRUCT_REPLACEMENT_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
+    }:
         for path_key, hash_key in (
             ("source_revision_policy", "source_revision_policy_sha256"),
             ("prior_v2_source_revision_failure", "prior_v2_source_revision_failure_sha256"),
+        ):
+            path = resolve(str(config.get(path_key) or ""))
+            if not path.is_file() or sha256_file(path) != str(config.get(hash_key) or ""):
+                faults.append(f"binding_invalid:{path_key}")
+    if state == "CONSTRUCT_REPLACEMENT_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL":
+        for path_key, hash_key in (
+            ("prior_v3_materialization_report", "prior_v3_materialization_report_sha256"),
+            ("prior_v3_materialization_audit", "prior_v3_materialization_audit_sha256"),
+            ("trigger_construct_review", "trigger_construct_review_sha256"),
+            ("task11_replacement_selection", "task11_replacement_selection_sha256"),
         ):
             path = resolve(str(config.get(path_key) or ""))
             if not path.is_file() or sha256_file(path) != str(config.get(hash_key) or ""):

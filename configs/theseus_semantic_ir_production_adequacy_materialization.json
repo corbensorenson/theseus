@@ -1,13 +1,13 @@
 {
   "policy": "project_theseus_semantic_ir_production_adequacy_materialization_v1",
-  "state": "REVISION_POLICY_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
-  "source_binding_commit": "c1599dd9",
+  "state": "CONSTRUCT_REPLACEMENT_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
+  "source_binding_commit": "f6ee7c5c",
   "adequacy_preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
   "adequacy_preregistration_sha256": "6fcb36d9e8a8690ecd295d0ac084d4e2c24d1fe32ea1d3a43229162aedb7d59a",
-  "source_candidates": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v2.json",
-  "source_candidates_sha256": "a9d406faa639ed4d1b7939a0eb7ccf6ba777fc89006dac63f9dc670f7dea5359",
-  "metadata_report": "reports/theseus_semantic_ir_production_adequacy_metadata_v3.json",
-  "metadata_report_sha256": "0bd5e5e1a30ab5f5849fc9330c4eecfc4b67fb5e00189138473731ce668fe114",
+  "source_candidates": "configs/theseus_semantic_ir_production_adequacy_source_candidates_v3.json",
+  "source_candidates_sha256": "55b9c0c75856365d1f7abcf7157730e12706c87c95853bf30afc9ec07c049e4a",
+  "metadata_report": "reports/theseus_semantic_ir_production_adequacy_metadata_v4.json",
+  "metadata_report_sha256": "b8b4d399757b2328dfa354ef312a2af7474ed7cd45cb61569798dd1a18639257",
   "source_revision_policy": "configs/theseus_semantic_ir_production_adequacy_source_revision_policy.json",
   "source_revision_policy_sha256": "d8677339069cfefea0e0e7aad9317f8c103f5d5611e9ad914c45e30f72ea76bb",
   "prior_source_failure_report": "reports/theseus_semantic_ir_production_adequacy_materialization_source_path_failure.json",
@@ -16,7 +16,15 @@
   "prior_source_failure_audit_sha256": "2949bfac7418ac239635c878403116e0ec0351363c464650a9fffa730e0e463b",
   "prior_v2_source_revision_failure": "reports/theseus_semantic_ir_production_adequacy_materialization_v2_source_revision_failure.json",
   "prior_v2_source_revision_failure_sha256": "1c3aa7e2155d4c7bd6845b47666ae5c73fb95de8f578ee9c617d8960bed67ca1",
-  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy",
+  "prior_v3_materialization_report": "reports/theseus_semantic_ir_production_adequacy_materialization_v3.json",
+  "prior_v3_materialization_report_sha256": "2aaf9eb8fe85256d45786f9def49828233956a239e7f998f0b9f4aaf0f7bfa24",
+  "prior_v3_materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v3_audit.json",
+  "prior_v3_materialization_audit_sha256": "631f951fdc478b0a11b81094ceacd98f514675bb5073639b1e08848b8197a32a",
+  "trigger_construct_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review.json",
+  "trigger_construct_review_sha256": "4f3e6023d5ec55ea47c44d89dc0810675de7f7abf53e74e85abfe9bef40aa11c",
+  "task11_replacement_selection": "reports/theseus_semantic_ir_production_adequacy_task11_replacement_selection.json",
+  "task11_replacement_selection_sha256": "7f3de66c6b9390b4fedb622ee74a18b13070ab745da1ac1dfe4245fca1911004",
+  "output_directory": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4",
   "archive_policy": {
     "selected_source_and_license_files_only": true,
     "deterministic_tar_gzip": true,
@@ -42,5 +50,5 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "maximum_inference": "A GREEN v3 materialization proves only that exact selected public source and license bytes at the frozen public PR base/head revisions were content-bound into deterministic minimal archives after the preserved task-4 path and revision-semantics repairs. It does not establish parent failure, target success, evaluator adequacy, production mechanics, a subsystem effect, D1, D2, or book support."
+  "maximum_inference": "A GREEN v4 materialization proves only that exact selected public source and license bytes at the frozen public PR base/head revisions were content-bound into a new deterministic archive set after the preserved task-4 source repairs and task-11 construct replacement. It does not establish parent failure, target success, evaluator adequacy, production mechanics, a subsystem effect, D1, D2, or book support."
 }

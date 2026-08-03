@@ -236,7 +236,9 @@ balance, and statistical design are unchanged. Replay all 18 metadata and source
 pairs before evaluator admission or any model call. The full amended metadata
 replay is now GREEN for 18/18 rows in 90 public calls; its initial zero-row
 sandbox transport pause is retained. Source-byte replay and independent archive
-and construct audits are the active boundary.
+and construct audits are the active boundary. The amended source contract is now
+hash-bound, preserves the prior v3 archive set, targets a separate v4 directory,
+and passes zero-call preflight before retrieval.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

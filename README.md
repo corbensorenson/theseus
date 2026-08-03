@@ -126,8 +126,9 @@ preserved. Autonomous source-only search selected MIT-licensed
 setup guard before client construction. The unchanged 18-task registry passes
 zero-call preflight and full independent metadata replay for all 18 rows in 90
 public calls. The initial sandbox transport pause is preserved with zero admitted
-rows. Source replay remains required before the panel can seal, and no adequacy
-observation is yet authorized.
+rows. A new hash-bound source contract preserves the v3 archives, targets a
+separate v4 directory, and passes zero-call preflight. Source replay remains
+required before the panel can seal, and no adequacy observation is yet authorized.
 
 ## Repository Map
 
