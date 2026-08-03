@@ -1,7 +1,110 @@
 {
   "policy": "project_theseus_roadmap_implementation_matrix_v1",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "purpose": "Machine-readable implementation state for the AI_book-derived Theseus roadmap. This is the governed bridge between roadmap.md prose and registry-owned implementation work.",
+  "research_program_recenter": {
+    "policy": "project_theseus_subsystem_first_recenter_v1",
+    "date": "2026-08-02",
+    "state": "SUBSYSTEM_PROOF_ACTIVE_NEURAL_HOLD",
+    "north_star": "Implement and rigorously test the largest highest-leverage ASI Stack mechanisms; autonomous machine-verifiable work is the experimental substrate rather than the product goal.",
+    "authority_precedence": "This recenter object, flagship_lane_governance, weekly_focus_decision, core_evidence_campaign, and the source-controlled launch policies own current selection. Directional or next-step fields inside dated review, intake, reconciliation, and historical experiment objects are retained evidence only and grant no current execution authority.",
+    "active_track": "ASI_STACK_SUBSYSTEM_CAUSAL_PROOF",
+    "active_flagship_track_id": "F_memory_planning_tool_substrate",
+    "active_claim": {
+      "claim_id": "cognitive-compilation-and-semantic-ir.core",
+      "state": "TERMINAL_P4_INCONCLUSIVE_IMPLEMENTATION_MECHANICS_REPAIR_ACTIVE",
+      "observed_residual": "semantic_ir_identity_coverage_target_unit_transport",
+      "next_evidence_class": "SOURCE_DISJOINT_NON_CLAIM_PRODUCTION_PATH_MECHANICS",
+      "fresh_claim_pool_authorized": false,
+      "D1_authorized": false,
+      "maximum_inference": "The exact frozen TMax plus Semantic-IR v2r2 implementation missed its mechanics floor; cognitive compilation generally remains unresolved."
+    },
+    "claim_selection_policy": {
+      "maximum_simultaneously_active_claims": 1,
+      "selection_inputs": [
+        "observed residual from the preceding terminal experiment",
+        "decision value for neural topology data representation routing verifier or checkpoint interfaces",
+        "causal identifiability under one-variable intervention",
+        "availability of a faithful production-path implementation and independent evaluator",
+        "expected information gain relative to total lifecycle cost"
+      ],
+      "forbidden_inputs": [
+        "implementation convenience alone",
+        "available compute alone",
+        "Luna reference outputs",
+        "book chapter order",
+        "desire for a positive result",
+        "unconsumed task answers or hidden evaluator metadata"
+      ],
+      "tie_break": "Choose the candidate whose terminal result would eliminate the most downstream architecture uncertainty before neural re-entry."
+    },
+    "book_binding": {
+      "experiment_pin_commit": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+      "experiment_pin_chapter_count": 84,
+      "observed_live_head": "1280fdfa457735ae39289d42a82173f9485434fc",
+      "observation_captured_utc": "2026-08-02T23:39:00Z",
+      "observed_live_chapter_count": 84,
+      "observed_live_worktree_state": "CONCURRENTLY_ADVANCING_DIRTY_UNCOMMITTED_INTAKE_ONLY",
+      "selected_core_claim_vector_changed_since_pin": false,
+      "rule": "Freeze opened experiment semantics, observe living-book drift, return evidence by stable claim ID, and never move support automatically."
+    },
+    "local_model_control": {
+      "model": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "role": "PRIMARY_FIXED_LOCAL_CAUSAL_INSTRUMENT",
+      "selection_state": "CURRENT_QUALIFIED_LOCAL_INSTRUMENT_NOT_PERMANENT_BEST_MODEL_CLAIM",
+      "successor_selection": "Before a new model block opens, use a prospectively frozen claim-task-disjoint competence runtime-stability context and total-cost bakeoff with no Luna-output influence; freeze the winner for the whole block.",
+      "replacement_rule": "A replacement starts a new instrument version and must re-establish every required baseline."
+    },
+    "openai_reference_control": {
+      "model": "gpt-5.6-luna",
+      "reasoning_effort": "xhigh",
+      "state": "PROSPECTIVELY_DEFINED_TRANSPORT_NOT_BOUND_ZERO_CALLS",
+      "role": "SEPARATELY_DENOMINATED_MEASUREMENT_ONLY_REFERENCE",
+      "contract": "configs/theseus_external_reference_control.json",
+      "rule": "Bind before any future claim arm opens; omit rather than backfill after local outcomes; never serve, train, select tasks, write source, or enter the local denominator."
+    },
+    "neural_hold": {
+      "state": "HOLD_SUBSYSTEM_PROOF_FIRST",
+      "launch_allowed": false,
+      "optimizer_steps": 11992,
+      "optimizer_positions": 91869446,
+      "capability_state": "NOT_EVALUATED",
+      "D2_consumed": false,
+      "source_policy": "configs/neural_seed_training_availability.json",
+      "runtime_yield_control": "runtime/control/neural_seed_yield_after_segment",
+      "rule": "Preserve checkpoint, optimizer, RNG, cursor, corpus, controls, and D2 identity; do not train or change the neural experiment before subsystem architecture freeze."
+    },
+    "neural_reentry": {
+      "decision": "SUBSYSTEM_ARCHITECTURE_FREEZE_REQUIRED",
+      "all_conditions_required": true,
+      "conditions": [
+        "every architecture-shaping claim has a qualified interface or explicit first-model exclusion with terminal scoped disposition",
+        "no unresolved subsystem decision would change topology training target data representation route contract verifier interface or checkpoint semantics",
+        "one production-equivalent end-to-end composition canary proves selected interfaces join causally",
+        "the modular dense-active dense-total question remains decision-relevant after subsystem results",
+        "checkpoint optimizer RNG cursor corpus controls D2 and clean source are rebound exactly",
+        "autonomous resource transaction rollback and one-shot D2 policies are green without user presence or routine approval"
+      ]
+    },
+    "immediate_execution_order": [
+      "finish_source_controlled_program_recenter_and_neural_hold",
+      "bind_luna_transport_receipts_completion_evaluator_and_campaign_cost_authority_without_calls",
+      "repair_semantic_ir_production_path_mechanics_on_non_claim_evidence",
+      "run_independent_mechanics_adequacy_audit",
+      "open_at_most_one_fresh_source_disjoint_claim_campaign_only_after_adequacy",
+      "qualify_a_development_survivor_once_on_fresh_D1",
+      "return_claim_packet_to_book_review_without_support_movement",
+      "repeat_one_claim_at_a_time_until_subsystem_architecture_freeze"
+    ],
+    "autonomy": {
+      "user_task_supply_required": false,
+      "user_labels_required": false,
+      "routine_user_approval_required": false,
+      "user_timing_choice_required": false,
+      "out_of_policy_action": "FAIL_CLOSED_AND_RECORD_WALL"
+    }
+  },
   "roadmap_source": "roadmap.md",
   "registry_source": "configs/project_manifest_registry.json",
   "external_177_commit_review_reconciliation": {
@@ -1876,6 +1979,8 @@
     "execution_priority": "architecture_before_long_training",
     "strict_architecture_first_enforcement": true,
     "training_authority_state": "denied_until_finite_docket_and_freeze_package_are_green",
+    "current_program_authority_state": "HOLD_SUBSYSTEM_PROOF_FIRST_STEP_11992",
+    "current_program_authority_rule": "Historical pretraining architecture readiness is necessary but not sufficient. No neural launch may occur until research_program_recenter.neural_reentry is fully satisfied and configs/neural_seed_training_availability.json prospectively changes to AUTHORIZED_AFTER_SUBSYSTEM_ARCHITECTURE_FREEZE.",
     "binding_disposition_kinds": [
       "include_in_frozen_campaign",
       "exclude_by_falsification_or_retirement",
@@ -1985,12 +2090,13 @@
     "manifest_sha256": "ab8db6fddc6a367beac24d16866d0dc687b85cc796f5fc4086833b752bbfae4e",
     "book_manifest_chapter_count": 84,
     "source_state": "The authoritative Theseus implementation crosswalk is bound to committed AI_book revision 17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0 and its exact ordered 84-chapter manifest. Every chapter has one existing-track disposition, work-package owner, maturity/evidence/route state, activation gate, bound test, residual, and maximum-inference boundary. Later book edits are intake only until a new reviewed pin advances.",
-    "decision": "Advance the historical 54-chapter pin to the current committed 84-chapter living-book manifest without creating a lane or changing claim support. Preserve the prior 54 Theseus dispositions, bind the 30 admitted chapters to existing owners, and use claim-level P2A/P3/P4/D1/D2 evidence as the only route back to book review.",
+    "decision": "Preserve the reviewed 84-chapter experiment pin without creating a lane or changing claim support. Observe later living-book work as intake, keep all 84 dispositions bound to existing owners, and return only stable-ID claim-level subsystem evidence to book review.",
     "current_theseus_evidence": "Source binding and backlog ownership are complete for all 84 chapters. Chapter implementation, mechanism efficacy, usefulness, safety, and support remain governed by their independent evidence states and activation gates.",
     "new_required_work": [
-      "execute the bound 13-claim portfolio through P2A/P3 and exactly one residual-selected P4 mechanism",
-      "build and qualify P2A before consuming any P3 or P4 task evidence",
-      "acquire and seal a licensed source-disjoint machine-verifiable task pool",
+      "preserve terminal P2A P2B P2C P3 and P4 evidence without replay rescoring or reseal",
+      "repair the exact Semantic-IR identity coverage target and unit mechanics owner on non-claim production-path evidence",
+      "bind the Luna measurement-only adapter without calls before any future claim pool opens",
+      "acquire and seal one powered licensed source-disjoint task cohort only after independent mechanism adequacy",
       "return only independently reviewed claim-level evidence to the book with no automatic support promotion"
     ],
     "no_claim_boundary": "Exact crosswalk reconciliation is source-integrity and planning evidence only. It does not establish model capability, subsystem efficacy, usefulness, safety, complete rollback, unlearning, scalable oversight, production readiness, AGI, ASI, or any book support-state change."
@@ -3817,7 +3923,7 @@
       "claim_boundary": "The current audit independently rematerializes all 160 current cases, verifies the content-addressed consumed v8 packet, and finds zero exact or whitespace/case-normalized model-visible prompt overlap. This scoped freshness result does not evaluate the 57M candidate, authorize D2 execution, or authorize long training."
     },
     "step_11416_plan_identity_migration": {
-      "state": "GREEN_EXACT_IDENTITY_ONLY",
+      "state": "HISTORICAL_GREEN_EXACT_IDENTITY_SUPERSEDED_BY_STEP_11992_LINEAGE",
       "legacy_plan_sha256": "4f18bd17519eed4a15150f2afb559367edd8f5c639d47b5917c7c4bbdd241cea",
       "current_plan_sha256": "1ea53da2dcf8a6a0ce4eda5da26764e676c0e418101a2189aa5e61c99075e61c",
       "migration_id": "shared_trunk_step11416_exiting_process_inventory_rebind_v1",
@@ -3826,45 +3932,41 @@
       "mlx_rng_state_sha256": "9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f",
       "optimizer_steps": 11416,
       "optimizer_positions": 87441996,
-      "claim_boundary": "This authorizes semantic plan identity only for the exact unchanged state. It cannot reinterpret incompatible model, optimizer, RNG, cursor, data, objective, schedule, or evaluation state."
+      "claim_boundary": "This historical receipt authorized semantic plan identity only for the exact step-11,416 state. It grants no current launch authority and cannot reinterpret the preserved step-11,992 model, optimizer, RNG, cursor, data, objective, schedule, or evaluation state."
     },
     "replacement_freeze": {
-      "state": "GREEN_SOURCE_BOUND_MACHINE_LEASE_REQUIRED",
+      "state": "HISTORICAL_GREEN_SOURCE_DRIFTED_PROGRAM_HOLD_REBIND_REQUIRED",
       "evidence": "reports/pre_long_run_replacement_freeze.json",
       "package_identity_source": "evidence.package_identity; intentionally not duplicated here because this matrix is itself a source-bound package input",
-      "decision": "AUTHORIZE_EXACT_STEP_11416_RESUME_UNCHANGED_THROUGH_MACHINE_PREDICATE_LEASE",
+      "decision": "PRESERVE_HISTORICAL_STEP_11416_RECEIPT_NO_CURRENT_LAUNCH_AUTHORITY",
       "selected_route": "compiled FP32 MLX, microbatch four, width quantum 64, AdamW, separate Q/K/V, SwiGLU, sequential unscaled residuals",
       "historical_review_hold_preserved": true,
       "user_or_operator_approval_required": false,
       "long_training_authorized_now": false,
       "long_training_started_or_resumed": false,
       "source_binding_required": true,
-      "source_binding_current": true,
+      "source_binding_current": false,
       "incompatible_state_policy": "Any model topology, tensor, optimizer, RNG, cursor, data, objective, schedule, or evaluation mismatch requires a new content-addressed lineage."
     },
-    "release_rule": "Every required candidate must receive one retained matched disposition. If none wins, resume the exact step-11416 model/AdamW/RNG/cursor/data/objective lineage. If AttnRes or SiTU-GLU wins strongly enough to repay discarded work, archive step 11416 as non-capability evidence and start a new content-addressed lineage; never reinterpret incompatible state.",
+    "release_rule": "Preserve every retained architecture disposition and the step-11,992 lineage as non-capability evidence. Do not resume or replace the neural experiment until the Subsystem Architecture Freeze prospectively selects the architecture, confirms the modular-versus-dense question remains relevant, and creates a new clean content-addressed rebind; never reinterpret incompatible state.",
     "resource_rule": "No clock-of-day window, arbitrary hour ceiling, or arbitrary memory floor. Use finite prewritten workloads, transactional boundaries, and causal thermal/swap/disk/nonfinite/parity stops.",
     "no_claim_boundary": "Source review, roadmap admission, canary completion, loss reduction, or throughput does not establish Kimi K3 reproduction, Theseus capability, architecture superiority, public transfer, support, or release."
   },
   "asi_stack_completion_program": {
     "policy": "project_theseus_asi_stack_completion_program_v1",
-    "execution_state": "P4V2R2R3_final_production_conformance_green_durable_precall_custody_awaiting_source_locked_run",
+    "execution_state": "SUBSYSTEM_PROOF_ACTIVE_P4V2R2R3_TERMINAL_INCONCLUSIVE_IMPLEMENTATION_SEMANTIC_IR_MECHANICS_REPAIR_D1_CLOSED_NEURAL_HELD",
     "active_work_package_ids": [
       "ASI-03",
-      "ASI-07",
+      "ASI-05",
       "ASI-08",
-      "ASI-09",
-      "ASI-10",
       "ASI-12",
-      "ASI-14",
-      "ASI-15",
       "ASI-20",
       "ASI-29",
       "ASI-32"
     ],
     "completed_work_package_ids": ["ASI-00"],
     "sidelined_default": "Every work package not named in active_work_package_ids is preserved but nonblocking until a terminal flagship result identifies it as the smallest causal next intervention. Required integrity dependencies may be maintained, but they cannot become a parallel headline lane.",
-    "roadmap_source": "roadmap.md#asi-stack-to-theseus-completion-program",
+    "roadmap_source": "roadmap.md#active-proof-cycle",
     "shared_flagship_id": "ASI-THESEUS-FLAGSHIP-01",
     "p3_terminal_result": {
       "state": "complete_no_usefulness_route_winner",
@@ -4206,27 +4308,27 @@
     "execution_waves": [
       {
         "wave": 0,
-        "purpose": "restore repository truth and roadmap continuity beside faithful KERC repair",
+        "purpose": "preserved integrity owners; activate only the source trace security or custody subset required by the single active claim",
         "work_package_ids": ["ASI-00", "ASI-01", "ASI-02", "ASI-03", "ASI-04", "ASI-29", "ASI-30", "ASI-31"]
       },
       {
         "wave": 1,
-        "purpose": "close checkpoint-shaping interfaces before the next architecture freeze",
+        "purpose": "architecture-shaping interface owners; evaluate one mechanism at a time before the Subsystem Architecture Freeze",
         "work_package_ids": ["ASI-05", "ASI-06", "ASI-13", "ASI-16", "ASI-17", "ASI-19", "ASI-32"]
       },
       {
         "wave": 2,
-        "purpose": "prove one autonomous machine-verifiable vertical without learned-credit laundering",
+        "purpose": "autonomous task and Semantic-IR runtime owners; activate only the subset required by the current causal intervention",
         "work_package_ids": ["ASI-07", "ASI-08", "ASI-09", "ASI-10", "ASI-11", "ASI-12"]
       },
       {
         "wave": 3,
-        "purpose": "replace declared governance and synthetic economics with observed evidence",
+        "purpose": "qualification governance and lifecycle-cost owners; activate only after an adequate development experiment or survivor",
         "work_package_ids": ["ASI-14", "ASI-15", "ASI-18", "ASI-20", "ASI-21", "ASI-22", "ASI-23"]
       },
       {
         "wave": 4,
-        "purpose": "qualify behavior-dependent amplifiers only after nonzero clean student behavior",
+        "purpose": "behavior-dependent neural amplifiers remain held until subsystem architecture freeze and later nonzero clean student behavior",
         "work_package_ids": ["ASI-24", "ASI-25", "ASI-26", "ASI-27"]
       },
       {
@@ -4831,7 +4933,7 @@
   ],
   "weekly_focus_decision": {
     "date": "2026-08-02",
-    "recommendation": "Preserve terminal P3 as historical bounded evidence because its project-selected 1,536-token ceiling lacks complete natural-termination custody; report its exact 1/10 versus 1/10 usefulness and 5/10 versus 9/10 parseability without capability or subsystem overclaim. Preserve interrupted P4-v1, terminal P4R, terminal P4S, and all zero-call dispositions without replay. Preserve the completed P4V2R2R3 ten-task/60-call campaign as GREEN-audited INCONCLUSIVE_IMPLEMENTATION: Semantic IR parsed/lowered 2/10 against the 8/10 mechanics floor, so its 0/10 usefulness cannot support an effect loss or broad falsification; D1 stays closed and no reseal is allowed. Return the public-safe packet to governed book review with support state unchanged. Close the current storage wall through runtime-wide replay-safe custody under a measured derived envelope. Advance the compiled-MLX microbatch-4 neural route through autonomous source/resource predicates, finish matched modular/dense training, and consume D2 once. Keep Luna-xhigh separately denominated if transport becomes callable. Preserve public calibration and every negative, interrupted, or invalid result.",
+    "recommendation": "Make ASI Stack subsystem causal proof the sole active research lane. Preserve terminal P3 as historical bounded evidence and P4V2R2R3 as INCONCLUSIVE_IMPLEMENTATION with D1 closed and no reseal. Hold the neural seed at ledgered step 11,992 until the Subsystem Architecture Freeze. Source-bind the Luna-xhigh measurement-only adapter without making calls, then repair the exact Semantic-IR identity/coverage/target/unit mechanics owner on non-claim production-path evidence. Open at most one fresh source-disjoint claim campaign only after an independent adequacy audit. Return every terminal claim packet to governed book review with support unchanged. Use existing retention and registry owners only when they remove a concrete evidence, replay, source, or storage blocker.",
     "project_theseus_focus": [
       "preserve_the_source_bound_84_chapter_pin_and_13_claim_causal_portfolio_without_support_movement",
       "preserve_the_source_bound_P1_backend_direct_mode_and_live_route_integrity_transaction",
@@ -4846,8 +4948,11 @@
       "keep_D1_closed_and_return_public_safe_claim_packet_to_book_review_without_support_movement",
       "preserve_completed_canonical_runtime_generation_boundary_migration_with_null_project_quality_caps_and_physical_context_residual_custody",
       "retain_every_negative_null_blocked_interrupted_and_invalid_outcome",
-      "refresh_step_11416_source_and_custody_readiness_under_machine_predicate_authority_without_user_approval",
-      "preserve_modular_dense_active_and_dense_total_D2_for_later_matched_training",
+      "enforce_the_source_controlled_neural_hold_at_step_11992_until_subsystem_architecture_freeze",
+      "preserve_modular_dense_active_and_dense_total_D2_without_training_or_consumption",
+      "bind_the_Luna_xhigh_measurement_only_transport_before_any_future_claim_arm_opens_without_making_calls",
+      "repair_semantic_IR_identity_coverage_target_and_unit_mechanics_on_non_claim_production_path_evidence",
+      "run_one_independent_adequacy_audit_before_any_new_claim_denominator",
       "preserve_the_clean_transaction_boundary_and_keep_unrelated_neural_Rust_release_and_cleanup_work_outside_P4_source_binding",
       "close_runtime_and_report_storage_custody_with_manifest_backed_replay_safe_compaction_under_a_measured_derived_envelope"
     ],
@@ -4880,12 +4985,12 @@
   "core_evidence_campaign": {
     "policy": "project_theseus_core_evidence_campaign_v1",
     "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
-    "state": "active_claim_bindings_complete_P2A_implementation_neural_N0_parallel",
-    "objective": "Produce claim-bearing causal evidence for the highest-leverage ASI Stack mechanisms. Qualify a frozen local model as an adequate autonomous measurement instrument, compare one causally active subsystem at a time against strong matched controls, and advance the independent modular-versus-dense neural verdict in parallel.",
+    "state": "subsystem_proof_active_terminal_P4_mechanics_repair_neural_hold",
+    "objective": "Produce claim-bearing causal evidence for the highest-leverage ASI Stack mechanisms by holding the local model fixed, repairing and qualifying one faithful subsystem implementation at a time, comparing it with strong matched controls, and qualifying a survivor once on fresh source-disjoint evidence. Preserve the neural experiment without advancing it until subsystem architecture freeze.",
     "denominators": {
       "L0": {
         "question": "After route integrity is proved, which causally active Theseus subsystem changes improve useful completion or total contract cost relative to the same frozen local model on a matched direct runtime?",
-        "state": "blocked_on_P2A_instrument_adequacy",
+        "state": "terminal_P4_inconclusive_implementation_mechanics_repair_active_no_fresh_denominator",
         "owner": "configs/core_evidence_subsystem_adequacy.json development_dogfood",
         "worker_boundary": "same_frozen_model_decoder_snapshot_effect_sandbox_and_independent_evaluator_no_external_inference_no_teacher_calls_no_theseus_student_credit",
         "reuse_policy": "development tasks and outcomes may be inspected and reused for repair",
@@ -4893,13 +4998,13 @@
       },
       "D1": {
         "question": "Does the existing local governed stack improve the joint useful-safe frontier over matched simpler routes on natural repository work at acceptable total lifecycle cost?",
-        "state": "sealed_pending_L0_mechanism_selection_and_fresh_freeze",
+        "state": "closed_no_P4_survivor_prepared_surface_unconsumed",
         "worker_boundary": "local_only_no_external_inference_no_teacher_calls_no_learned_student_credit",
         "noninterference": "D1 tasks, outcomes, tuning decisions, and support movement may not alter or enter D2."
       },
       "D2": {
         "question": "Does the locally trained modular Theseus student achieve useful source-disjoint behavior and improve over dense-active and dense-total controls?",
-        "state": "candidate_not_evaluated_surface_fresh_controller_implemented_sealed",
+        "state": "held_step_11992_not_evaluated_surface_fresh_controller_implemented_D2_sealed",
         "surface": "fresh_160_case_contract_exact_and_normalized_prompt_overlap_zero",
         "noninterference": "No 57M D2 result exists. Independent freshness and implemented controller source do not authorize execution: the surface remains sealed until the clean source-bound freeze, private custody, completed matched checkpoints, pinned local raters, zero current-identity consumption, zero output collisions, and exclusive accelerator lease all pass. The controller forbids user approval gates, arbitrary quality-token caps, reruns, external inference, and negative inference from physical boundaries."
       }
@@ -5300,58 +5405,44 @@
     ],
     "immediate_stages": [
       {
-        "id": "P1",
-        "title": "Canonical local-model runtime integration",
-        "exit": "The exact TMax backend is owned by the existing canonical assistant runtime; matched direct mode shares model, decoder, snapshot, effect sandbox, and independent evaluator; every integrated subsystem has a downstream-consumed live receipt; plan execution, VCM use, routing, verification, authority, effects, rollback, and ledgers cannot be satisfied by labels or prompt decoration."
+        "id": "S0",
+        "title": "Program recenter and neural hold",
+        "exit": "Roadmap, project state, README, active flagship identity, book binding, and executable launch policy agree that subsystem proof is active and the neural seed is held at step 11,992 regardless of host readiness."
       },
       {
-        "id": "P2",
-        "title": "Terminal exact TMax 512-token canary",
-        "exit": "P2-001 and its only allowed repair are preserved as a terminal instrument-unsuitable result with zero applicable candidates and no subsystem inference."
+        "id": "S1",
+        "title": "Prospective Luna reference binding",
+        "exit": "The exact approved OpenAI transport, model and xhigh receipt, wrapper, tool policy, completion telemetry, evaluator adapter, price basis, spend authority, and no-serving/no-training/no-task-selection boundaries are source-bound with zero reference calls."
       },
       {
-        "id": "P2A",
-        "title": "Adequate autonomous coding instrument",
-        "exit": "One fresh task from a sealed license-compatible online pool reaches independent correctness evaluation through the exact frozen model, shared typed action tools, completion-based generation with explicit termination telemetry and no project-selected quality token cap, at most two calls per arm, and one visible-verifier repair; any physical context or host-safety stop invalidates the observation rather than scoring a failure."
+        "id": "S2",
+        "title": "Semantic-IR production mechanics repair",
+        "exit": "One canonical typed schema and source-independent canonicalizer exercise the exact production renderer, transport, parser, lowerer, applier, verifier, intervention, and repair path on source-disjoint model-produced non-claim evidence without answer-bearing repair."
       },
       {
-        "id": "P3",
-        "title": "Autonomous paired development",
-        "exit": "Ten distinct deterministically selected repository tasks from a sealed online pool have complete useful, safety, rollback, weakest-type, latency, model/tool/verifier/autonomous-repair cost, decision, and residual accounting; repeated opened tasks count only as regressions."
+        "id": "S3",
+        "title": "Independent implementation adequacy",
+        "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },
       {
-        "id": "P4",
-        "title": "One ASI Stack mechanism ablation",
-        "exit": "A single causally active subsystem intervention selected from nonzero useful-work residuals receives a reversible local development disposition without claim-bearing or student credit."
+        "id": "S4",
+        "title": "One fresh claim-development experiment",
+        "exit": "One powered source-disjoint cohort runs frozen TMax direct and treatment plus prospectively sealed Luna direct and treatment when available, along with claim-specific strong controls, blind scoring, uncertainty, weak tails, rollback, and total-system cost; it receives one terminal disposition."
       },
       {
-        "id": "E0",
-        "title": "Freeze fresh qualification tasks and decisions after L0",
-        "exit": "Exact claims, natural task reconstruction, candidate-visible fields, hidden evaluator fields, disjoint partitions, routes, budgets, competence floor, terminal rules, rescue ceiling, and maximum inference are prospectively bound."
+        "id": "S5",
+        "title": "Fresh D1 qualification",
+        "exit": "A development survivor is frozen and qualified exactly once on fresh source-disjoint D1 evidence; a non-survivor does not open D1."
       },
       {
-        "id": "E1",
-        "title": "Clean live Theseus replay",
-        "exit": "One exact public-safe clean-checkout packet joins allowed, blocked or revoked, and rollback traces with complete identities and visible gaps."
-      },
-      {
-        "id": "E2",
-        "title": "D1 natural governed-stack comparison",
-        "exit": "Full governed, direct, test-only, record-only, and conservative-hold routes receive a scoped terminal disposition with competence, usefulness, unsafe release, false block, fair rescue, weak-tail, cost, and latency evidence."
-      },
-      {
-        "id": "E3",
-        "title": "Route planning context and reuse causality",
-        "exit": "Disjoint natural repeated work compares maximal, cheapest, and least-sufficient routes plus planning, VCM, stale/shuffled/omitted context, and verified-procedure interventions under total contract cost."
-      },
-      {
-        "id": "E4",
-        "title": "Claim disposition and public-safe evidence",
-        "exit": "Every denominator, failure, residual, digest, replay command, maximum inference, and non-claim is bound to an existing evidence owner; no automatic book support movement."
+        "id": "S6",
+        "title": "Claim handoff and next residual",
+        "exit": "Every denominator, failure, residual, digest, cost, replay command, maximum inference, and non-claim reaches book review with support unchanged; the observed residual selects the next single architecture-shaping claim."
       }
     ],
     "later_neural_stages": [
-      "N0_source_bound_step_11416_readiness_refresh_hold_installed",
+      "HOLD_step_11992_until_subsystem_architecture_freeze",
+      "N0_rebind_source_checkpoint_optimizer_RNG_cursor_corpus_controls_and_D2_after_reentry",
       "N1_one_bounded_fresh_process_resume_qualification",
       "N2_modular_dense_active_dense_total_matched_training",
       "N3_consume_D2_once",
@@ -5370,21 +5461,24 @@
       "allowed": [
         "read_only_audits_and_source_reconciliation",
         "read_only_allowlisted_online_task_acquisition_with_local_cache_license_provenance_and_contamination_receipts",
-        "P2A_local_instrument_and_P3_through_P5_experiments_after_machine_predecessor_gates",
-        "neural_N0_source_and_custody_readiness_refresh_with_training_hold_installed",
-        "bounded_N1_and_N2_only_after_automated_launch_resource_checkpoint_rollback_and_stop_predicates",
-        "one_shot_D1_and_D2_only_through_the_sealed_registry_after_all_independence_predicates",
+        "source_bound_Luna_adapter_and_receipt_qualification_with_zero_reference_calls",
+        "active_claim_non_claim_production_path_mechanics_repair_and_independent_adequacy",
+        "one_fresh_claim_development_campaign_only_after_every_machine_predecessor_gate",
+        "one_shot_D1_only_for_a_development_survivor_through_the_sealed_registry",
+        "neural_checkpoint_lineage_custody_and_replay_maintenance_without_optimizer_progress_or_D2",
         "disposable_worktree_or_temporary_effects_with_exact_rollback",
         "tests_validators_independent_replays_and_public_safe_evidence_assembly",
         "flagship_defect_repairs_that_preserve_the_frozen_D2_experiment",
         "one_coherent_reviewed_validated_local_commit"
       ],
       "forbidden": [
-        "remove_any_hold_except_through_its_exact_machine_readable_controller",
-        "exceed_configured_compute_storage_call_token_or_time_envelope",
+        "remove_the_neural_hold_before_every_subsystem_architecture_freeze_condition_and_clean_rebind_pass",
+        "exceed_prospectively_declared_compute_storage_call_effect_verifier_time_or_spend_authority",
+        "use_a_project_selected_generated_token_count_as_a_quality_boundary",
         "rerun_consumed_D1_D2_or_public_calibration_surface",
-        "change_architecture_optimizer_data_objective_schedule_or_evaluator",
-        "external_inference_private_transmission_or_online_content_at_runtime_serving",
+        "change_neural_architecture_optimizer_data_objective_schedule_or_evaluator_during_the_hold",
+        "external_inference_except_a_prospectively_sealed_OpenAI_measurement_reference_or_governed_teacher",
+        "private_data_transmission_or_external_inference_at_runtime_serving",
         "checkpoint_corpus_user_file_or_negative_evidence_deletion",
         "non_loopback_exposure",
         "external_publish_push_or_mutation_without_separate_authority",
@@ -5408,13 +5502,13 @@
     "Negative, inconclusive, and regression evidence must remain attached to the exact implementation and regime it constrains; do not replace a negative report with a nearby positive family or generalize a proxy failure into a mechanism failure.",
     "No generation, repair, rater, judge, adjudicator, assistant, worker, resident runtime, or local compatibility route may use a project-selected generated-token count as a quality boundary. Normal completion is declared parser/artifact completion or model EOS after exact prompt tokenization; the pinned model context residual is the only numeric generation boundary, and touching any physical or caller-requested truncation boundary invalidates the observation rather than failing the model, candidate, mechanism, evaluator, or architecture. Preserve consumed capped instruments and bounded mechanics tests as immutable non-propagating evidence; training-data, optimizer, call-count, effect, and verifier resource budgets remain valid when they do not masquerade as output quality evidence.",
     "Any retirement or falsification requires a decision-grade adequacy receipt covering mechanism fidelity, learnability, optimization, matched opportunity, evaluation independence, statistical power, uncertainty, weak tails, and exact claim scope. Missing adequacy yields INCONCLUSIVE_IMPLEMENTATION or INCONCLUSIVE_EXPERIMENT, never a broad negative claim.",
-    "The architecture core is reopened as a finite closure program because the KERC adequacy audit invalidated its prior retirement: the completed proxy tested authored templates and a linear intent classifier rather than the paper's learned compiler/core/residual/renderer system. KERC must be faithfully wired and frozen as a matched English-arm candidate before the content-bound architecture freezes again.",
-    "The finite architecture and acceleration docket is complete and independently replayed. Primary work may return to the selected English/code neural seed only after the separate broader pre-training architecture-readiness gate names zero hard blockers; do not reopen elective acceleration or architecture intake.",
+    "The KERC adequacy audit remains valid negative evidence only for the tested authored-template and linear proxy. KERC/RDC is a protected but sidelined alternative and may re-enter only if a terminal active subsystem residual selects it as the smallest decision-relevant mechanism; it is not a current pretraining blocker or parallel campaign.",
+    "Historical architecture and acceleration receipts remain custody evidence. Primary work is the F1 ASI Stack subsystem causal-proof lane; neural work may return only after every Subsystem Architecture Freeze condition, clean source/checkpoint rebind, and autonomous safety predicate passes.",
     "AI_book technique recommendations are coverage obligations, but if a technique has already produced clean negative behavior evidence, the roadmap must route to the lower-level wall before retrying it.",
     "The v8 prompt/target comparison is an exact-recovery diagnostic because its rows do not carry complete functional verifiers; practical architecture selection requires a separately frozen source-disjoint functional utility surface.",
-    "After the finite pre-training docket and revised joint campaign are wired, freeze architecture and control-plane breadth for three capability cycles; only a concrete correctness, security, replay, migration, checkpoint, or measured training/inference defect may authorize another architecture change.",
+    "During subsystem proof, freeze neural architecture, data, optimizer, objective, and D2. Change only the one active subsystem implementation and common integrity owners required for its causal test. After terminal interface dispositions and a production composition canary, the Subsystem Architecture Freeze decides the neural topology once.",
     "Treat 10.8M active parameters as a systems-canary rung. If sparse and both dense controls remain functionally zero across code, close the rung and require task-complete data plus a preregistered 50M-100M scale proposal instead of another same-scale patch.",
-    "Treat OneCell-RWM as a pre-training architecture-disposition candidate: its shared ABI, exact substrate, checkpoint/objective interfaces, and matched campaign decision must close before the long run, but it cannot become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority before a preregistered matched total-cost verdict."
+    "Preserve OneCell-RWM as a sidelined protected discovery candidate. It does not block the subsystem proof program or neural hold decision and may not become a same-scale rescue patch, duplicate VIEA/VCM/Octopus/SCF/Loop-Closure/SparkStream/registry machinery, or receive route authority without activation by a terminal residual and a preregistered matched total-cost verdict."
   ],
   "planned_codex_test_backlog": [
     {
@@ -6130,10 +6224,10 @@
     "count_router_as_learned_generation",
     "count_template_as_learned_generation",
     "long_training_as_implementation_proof",
-    "multi_day_training_during_current_travel_posture",
+    "all_neural_optimizer_progress_architecture_mutation_and_D2_consumption_before_subsystem_architecture_freeze",
     "new_strict_generator_target_mode_experiments",
     "new_architecture_optimizer_tokenizer_objective_curriculum_or_speculative_decode_intake",
-    "KERC_RDC_ANE_OneCell_SymLiquid_CGS_Coil_RankFold_or_NeuralFold_expansion_before_flagship_terminal_result",
+    "KERC_RDC_ANE_OneCell_SymLiquid_CGS_Coil_RankFold_or_NeuralFold_expansion_without_activation_by_a_terminal_active_claim_residual",
     "generic_CPU_GPU_NPU_Rust_or_acceleration_search_without_selected_route_defect",
     "broad_corpus_growth_bulk_teacher_generation_preference_optimization_RL_self_training_or_unlearning",
     "new_benchmark_private_suite_report_dashboard_document_or_registry_family",
@@ -6246,15 +6340,15 @@
         "the current transformer checkpoint exemption is explicitly development-only and non-routeable; production/default routes require admission, while private signing keys remain outside the repository",
         "shared archive resolution follows inline or retention-sidecar pointers, prefers live originals, and makes the T2 readiness gate recompute archived checkpoint and live vocabulary hashes; corrupted archived bytes fail closed",
         "the independent D2 freshness audit rematerializes all 160 current cases, reproduces contract d48875c5..., verifies the content-addressed consumed v8 packet and contract d724363e..., observes zero exact or whitespace/case-normalized model-visible prompt overlap, and leaves evaluation authorization false",
-        "the replacement freeze is GREEN and content-addressed against a clean post-maintenance source commit; only its own evidence-report commit may follow without a full rebind",
+        "the prior replacement freeze is preserved as historical content-addressed custody; the subsystem-first source transaction intentionally invalidates launch currentness and requires a future post-freeze rebind",
         "the D2 one-shot controller is machine-only, source/freeze/checkpoint bound, collision refusing, append-only, EOS-only, and terminal on invalid observations without rerun or user approval"
       ],
       "missing_items": [
         "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
       ],
       "pre_training_readiness": {
-        "state": "READY_FOR_FROZEN_CAMPAIGN",
-        "acceptance_boundary": "The exact step-11,416 checkpoint, AdamW, RNG, cursor, training implementation, append-only lineage, nonconsumption, scoped exact/normalized prompt freshness, and content-addressed replacement package are current. This opens only the autonomous one-segment controller; live AC power, derived disk reserve, exclusive accelerator custody, rollback snapshot, and every other machine predicate must still pass. No user approval, D2 evaluation, capability claim, or automatic continuation is authorized.",
+        "state": "HOLD_SUBSYSTEM_PROOF_FIRST_STEP_11992_REBIND_REQUIRED_AFTER_ARCHITECTURE_FREEZE",
+        "acceptance_boundary": "The exact step-11,992 checkpoint, AdamW, RNG, cursor, append-only lineage, nonconsumption, and D2 identity are preserved. The source-controlled program authority denies all new segments regardless of host readiness. Only a completed Subsystem Architecture Freeze may permit a clean source/checkpoint rebind and a later autonomous one-segment preflight; no user approval, D2 evaluation, capability claim, or automatic continuation is authorized.",
         "nonblocking_residuals": [
           "formally retire or evidence-preservingly demote the superseded strict-generator/code-LM-closure family after its registered successor passes the same functional contract"
         ],
@@ -6278,7 +6372,7 @@
         "formal strict-generator/code_lm_closure retirement proof: active imports and gate dependencies removed or extracted into canonical owners, retained comparators non-routeable, superseded reports archived with verified replay pointers, and reference-only source deleted or moved under deprecated with git history as recovery",
         "roadmap entropy enforcement: keep forward requirements in roadmap.md, move run narratives and inventories to matrix/registry/state/history, and hold the live roadmap below 1100 lines without dropping unresolved obligations"
       ],
-      "smallest_next_patch": "Keep D2 sealed and let the autonomous one-shot controller execute at most one transactional segment only when every live machine predicate passes. Preserve rollback and append-only lineage receipts; do not create an incidental benchmark family or infer capability from training progress.",
+      "smallest_next_patch": "Enforce and verify the source-controlled subsystem-first program selection: F1 is the active flagship, the neural seed is held at step 11,992 regardless of host readiness, D2 stays sealed, and roadmap, state, README, book binding, and executable launch policy agree.",
       "integration_smoke": [
         "python3 scripts/python_environment_gate.py --profile cpu --gate",
         "python3 scripts/phase0_reproducibility_gate.py --gate",
@@ -6767,7 +6861,7 @@
       "missing_items": [
         "P2A instrument adequacy followed by ten distinct machine-selected tasks from a sealed license-compatible online pool with independent correctness, safety, rollback, cost, and residual accounting"
       ],
-      "smallest_next_patch": "Implement and qualify P2A on one sealed online task with shared typed actions and independent evaluation. If adequate, run P3 on ten deterministically selected tasks and use the residual to select one bound P4 ASI Stack mechanism. Tool-assisted success remains separate from learned-model credit.",
+      "smallest_next_patch": "Preserve terminal P2A/P2B/P2C/P3/P4 task evidence without replay. Use the existing autonomous source and evaluator owners only after the active mechanism passes its independent production-path adequacy audit, then acquire one powered source-disjoint claim cohort without user task supply or labels.",
       "integration_smoke": [
         "python3 scripts/theseus_assistant_runtime.py --prompt \"Summarize the assistant trace schema and dogfood outcome boundary.\" --intent planning --feedback completed --session-id assistant_trace_schema_smoke --out reports/theseus_assistant_trace_schema_smoke.json --markdown-out reports/theseus_assistant_trace_schema_smoke.md --events-out reports/theseus_assistant_trace_schema_events.jsonl --viea-trace-out reports/theseus_assistant_trace_schema_trace.jsonl --skip-context-refresh",
         "reports/theseus_assistant_trace_schema_smoke.json summary.assistant_trace_schema_ready=true",
@@ -7334,7 +7428,7 @@
         "The practical MLX decoder has exact-tested incremental source/cross/self-attention cache reuse, serialization-complete finalization, batching, and atomic task resume. Its bounded speed evidence is not cross-backend parity or production-route eligibility.",
         "Semantic candidate quality, route-positive behavior, and learned full-body improvement remain Phase 10 work."
       ],
-      "smallest_next_patch": "Measure complete E2/E3 lifecycle cost through existing resource owners and keep compiled FP32 MLX authoritative for D2. Refresh selected-route currentness at step 11,416 with the hold installed. Cross-platform parity, serving, continuous batching, energy studies, ANE, Rust rewrites, and generic acceleration are sidelined unless a terminal flagship result identifies a measured selected-route defect.",
+      "smallest_next_patch": "Measure complete active-claim lifecycle cost through existing resource owners and preserve compiled FP32 MLX only as the held future D2 route. Do no acceleration or step-currentness work while the neural program is held at step 11,992; re-enter only if a terminal subsystem result identifies a measured route defect or the Subsystem Architecture Freeze authorizes neural work.",
       "integration_smoke": [
         "python3 scripts/resource_mlx_route_readiness_gate.py --gate",
         "reports/resource_mlx_route_readiness_gate.json trigger_state=GREEN",
@@ -7702,7 +7796,7 @@
         "The operand/state-event prefix-context optimization and incremental MLX attention cache are behavior-exact runtime evidence only. The first removes a repeated vocabulary-times-prefix parse with a focused 27.96x speedup. The second proves every materialized output head within 1e-5, exact candidate/token identity, 832 ms -> 500 ms pre-verifier decode on the real 48-token canary, source encodes 47 -> 1, and atomic contract-bound resume reproducing all six clean-control candidate identities after interruption. This is not semantic capability, model promotion, or CUDA/MLX parity evidence.",
         "The parameter-neutral prefix-LM control is valid negative architecture evidence. All 17,643 raw-code windows have no separator; all 12,111 SFT rows and 24 eval rows have exactly one canonical separator with loss strictly target-side. Matched causal/prefix arms use seed 20260711, equal parameters, 47 optimizer steps, 100260 supervised positions, and the same 24 family-disjoint tasks. Both produce zero syntax-valid candidates and 0/24 passes; prefix-LM worsens loss by 0.004548, SFT throughput by 270.604 tokens/s, and decode by 65 ms. Prefix-LM is NOT_ADOPTED and causal remains canonical."
       ],
-      "smallest_next_patch": "Preserve the 57.315M proposal, corpus, objective, schedule, modular candidate, dense-active control, dense-total control, checkpoint lineage, current frozen 160-case surface, and consumed-v8 evidence. Keep the hold installed until the machine-readable launch/resource/rollback controller proves its predicates. Commit clean source binding, complete the matched controls under autonomous leases, then let the implemented D2 controller consume the frozen surface once; do not create a replacement benchmark or ask for user approval.",
+      "smallest_next_patch": "Preserve the 57.315M proposal, corpus, objective, schedule, modular candidate, dense-active control, dense-total control, exact step-11,992 checkpoint lineage, frozen 160-case D2 surface, and consumed-v8 evidence. The source-controlled program hold overrides green hardware predicates. Do not train, mutate the architecture, refresh acceleration, or consume D2 until every Subsystem Architecture Freeze condition passes and a clean future rebind is generated without a user gate.",
       "integration_smoke": [
         "python3 -m pytest -q tests/test_strict_generator_mlx_model.py tests/test_strict_generator_mlx_decode_progress.py tests/test_strict_generator_mlx_decode_guards.py",
         "reports/strict_generator_mlx_decode_eval_cache_incremental_canary_20260711.json splits.family_disjoint.view.decoder_constraints.decode_cache.source_encode_batch_calls=1",
@@ -8114,7 +8208,7 @@
         "KERC K0-K3 retain faithful bounded evidence, and RDC now supplies typed relation instances/incidences, sparse proposal receipts, relational-order routing, reversible contraction/expansion, exact schema migration, monitored slow-path compilation, factorized sparse MLX parity, typed target-authoritative structured-unit draft mechanics, and separately parameterized learned proposal/qualification mechanics with evaluator-label noninterference. T0A still requires real source-disjoint proposal/qualification quality, real multi-turn K4 utility, canonical-path structured-draft qualification, complete K5-K7 behavior/lifecycle security/total-cost accounting, and matched K8 evidence.",
         "The RDC/KERC route must face optimized surface AR, byte, entropy-patch, and learned dynamic-chunk controls under matched raw data, active/total parameters, train compute, tuning opportunity, verifier budget, and lifecycle cost before selection or an adequately scoped negative verdict."
       ],
-      "smallest_next_patch": "Freeze KERC/RDC as a protected successor discovery lane with zero campaign-one optimizer exposure and preserve all K0-K3, resource, population, checkpoint, transport, and negative-control evidence as INCONCLUSIVE_EXPERIMENT. Do not run another KERC canary before the practical modular-versus-dense verdict. Prospective re-entry must complete the existing K4-K8 causal, learned-stage, source-disjoint behavior, maximum-row/resource, canonical-path, matched-control, weak-tail, and total-cost obligations.",
+      "smallest_next_patch": "Repair the exact P4 Semantic-IR identity, obligation-coverage, target, and unit transport mechanics through one canonical typed schema and the exact production renderer-to-verifier path. Use source-disjoint model-produced non-claim evidence, corruption rejection, intervention sensitivity, dependency-local repair, and independent adequacy. Keep KERC/RDC and every alternate semantic substrate frozen unless this implementation receives a terminal disposition that specifically activates one.",
       "integration_smoke": [
         "python3 scripts/strict_generator_semantic_ir_repair_bridge.py",
         "python3 scripts/strict_generator_semantic_ir_repair_apply.py --repair-bridge reports/strict_generator_semantic_ir_repair_bridge.json --candidates reports/strict_generator_mlx_decode_eval_initializer_operation_delay_canary_v9_20260706_candidates.jsonl --out reports/strict_generator_semantic_ir_repair_apply_v9.json --markdown-out reports/strict_generator_semantic_ir_repair_apply_v9.md --candidates-out reports/strict_generator_semantic_ir_repair_apply_v9_candidates.jsonl --execute",
@@ -8764,7 +8858,7 @@
         "configs/project_steward.json"
       ],
       "missing_items": [],
-      "smallest_next_patch": "Use the bound 13-claim portfolio to implement P2A, acquire the sealed task pool, run P3, and activate exactly one residual-matched P4 mechanism. Return terminal public-safe claim dispositions to book review without automatic support movement; do not broaden into chapter prose, reader derivatives, or publication work.",
+      "smallest_next_patch": "Keep the 84-chapter experiment pin stable while observing living-book drift. Return the terminal cognitive-compilation packet now with support unchanged; after an adequate future claim campaign, bind the exact estimand, implementation, controls, costs, residuals, limitations, and maximum inference to the same stable claim ID. Never absorb concurrent book work or broaden into publication work automatically.",
       "integration_smoke": [
         "python3 scripts/roadmap_implementation_gate.py --gate",
         "python3 scripts/module_definition_of_done_gate.py",
@@ -8868,62 +8962,62 @@
   ],
   "flagship_lane_governance": {
     "policy": "one_active_flagship_lane_v1",
-    "active_flagship_lane_id": "C1_correctness_rl_and_generator_survival_lane",
-    "active_track_id": "C_capability_research_survival_lane",
+    "active_flagship_lane_id": "F1_asi_stack_subsystem_causal_proof",
+    "active_track_id": "F_memory_planning_tool_substrate",
     "shared_book_flagship_id": "ASI-THESEUS-FLAGSHIP-01",
     "shared_research_question": "Which highest-leverage ASI Stack mechanisms survive faithful implementation, adequate instruments, strong matched controls, source-disjoint evaluation, and total-system-cost accounting in Theseus?",
     "critical_path": [
       {
         "id": "T0",
-        "state": "complete",
+        "state": "complete_program_foundations_preserved",
         "depends_on": [],
         "exit": "The prior 57M package, KERC K0-K3 evidence, performance ledger, independent replay, and content-addressed freeze remain preserved as immutable controls."
       },
       {
         "id": "T0A",
-        "state": "historically_complete_source_currentness_refresh_required",
+        "state": "historical_architecture_work_preserved_sidelined",
         "depends_on": ["T0"],
         "exit": "Adequate MTP, target-authoritative drafting, learned dynamic byte patches, RDC-enhanced KERC, optimizer challengers, candidate-specific canaries, frozen evaluator prompt-injection/runtime-taint integrity, and the matched factorized bakeoff are implemented through existing owners; every finite candidate is adopted or adequately dispositioned; a replacement content-addressed architecture freeze is published."
       },
       {
         "id": "T1",
-        "state": "held_step_11416_ledgered_from_step_9048_anchor_not_evaluated",
-        "depends_on": ["T0A"],
-        "exit": "The existing preregistration, executable topology, tokenizer/index capacity, staged positions, controls, checkpoint namespace, and evaluation identity remain frozen through the held step-11,416 lineage; then the modular candidate and both matched dense controls finish training with exact data, optimizer, checkpoint, resource, cleanup, and no-cheat lineage."
+        "state": "hold_subsystem_proof_first_step_11992_ledgered_not_evaluated",
+        "depends_on": [],
+        "exit": "Preserve the exact step-11,992 checkpoint, optimizer, RNG, cursor, corpus, modular and dense controls, and sealed D2 identity until the complete Subsystem Architecture Freeze authorizes a clean future rebind."
       },
       {
         "id": "T2",
-        "state": "blocked_by_T1",
-        "depends_on": ["T1"],
-        "exit": "At least one lineage-bound arm produces nonzero model-only source-disjoint functional behavior, or the exact regime receives a decision-grade scoped negative."
+        "state": "blocked_by_subsystem_architecture_freeze",
+        "depends_on": ["T6"],
+        "exit": "After all architecture-shaping claims receive terminal interface dispositions and a production composition canary passes, decide whether the modular-versus-dense question remains relevant; if so, rebind and complete the matched neural experiment once."
       },
       {
         "id": "T3",
-        "state": "P1_complete_P2_terminal_claim_bindings_complete_P2A_ready_for_implementation_no_learned_credit",
+        "state": "P1_P2_P3_complete_P4_terminal_inconclusive_implementation_D1_closed",
         "depends_on": [],
-        "exit": "The fixed local model is joined to the canonical runtime; route integrity proves the integrated subsystems are causally live; a successor typed-edit instrument reaches independent correctness evaluation; then ten deterministically selected tasks from a sealed license-compatible online pool record complete paired outcomes and costs. L0 grants no learned or claim-bearing credit."
+        "exit": "Preserve the exact P1 route mechanics, historical bounded P3 null, terminal P4 mechanics failure, closed D1, and public-safe claim handoff without replay, rescoring, or support movement."
       },
       {
         "id": "T4",
-        "state": "blocked_by_T3",
+        "state": "active_semantic_ir_identity_coverage_target_unit_mechanics_repair",
         "depends_on": ["T3"],
-        "exit": "One natural happy path and one blocked or rollback path join intent, VCM, plan, route, candidate, verification, authority, observed effects, terminal acknowledgement, residuals, and autonomous task outcomes without orphan or stale projection."
+        "exit": "The exact production renderer, model-visible protocol, canonicalizer, parser, lowerer, applier, verifier, intervention, and repair path pass source-disjoint model-produced non-claim mechanics, corruption, identity, locality, and known-positive tests; otherwise freeze the implementation."
       },
       {
         "id": "T5",
-        "state": "blocked_by_T4",
+        "state": "blocked_by_T4_independent_adequacy",
         "depends_on": ["T4"],
-        "exit": "L0 selects at most one reversible subsystem default from matched autonomous-task development evidence. Q1/D1 then prospectively freezes a competent local identity and source-disjoint tasks before comparing full governance, test-only, record-only, direct, and conservative-hold routes; Q2/D2 separately measures the frozen local student and integrated stack after T2. Denominators do not overlap or tune each other, and claim-bearing surfaces report independent evaluation, uncertainty, weak tails, false blocks/releases, fair rescue, and total lifecycle cost."
+        "exit": "If T4 is adequate, freeze one source-disjoint claim-development experiment with local direct/treatment and prospectively available Luna direct/treatment cells plus claim-specific strong controls; run it once and issue a scoped terminal disposition."
       },
       {
         "id": "T6",
-        "state": "blocked_by_T5",
+        "state": "conditional_on_T5_development_survivor_or_terminal_handoff",
         "depends_on": ["T5"],
-        "exit": "A public-safe book handoff binds exact commits, artifacts, estimand, effects, costs, residuals, non-claims, and maximum inference; broadened claims then require separate reproduction and transfer."
+        "exit": "Qualify a development survivor once on fresh source-disjoint D1, or skip D1 for a non-survivor; return the exact public-safe packet to book review with support unchanged, then activate the next architecture-shaping residual."
       }
     ],
     "parallel_book_evidence_path": {
-      "state": "blocked_on_P1_route_integrity_D1_sealed",
+      "state": "active_one_claim_subsystem_proof_D1_closed",
       "denominator_id": "L0",
       "depends_on": [],
       "work": [
@@ -8936,7 +9030,7 @@
         "D1_fresh_source_disjoint_freeze_only_after_L0_selection",
         "D1_claim_scoped_comparison_and_public_safe_evidence_packet"
       ],
-      "rule": "No new L0 pair runs until P1 route integrity is preserved and P2A proves a successor instrument reaches independent correctness evaluation. L0 may then improve existing owners using distinct deterministically selected tasks from a sealed license-compatible online pool, but it cannot qualify a worker, move an ASI Stack claim, or enter D1 or D2. D1 may begin only after L0 selects a mechanism and a fresh competent identity, source-disjoint task surface, evaluator, budgets, and decision thresholds are prospectively frozen."
+      "rule": "P1 through P4 are terminal evidence. Repair only the exact active mechanics owner on non-claim fixtures, then require an independent adequacy pass before opening one fresh claim-development denominator. D1 opens once only for a development survivor. Neural D2 remains sealed and is not a parallel path."
     },
     "book_handoff_contract": {
       "book_owns": ["claim identity", "competence standard", "preregistration", "evidence transition", "argument-exit language", "publication boundary"],
@@ -8963,18 +9057,18 @@
         "release_authority": "none"
       }
     },
-    "rule": "The primary goal is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. The 84-chapter pin and 13-claim causal portfolio are source-bound. P4V2R2R3 is terminal scoped INCONCLUSIVE_IMPLEMENTATION because its Semantic-IR treatment failed the predeclared mechanics floor; D1 is closed and the public-safe packet is ready for governed book review without support movement. Repair that exact mechanics owner only on non-claim fixtures while the independent neural N0/N1/N2/D2 track advances under automated source/resource/rollback authority, never user presence. Reopen no architecture, optimizer, data, evaluator, KERC, ANE, or substrate choice without a terminal flagship result naming a concrete causal defect.",
-    "why": "Theseus currently has a canonical control-plane runtime without the frozen local model and a local-model worker without the canonical control plane. Joining those halves is the smallest honest step. Only causally live mechanisms and useful natural outcomes can justify subsystem A/B work; record production, route labels, and context decoration cannot.",
+    "rule": "The sole active research program is claim-bearing evidence for the highest-leverage ASI Stack mechanisms. The 84-chapter pin and 13-claim portfolio remain source-bound. P4V2R2R3 is terminal INCONCLUSIVE_IMPLEMENTATION, D1 is closed, and its public-safe packet moves no support. Repair that exact mechanics owner on non-claim evidence, run an independent adequacy audit, and open at most one fresh claim campaign. Neural training and D2 remain held at step 11,992 until the Subsystem Architecture Freeze; host readiness cannot override program authority.",
+    "why": "The current bottleneck is not model training or task supply. It is proving that intended ASI Stack mechanisms are faithful, causally active, mechanically adequate, and useful under a fixed model. Resolving those interfaces before neural training prevents expensive optimization of an architecture the proof program may need to change.",
     "allowed_parallel_work": [
-      "P1 frozen TMax backend integration behind the existing canonical assistant runtime",
-      "P1 matched direct mode and live route integrity gates",
-      "one P2A successor instrument and later autonomous P3 pairs only after their machine predecessor gates pass",
-      "one P4 registered owner ablation selected from nonzero useful work residuals",
-      "redacted paired outcome cost safety rollback residual and selection accounting through the existing L0 owner",
-      "E0 through E4 fresh D1 qualification only after an L0 mechanism earns selection",
-      "neural N0 source bound step 11416 readiness refresh with training hold installed",
-      "security evaluator no cheat custody or replay repair required by those exact experiments",
-      "cleanup only when it removes an active flagship blocker evidence ambiguity or material disk wall"
+      "source-bind the Luna xhigh measurement-only adapter without making reference calls",
+      "repair the active Semantic-IR production mechanics owner on non-claim evidence",
+      "independently audit active mechanism adequacy before fresh tasks",
+      "run one source-disjoint claim campaign only after the adequacy gate",
+      "qualify one development survivor once on fresh D1",
+      "return terminal public-safe claim evidence without automatic support movement",
+      "preserve neural checkpoint lineage and sealed D2 without optimizer progress",
+      "security evaluator no-cheat custody source and replay repair required by the active experiment",
+      "cleanup only when it removes an active proof blocker evidence ambiguity or material disk wall"
     ],
     "disallowed_parallel_work": [
       "resume L0 003 R2 or tune the same opened workspace hygiene task",
@@ -8985,14 +9079,15 @@
       "new benchmark private suite report dashboard document registry or product surface family",
       "Hive network public gateway compute market licensing mobile spatial voice multimodal or exposure expansion",
       "broad book prose chapter theorem reader derivative or publication work before material evidence",
-      "full corpus training public calibration D2 consumption or production checkpoint mutation outside the automated resource and one-shot evaluation policies"
+      "all neural optimizer progress architecture mutation matched-control training and D2 consumption before Subsystem Architecture Freeze",
+      "full corpus training public calibration or production checkpoint mutation regardless of host availability"
     ]
   },
   "book_implementation_tracks": [
     {
       "track_id": "A_reference_evidence_spine",
       "name": "Book Reference Evidence Spine",
-      "status": "implemented_E1_E4_clean_replay_and_claim_disposition",
+      "status": "supporting_active_claim_trace_and_handoff_integrity",
       "job": "Make one end-to-end Theseus task replayable through command contract, VCM packet, typed job, runtime receipt, artifact graph, claim ledger, evidence transition, residual, and policy/update boundary.",
       "primary_phases": [
         1,
@@ -9005,7 +9100,7 @@
     {
       "track_id": "B_product_assistant_usefulness",
       "name": "Autonomous Verified Work Instrument Lane",
-      "status": "active_L0_instrument_adequacy_D1_claim_evidence_learned_credit_forbidden",
+      "status": "supporting_autonomous_source_disjoint_task_instrument_no_product_lane",
       "job": "Supply source-disjoint machine-verifiable tasks for causal ASI Stack subsystem experiments while honestly separating model, tool, template, and deterministic output.",
       "primary_phases": [
         5,
@@ -9017,7 +9112,7 @@
     {
       "track_id": "C_capability_research_survival_lane",
       "name": "Capability Research Survival Lane",
-      "status": "frozen_D2_training_held_until_multi_day_compute_window",
+      "status": "hold_subsystem_proof_first_step_11992_D2_sealed",
       "job": "Build the practical seed as five independently trained MoECOT language arms (English, Python, JS/TS, HTML/CSS, Rust) behind the governed Octopus router, with per-arm data/model scaling, weights, optimizer/checkpoint lineage, verifiers, readiness, and rollback. Train the frozen 6.6M mixed dense MLX transformer only as a matched falsification control. Measure arm, route, composition, and answer behavior separately before activating search, preference/RL, fast generation, or SymLiquid. Prevent routing, templates, tools, renderers, and fallbacks from counting as learned generation.",
       "primary_phases": [
         7,
@@ -9031,7 +9126,7 @@
     {
       "track_id": "D_repo_stewardship_and_evidence_hygiene",
       "name": "Repo Stewardship And Evidence Hygiene",
-      "status": "maintenance_only_when_required_by_E0_E4_or_N0_N4",
+      "status": "service_only_when_required_by_active_proof_or_neural_custody",
       "job": "Keep the registry, ATT-D, report retention, module DoD, source-sync, and negative-evidence lifecycle green enough that evidence remains auditable.",
       "primary_phases": [
         0,
@@ -9043,7 +9138,7 @@
     {
       "track_id": "E_authority_security_rights_kernel",
       "name": "Authority, Security, Rights, And Failure Boundary Kernel",
-      "status": "active_D1_natural_authority_and_rollback_evidence_only",
+      "status": "supporting_common_authority_and_rollback_constraints_only",
       "job": "Make authority transitions, Digital SCIFs, runtime adapter receipts, governance rights, constitutional predicates, and value-conflict records operational instead of prose.",
       "primary_phases": [
         2,
@@ -9056,7 +9151,7 @@
     {
       "track_id": "F_memory_planning_tool_substrate",
       "name": "Memory, Planning, Tool, And Substrate Integration",
-      "status": "active_D1_planning_VCM_route_and_verified_reuse_evidence_only",
+      "status": "active_flagship_one_claim_at_a_time_semantic_ir_mechanics_repair",
       "job": "Make VCM, PlanForge, deterministic tools, routing heads, resource accounting, semantic IR, simulation contracts, proof envelopes, and procedural memory one substrate-neutral stack.",
       "primary_phases": [
         3,
@@ -9074,10 +9169,10 @@
   ],
   "book_reference_core_before_training": {
     "policy": "book_reference_core_before_training_focus_v1",
-    "scope": "Architecture readiness record and active capability-slice selector; it is not a ban on governed training or fresh useful measurement.",
-    "rule": "The reference slices have reached prototype-backed or better and the strict architecture-readiness gate is GREEN under the content-addressed freeze package. Preserve that exact package and direct primary work through the active C1 capability slice until the current model establishes positive direct behavior.",
+    "scope": "Historical pretraining architecture-readiness record. It does not select the active research lane or authorize training.",
+    "rule": "Preserve the prior content-addressed architecture package as custody evidence. The active selector is now F1 ASI Stack subsystem causal proof; neural work remains held at step 11,992 until the Subsystem Architecture Freeze and a clean future rebind.",
     "architecture_readiness_gate": "python3 scripts/roadmap_implementation_gate.py --gate --require-pre-training-ready",
-    "architecture_readiness_rule": "Long training is authorized only while the strict readiness mode remains GREEN for the exact frozen package. Normal roadmap YELLOW from pinned-book intake drift remains non-blocking when hard_gap_count=0.",
+    "architecture_readiness_rule": "A GREEN historical readiness gate is necessary but not sufficient for future training. Source-controlled program authority, every Subsystem Architecture Freeze condition, clean rebinding, host safety, transaction custody, and sealed D2 authority must also pass prospectively.",
     "required_slices": [
       {
         "slice_id": "A1_claim_ledger_trace_kernel",
@@ -9202,38 +9297,39 @@
         ]
       },
       {
-        "slice_id": "C1_correctness_rl_and_generator_survival_lane",
+        "slice_id": "F1_asi_stack_subsystem_causal_proof",
         "active": true,
-        "track_id": "C_capability_research_survival_lane",
+        "track_id": "F_memory_planning_tool_substrate",
         "phases": [
-          10,
-          12
+          4,
+          5,
+          13,
+          14,
+          19
         ],
-        "target_support_state": "synthetic-test-backed",
-        "minimum_done": "One bounded private verifier-driven generator experiment improves unassisted learned body-token behavior or records a falsifying wall; public benchmarks remain calibration-only.",
+        "target_support_state": "empirical-test-backed",
+        "minimum_done": "One exact architecture-shaping ASI Stack mechanism passes production-path mechanics and independent adequacy, receives a matched frozen-model causal development result, qualifies a survivor once on fresh source-disjoint D1, and returns a claim-level packet to book review without automatic support movement.",
         "current_support_state": "synthetic-test-backed",
-        "current_state": "GREEN",
+        "current_state": "P4_TERMINAL_INCONCLUSIVE_IMPLEMENTATION_SEMANTIC_IR_MECHANICS_REPAIR_ACTIVE_D1_CLOSED",
         "current_evidence_refs": [
-          "reports/neural_seed_survival_readiness_gate.json",
-          "reports/standard_causal_transformer_survival_gate.json",
-          "reports/standard_causal_transformer_survival.json",
-          "reports/training_inference_execution_plan_gate.json",
-          "reports/candidate_integrity_standard_causal_transformer_survival.json",
-          "reports/blind_information_flow_audit_standard_causal_transformer_survival.json",
-          "configs/training_inference_execution_roadmap.json"
+          "reports/theseus_p4v2r2r3_attempt1_terminal_disposition.json",
+          "reports/theseus_asi_stack_claim_handoff.json",
+          "reports/theseus_assistant_p3_terminal_disposition.json",
+          "configs/theseus_external_reference_control.json"
         ],
         "current_validation_commands": [
-          "python3 scripts/standard_causal_transformer_survival_gate.py --gate",
-          "python3 scripts/neural_seed_survival_readiness_gate.py --gate",
-          "python3 scripts/training_inference_execution_plan_gate.py --gate",
-          "python3 scripts/roadmap_implementation_gate.py --gate"
+          "python3 scripts/roadmap_implementation_gate.py --gate",
+          "python3 scripts/theseus_asi_stack_claim_handoff.py",
+          "python3 -m pytest -q tests/test_roadmap_book_sync.py tests/test_theseus_external_reference_control.py tests/test_theseus_asi_stack_claim_handoff.py"
         ],
         "current_non_claims": [
-          "synthetic-test-backed C1 proves architecture, lineage, replay, integrity, and negative interventions only; it is not promotion-grade code generation",
-          "the current clean MLX transformer replay is a falsifying semantic wall: direct model-only family-disjoint behavior remains zero",
-          "the existing governed corpus is diagnostic scale and does not support a strong from-scratch model-capability conclusion",
-          "routers, templates, private ngrams, semantic renderers, deterministic tools, and fallback returns remain non-credit for learned generation",
-          "public benchmarks remain calibration-only and no public benchmark artifacts enter training rows"
+          "P1 route integrity is mechanics evidence rather than subsystem usefulness",
+          "historical P3 is bounded by its project-selected output ceiling and supplies no current capability claim",
+          "P4V2R2R3 failed the exact Semantic-IR mechanics floor and cannot falsify cognitive compilation generally",
+          "D1 is closed because no development survivor exists",
+          "the Luna reference is unbound and has made zero calls",
+          "the neural seed and D2 are held and contribute no evidence to F1",
+          "book support remains unchanged until independent book-side review"
         ]
       }
     ]
@@ -17616,26 +17712,28 @@
   "book_chapter_crosswalk_summary": {
     "policy": "all_authored_book_chapters_mapped_to_theseus_v1",
     "book_manifest": "/Users/corbensorenson/Documents/AI_book/book_structure.json",
-    "book_chapter_count": 54,
+    "book_chapter_count": 84,
     "track_counts": {
-      "A_reference_evidence_spine": 11,
+      "A_reference_evidence_spine": 12,
       "B_product_assistant_usefulness": 1,
-      "C_capability_research_survival_lane": 9,
+      "C_capability_research_survival_lane": 15,
       "D_repo_stewardship_and_evidence_hygiene": 9,
-      "E_authority_security_rights_kernel": 11,
-      "F_memory_planning_tool_substrate": 13
+      "E_authority_security_rights_kernel": 29,
+      "F_memory_planning_tool_substrate": 18
     },
     "current_state_counts": {
       "mapped_missing_deliberation_campaign_contract": 1,
       "mapped_with_frozen_dependency": 2,
       "partial_reference_slice": 38,
       "pretraining_wired_behavior_qualification_pending": 2,
+      "unimplemented_book_intake_bound_to_existing_owner": 30,
       "wired_reference_slice_exists": 11
     },
     "support_state_target_counts": {
-      "empirical-test-backed": 1,
+      "argument": 12,
+      "empirical-test-backed": 15,
       "replayable-reference-backed": 9,
-      "synthetic-test-backed": 44
+      "synthetic-test-backed": 48
     },
     "non_claim": "This is implementation planning coverage, not evidence that all chapters are implemented or beyond-SOTA."
   }

@@ -53,6 +53,7 @@ def preflight(
     independent_override: dict[str, Any] | None = None,
     scale_override: dict[str, Any] | None = None,
     availability_override: dict[str, Any] | None = None,
+    availability_policy_override: dict[str, Any] | None = None,
     review_override: dict[str, Any] | None = None,
     source_binding_override: bool | None = None,
 ) -> dict[str, Any]:
@@ -75,7 +76,10 @@ def preflight(
         process_jobs = campaign.active_accelerator_jobs(
             list(config["exclusive_accelerator_process_patterns"])
         )
-    availability_policy = read_json(availability_path)
+    availability_policy = availability_policy_override or read_json(
+        availability_path
+    )
+    campaign.validate_availability_policy(availability_policy)
     availability = availability_override or campaign.availability_state(
         availability_policy
     )

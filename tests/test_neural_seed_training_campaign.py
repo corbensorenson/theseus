@@ -23,6 +23,17 @@ def policy() -> dict:
     )
 
 
+def authorized_policy() -> dict:
+    value = policy()
+    value["program_authority"].update(
+        {
+            "state": campaign.PROGRAM_AUTHORIZED_STATE,
+            "launch_allowed": True,
+        }
+    )
+    return value
+
+
 def green_snapshot() -> dict:
     return {
         "on_ac_power": True,
@@ -52,7 +63,7 @@ def test_availability_policy_forbids_clock_based_launch_windows() -> None:
 
 
 def test_availability_gate_requires_every_laptop_safety_condition() -> None:
-    config = policy()
+    config = authorized_policy()
     campaign.validate_availability_policy(config)
     report = campaign.evaluate_availability(config, green_snapshot())
     assert report["trigger_state"] == "GREEN"
@@ -74,6 +85,26 @@ def test_availability_gate_requires_every_laptop_safety_condition() -> None:
         report = campaign.evaluate_availability(config, snapshot)
         assert report["trigger_state"] == "PAUSED"
         assert failed_gate in report["failed_gates"]
+
+
+def test_default_program_authority_holds_training_even_when_host_is_green() -> None:
+    config = policy()
+    campaign.validate_availability_policy(config)
+    report = campaign.evaluate_availability(config, green_snapshot())
+    assert report["trigger_state"] == "PAUSED"
+    assert report["program_authority"]["state"] == campaign.PROGRAM_HOLD_STATE
+    assert "program_authority_allows_training" in report["failed_gates"]
+
+
+def test_program_authority_cannot_claim_hold_and_allow_launch() -> None:
+    config = policy()
+    config["program_authority"]["launch_allowed"] = True
+    try:
+        campaign.validate_availability_policy(config)
+    except ValueError as exc:
+        assert "state and launch authority disagree" in str(exc)
+    else:
+        raise AssertionError("contradictory neural program authority was accepted")
 
 
 def test_disk_reserve_is_derived_from_live_checkpoint_transaction() -> None:

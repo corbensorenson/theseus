@@ -1,230 +1,192 @@
 # Project Theseus
 
-Project Theseus is a private, locally trained AI research system built around
-specialist neural arms, governed memory and tools, exact experiment custody,
-and zero external inference at serving time.
+Project Theseus is the experimental implementation of *The ASI Stack*. Its
+purpose is to turn the book's highest-leverage mechanisms into causally active
+software, test them under adequate matched controls, and return honest
+claim-level evidence to the book.
 
-The project asks one practical, falsifiable question:
+The active question is:
 
-> Can a locally trained Theseus student do useful conversation and repository
-> work, and does modular MoECOT improve the useful-safe frontier over matched
-> dense controls at acceptable total cost?
+> With the underlying model held fixed, which ASI Stack subsystems improve
+> useful-safe performance on autonomously acquired, machine-verifiable work,
+> why do they help, and under what operating limits?
 
-Theseus is not yet a demonstrated useful learned assistant or a production
-runtime. Its governance, evidence, and orchestration infrastructure are more
-mature than its measured learned capability.
+Theseus is not currently a personal-assistant project and is not yet training
+its own production model. Autonomous repository work is an experimental
+substrate. The immediate product is a trustworthy proving system.
 
-## Current State
+## Program Selection
 
-The canonical human-readable status is
-[Project State](docs/PROJECT_STATE.md). The short version as of the
-2026-07-31 local-model program reorientation is:
-
-- the exact 57.3M-parameter modular checkpoint is paused at optimizer step
-  11,416 with model, AdamW, MLX RNG, cursor, and prospective lineage identity;
-- independent encrypted off-machine custody is not complete, so destructive
-  maintenance remains blocked;
-- the operator hold is installed, so long training is `TRAINING_HELD`;
-- the checkpoint remains unevaluated; its 160-case D2 surface is independently
-  fresh at exact and normalized prompt scope but remains sealed and separately
-  unauthorized;
-- both matched dense controls remain untrained;
-- the selected practical route is compiled FP32 MLX;
-- KERC/RDC is a protected, frozen successor experiment and ANE training was
-  not selected for the current campaign;
-- local security and evaluator-integrity repairs pass their bounded tests, but
-  LAN or public exposure is not qualified;
-- the existing public Git history is not an approved release surface, and
-  pushes remain frozen pending a clean source-only transition;
-- teacher-accepted rows are about 0.013% of accepted training rows;
-- genuine daily usefulness remains `NOT_ESTABLISHED`;
-- P1 now binds the exact frozen TMax model to the canonical direct and
-  integrated assistant routes with GREEN route-integrity evidence;
-- P2C established an adequate Qwen3.5 instrument but did not solve its one
-  licensed task, and the ten-task P3 campaign found no useful-route winner; and
-- P4 now tests one ASI Stack mechanism at a time on fresh source-disjoint tasks,
-  with no automatic D1, neural, serving, or book-support promotion.
-
-Documentation consolidation does not change any of those evidence states.
-The current [roadmap](roadmap.md) is causal-evidence first. P1 route integrity,
-P2 instrument repair, and P3 residual discovery are complete. The active P4
-lane tests typed Semantic IR/cognitive compilation against matched direct,
-planning, and deterministic controls with the same frozen local model. The
-matched neural campaign proceeds independently under its hold and later tests
-modular MoECOT against dense-active and dense-total controls on sealed D2.
-
-## Operating Boundaries
-
-The complete charter is in [AGENTS.md](AGENTS.md). Its core constraints are:
-
-1. External inference may be used only as a governed training teacher.
-   Externally generated tokens are never served.
-2. Public benchmarks are calibration-only and never become training data.
-3. Candidate generation and ranking cannot see hidden answers, tests,
-   answer-family labels, or fields derived from them.
-4. Templates, tools, retrieval, routers, and deterministic fallbacks receive
-   no learned-generation credit.
-5. Negative evidence is scoped to the exact implementation and regime tested.
-6. English, Python, JavaScript/TypeScript, HTML/CSS, and Rust are the current
-   seed scope.
-7. New lanes and surfaces remain frozen unless they directly serve the neural
-   seed, teacher accounting, real dogfood, or repository health.
-
-## System Shape
-
-Theseus has five distinct planes:
-
-| Plane | Role | Capability implication |
+| Track | State | Purpose |
 | --- | --- | --- |
-| Neural experiment | Modular MoECOT student and matched dense controls | Only blind frozen evaluation can establish learned capability |
-| Protected discovery | SymLiquid/CGS/VSA/liquid substrate and bounded successor mechanisms | Research hypothesis, not the practical route |
-| Local product | CLI, VCM, tools, assisted workflows, and personality context | Useful mechanics; assisted outcomes are reported separately |
-| Governance | Registries, ledgers, evaluator integrity, data/teacher gates, and exact custody | Makes claims auditable; does not create capability |
-| Runtime infrastructure | SparkStream, Hive, dashboard, device adapters, and update machinery | Local prototype infrastructure; exposure needs separate qualification |
+| ASI Stack subsystem proof | **Active flagship** | Test one book mechanism at a time with a frozen local model, strong controls, blind evaluation, and source-disjoint qualification |
+| Neural seed | **Held at step 11,992** | Preserve the modular-versus-dense experiment until the subsystem architecture is stable enough for training to answer the right question |
+| Maintenance | **Service only** | Protect source binding, evidence custody, storage, replay, and test integrity for the two research tracks |
 
-The active neural experiment uses a shared transformer trunk with independent
-English, Python, JavaScript/TypeScript, HTML/CSS, and Rust arms behind the
-Octopus/MoECOT route contract. It is compared with:
+The canonical [roadmap](roadmap.md) defines the re-entry contract. Hardware
+availability alone cannot resume neural training.
 
-- a dense control matched on active parameters; and
-- a dense control matched on total parameters.
+## Current Evidence Boundary
 
-The older Rust-first SymLiquid stack remains a protected discovery comparator.
-Its compact loop is:
+- The ASI Stack experiment identities are pinned to the 84-chapter book at
+  commit `17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`. Later book work is observed
+  as drift; it does not silently rewrite an opened experiment.
+- The active local controlled variable is
+  `mlx-community/Tmax-9B-MLX-8bit` at revision
+  `33812d6cf04f88856f25eb828de4f3144a194560`.
+- P1 proves that direct and integrated requests traverse the real local model
+  and registered runtime routes. It proves mechanics, not usefulness.
+- Historical P3 solved 1/10 tasks in each route. Its project-selected output
+  ceiling makes it bounded historical evidence rather than current capability
+  evidence.
+- The completed P4 Semantic-IR campaign is
+  `INCONCLUSIVE_IMPLEMENTATION`: direct solved 3/10, the plan control 1/10,
+  and Semantic IR 0/10, but the Semantic-IR path parsed and lowered only 2/10
+  against its frozen 8/10 mechanics floor. No broad mechanism conclusion is
+  allowed and D1 remains closed.
+- `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
+  separately denominated OpenAI measurement-only reference. Its exact
+  transport is not yet bound and it has made zero project calls.
+- The 57.3M neural shared trunk is preserved at optimizer step 11,992 with
+  append-only checkpoint, optimizer, RNG, and cursor custody. D2 remains
+  unconsumed and capability remains `NOT_EVALUATED`.
+
+See [Project State](docs/PROJECT_STATE.md) for the exact current scorecard and
+[Roadmap](roadmap.md) for the forward sequence.
+
+## Scientific Boundaries
+
+The complete operating charter is [AGENTS.md](AGENTS.md). The core rules are:
+
+1. Test one causally active mechanism at a time. Prompt labels and reports do
+   not count as subsystem execution.
+2. Hold model identity, candidate-visible information, evaluator, effects, and
+   resource opportunities fixed within a comparison.
+3. Keep hidden answers, tests, target-derived metadata, and source identities
+   out of generation and ranking. Recompute integrity independently.
+4. Establish mechanics and implementation adequacy before interpreting a
+   treatment result. An inadequate proxy cannot falsify the full mechanism.
+5. Quality-bearing generation ends on a complete artifact or model EOS. A
+   project-selected generated-token cap cannot manufacture equal quality.
+6. Public benchmarks are calibration-only. Fresh claim-bearing work comes from
+   governed, licensed, source-disjoint repositories.
+7. OpenAI inference is allowed only as a governed teacher or a prospectively
+   sealed measurement-only reference. Reference outputs never serve users,
+   train the local model, select tasks, or enter local denominators.
+8. Book support never moves automatically from a Theseus report.
+9. Routine execution must not depend on Corben supplying tasks, labels,
+   approvals, or timing decisions.
+
+## Experimental Shape
 
 ```text
-observe -> compress -> expand -> bind -> predict -> act -> correct -> recompress
+ASI Stack claim
+  -> faithful causal implementation
+  -> production-path mechanics and adequacy bench
+  -> frozen task/model/evaluator/cost contract
+  -> matched local direct vs treatment comparison
+  -> separately denominated Luna direct vs treatment reference
+  -> blind disposition and weak-tail/cost analysis
+  -> one fresh D1 qualification for a survivor
+  -> claim-level book handoff with support unchanged
 ```
 
-That prototype must not be confused with the active 57.3M MLX campaign.
+The active claim is `cognitive-compilation-and-semantic-ir.core`. The immediate
+work is to repair its identity, coverage, target, and unit transport mechanics
+on non-claim evidence. A new task pool opens only if the exact production path
+passes an independent adequacy audit.
 
 ## Repository Map
 
 | Path | Purpose |
 | --- | --- |
+| `AGENTS.md` | Durable research, safety, autonomy, and inference rules |
+| `roadmap.md` | Canonical forward execution order |
+| `docs/PROJECT_STATE.md` | Canonical plain-English current state |
+| `configs/roadmap_implementation_matrix.json` | Machine-readable claim, phase, book, and re-entry obligations |
 | `configs/project_manifest_registry.json` | Canonical implementation and route ownership |
-| `configs/roadmap_implementation_matrix.json` | Detailed remaining obligations |
-| `docs/PROJECT_STATE.md` | Current human-readable state |
-| `roadmap.md` | Compact execution order |
-| `docs/README.md` | Documentation index and authority classes |
-| `docs/GLOSSARY.md` | Shared terminology and evidence-state meanings |
-| `scripts/` | Experiment, governance, evaluation, and operator entry points |
-| `tests/` | Python regression and integrity coverage |
-| `crates/` | Rust prototype and runtime components |
-| `dashboard/` | Local operator dashboard source |
-| `reports/` | Generated evidence; not progress by itself |
-| `runtime/` | Private local state and ledgers |
-| `checkpoints/` | Private model and optimizer state |
+| `configs/theseus_external_reference_control.json` | OpenAI reference-control contract |
+| `configs/neural_seed_training_availability.json` | Neural program and host launch authority |
+| `scripts/` | Experiment, governance, evaluation, and maintenance owners |
+| `tests/` | Regression and integrity coverage |
+| `reports/` | Evidence artifacts; not progress by themselves |
+| `runtime/` | Private local state and control signals |
+| `checkpoints/` | Private model, optimizer, RNG, and cursor state |
 
 Generated reports, private traces, datasets, credentials, and checkpoints do
-not belong in the public tracked source tree.
+not belong in a public source release.
 
-## Start Safely
+## Verify The Current Contract
 
-Use Python 3.12+ and a current Rust toolchain. Platform-specific MLX work
-requires Apple Silicon and the pinned local environment described in the
+Use Python 3.12+ and a current Rust toolchain. MLX execution requires Apple
+Silicon and the pinned environment described in the
 [Replication Guide](docs/REPLICATION_GUIDE.md).
-
-Run the lightweight source checks:
 
 ```bash
 python3 scripts/theseus_doc_link_audit.py
-python3 scripts/public_release_audit.py --gate
 python3 scripts/theseus_project_registry.py --gate
 python3 scripts/roadmap_implementation_gate.py --gate
-python3 -m pytest -q
-cargo test --workspace
+python3 scripts/theseus_asi_stack_claim_handoff.py
+python3 -m pytest -q tests/test_roadmap_book_sync.py \
+  tests/test_roadmap_pretraining_gate.py \
+  tests/test_theseus_external_reference_control.py \
+  tests/test_neural_seed_training_campaign.py \
+  tests/test_neural_seed_autonomous_launch_controller.py \
+  tests/test_theseus_asi_stack_claim_handoff.py
 ```
 
-Some suites are intentionally platform- or artifact-gated. A skipped private,
-MLX, Metal, or checkpoint test is not equivalent to a pass.
+Some tests are intentionally artifact-, MLX-, or platform-gated. A skip is not
+a capability pass. During the current uncommitted recentering transaction the
+roadmap gate is expected to be `YELLOW` with zero hard gaps and the project
+registry is expected to be `RED` on content-bound source/route receipts. Rebind
+those once at a coherent source boundary; do not use piecemeal report refreshes
+to manufacture a green worktree.
 
-For local assisted use:
+For local runtime inspection:
 
 ```bash
 python3 scripts/theseus_assistant_runtime.py --help
 ```
 
-The registered runtime supports the frozen local-model direct and integrated
-experiment routes plus the deterministic grounded-status maintenance path.
-Assisted outputs may use deterministic tools, memory, retrieval, or rules.
-Record them as assisted and never treat them as learned-model capability. P1
-route integrity is mechanics evidence; P2/P3/P4 own usefulness and causal
-inference.
+## Neural Hold
 
-## Training
+Do not infer training authority from a runnable command. The source-controlled
+availability policy currently denies launch under
+`HOLD_SUBSYSTEM_PROOF_FIRST`, and the runtime yield signal independently asks
+the segment controller to stop. The checkpoint is preserved, not rejected.
 
-Do not infer launch authority from a command in this repository. Read
-[Real Training Preflight](docs/REAL_TRAINING_PREFLIGHT.md) and current
-[Project State](docs/PROJECT_STATE.md) first.
+Training can be reconsidered only after the machine-readable Subsystem
+Architecture Freeze establishes terminal interface dispositions for the
+architecture-shaping claims, production-equivalent subsystem composition, no
+unresolved topology/data/route/verifier changes, exact checkpoint rebinding,
+and autonomous resource and rollback readiness. D2 remains sealed until then.
 
-At present:
-
-- no long run is authorized;
-- the independent readiness audit is GREEN after recomputing exact and
-  normalized prompt freshness against the consumed v8 packet;
-- the source-bound replacement package is RED solely because the remaining
-  maintenance transaction is not yet a clean committed source ref;
-- the operator hold remains installed;
-- the frozen D2 material remains untouched and evaluation remains separately
-  unauthorized;
-- no additional KERC, ANE, optimizer, architecture, data, or generic
-  acceleration experiment should interrupt the selected matched campaign.
-
-A future campaign action requires an exact fresh-process qualification, current
-gates, transactional checkpoint headroom, and explicit operator approval.
-
-## Documentation
-
-Read documentation in this order:
+## Documentation Order
 
 1. [Project State](docs/PROJECT_STATE.md)
 2. [Roadmap](roadmap.md)
-3. [Glossary](docs/GLOSSARY.md)
-4. [Documentation Index](docs/README.md)
-5. [Top-To-Bottom Architecture](docs/TOP_TO_BOTTOM_ARCHITECTURE.md)
-6. [Replication Guide](docs/REPLICATION_GUIDE.md)
+3. [Operating Charter](AGENTS.md)
+4. [Glossary](docs/GLOSSARY.md)
+5. [Documentation Index](docs/README.md)
+6. [Top-To-Bottom Architecture](docs/TOP_TO_BOTTOM_ARCHITECTURE.md)
+7. [Replication Guide](docs/REPLICATION_GUIDE.md)
 
-Current state belongs only in Project State. Detailed implementation ownership
-belongs in the project registry, detailed obligations in the roadmap matrix,
-and observations in content-bound reports and ledgers. Architecture and
-research documents do not override those sources.
+## Honest Walls
 
-## Public Source And License
+- No ASI Stack mechanism has yet earned source-disjoint D1 qualification.
+- The exact Semantic-IR implementation failed its mechanics floor; the broader
+  cognitive-compilation claim remains unresolved.
+- The Luna transport is not bound, so no hosted reference call is authorized.
+- The neural checkpoint has no capability result, both matched dense controls
+  are incomplete, and D2 is unconsumed.
+- Large generated surfaces and broad script/config ownership remain a real
+  maintenance burden; cleanup must use existing replay-safe retention owners.
+- Local security evidence does not qualify LAN or public exposure.
+- The existing public Git history is not an approved release surface.
 
-The intended public source repository is
-[corbensorenson/theseus](https://github.com/corbensorenson/theseus), but its
-current tip and history are not an approved public-release surface. Pushes
-remain frozen. Prepare a clean source-only tree, run the public-release and
-registry gates, inspect the actual Git diff and Git object closure, and obtain
-explicit approval before any repository or history transition.
+These are scientific and operational boundaries, not wording problems to hide.
 
-Project Theseus source code is licensed under Apache-2.0. Dataset, model,
-generated-artifact, and third-party dependency terms remain governed by their
-own provenance and license records.
-
-See [LICENSE](LICENSE), [Data And Artifacts](docs/DATA_AND_ARTIFACTS.md), and
-[Public Release](docs/PUBLIC_RELEASE.md) for source, data, model, and generated
-artifact boundaries.
-
-## Honest Limitations
-
-- There is no capability claim for the current neural checkpoint.
-- The matched modular-versus-dense experiment is incomplete.
-- P1 route integrity does not establish that the integrated route is more
-  useful than direct generation.
-- P3 found equal useful completion at 1/10 per route despite higher integrated
-  parseability; no subsystem effect may be inferred from that tie.
-- The first explicit travel-mode dogfood task was recorded as a miss.
-- Hosted CI has not yet verified the latest local workflow changes.
-- Independent encrypted off-machine source/checkpoint custody is not complete.
-- The existing public repository history contains paths excluded by the current
-  public boundary.
-- Local security tests do not qualify Theseus for LAN or public exposure.
-- The complete predecessor checkpoint chain before the prospective step-9,048
-  lineage was not retained.
-- The protected discovery architecture has not been shown to outperform the
-  practical transformer route.
-
-These are the project’s current walls, not documentation defects to be worded
-away.
+Project Theseus source is Apache-2.0 licensed. Dataset, model, generated
+artifact, and dependency terms remain governed separately. See
+[LICENSE](LICENSE), [Data And Artifacts](docs/DATA_AND_ARTIFACTS.md), and
+[Public Release](docs/PUBLIC_RELEASE.md).

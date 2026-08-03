@@ -1,714 +1,279 @@
 # Project Theseus: Current State
 
-Last corrected: 2026-07-31 UTC. P1 and P2 are isolated at `89085cdf` and
-`cfa101d9`; the 84-chapter reconciliation is source-bound at `15727327`; this
-page includes the bounded 13-claim causal-binding transaction, the terminal
-P2A/P2B instrument-adequacy results, and the terminal adequate P2C successor.
+Last recentered: 2026-08-02 UTC.
 
-This is the canonical human-readable current-state page. It describes what is
-true now; it is not the historical evidence ledger and it does not authorize a
-training or serving action by itself.
+This is the canonical plain-English statement of what is true now. It does not
+override machine policy, source-bound reports, or the experiment registry, and
+it does not authorize training, reference calls, serving, publication, or book
+support changes by itself.
 
 ## One-Sentence Verdict
 
-The primary purpose of Theseus is to produce rigorous causal evidence for the
-largest ASI Stack ideas. Its governance machinery, exact resumable
-57.3M-parameter lineage, and frozen TMax-9B runtime are experimental
-infrastructure, not the goal by themselves. P1 now proves that the exact local
-model traverses the canonical direct and integrated routes, but P2-001 and its
-only repair produced no applicable candidate under the 512-token protocol.
-Subsystem efficacy is therefore still `INCONCLUSIVE_IMPLEMENTATION`. P2A has
-now also terminated without an evaluable candidate: its matched execution held,
-but TMax did not follow the edit protocol and the task exposed a path-namespace
-ambiguity. P2B also ended inconclusively because its displayed grammar used
-literal backslash-n text while its parser required actual newlines; Qwen3.5
-reproduced the displayed transport. P2C changed only that transport and has now
-completed its single licensed Click run: the harness is adequate, but the task
-was not solved. In parallel,
-the neural campaign remains held on clean source binding and exclusive
-accelerator custody. Its one-segment launch authority is now machine-readable
-and autonomous. The separate D2 one-shot evaluation controller is now
-implemented with machine-only authority, exact freeze/source binding,
-exclusive accelerator custody, append-only consumption, terminal invalidation,
-and no rerun permission; it remains paused until the source transaction is
-clean and both dense controls are complete.
-No forward phase depends on Corben supplying tasks, labels, approvals, or
-timing.
+Theseus is now a subsystem-first ASI Stack proving program: the frozen local
+model is the controlled instrument, one architecture-shaping subsystem claim
+is tested at a time, the OpenAI Luna arm is a separately denominated
+measurement-only reference, and the neural seed is preserved at step 11,992
+but source-denied from further training until a Subsystem Architecture Freeze.
 
-## How Truth Is Resolved
-
-Different sources own different kinds of truth:
+## Truth Order
 
 | Question | Authority |
 | --- | --- |
-| What is allowed? | `AGENTS.md` and the relevant policy/configuration |
+| What is allowed? | `AGENTS.md` and the relevant machine policy |
 | What implementation or route is canonical? | `configs/project_manifest_registry.json` |
-| What work remains? | `configs/roadmap_implementation_matrix.json` |
+| What experiment, claim, or phase is active? | `configs/roadmap_implementation_matrix.json` |
 | What was observed? | Content-bound `reports/`, checkpoints, and append-only ledgers |
-| What is true in plain English now? | This file |
-| What should happen next? | `roadmap.md` |
-| How is the system designed? | `docs/TOP_TO_BOTTOM_ARCHITECTURE.md` and `docs/VIEA.md` |
+| What is true in plain English? | This file |
+| What happens next? | `roadmap.md` |
 
-If a human summary conflicts with a current machine artifact, the machine
-artifact wins and the summary must be repaired. A GREEN mechanics, security,
-or registry result is not model capability or training authority.
+If a summary conflicts with a current machine artifact, the machine artifact
+wins and this page must be repaired. A GREEN registry, mechanics, custody, or
+security report is not a capability result.
 
-## State Vocabulary
+## Program Selection
 
-| State | Meaning |
+| Track | Current state | Forward authority |
+| --- | --- | --- |
+| ASI Stack subsystem proof | `ACTIVE_FLAGSHIP` | May repair and test exactly one bound architecture-shaping mechanism |
+| Neural seed | `HOLD_SUBSYSTEM_PROOF_FIRST` | Custody and replay maintenance only; no optimizer steps, architecture changes, or D2 |
+| Maintenance | `SERVICE_ONLY` | May remove a concrete evidence, source, storage, or replay blocker; may not open a research lane |
+
+This reverses the prior assumption that neural training should advance in
+parallel. Training before the intended subsystem interfaces are decided would
+spend compute on an architecture that the active research may require us to
+change.
+
+## Current Scientific Scorecard
+
+| Surface | State | Maximum inference |
+| --- | --- | --- |
+| North star | `ASI_STACK_SUBSYSTEM_CAUSAL_PROOF_ACTIVE` | Theseus exists to earn evidence for the book's largest claims; repository tasks are the substrate, not the product |
+| Book binding | `84_CHAPTER_EXPERIMENT_PIN_STABLE_LIVE_SOURCE_MOVING` | Experiment semantics stay pinned to AI_book commit `17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`; the concurrently advancing book was observed at `1280fdfa457735ae39289d42a82173f9485434fc` during final audit, and live uncommitted work remains intake-only |
+| Bound portfolio | `13_EXACT_CORE_CLAIMS` | Exactly one architecture-shaping candidate may be active; synthesis claims require multiple independent survivors |
+| Local controlled variable | `FROZEN_TMAX_BLOCK` | `mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560` remains fixed for the current mechanism block |
+| Canonical runtime | `P1_ROUTE_MECHANICS_GREEN` | Direct and integrated requests traverse the same local backend and effect sandbox; integrated receipts reach live downstream execution, but usefulness is unproven |
+| Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
+| Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
+| D1 | `CLOSED_NO_SURVIVOR` | The failed implementation cannot consume the prepared fresh qualification surface |
+| Luna reference | `DEFINED_TRANSPORT_NOT_BOUND_ZERO_CALLS` | `gpt-5.6-luna` at fixed `xhigh` effort is a future measurement-only reference, not a serving model, teacher row source, task selector, or local denominator |
+| Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
+| Repository state | `SOURCE_TRANSACTION_ACTIVE_REGISTRY_REBIND_PENDING` | This recentering transaction changes roadmap, policy, state, and tests together. The roadmap gate has zero hard gaps, while the content-bound project registry is expectedly RED on four stale route outputs plus source/AIBOM drift until a coherent source boundary can be rebound |
+
+## Active Claim And Residual
+
+The active claim is `cognitive-compilation-and-semantic-ir.core`.
+
+The completed P4V2R2R3 campaign is terminal and will not be replayed, rescored,
+or resealed. Its exact finding is implementation failure: the model-produced
+Semantic IR reached the exact headers and terminal envelopes on all ten tasks,
+but the production parse/lower path accepted only two. The observed fault
+families are identity, obligation coverage, target, and unit transport.
+
+The next work is therefore a non-claim mechanics repair, not another ten-task
+campaign:
+
+1. establish one canonical typed schema and source-independent canonicalizer;
+2. forbid target-derived or answer-bearing repair;
+3. exercise the exact production renderer, transport, parser, lowerer, applier,
+   verifier, intervention, and repair path together;
+4. qualify model-produced IR on a source-disjoint non-claim panel;
+5. prove identity stability, corruption rejection, intervention sensitivity,
+   dependency-local repair, unrelated-unit stability, and known-positive
+   reachability; and
+6. derive the mechanics floor and panel size from a predeclared useful effect.
+
+If the exact implementation passes an independent adequacy audit, one fresh
+claim-development denominator may open. If it fails, preserve
+`INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
+architecture-shaping residual. A nearby reseal is forbidden.
+
+Primary terminal evidence:
+
+- `reports/theseus_p4v2r2r3_attempt1_terminal_disposition.json`
+- `reports/theseus_asi_stack_claim_handoff.json`
+- `reports/theseus_assistant_p3_terminal_disposition.json`
+
+## Model And Control Contract
+
+### Local instrument
+
+The current TMax model, revision, tokenizer, template, decoder, completion
+policy, and runtime remain fixed across a mechanism comparison. Replacing it
+creates a new instrument version and requires new baselines.
+
+TMax is the current qualified local instrument, not a permanent “best local”
+claim. A future block may choose a stronger runnable local model only through a
+prospectively frozen calibration bakeoff that is disjoint from claim tasks and
+Luna outputs. That winner must then remain fixed for the block.
+
+The primary causal estimand is always within the local model:
+
+```text
+local treatment - local direct control
+```
+
+Mechanism-specific controls such as an information-matched natural-language
+plan or deterministic compiler are added when they are stronger than a plain
+direct baseline.
+
+### OpenAI reference
+
+The intended future reference is Luna at fixed `xhigh` effort in a separate
+within-model contrast:
+
+```text
+Luna treatment - Luna direct control
+```
+
+Cross-model ranking is descriptive because wrappers, tokenizers, training,
+reasoning tokens, latency, and monetary cost differ. The transport, exact model
+receipt, wrapper, effort, completion telemetry, price basis, evaluator
+interface, and cost authority must be sealed before any arm in that future
+claim pool opens. If Luna is unavailable at seal time, omit it and record the
+missing reference; never backfill it after local outcomes are visible.
+
+No Luna call has been made. The current contract is
+`configs/theseus_external_reference_control.json`.
+
+### Completion and cost
+
+Quality-bearing generation ends on a complete artifact or model EOS. There is
+no project-selected generated-token quality cap. Touching the exact physical
+context/output boundary invalidates the observation for capability inference.
+Model calls, tool effects, verifier work, wall time, and spend remain bounded
+and recorded because they are causal, safety, and cost resources.
+
+## Autonomous Task Contract
+
+Corben supplies no tasks, labels, acceptance decisions, routine approvals, or
+timing choices. Theseus autonomously acquires allowlisted, license-compatible
+repositories; preserves exact parent and target artifacts; reconstructs a
+natural request without answer leakage; independently proves parent-fail and
+target-pass; and evaluates candidates in disposable, network-free sandboxes.
+
+Generation and ranking see no hidden tests, solutions, expected answers,
+source-task IDs, answer-family labels, or target-derived decoder fields. Task
+selection, development, D1, D2, training, and public calibration remain
+source-disjoint. Consumed tasks do not become training rows.
+
+## Neural State And Hold
+
+The preserved shared-trunk receipt is:
+
+| Field | Value |
 | --- | --- |
-| `CUSTODY_GREEN` | Exact state and lineage replay; no capability implication |
-| `TRAINING_HELD` | No new long training segment may launch |
-| `TRAINING_READY` | Every current machine-readable launch, resource, custody, rollback, and stop predicate passes |
-| `NOT_EVALUATED` | The frozen capability surface has not been consumed |
-| `SOURCE_BINDING_PENDING` | Mechanical and evidence gates pass, but a final package has not been generated from a clean post-maintenance source commit |
-| `INCONCLUSIVE_EXPERIMENT` | The tested result cannot support the broader scientific claim |
-| `LOCAL_ONLY` | Suitable only for loopback/local use; no LAN or public exposure claim |
-| `ASSISTED_ONLY` | Tools, retrieval, rules, or scaffolding contributed; no learned-model credit |
-| `EMPIRICAL_SUPPORT_INSUFFICIENT` | Synthetic or sparse observations do not establish subsystem efficacy on source-disjoint tasks |
-| `FROZEN` | Preserved and intentionally inactive until a named re-entry condition is met |
-
-The glossary in `docs/GLOSSARY.md` defines project-specific terms.
-
-## Current Scorecard
-
-| Dimension | Current state | Evidence boundary |
-| --- | --- | --- |
-| Primary scientific objective | `ASI_STACK_CAUSAL_PROOF_ACTIVE` | P2A/P3 establish an adequate autonomous instrument; P4/P5 test and qualify one major subsystem claim at a time; N tests modular specialization against dense controls |
-| Repository | `PUBLIC_REMOTE_UNSAFE_HISTORY_PUSH_FROZEN` | The public remote and its history contain material excluded by the current boundary; the current local full-tree audit has 529 forbidden tracked paths |
-| Project registry | `GREEN` | Current registry gate has zero abstraction, stable-field, or routing blockers; all 17 route-evidence outputs are unblocked |
-| Roadmap gate | `YELLOW` | Zero roadmap hard gaps; the exact committed 84-chapter snapshot remains authoritative, one later dirty AI_book manifest edit is intake-only, and the nested pre-training gate retains one unrelated source-binding blocker |
-| D1 governed-stack evidence | `TERMINAL_INCONCLUSIVE_WORKER_INADEQUATE` | E1 replayed; E2 observed 0/3 useful and preserved heldout; E3 observed 0/6 useful across 42 sealed variants |
-| D1 successor | `HISTORICAL_QUALIFIED_PASS_SCOPED` | Exact TMax-9B 8-bit/Worker-v3 passed 2/3 prospective tasks and was historically admitted for D1 stack evaluation only, never student/D2 credit; its result does not transfer after Worker-v4 repairs |
-| D1 local-8B causal campaign | `TERMINAL_FAIL_TMAX_WORKER_V4_EDIT_COMMITMENT` | After generic controller repairs, TMax inspected four source spans and an analogous test, accepted a five-criterion/two-path plan, then twice regressed to forbidden reads instead of editing or abstaining. No patch or verification occurred. E2 stays sealed; a later D1 qualification must prospectively freeze a competent local identity after L0 selection, but model shopping is not a prerequisite for L0 work |
-| Frozen TMax runtime | `P2_TERMINAL_CODING_INSTRUMENT_UNSUITABLE` | Exact model and revision remain runtime-compatible, but P2-001 and its only repair produced no applicable candidate under the frozen 512-token protocol |
-| Canonical assistant backend | `FROZEN_TMAX_COMPLETION_BOUNDARY_GREEN` | Direct and integrated modes invoke the exact offline TMax snapshot with exact prompt tokenization, no project-selected quality-token cap, model-declared context residual, full termination telemetry, and fail-closed physical-boundary handling; the deterministic status path remains for maintenance compatibility |
-| Integrated local-model runtime | `P1_GREEN_ROUTE_INTEGRITY` | Live VCM content and executed route state reach the model and are independently receipt-bound; this is not a utility or book-claim result |
-| L0 fixed-model instrument | `P2_TERMINAL_ZERO_USEFUL` | The fresh P2-001 pair stayed within budget and route-blind, but both repaired candidates hit 512 tokens and failed patch application; do not replay it |
-| P2A successor instrument | `TERMINAL_INCONCLUSIVE_INSTRUMENT_AND_TASK_NAMESPACE` | One persistent TMax load served the matched four-call pair with GREEN route integrity, but neither arm produced a parseable edit and the archive-prefixed allowed path conflicted with the repo-relative path in the natural request; zero candidates reached correctness evaluation |
-| P2B repaired instrument | `TERMINAL_INCONCLUSIVE_LITERAL_GRAMMAR_TRANSPORT` | One Qwen3.5 load served four matched route-integrity-GREEN calls; every output reproduced the prompt's literal backslash-n transport while the parser required actual newlines, so zero candidates were evaluable and no model/route/subsystem inference is valid |
-| P2C grammar-transport instrument | `TERMINAL_INSTRUMENT_ADEQUATE_ZERO_USEFUL` | One persistent Qwen3.5 load served three matched calls; direct remained malformed, one safe integrated edit reached the blind evaluator and failed correctness, rollback passed, and the Click task is consumed |
-| P3 ten-task instrument | `TERMINAL_HISTORICAL_BOUNDED_NO_USEFULNESS_ROUTE_WINNER` | Ten counterbalanced tasks consumed 36 calls: direct and integrated each solved 1/10; integrated produced 9/10 versus direct 5/10 parseable edits, but 12/14 evaluated edits were incorrect, with zero unsafe outcomes and valid rollback. Its project-selected 1,536-token ceiling and absent per-call natural-termination custody prevent definitive capability or subsystem inference under the current charter |
-| P4 predecessor evidence | `P4S_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | P4S completed 10/10 fresh tasks and 60 natural-completion calls with zero context-boundary hits. Information flow, evaluator replay, source custody, 10/10 oracle reachability, and all corruption controls passed, but Semantic IR parsed/lowered 0/10 because its exact-list parser rejected semantically ordinary bracketed, quoted, or whitespace-separated obligation lists. D1 and book support remain closed; consumed outputs will not be rescored |
-| P4 causal development | `P4V2R2R3_TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | The source-locked run completed 10/10 tasks, 60/60 learned calls, and 10/10 independent evaluator replays with zero context/host boundary hits and no information-flow or experiment-floor failure. Direct was useful on 3/10 tasks, plan control on 1/10, and Semantic IR on 0/10. The treatment parsed/lowered 2/10 against the predeclared 8/10 mechanics floor despite exact headers and terminal envelopes on 10/10. Effect inference is unauthorized: this is scoped negative evidence for the exact implementation, not a broad cognitive-compilation falsification. The surface is consumed and D1 is closed. |
-| P4→D1 successor handoff | `D1_INSTRUMENT_IMPLEMENTED_AUTONOMOUS_PIPELINE_CONTROLLER_OPEN` | D1 binds the complete-artifact P4 successor and exact TMax snapshot rather than historical P4S/Qwen owners. Its source successor waits indefinitely without a user gate, opens public metadata only after the exact survivor status, and prospectively orders a design-derived initial frame of 206 distinct repositories before archive fetch; this gives at least 0.90 probability of reaching the final 44-task cohort at the declared 0.25 evaluator-qualification floor. Exact parent/target archives retain upstream bytes and pass deterministic path/license custody. The qualified local sandbox denies home/symlink reads, write escape, network, Mach lookup, non-Python exec, excess environment, and physical resource boundaries. The pre-model evaluator seal admits only one-callable Python repairs whose public request is bound before generation, whose target tests are deterministically split into candidate-hidden visible and hidden sets, whose parent fails while target and exact callable transplant pass both sets, and whose full first prompts fit the pinned model according to exact local tokenizer counts. The matched campaign, route-blind evaluator, independent integrity recomputation, one-shot consumption custody, exact sign decision, weak-tail retention, and token/runtime/verifier Pareto-cost disposition are implemented prospectively. The append-only underfill controller and machine-predicate end-to-end D1 pipeline controller remain open, so D1 execution readiness is not claimed. |
-| Hosted reference control | `DEFINED_TRANSPORT_NOT_BOUND` | P3 will add `gpt-5.6-luna` at `xhigh` as a measurement-only direct/integrated reference on the same sealed tasks; its outputs cannot serve users, enter training, select tasks, or mix with local denominators |
-| Active model custody | `CUSTODY_GREEN` | Exact step 11,416 model, AdamW, MLX RNG, cursor, and 37-manifest prospective lineage |
-| Independent recovery custody | `BLOCKED_CLEAN_REF_AND_DESTINATION` | All 211 logical files and 170 unique objects hash correctly, but the source worktree is dirty and no private encrypted off-machine destination is configured |
-| Training | `TRAINING_WAITING_ON_MACHINE_PREDICATES` | The campaign controller may launch transactional segments only after clean source binding, derived two-checkpoint disk custody, exact lineage continuity, power/resource checks, and exclusive accelerator availability pass. The optional yield file is an emergency stop request, not required authority; normal execution requires no user approval |
-| Learned capability | `NOT_EVALUATED_SEALED` | The 57M candidate has no D2 result; the current surface is independently fresh at exact and normalized model-visible prompt scope, and automated one-shot evaluation authority is implemented but not executable until its clean-source, exact-freeze, checkpoint, local-rater, nonconsumption, output-collision, and exclusive-accelerator predicates all pass |
-| Matched controls | `NOT_TRAINED` | Both dense controls remain at 0 optimizer steps |
-| Instrument usefulness | `NOT_ESTABLISHED` | P2-001 and P2A both traversed matched canonical routes but produced zero independently evaluable candidates under their exact protocols; no route or subsystem won |
-| Runtime exposure | `LOCAL_ONLY` | Authority surfaces pass local adversarial tests; LAN/public exposure remains unauthorized |
-| Teacher accounting | `GREEN_ACCOUNTING` | 15 teacher-accepted rows among 115,429 accepted rows, about 0.013% |
-| Storage | `RETENTION_BUDGET_RED_RUNTIME_CUSTODY_INCOMPLETE` | Current trees are roughly 2.1 GiB / 10,600 report files and 41 GiB / 249,000 runtime files, and the latest governed hot-report budget receipt is RED. Existing report/checkpoint retention is replay-aware, but it does not yet classify the complete runtime tree or derive its envelope from active working set, two-checkpoint transaction reserve, host reserve, and durable evidence. No evidence, active checkpoint, or governed corpus is implicitly eligible for deletion |
-| Public CI | `DEFINED_NOT_REMOTE_VERIFIED` | Linux and guarded Mac workflows exist locally but the latest source has not been observed on hosted CI |
-| ASI Stack synchronization | `RECONCILED_84_OF_84` | Immutable book commit `17c6ece…` is bound in exact order with zero unmapped chapters and no automatic support movement |
-| ASI Stack claim portfolio | `BOUND_13_EXACT_CLAIMS` | Two integrity prerequisites, eight one-variable P4 candidates, one independent D2 neural claim, and two synthesis claims now have exact causal, adequacy, control, decision, and maximum-inference contracts |
-| ASI Stack claim handoff | `GREEN_READY_FOR_GOVERNED_REVIEW_WITHOUT_D1` | The public-safe packet binds the reviewed 84-chapter commit, exact cognitive-compilation core claim, Appendix C `argument` state, and evidence-transition schema to the GREEN terminal P4 disposition. Because P4 did not produce a survivor, D1 remains empty. Candidate, hidden-test, oracle, and private payloads are excluded; support-state effect, publication authority, and release authority are all `none`. |
-
-## The Active Local-Model Program
-
-The local-model controlled-variable strategy remains correct. P1 now puts the
-exact TMax model behind `theseus_assistant_runtime` with a direct mode sharing
-the model, decoder, snapshot, effect sandbox, and structural verifier. Its live
-route-integrity gate is GREEN.
-
-The integrated route must causally execute intent/authority, VCM selection,
-planning, capability/tool routing, local generation, verification, effect or
-hold, rollback, and outcome accounting. A plan that is only rendered, a route
-that changes only a label, or a context object appended to a prompt does not
-qualify as the full stack.
-
-P2-001 then used a new useful maintenance request with one call per arm and one
-prospectively frozen matched output-format repair. All four calls remained
-inside the cumulative six-call, 12-minute-per-arm, and 25-minute-pair limits.
-Both repaired candidates sealed safely but reached exactly 512 tokens, ended
-mid-patch, and failed independent patch application. The exact TMax/512-token
-instrument is terminally unsuitable for this coding denominator. Theseus
-subsystem efficacy remains `INCONCLUSIVE_IMPLEMENTATION`; P3, P4, and all
-subsystem-specific claim experiments remain blocked until a newly frozen P2C
-successor proves instrument adequacy.
-
-P2A used one persistent frozen backend, concise line-addressed edits, atomic
-application, one repair, and independent route-blind evaluation on the sealed
-PSF-licensed task. Pair integrity, model identity, call limits, route integrity,
-zero external inference, and evaluator blindness all held. Both first calls
-ignored the typed envelope. The direct repair emitted the repo-relative path
-named in the request, but the task authorized only its archive-prefixed form;
-the integrated repair remained malformed. No candidate was sealed or scored.
-The integrated runtime's product-trace gate was also RED on both calls while
-the experiment-relevant route-integrity receipts were GREEN. The consumed task
-is permanently ineligible for rerun, training, D1, or D2. This is exact
-instrument/task evidence only and cannot support a route or subsystem verdict.
-
-P2B is now prospectively frozen before opening its task. The retained bakeoff
-selected Qwen3.5-9B because it produced the only useful completed result, but
-two of its three old tasks timed out and no candidate passed the old adequacy
-floor; its state is therefore `SELECTED_FOR_P2B_INSTRUMENT_ONLY_NOT_QUALIFIED`.
-The new runtime overlay binds that exact local snapshot without changing the
-serving default. The harness strips one declared source-archive root so every
-candidate-visible and evaluator path is repository-relative, and it records
-the assistant product trigger separately from the route-integrity receipt.
-Instrument audit is GREEN. The fresh Apache-2.0 Requests PR 7502 task is now
-sealed after the instrument commit. Exact upstream archives are retained and
-their deterministic link-free derivatives expose a single repository-relative
-namespace. The independent network-free oracle observes the exact parent fail
-and exact target pass; the model cannot see the patch, hidden test, PR identity,
-or evaluator. Candidate model calls were zero at seal time; the exact task was
-eligible for one run only.
-
-That one allowed run is complete. Pair identity, one-load persistence, four-call
-budget, route integrity, no external inference, and no effects all held. The
-frozen grammar string contained literal `\\n` separators; all four Qwen3.5
-outputs reproduced that escaped representation, three included the required
-`REPLACE` token, and all used the correct repository-relative path. The parser
-requires actual newlines, so no candidate was sealed or scored. The terminal
-status is `INCONCLUSIVE_IMPLEMENTATION`, the Requests task is consumed, and no
-model, route, subsystem, or book claim follows. P2C will change only the grammar
-transport and add an exact render-to-parser round-trip audit before acquiring a
-fresh licensed task.
-
-P2C is prospectively frozen with that single repair. The exact configured
-grammar renders with actual newline characters, a concrete authorized example
-round-trips through the exact parser as one action with zero faults, and every
-other P2B denominator variable remains fixed. Its instrument audit was GREEN
-before task selection. P2C then selected `pallets/click` PR 3578: the exact
-BSD-3-Clause parent emits double-bracketed optional Choice/DateTime metavars,
-while the exact upstream target passes a network-free blind oracle that also
-checks required, deprecated, and repeated-argument behavior. The normalized
-parent/target archives, task manifest, hidden oracle, evaluator, and GREEN
-baseline-fail/target-pass audit were sealed before generation. The one run used
-one persistent load and three calls. Direct remained malformed after repair;
-integrated produced one safe, authorized, parseable edit, but that edit retained
-the double-bracketing defect and failed the hidden oracle. Rollback passed. The
-harness is therefore adequate for P3 residual measurement, while the task has
-zero useful candidates and is consumed. This single task establishes no
-direct-versus-integrated, subsystem, model-competence, or book claim.
-
-P3 was prospectively frozen before task acquisition. It retains the exact
-P2C local model, decoder, runtime overlay, grammar, path namespace, effect
-sandbox, repair budget, route integrity, and blind scoring. Its ten-task count
-is fixed, with odd campaign indices direct-first and even indices
-integrated-first. The local-model freeze names Qwen3.5 only as the strongest
-retained development denominator; it does not grant serving or general
-capability status. The instrument audit is GREEN. The pool binds ten
-distinct MIT/BSD-licensed repositories, normalized parent and target archives,
-exact revisions, candidate-visible contexts, allowed edit paths, hidden
-network-free oracles, and independent evaluator receipts. All ten parents fail
-and all ten upstream targets pass. The terminal local run used ten persistent
-model loads and 36 calls. Direct produced 5/10 parseable edits and one useful
-completion; integrated produced 9/10 parseable edits and one useful completion.
-The useful discordant pairs split 1–1, so the useful-rate difference is zero.
-All 14 evaluated edits were authorized and rollback-valid, but 12 were
-incorrect. No unsafe candidate or route-integrity failure occurred. P3 therefore
-exposes a semantic translation/repair residual without a route winner. The ten
-local tasks are consumed and ineligible for replay, training, D1, or D2.
-
-The preregistered mapping selects only
-`cognitive-compilation-and-semantic-ir.core` for P4. A faithful P4 treatment must
-make the fixed model use typed Semantic IR with stable obligation identities,
-explicit loss or ambiguity, target validation, and dependency-local repair,
-against information-matched direct generation, natural-language structured
-planning, and deterministic compiler-only controls on fresh tasks. The P3
-result neither supports nor falsifies that claim. Luna-xhigh remains a separate
-measurement-only reference whose callable transport is not bound; any later
-hosted cell must consume the reserved identical pool once and remain outside
-serving and training.
-
-The original P4 instrument was frozen before any P4 task acquisition. It uses the
-same exact Qwen3.5 identity for direct generation, natural-language planning,
-and typed Semantic IR; two calls per learned arm; one persistent load per task;
-direct-local execution throughout; identical request, obligations, AST symbol
-table, source, verifier, hidden evaluator, token cap, and effect sandbox. The
-Semantic IR treatment binds source, obligation, and target identity, explicit
-loss, deterministic lowering, actual validation, and dependency-local repair.
-The real compiler-only control is a fixed no-model request compiler with narrow
-literal-replacement and collection-edit rules plus explicit abstention. The
-target-derived Semantic IR oracle is separately evaluator-only and proves only
-mechanics reachability. The instrument audit and corruption interventions are
-GREEN. Ten fresh licensed tasks are now sealed without conditioning selection
-on any learned arm, Luna row, or static-compiler outcome. All ten parents fail
-their independent hidden behavior check, all ten exact upstream targets pass,
-all ten evaluator-only Semantic IR oracles pass visible and hidden checks, and
-all four identity/loss corruption classes are rejected. The pool is
-development-only, source-disjoint from P2/P3, permanently excluded from
-training/D1/D2. Execution then completed tasks 1 and 2 and opened task 3 before
-the inherited 1,536-token ceiling was rejected as an adequacy-unjustified
-quality boundary. Fourteen retained outputs all reached `END`, the largest used
-662 tokens, and no retained output hit the ceiling. The backend did not retain
-an explicit finish reason, however, so P4-v1 is terminal
-`P4_V1_INTERRUPTED_BUDGET_POLICY_REJECTED` / `INCONCLUSIVE_EXPERIMENT`. It
-provides no arm, mechanism, model, or book inference. Tasks 1-3 are consumed;
-tasks 4-10 remain unopened.
-
-P4R is now prospectively frozen before any further candidate call. It stops on
-a complete declared artifact envelope or model EOS and records exact prompt
-tokens, generated tokens, backend finish reason, termination reason, and
-ceiling-hit status. It has no project-selected quality token cap. Its sole
-numeric token guard is the pinned model-declared context residual
-(`262,144 - exact prompt tokens`); reaching that physical boundary or a host
-emergency stop invalidates the observation rather than becoming a negative
-model or mechanism result. The repaired ten-task pool is now sealed from the
-seven exact unopened Yarl, Packaging, Structlog, Trio, Tox, Uvicorn, and
-Installer surfaces plus prospectively selected Black, Django, and Celery
-tasks. All ten parents fail, all exact targets and evaluator-only oracles pass,
-all corruption interventions reject, and candidate/control calls remain zero.
-
-P4R later completed all ten tasks and sixty natural-completion calls with zero
-physical-boundary hits, but learned Semantic IR parsed and lowered 0/10 against
-its predeclared mechanics floor while the evaluator-only oracle remained useful
-10/10. It is terminal `INCONCLUSIVE_IMPLEMENTATION`; all ten tasks are consumed.
-The non-claim repair sequence then recovered labeled transport and semantic-unit
-granularity to 3/3 exact verification. The first two-unit intervention attempt
-consumed one call and was retained inconclusive after copying descriptive prompt
-sections into an invalid envelope. A prospectively frozen bound-skeleton R1
-used a new namespace and passed both rotations: 2/2 provisional and final exact
-verification, 2/2 authentic feedback closures, 2/2 dependency-local repairs,
-2/2 unrelated units byte-stable, 5/5 static corruptions rejected, one persistent
-model load, four parser-complete calls, and zero physical-boundary hits. These
-are mechanics-only results. They open a fresh source-disjoint P4 decision
-denominator, not D1, book support, training use, or serving authority.
-
-That P4S denominator is now terminal. Ten source-disjoint licensed tasks
-consumed sixty frozen-model calls: ten ended at parser completion, fifty at
-model EOS, none reached the 262,144-token physical context boundary, and the
-largest natural output used 149,505 tokens. The independent evaluator replay,
-route blinding, candidate-integrity recomputation, source custody, and all five
-corruption classes passed 10/10; evaluator-only oracles were useful 10/10.
-Natural-language plan control solved 1/10 while direct generation, learned
-Semantic IR, and the no-model compiler control solved 0/10.
-
-The treatment emitted the exact version header and terminal `END` on 10/10,
-but parsed and lowered 0/10 against the preregistered 8/10 mechanics floor.
-Every output expressed the required obligation identities using a semantically
-ordinary list spelling that the exact parser rejected: bracketed comma lists,
-quoted Python-style lists, or whitespace-separated identifiers. The terminal
-status is `INCONCLUSIVE_IMPLEMENTATION`, not evidence against cognitive
-compilation. P4S tasks and outputs are consumed and cannot be rescored, trained
-on, or reused in D1/D2. The delimiter-only parser owner is now repaired
-prospectively as `v2r2`: adversarial tests and a mechanics-only scan of all 20
-retained treatment calls preserve identifier order and replacement bytes while
-normalizing 41 bracketed, quoted, or whitespace list fields. No evaluator or
-score was invoked. Two Werkzeug calls retain a separate overlong `NODE` field,
-which `v2r2` intentionally does not repair. The next scientific owner is a new
-source-disjoint P4 denominator bound to `v2r2`; D1 and book support remain
-closed.
-
-The no-arbitrary-generation-cap contract now covers P4R/P4S, the frozen D2
-candidate and local-rater paths, the canonical TMax assistant backend and
-worker, the resident neural runtime, and its disabled OpenAI-compatible shim.
-The successor TMax worker binds the pinned snapshot's declared 262,144-token
-window; the backend always tokenizes the exact chat prompt and derives the
-remaining physical context. The resident route derives its boundary from the
-training base configuration and exact encoded prompt. Neither has a
-project-selected quality-token cap. A physical-boundary hit fails closed as an
-invalid observation, while an explicit OpenAI-compatible `max_tokens` value is
-recorded only as a caller constraint and cannot support capability inference.
-Historical consumed 512/1,536-token instruments and the 8-token resident
-mechanics qualification remain immutable, explicitly non-propagating evidence.
-
-The contract also governs P4-v2r2 and all successor quality-bearing
-experiments: a project-selected output-token number cannot be used as a quality
-budget. Semantic artifact completion or model EOS ends normal generation; the
-exact model context residual is only a physical boundary. Call, verifier,
-effect, and transactional resource budgets may remain finite and matched, but
-they cannot be translated into answer-length ceilings. Provider-constrained
-hosted instruments must retain the provider ceiling and finish reason under a
-separate identity, and a ceiling hit invalidates capability inference.
-
-Historical L0 evidence remains preserved:
-
-- L0-001 is infrastructure-blocked and exposed missing partial-candidate
-  sealing;
-- L0-002 is a valid scoped 0-useful pair;
-- L0-003 is a valid scoped 0-useful pair that exposed structured-test protocol
-  friction;
-- L0-003-R1 is a positive context-wrapper observation with no terminal
-  candidate verification and no adoption;
-- L0-003-R2 is an interrupted five-read trace with no comparison and
-  no scientific disposition beyond `INTERRUPTED_DIRECTION_CANCELLED`; and
-- P2-001 is a terminal exact-instrument result with zero useful candidates after
-  its one allowed matched repair, not a subsystem or general-model falsification.
-
-No L0 row qualifies the worker, moves an ASI Stack claim, or enters D1/D2.
-
-## The Held Neural Experiment
-
-The practical experiment is deliberately narrow:
-
-> Does the modular MoECOT candidate improve useful, safe, source-disjoint
-> behavior over matched dense controls at comparable parameter and training
-> cost?
-
-The active candidate uses a shared encoder-decoder transformer trunk with
-independent English, Python, JavaScript/TypeScript, HTML/CSS, and Rust arms.
-The matched controls hold active or total parameter count comparable.
-
-The selected campaign recipe is:
-
-- compiled FP32 MLX;
-- compiled microbatch 4;
-- width quantum 64;
-- AdamW;
-- separate Q/K/V projections;
-- SwiGLU;
-- sequential unscaled residuals;
-- fixed open-vocabulary autoregressive generation;
-- canonical KV handling;
-- Semantic-IR as a control surface, not a capability claim;
-- independent verification and zero credit for templates, tools, retrieval,
-  routers, deterministic renderers, or fallbacks.
-
-Per-head Muon, AttnRes, SiTU-GLU, fused QKV, full-shape SOAP, native ANE block
-training, target-window projection, and MLX fast synchronization were tested in
-bounded matched regimes and were not selected. Their negative evidence remains
-scoped to those implementations and regimes.
-
-KERC/RDC remains a protected successor discovery lane with
-`INCONCLUSIVE_EXPERIMENT` status and zero campaign-one optimizer exposure. It
-may not block the current practical experiment and may re-enter only through
-its recorded K4-K8 adequacy and resource conditions.
-
-## Checkpoint And Lineage
-
-The shared trunk is paused at:
-
-- optimizer step: `11,416`;
-- optimizer positions: `87,441,996`;
-- checkpoint root:
-  `checkpoints/moecot_mlx_57m_active_preregistered_v1`;
-- model SHA-256:
-  `d2a485a59add5eccaf9388ae6bb7ae0972037c6e182602b0f91bec764b632506`;
-- AdamW SHA-256:
-  `4d85f93999c5b030728e550b9bbe8aeda476945d36bee0b96cdb3fe98da071eb`;
-- MLX RNG SHA-256:
-  `9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f`.
-
-The prospective append-only lineage begins at step 9,048 and contains 37
-manifests through step 11,416. The complete predecessor chain from the earlier
-step-3,480 state to step 9,048 was not retained. This gap is explicit and may
-not be laundered into a full-chain replay claim.
-
-The frozen pretraining target is `1,096,734,920` optimizer positions. The
-shared trunk has completed about 7.97% of that target. This is progress, not
-capability.
-
-## Why Training Is Paused
-
-The finite acceleration audit, current independent readiness audit, and
-content-addressed replacement package are GREEN. The replacement package is
-bound to a clean source commit and must be refreshed after any source change
-other than its own explicitly allowed evidence-report commit.
-The independent audit now rematerializes the current 160 cases, reproduces
-contract `d48875c5...`, verifies the historical packet digest and consumed
-contract `d724363e...`, and observes zero exact or whitespace/case-normalized
-model-visible prompt overlap. This corrects an earlier configuration-only
-assertion that had incorrectly described the surfaces as exact reuse.
-Therefore:
-
-1. the machine-readable autonomous one-shot launch controller is the only
-   training entry point; it requires no user or operator approval;
-2. independent `evaluation_nonconsumption` and
-   `evaluation_surface_freshness` pass without authorizing D2 execution;
-3. the replacement package binds a clean source commit and may be followed only
-   by its own evidence-report commit; any other source drift fails closed;
-4. the pre-training matrix is ready only for the exact frozen campaign through
-   the autonomous one-segment controller; its current live AC-power predicate
-   is false, so training remains paused without a user gate;
-5. Phase 8 is globally partial even though the selected M1/MLX campaign route
-   is closed; its remaining cross-platform and production-serving work should
-   not be confused with a campaign blocker.
-
-Therefore the honest state is `TRAINING_WAITING_ON_MACHINE_PREDICATES` and
-`NOT_EVALUATED_SEALED`. The source-bound package does not execute D2 or training
-by itself; the autonomous controller separately proves source, custody,
-resources, checkpointing, rollback, exclusive-lease, emergency-yield, and
-terminal-stop predicates before every segment.
-
-## Flagship Evidence Result
-
-The roadmap now separates two independent questions:
-
-- **D1 governed-stack efficacy:** natural repository work through the full
-  local stack and matched direct, test-only, record-only, and conservative-hold
-  routes. A fresh D1 remains sealed until P2A establishes instrument adequacy,
-  P3 exposes a residual, and one P4 mechanism survives L0 development. It
-  receives no learned-model credit.
-- **D2 local-student competence:** the modular student, dense-active control,
-  and dense-total control followed by a valid private 160-case evaluation. The
-  57M candidate remains unevaluated, but the currently registered surface is
-  independently fresh at exact and normalized model-visible prompt scope.
-  Execution remains sealed pending the automated one-shot controller.
-
-D1 used a disjoint natural repeated-work cohort to test maximal, cheapest, and
-least-sufficient routing plus planning, VCM, stale/shuffled/omission context,
-and verified reuse. Nine existing-owner mechanics regressions passed, but no
-route met the frozen useful-work predicate. This is a worker/route wall, not a
-falsification of the broader mechanisms.
-
-The public-safe result is `docs/CORE_EVIDENCE_BRIEF.md`; exact claim
-dispositions are in `reports/core_evidence_e4_disposition.json`. The E2 heldout
-cohort remains sealed. Any successor must keep the evaluator and competence
-floor fixed while qualifying a patch-producing local worker on the already
-opened development partition.
-
-The active ASI Stack claim owners are the stack-not-model, efficient-ASI,
-authority, planning, VCM, procedural-memory, specialist-routing,
-evidence-discipline, integrated-architecture, and Theseus implementation
-reference claims. A Theseus result does not change a book support state without
-separate claim-specific review.
-
-## Evaluation State
-
-The current private functional utility metadata says:
-
-- 160 cases;
-- 32 cases for each of five arms;
-- source-disjoint;
-- candidate output treated as inert data;
-- runtime forbidden-field capability enforcement;
-- independent candidate-integrity recomputation;
-- prompt-injection, rubric-copy, self-score, empty, and malformed-output
-  rejection;
-- a prospective independently recomputed machine audit with no user or human
-  completion gate;
-- EOS-only candidate completion, with no project-selected quality-token cap;
-- exact prompt-token recomputation against the pinned 512-token model context;
-- physical context exhaustion invalidates the observation rather than failing
-  the model or architecture;
-- Rust and Chrome verifier safety windows are mechanics-qualified, and any
-  verifier timeout invalidates the D2 observation rather than failing the
-  candidate or architecture;
-- capability claim `NOT_EVALUATED`.
-
-No D2 candidate or qualification result exists. The current replacement surface
-is fresh at exact and normalized model-visible prompt scope, but D2 remains
-sealed until the source-bound freeze and autonomous one-shot controller are
-GREEN. The controller must reserve every stage before execution, stop the whole
-campaign on any invalid observation, consume each target exactly once, and
-derive no negative model or architecture inference from a physical context or
-host boundary.
-
-## Autonomous Measurement-Lane State
-
-The assisted local CLI, VCM, deterministic tools, VIEA records, and local
-runtime are real mechanisms. They do not demonstrate learned capability.
-
-One historical user-requested trace asked the runtime to identify the training
-hold and one safe next action. The response missed both requirements. It
-remains recorded as:
-
-- outcome `missed`;
-- error family `request_fidelity_miss`;
-- learned-model credit `false`;
-- capability credit `none_assisted_or_tool_mediated`;
-- training rows written `0`;
-- external inference calls `0`.
-
-This is retained historical evidence only. It is not a request for further user
-tasks and is not a forward promotion gate. P2A and P3 instead use
-deterministically selected, machine-verifiable work from sealed online-source
-pools and record completed, failed, abstained, unsafe, false-blocked, rollback,
-cost, and residual outcomes without manufacturing success.
-
-## Security And Exposure
-
-The local authority package now enforces:
-
-- authenticated mutations;
-- strict JSON, content-type, and body-size checks;
-- exact Origin and CSRF policy;
-- rate, concurrency, job, and SSE limits;
-- request-local teacher/network authority that defaults false;
-- tokened, non-wildcard-CORS OpenAI-compatible defaults;
-- loopback Hive defaults;
-- separate coordinator, worker, and discovery credentials;
-- signed discovery;
-- header-only credentials;
-- fail-closed remote execution when sandbox qualification is absent;
-- sanitized errors and random identifiers.
-
-This is local code and adversarial-test evidence. It is not an
-internet-security audit. Keep dashboard, OpenAI shim, and Hive loopback-only
-until a separate exposure qualification is reviewed.
-
-## Data And Teacher State
-
-The frozen corpus passed the current provenance, license, exact and semantic
-deduplication, contamination, retention, tokenizer, and recursive synthetic
-share checks. It should not be expanded merely because training has not yet
-run.
-
-Teacher accounting is content-bound through an append-only hash chain:
-
-- total accepted rows: `115,429`;
-- teacher-accepted rows: `15`;
-- teacher share: `0.0001299500` (about `0.013%`);
-- configured cap: `10%`;
-- accounting replay: valid.
-
-Live teacher data remains targeted residual pressure, never bootstrap data or
-runtime serving.
-
-## Resource And Reproducibility State
-
-The selected training route is compiled FP32 MLX. Python remains orchestration;
-Rust is used where correctness, parsing, data movement, or profiled CPU work
-justifies it. Rewriting orchestration in Rust without a measured bottleneck is
-not an optimization plan.
-
-Travel-mode cleanup permanently removed 93 unreferenced closed canary runs and
-126 superseded checkpoint files. The deleted payloads were regenerable but are
-not directly recoverable. Active checkpoint custody and meaningful evidence
-were preserved and rehashed.
-
-Linux CI now defines:
-
-- scoped Python format, lint, and security/evaluator tests;
-- Rust format, clippy, and tests excluding Mac-only crates;
-- license and public-release checks;
-- dependency review;
-- a deterministic public-safe evidence-protocol capsule.
-
-Mac MLX qualification remains a guarded manual workflow on the qualified local
-runner. Because local `main` is ahead of `origin/main`, hosted CI has not yet
-validated the latest transaction.
-
-## Repository Health Cleanup State
-
-The 2026-07-30/31 maintenance transaction is deliberately non-destructive.
-Source, registry, CI, evaluator-integrity, and release-boundary repairs may
-proceed while training is paused by machine predicates. Archive moves, deletions,
-public-history changes, and D2 execution have separate authority.
-
-| Cleanup area | Current state | Exact boundary |
-| --- | --- | --- |
-| Source and tests | `VERIFIED_LOCAL` | Python defects, Rust hygiene, public CI dependencies, path handling, and focused regression coverage are repaired; the full Python, exact public-CI, Rust fmt/check/clippy/test, license, release-boundary, and reproducibility tiers pass locally |
-| Registry ownership | `GREEN` | All 19 source duplicate families have canonical owners, promotion roles, and successor policies; unclassified source duplicates are zero |
-| Workspace hygiene | `YELLOW_DIRTY_ONLY` | The audit has one candidate: review and commit the intentional dirty transaction; classified duplicate history is no longer misreported as an unresolved authority |
-| Evaluator integrity | `GREEN_FRESHNESS_SEALED` | Current contract `d48875c5...` and consumed v8 contract `d724363e...` independently recompute with zero exact/normalized model-visible prompt overlap; evaluation and training authority remain false |
-| Checkpoint retention | `NO_SAFE_CANDIDATES` | All current checkpoint payloads are reference-protected; physical duplicate reclaim candidates are zero |
-| T0A retention | `GREEN_NO_CANDIDATES` | Regenerable cache, superseded-checkpoint, and unreferenced-closed-run dry runs all found zero candidates |
-| Report retention | `AUTOMATED_POLICY_PENDING` | The current-reference-aware packet selects 383 unreferenced JSON/JSONL reports, all at least 24.189 hours old, totaling 998,959,866 bytes; execution requires machine-readable custody, recovery, retention, and rollback predicates |
-| Public source export | `CANDIDATE_NOT_PUBLISHABLE_WHILE_DIRTY` | The allowlisted export excludes reports, runtime, checkpoints, private evaluator materials, and hidden fixtures; publication waits for a clean reviewed source ref |
-
-No retention action has been executed in this transaction. The report candidates
-may be archived only after an automated retention controller verifies the exact
-candidate manifest, independent recovery custody, replay pointers, and rollback
-policy. Applying that packet to the current inventory would leave 697,480,473 bytes / 5,997 hot files
-and 4,072 archive pointers, all within policy. It would also reduce the only
-over-cap hot family, `report_snapshots/theseus_project_registry`, from
-842,972,029 bytes / 76 files to 172,694,083 bytes / 15 files. The 9.70 GB checkpoint tree is
-above its 6 GiB warning target but below its 12 GiB hard cap; the warning is
-not authority to move protected model state.
-
-The selected public-history strategy is `NEW_CLEAN_PUBLIC_ROOT`, not a
-force-push rewrite. Preserve the complete current history privately and create
-and audit a clean source-only candidate. External publication and mutation stay
-outside the autonomous research envelope unless a separate machine-readable
-publication policy is established; they do not block local proof work.
-
-## Current Gates
-
-| Gate | State | Interpretation |
-| --- | --- | --- |
-| Project registry | `GREEN` | Canonical routes have current minimal evidence |
-| Roadmap implementation | `YELLOW` | Zero hard gaps; the exact 84-chapter book pin is reconciled, while unrelated partial phases and the pre-training source-binding blocker remain |
-| Pre-training architecture | `NOT_READY` | Phase 0 awaits a clean source-bound replacement package; the selected Phase 8 route remains mechanically qualified |
-| Replacement freeze | `REBIND_AFTER_SOURCE_CHANGE` | Regenerate from a clean source commit after any authority change; the package grants no execution by itself |
-| Independent pre-long-run audit | Current `GREEN` | Recomputes the current contract, historical packet identity and consumption, and zero exact/normalized prompt overlap |
-| Functional utility freeze | `NOT_EVALUATED_SEALED` | The 57M candidate is unevaluated; current exact surface nonconsumption and scoped freshness pass. EOS-only uncapped generation, autonomous independent English audit, current-checkpoint exact diagnostics, and one-shot D2 authority are implemented; execution remains sealed pending the clean source-bound freeze and completed dense controls |
-| Runtime exposure | `LOCAL_ONLY` | No LAN/public authorization |
-
-## Immediate Work
-
-In order:
-
-1. Keep the isolated source-bound P1 implementation and terminal P2-001
-   evidence immutable; do not mix subsystem, neural, release, cleanup, or Rust
-   work into their transactions.
-2. Preserve the source-bound 84-chapter pin and 13-claim causal portfolio. The
-   exact identities, causal variables, adequacy requirements, strongest
-   controls, decisions, and maximum-inference boundaries are now fixed; the
-   binding changes no book support state.
-3. Preserve P2A's run, blind evaluation, runtime receipts, and terminal
-   disposition as immutable `INCONCLUSIVE_IMPLEMENTATION` evidence. Do not
-   replay its consumed `typing_extensions` task or infer a subsystem effect.
-4. Preserve P2B's run, blind evaluation, runtime receipts, and terminal
-   disposition. Do not replay its consumed Requests task or infer model or
-   subsystem failure from the literal-newline transport mismatch.
-5. Preserve the terminal P2C run, blind evaluation, runtime receipts, and
-   disposition. Do not replay the consumed Click task or infer a subsystem
-   effect from its one parseable but incorrect integrated candidate.
-6. Preserve terminal P3 and its ten consumed tasks, 36 runtime receipts, blind
-   evaluations, exact 1/10 versus 1/10 useful result, and zero-unsafe rollback
-   evidence as historical bounded evidence, not current-charter capability
-   proof. Preserve interrupted P4-v1, terminal P4R, and terminal P4S without
-   replay or rescoring. No other mechanism is active.
-   Bind Luna-xhigh only when a callable governed transport exists, using the
-   reserved identical pool once and retaining separate denominators.
-7. Preserve terminal P4V2R2R3 as scoped `INCONCLUSIVE_IMPLEMENTATION`: all 60
-   natural completions and ten evaluator replays are retained, the Semantic-IR
-   mechanics floor failed at 2/10 versus 8/10, the surface is consumed, and D1
-   stays closed. Do not replay, rescore, or reseal it.
-8. Preserve the GREEN claim handoff for independent book review with no support
-   movement. Repair only the named Semantic-IR mechanics owner on non-claim
-   fixtures before considering a new source-disjoint development campaign.
-9. Refresh neural N0 source/custody readiness and run the automated
-   launch/resource/checkpoint/rollback controller. N1/N2 wait on its
-   machine predicates, not a user decision.
-10. Keep E2, D2, and public calibration sealed. Do not tune or rerun
-   TMax/Worker-v4 on the consumed procedural-effect task.
-   Preserve its terminal post-plan edit-commitment disposition and the
-   superseded source-state diagnosis.
-11. Model-shopping is optional and nonblocking. Preflight a stronger local
-   model only when it is installed or a measured worker wall makes that
-   comparison the smallest decision-relevant experiment.
-12. Continue cleanup only when it removes a proof/neural blocker or a material
-   storage wall. Classify the roughly 41 GiB runtime and 2.1 GiB reports trees
-   under replay-safe retention authority before deleting anything, and derive
-   the operating envelope from the measured working set, transaction reserve,
-   host reserve, and durable evidence rather than arbitrary fixed counts.
-13. After a live subsystem earns a reversible local default on development
-   evidence, freeze a fresh source-disjoint D1 qualification before making a
-   claim-bearing comparison.
-14. Continue the already-scoped custody work autonomously: commit coherent
-    source transactions, establish independent encrypted custody, and leave
-    retention or public-root mutation out of scope until exact machine policies
-    exist.
-
-## Explicitly Not Immediate
-
-- new architecture families;
-- new standalone KERC, RDC, ANE, OneCell, SymLiquid, CGS, Coil, RankFold, or
-  NeuralFold implementation campaigns; their existing contracts may inform an
-  active L0 ablation without becoming a new lane;
-- generic acceleration searches;
-- new optimizers, tokenizers, objectives, curricula, or decoding modes;
-- more private benchmark families;
-- broad corpus expansion;
-- teacher generation, preference optimization, RL, self-training, continual
-  learning, or unlearning;
-- public benchmark consumption;
-- LAN or public dashboard exposure;
-- remote arbitrary execution;
-- Hive networking, mobile, spatial, voice, multimodal, compute-market,
-  licensing, or product-surface expansion;
-- broad ASI Stack prose, chapter, theorem, reader-derivative, or publication
-  work before material evidence;
-- claims that assisted behavior is learned capability.
-
-## Definition Of Project Progress
-
-Progress means at least one of:
-
-- a highest-leverage ASI Stack claim receives stronger causal evidence under a
-  faithful implementation and adequate matched experiment;
-- the learned student improves on source-disjoint functional behavior;
-- a core stack or book claim receives a terminal scoped natural result;
-- the comparison becomes more scientifically honest or reproducible;
-- the runtime becomes safer or materially faster by measurement;
-- duplicated machinery is removed without losing evidence.
-
-A new report, mechanism, dashboard, or document is not progress by itself.
+| Optimizer steps | `11,992` |
+| Optimizer positions | `91,869,446` |
+| Checkpoint | `weights.step-00011992.safetensors` |
+| Checkpoint SHA-256 | `997772ea1f3f2b302d2bf6e379f8537ae6ee2d51b9edb714243999232703b518` |
+| AdamW state SHA-256 | `f7672670505aa6acb8c13b88fe53bc3b2f920e01b5f60859a5a36ca288b45ca0` |
+| MLX RNG state SHA-256 | `9209383f5b4eb599c89462f922957b13e60f03eb6fac3b73f6af9003c023850f` |
+| Capability state | `NOT_EVALUATED` |
+| D2 | `UNCONSUMED` |
+
+Nine append-only 64-step transactions advanced the prior step-11,416 state to
+11,992. No segment remains active. Two independent controls now prevent a new
+launch:
+
+- source policy: `configs/neural_seed_training_availability.json` is
+  `HOLD_SUBSYSTEM_PROOF_FIRST` with `launch_allowed=false`;
+- runtime stop request: `runtime/control/neural_seed_yield_after_segment`.
+
+The hold is strategic, not a negative result. Re-entry requires the
+machine-readable Subsystem Architecture Freeze in the roadmap matrix: terminal
+interface dispositions for the architecture-shaping claims, no unresolved
+topology/data/route/verifier changes, a production-equivalent composition
+canary, continued decision relevance of modular-versus-dense, exact source and
+checkpoint rebinding, and autonomous resource/transaction/rollback readiness.
+
+## Book Binding
+
+The experiment pin remains the 84-chapter snapshot at AI_book commit
+`17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`. The living-book source advanced
+while this review was running and was observed at
+`1280fdfa457735ae39289d42a82173f9485434fc` during the final audit. Both its
+committed and working manifests still had 84 chapters, and its selected
+core-claim vector file was unchanged from the pin at that observation. Other
+book surfaces and uncommitted work remain moving intake rather than experiment
+authority.
+
+Policy:
+
+- do not repin an open experiment merely because the living book advances;
+- record source drift and assess whether claim semantics changed;
+- bind every result to the stable claim ID and exact experiment pin;
+- return positive, null, negative, inconclusive, invalid, and blocked evidence;
+- let book-side governance decide any support transition; and
+- never edit or overwrite concurrent book work as part of a Theseus roadmap
+  synchronization.
+
+## Repository And Maintenance State
+
+At review time the Theseus runtime surface was about 41 GiB and 250,030 files;
+reports were about 2.1 GiB and 10,790 files; checkpoints were about 9.0 GiB.
+The top-level source surface included roughly 828 scripts, 416 configs, and 261
+tests. Those counts are an ownership and retention smell, not a reason for a
+new cleanup program.
+
+The existing reference-aware retention controller is the owner. It has already
+archived substantial replay-safe material. Maintenance should preserve
+terminal evidence, negative results, active pointers, irreproducible source
+acquisitions, checkpoint lineage, and independent recovery. Consolidation is
+incremental when an active family is touched; no repository-wide rewrite or
+evidence deletion is authorized.
+
+The latest roadmap audit is `YELLOW` with zero hard gaps because pretraining is
+deliberately not current or authorized and the living book differs from the
+experiment pin. The documentation link audit is GREEN. The project-registry
+audit is RED during this uncommitted recentering transaction: four route
+evidence outputs are content-stale, four AIBOM identities are missing, and nine
+cleanup rows lack current steward coverage. Those are rebind/steward walls to
+resolve at a coherent source boundary, not permission to regenerate every
+historical report or reopen neural work.
+
+## Immediate Execution Order
+
+1. Finish and verify this source-controlled program recentering.
+2. Bind the Luna adapter, exact receipt, completion telemetry, no-serving and
+   no-training boundary, evaluator contract, and campaign-derived cost
+   authority without making a reference call.
+3. Repair Semantic-IR identity/coverage/target/unit mechanics on non-claim
+   evidence through the exact production path.
+4. Run an independent adequacy audit and either admit one fresh campaign or
+   freeze the implementation.
+5. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
+   rather than backfill Luna if it was not sealed in advance.
+6. Qualify a development survivor once on fresh D1.
+7. Return the claim packet to book review with support unchanged.
+8. Repeat one claim at a time until the Subsystem Architecture Freeze can make
+   an evidence-based neural re-entry decision.
+
+## Work That Is Not Active
+
+- neural training, D2, new architectures, optimizers, tokenizers, objectives,
+  curricula, or corpus expansion;
+- KERC/RDC, OneCell, SymLiquid, CGS, VSA, Coil, RankFold, NeuralFold, ANE, and
+  generic accelerator campaigns;
+- preference optimization, RL, self-training, continual learning, and
+  unlearning;
+- personal-assistant data collection;
+- new private benchmark, dashboard, document, report, or product families;
+- Hive networking, public gateways, remote execution, compute markets, mobile,
+  spatial, voice, multimodal, embodied, and multi-user work; and
+- release engineering or broad book publishing unrelated to a returned claim
+  packet.
+
+## Honest Walls
+
+- No subsystem claim has earned source-disjoint D1 qualification.
+- The exact Semantic-IR implementation is inadequate; its broader claim is
+  unresolved.
+- The Luna transport is unbound and zero calls are authorized.
+- The neural checkpoint has no capability result and D2 remains sealed.
+- The generated surface is large and ownership is diffuse.
+- Local security evidence does not authorize LAN or public exposure.
+- Concurrent living-book work means the observed HEAD and worktree must be
+  treated as intake, not silently absorbed into the experiment pin.
+
+These walls must be removed by evidence or retained plainly. A nearby GREEN
+artifact, renamed phase, or additional report cannot erase them.

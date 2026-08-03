@@ -1,6 +1,13 @@
 {
   "policy": "project_theseus_resource_aware_training_segments_v2",
   "enabled": true,
+  "program_authority": {
+    "policy": "project_theseus_subsystem_architecture_freeze_v1",
+    "state": "HOLD_SUBSYSTEM_PROOF_FIRST",
+    "launch_allowed": false,
+    "reason": "Preserve the step-11992 neural transaction while the architecture-shaping ASI Stack subsystem claims receive terminal interface dispositions.",
+    "reentry_contract": "configs/roadmap_implementation_matrix.json#research_program_recenter.neural_reentry"
+  },
   "require_ac_power": true,
   "require_low_power_mode_off": true,
   "disk_reserve": {

@@ -1,48 +1,85 @@
 {
-  "policy": "project_theseus_openai_measurement_reference_v1",
+  "policy": "project_theseus_openai_measurement_reference_v2",
   "campaign_id": "ASI-THESEUS-FLAGSHIP-01",
   "state": "PROSPECTIVELY_DEFINED_TRANSPORT_NOT_BOUND",
-  "purpose": "Add a separately labeled hosted reference ceiling without changing the local-serving north star or mixing causal denominators.",
+  "purpose": "Measure whether an ASI Stack subsystem effect transfers to a separately denominated hosted OpenAI reference without changing the local-model causal estimand, serving boundary, training data, or task-selection process.",
+  "activation_scope": {
+    "current_claim_id": "cognitive-compilation-and-semantic-ir.core",
+    "current_claim_pool_open": false,
+    "reference_calls_authorized": false,
+    "next_pool_rule": "Bind this transport and freeze every local and reference arm before the first candidate call in a future source-disjoint claim-development pool.",
+    "missing_transport_disposition": "Omit the reference cells and record MISSING_PROSPECTIVE_REFERENCE; never backfill after any local outcome is visible."
+  },
   "reference_model": {
     "provider": "OpenAI",
-    "surface": "ChatGPT_or_Codex_only",
+    "surface": "UNBOUND_APPROVED_OPENAI_RESPONSES_API_CHATGPT_OR_CODEX_ADAPTER",
     "requested_model": "gpt-5.6-luna",
     "reasoning_effort": "xhigh",
     "role": "measurement_only_reference_control",
-    "current_official_guidance": "Luna is intended for clear, repeatable, high-volume and focused coding tasks; xhigh is for demanding reasoning when supported.",
-    "documentation_url": "https://learn.chatgpt.com/docs/models"
+    "selection_rationale": "A lower-cost high-volume OpenAI reference that supports xhigh reasoning; xhigh is frozen as a quality-oriented control setting, not presumed cost-optimal and not tuned after outcomes.",
+    "current_official_guidance": "OpenAI describes GPT-5.6 Luna as optimized for cost-sensitive, high-volume workloads and lists xhigh among its supported reasoning efforts; effort choice should be validated on the use case rather than assumed universally best.",
+    "documentation_url": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
   },
   "factorial": {
     "models": [
-      "best_locally_qualified_model",
+      "frozen_TMax_9B_MLX_8bit_33812d6cf04f88856f25eb828de4f3144a194560",
       "gpt-5.6-luna_xhigh_reference"
     ],
     "system_conditions": [
       "direct",
       "theseus_integrated"
     ],
-    "primary_local_contrast": "best_local_integrated_minus_best_local_direct",
-    "reference_contrast": "luna_integrated_minus_luna_direct",
+    "primary_local_contrast": "frozen_local_treatment_minus_frozen_local_direct",
+    "reference_contrast": "frozen_luna_treatment_minus_frozen_luna_direct",
     "exploratory_interaction": "difference_of_within_model_theseus_effects",
-    "cross_model_rank_is_not_a_subsystem_causal_claim": true
+    "cross_model_rank_is_not_a_subsystem_causal_claim": true,
+    "local_contrast_is_primary": true,
+    "reference_contrast_is_separately_denominated": true
   },
   "matched_requirements": {
     "same_sealed_task_pool": true,
     "same_candidate_visible_source_snapshot": true,
     "same_natural_request": true,
-    "same_typed_edit_protocol": "theseus_line_edit_v1",
-    "same_visible_verifier": true,
+    "same_claim_specific_candidate_visible_protocol": true,
+    "same_callable_signature": true,
+    "same_allowed_runtime_context": true,
+    "same_visible_verifier_opportunity": true,
     "same_hidden_evaluator_after_seal": true,
-    "same_maximum_model_calls_per_arm": 2,
+    "same_maximum_model_calls_per_arm": "prospectively_campaign_derived",
     "same_effect_root": "disposable_source_snapshot_only",
     "same_blind_scoring": true,
-    "task_selection_completed_before_any_arm_opens": true
+    "same_mechanism_absent_or_present_within_each_model": true,
+    "task_selection_completed_before_any_arm_opens": true,
+    "all_four_cells_sealed_before_any_candidate_call": true
+  },
+  "completion_policy": {
+    "normal_completion": "prospectively_declared_complete_artifact_or_model_EOS",
+    "project_selected_generated_token_quality_cap": null,
+    "exact_prompt_tokenization_required": true,
+    "provider_finish_reason_required": true,
+    "actual_prompt_reasoning_generated_tokens_required": true,
+    "physical_context_or_output_boundary_disposition": "INVALID_OBSERVATION_CONTEXT_OR_PROVIDER_BOUNDARY",
+    "boundary_hit_counts_as_model_or_mechanism_failure": false,
+    "boundary_hit_enters_treatment_effect_denominator": false
+  },
+  "transport_binding_requirements": {
+    "exact_callable_adapter_source_bound": true,
+    "provider_model_and_reasoning_effort_receipt_required": true,
+    "model_alias_or_snapshot_and_service_tier_recorded": true,
+    "wrapper_system_instructions_and_tool_policy_recorded": true,
+    "structured_output_or_schema_behavior_recorded": true,
+    "finish_reason_and_usage_telemetry_recorded": true,
+    "price_basis_and_observed_total_cost_recorded": true,
+    "campaign_total_spend_authority_derived_before_calls": true,
+    "reference_outputs_hidden_from_task_selection_and_local_arms": true,
+    "independent_evaluator_interface_identical_within_task": true
   },
   "known_non_equivalences": [
-    "Hosted Codex system prompts and orchestration are not the local MLX runtime.",
-    "Reasoning tokens, tokenizer, context implementation, latency, and monetary cost differ by model and surface.",
-    "Equal output/action budgets do not imply equal training compute or inference FLOPs.",
-    "The hosted reference is an engineering ceiling and robustness check, not a serving candidate or local-model falsifier."
+    "Hosted OpenAI system instructions and orchestration are not the local MLX runtime.",
+    "Reasoning tokens, tokenizer, context implementation, latency, monetary cost, and training differ by model and surface.",
+    "Structured-output enforcement may differ by transport and must be reported as an instrument difference.",
+    "Matched calls, tools, and verifier opportunities do not imply matched inference FLOPs or training compute.",
+    "The hosted reference is a robustness control, not a serving candidate, training source, frontier ceiling, or local-model falsifier."
   ],
   "admission_gate": {
     "callable_transport_must_be_source_bound": true,
@@ -51,13 +88,20 @@
     "external_source_effects_allowed": false,
     "training_row_admission_allowed": false,
     "runtime_serving_allowed": false,
+    "task_selection_or_tuning_allowed": false,
+    "subsystem_or_prompt_tuning_allowed": false,
+    "local_model_selection_allowed": false,
+    "claim_queue_selection_allowed": false,
+    "local_denominator_membership_allowed": false,
+    "source_effect_credit_allowed": false,
     "automatic_book_support_promotion_allowed": false
   },
   "counters": {
-    "maximum_reference_calls_per_task_condition": 2,
+    "reference_calls_made": 0,
     "accepted_training_rows": 0,
     "user_facing_serving_tokens": 0,
-    "external_source_effects": 0
+    "external_source_effects": 0,
+    "tasks_selected_with_reference_outputs": 0
   },
-  "current_blocker": "No callable gpt-5.6-luna transport is exposed inside the current experiment harness; bind an approved ChatGPT, Codex, or OpenAI API adapter before execution."
+  "current_blocker": "No exact gpt-5.6-luna transport, response receipt, completion telemetry, evaluator adapter, price basis, or campaign-derived spend authority is source-bound in the experiment harness."
 }

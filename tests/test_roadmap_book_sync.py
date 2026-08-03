@@ -32,6 +32,57 @@ class RoadmapBookSyncTests(unittest.TestCase):
     def gap_kinds(self, report: dict) -> set[str]:
         return {str(row.get("kind") or "") for row in report["hard_gaps"]}
 
+    def test_subsystem_first_program_selection_is_machine_bound(self) -> None:
+        recenter = self.matrix["research_program_recenter"]
+        flagship = self.matrix["flagship_lane_governance"]
+        neural = recenter["neural_hold"]
+
+        self.assertEqual("SUBSYSTEM_PROOF_ACTIVE_NEURAL_HOLD", recenter["state"])
+        self.assertEqual("ASI_STACK_SUBSYSTEM_CAUSAL_PROOF", recenter["active_track"])
+        self.assertEqual(
+            "cognitive-compilation-and-semantic-ir.core",
+            recenter["active_claim"]["claim_id"],
+        )
+        self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
+        self.assertEqual(
+            1,
+            recenter["claim_selection_policy"][
+                "maximum_simultaneously_active_claims"
+            ],
+        )
+        self.assertIn(
+            "Luna reference outputs",
+            recenter["claim_selection_policy"]["forbidden_inputs"],
+        )
+        self.assertEqual(
+            "F1_asi_stack_subsystem_causal_proof",
+            flagship["active_flagship_lane_id"],
+        )
+        self.assertEqual(
+            "F_memory_planning_tool_substrate", flagship["active_track_id"]
+        )
+        self.assertEqual("HOLD_SUBSYSTEM_PROOF_FIRST", neural["state"])
+        self.assertFalse(neural["launch_allowed"])
+        self.assertEqual(11992, neural["optimizer_steps"])
+        self.assertFalse(neural["D2_consumed"])
+        self.assertTrue(recenter["neural_reentry"]["all_conditions_required"])
+        self.assertGreaterEqual(len(recenter["neural_reentry"]["conditions"]), 6)
+        self.assertFalse(recenter["autonomy"]["routine_user_approval_required"])
+
+    def test_crosswalk_summary_counts_all_84_current_rows(self) -> None:
+        summary = self.matrix["book_chapter_crosswalk_summary"]
+        rows = self.matrix["book_chapter_implementation_crosswalk"]
+        derived_tracks: dict[str, int] = {}
+        for row in rows:
+            track = row["primary_track_id"]
+            derived_tracks[track] = derived_tracks.get(track, 0) + 1
+
+        self.assertEqual(84, summary["book_chapter_count"])
+        self.assertEqual(84, len(rows))
+        self.assertEqual(derived_tracks, summary["track_counts"])
+        self.assertEqual(84, sum(summary["current_state_counts"].values()))
+        self.assertEqual(84, sum(summary["support_state_target_counts"].values()))
+
     def test_current_crosswalk_matches_manifest_exactly(self) -> None:
         report = self.audit(self.matrix)
         summary = report["summary"]

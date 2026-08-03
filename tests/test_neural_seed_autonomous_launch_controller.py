@@ -14,6 +14,7 @@ if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
 import neural_seed_autonomous_launch_controller as controller  # noqa: E402
+import neural_seed_training_campaign as campaign  # noqa: E402
 
 
 CONFIG_PATH = ROOT / "configs/neural_seed_autonomous_launch_controller.json"
@@ -51,6 +52,21 @@ def green_availability() -> dict:
     }
 
 
+def authorized_availability_policy() -> dict:
+    value = json.loads(
+        (ROOT / "configs/neural_seed_training_availability.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    value["program_authority"].update(
+        {
+            "state": campaign.PROGRAM_AUTHORIZED_STATE,
+            "launch_allowed": True,
+        }
+    )
+    return value
+
+
 def test_config_replaces_user_gate_with_one_machine_predicate_segment() -> None:
     value = config()
     controller.validate_config(value)
@@ -66,11 +82,13 @@ def test_config_replaces_user_gate_with_one_machine_predicate_segment() -> None:
 
 
 def test_machine_preflight_authorizes_without_user_when_every_predicate_passes(
-    monkeypatch,
+    monkeypatch, tmp_path: Path,
 ) -> None:
     monkeypatch.setattr(controller.replacement_freeze, "verify_package_identity", lambda _: True)
+    value = config()
+    value["yield_control"] = str(tmp_path / "no-yield-request")
     report = controller.preflight(
-        config(),
+        value,
         config_path=CONFIG_PATH,
         source_state_override={
             "commit": "a" * 40,
@@ -90,6 +108,7 @@ def test_machine_preflight_authorizes_without_user_when_every_predicate_passes(
             "boundaries": {"D2_cases_consumed": 0},
         },
         availability_override=green_availability(),
+        availability_policy_override=authorized_availability_policy(),
         review_override={"trigger_state": "READY"},
         source_binding_override=True,
     )
@@ -121,6 +140,7 @@ def test_competing_accelerator_or_dirty_source_pauses_automatically(monkeypatch)
             "boundaries": {"D2_cases_consumed": 0},
         },
         availability_override=green_availability(),
+        availability_policy_override=authorized_availability_policy(),
         review_override={"trigger_state": "READY"},
         source_binding_override=False,
     )
@@ -158,6 +178,7 @@ def test_emergency_yield_is_a_stop_request_not_a_launch_prerequisite(
         },
         "review_override": {"trigger_state": "READY"},
         "source_binding_override": True,
+        "availability_policy_override": authorized_availability_policy(),
     }
     absent = controller.preflight(
         value, availability_override=green_availability(), **common
@@ -173,6 +194,44 @@ def test_emergency_yield_is_a_stop_request_not_a_launch_prerequisite(
     )
     assert requested["gates"]["emergency_yield_absent"] is False
     assert requested["trigger_state"] == "PAUSED"
+
+
+def test_default_program_hold_blocks_one_shot_even_when_other_gates_pass(
+    monkeypatch,
+) -> None:
+    monkeypatch.setattr(
+        controller.replacement_freeze, "verify_package_identity", lambda _: True
+    )
+    report = controller.preflight(
+        config(),
+        config_path=CONFIG_PATH,
+        source_state_override={
+            "commit": "a" * 40,
+            "branch": "main",
+            "clean_at_generation": True,
+            "dirty_path_count": 0,
+            "dirty_paths": [],
+        },
+        process_jobs_override=[],
+        package_override=green_package(),
+        independent_override={"trigger_state": "GREEN", "failed_audits": []},
+        scale_override={
+            "trigger_state": "GREEN",
+            "contract_state": "GREEN",
+            "proposal_state": "AUTHORIZED_FOR_FROZEN_TRAINING_PLAN",
+            "training_authorized": True,
+            "boundaries": {"D2_cases_consumed": 0},
+        },
+        availability_override=green_availability(),
+        review_override={"trigger_state": "READY"},
+        source_binding_override=True,
+    )
+    assert report["trigger_state"] == "PAUSED"
+    assert report["launch_authorized"] is False
+    assert report["gates"]["prospective_resource_gate_green"] is False
+    assert "program_authority_allows_training" in report[
+        "prospective_availability_under_exclusive_lease"
+    ]["failed_gates"]
 
 
 def test_checkpoint_transaction_restore_is_exact(tmp_path: Path) -> None:

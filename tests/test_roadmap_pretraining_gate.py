@@ -61,7 +61,7 @@ def matrix(required_status: str = "qualified") -> dict:
 
 
 class PreTrainingArchitectureGateTests(unittest.TestCase):
-    def test_active_t1_currentness_replaces_no_historical_t0a_claims(self) -> None:
+    def test_historical_freeze_is_preserved_but_step11992_requires_rebind(self) -> None:
         payload = json.loads(
             (ROOT / "configs/roadmap_implementation_matrix.json").read_text(
                 encoding="utf-8"
@@ -73,18 +73,19 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         report = gate.audit_pre_training_backlog_evidence(contract)
         currentness = report["post_activation_currentness"]
 
-        self.assertTrue(report["ready"])
+        self.assertFalse(report["ready"])
         self.assertGreater(report["historical_source_artifact_drift_count"], 0)
-        self.assertTrue(
+        self.assertFalse(
             report["historical_source_artifact_drift_accepted_after_activation"]
         )
-        self.assertTrue(currentness["ready"])
+        self.assertFalse(currentness["ready"])
         self.assertFalse(currentness["pre_anchor_full_chain_available"])
         self.assertEqual(currentness["capability_claim"], "NOT_EVALUATED")
         self.assertEqual(
-            currentness["migration_id"],
-            "shared_trunk_step11416_exiting_process_inventory_rebind_v1",
+            currentness["lineage"]["head_identity"]["optimizer_steps"], 11992
         )
+        self.assertIn("current_plan_identity_mismatch", currentness["faults"])
+        self.assertIn("current_plan_migration_missing", currentness["faults"])
 
     def test_current_phase0_readiness_is_bound_to_green_source_package(self) -> None:
         payload = json.loads(
@@ -96,10 +97,25 @@ class PreTrainingArchitectureGateTests(unittest.TestCase):
         readiness = phase0["pre_training_readiness"]
         evidence = gate.audit_pre_training_backlog_evidence(readiness["evidence"])
 
-        self.assertEqual(readiness["state"], "READY_FOR_FROZEN_CAMPAIGN")
-        self.assertTrue(evidence["ready"])
+        self.assertEqual(
+            readiness["state"],
+            "HOLD_SUBSYSTEM_PROOF_FIRST_STEP_11992_REBIND_REQUIRED_AFTER_ARCHITECTURE_FREEZE",
+        )
+        self.assertFalse(evidence["ready"])
         self.assertEqual(evidence["trigger_state"], "GREEN")
-        self.assertEqual(evidence["faults"], [])
+        self.assertTrue(
+            any(fault.startswith("source_artifacts_stale:") for fault in evidence["faults"])
+        )
+        availability = json.loads(
+            (ROOT / "configs/neural_seed_training_availability.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        self.assertEqual(
+            availability["program_authority"]["state"],
+            "HOLD_SUBSYSTEM_PROOF_FIRST",
+        )
+        self.assertFalse(availability["program_authority"]["launch_allowed"])
 
     def test_deferred_kerc_campaign_exclusion_is_machine_checked(self) -> None:
         import tempfile

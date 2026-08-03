@@ -34,6 +34,9 @@ POLICY = "project_theseus_fresh_process_training_campaign_v1"
 AVAILABILITY_POLICY = "project_theseus_resource_aware_training_segments_v2"
 LINEAGE_POLICY = "project_theseus_append_only_training_segment_lineage_v1"
 LINEAGE_ANCHOR_POLICY = "project_theseus_t1_prospective_lineage_anchor_v1"
+PROGRAM_AUTHORITY_POLICY = "project_theseus_subsystem_architecture_freeze_v1"
+PROGRAM_HOLD_STATE = "HOLD_SUBSYSTEM_PROOF_FIRST"
+PROGRAM_AUTHORIZED_STATE = "AUTHORIZED_AFTER_SUBSYSTEM_ARCHITECTURE_FREEZE"
 
 
 def validate_availability_policy(policy: dict[str, Any]) -> None:
@@ -41,6 +44,19 @@ def validate_availability_policy(policy: dict[str, Any]) -> None:
         raise ValueError("unexpected training availability policy")
     if policy.get("enabled") is not True:
         raise ValueError("training availability scheduler must remain enabled")
+    program_authority = policy.get("program_authority") or {}
+    if program_authority.get("policy") != PROGRAM_AUTHORITY_POLICY:
+        raise ValueError("neural program authority policy is missing or invalid")
+    program_state = program_authority.get("state")
+    launch_allowed = program_authority.get("launch_allowed")
+    if program_state not in {PROGRAM_HOLD_STATE, PROGRAM_AUTHORIZED_STATE}:
+        raise ValueError("neural program authority state is invalid")
+    if not isinstance(launch_allowed, bool):
+        raise ValueError("neural program launch authority must be boolean")
+    if launch_allowed != (program_state == PROGRAM_AUTHORIZED_STATE):
+        raise ValueError("neural program state and launch authority disagree")
+    if not str(program_authority.get("reentry_contract") or ""):
+        raise ValueError("neural program re-entry contract is required")
     if "launch_windows" in policy:
         raise ValueError("clock-based launch windows are forbidden")
     if "minimum_disk_free_gib" in policy:
@@ -401,7 +417,13 @@ def active_accelerator_jobs(patterns: list[str]) -> list[dict[str, Any]]:
 def evaluate_availability(
     policy: dict[str, Any], snapshot: dict[str, Any]
 ) -> dict[str, Any]:
+    validate_availability_policy(policy)
+    program_authority = dict(policy["program_authority"])
     gates = {
+        "program_authority_allows_training": (
+            program_authority["state"] == PROGRAM_AUTHORIZED_STATE
+            and program_authority["launch_allowed"] is True
+        ),
         "ac_power": (
             snapshot.get("on_ac_power") is True
             if policy["require_ac_power"]
@@ -429,6 +451,7 @@ def evaluate_availability(
         "trigger_state": "GREEN" if all(gates.values()) else "PAUSED",
         "gates": gates,
         "failed_gates": [name for name, passed in gates.items() if not passed],
+        "program_authority": program_authority,
         "snapshot": snapshot,
     }
 
