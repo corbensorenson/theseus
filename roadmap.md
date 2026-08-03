@@ -884,7 +884,11 @@ source identity, command/network phases, and storage limits rederive without
 execution. The all-task pair audit corrects the target-only denominator: 38
 tasks have identical dependency identities and 10 diverge (11, 14, 17, 19, 33,
 46, 53, 54, 61, 62), so 48 tasks require 58 distinct closures. Frozen task 14
-is compatible but must seal and qualify separate parent and target uv closures.
+is compatible and its separate parent and target uv closures are now
+prospectively sealed at zero execution. The seal binds both exact manifest/lock
+identities, uv 0.11.28, Python 3.12.5, wheel-only sync commands, distinct retained
+stores, deny-network replays, storage limits, and zero downstream authority.
+Execute and independently audit both closures before advancing the schedule.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

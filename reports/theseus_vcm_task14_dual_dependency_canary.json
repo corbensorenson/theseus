@@ -1,0 +1,51 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_task14_dual_dependency_canary.json",
+    "sha256": "969d4b415534faa33b78e1186927f8a969d0d566936868678080ef1fff584a9a"
+  },
+  "created_utc": "2026-08-03T19:24:14.857298Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN canary proves only that task 14's divergent parent and target uv locks separately materialize wheel-only dependency environments, replay with network denied, retain distinct caches, preserve source identity, and install only lock-compatible distributions without the project. It does not execute build backends, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
+  "network_denied_offline_replays": 0,
+  "network_enabled_dependency_syncs": 0,
+  "observed_side_dependency_identities": {
+    "parent": {
+      "artifact_identity_sha256": "75a413aa1fe9158292c0032439b54ad82cd09766cfb477a818cea1513bcd01fa",
+      "lock": {
+        "bytes": 181170,
+        "path": "uv.lock",
+        "sha256": "ea2365c192f61a749acdac7457d1d19aec55eea3d03068dd7ad64d2874002804"
+      },
+      "manifest": {
+        "bytes": 3645,
+        "path": "pyproject.toml",
+        "sha256": "4931f0242b2f77adcad6241d61d1ad43758728da5d65b3abd42c487b670b410d"
+      },
+      "package_count": 41
+    },
+    "target": {
+      "artifact_identity_sha256": "843680dd828c2a3d7a66391a0caf92c0f05be8bde578088faa7200e36000886d",
+      "lock": {
+        "bytes": 181170,
+        "path": "uv.lock",
+        "sha256": "e9d46f3c4907fa639ce5b41dbb11e6cd7c59b1ae792efaaf5c8f6381830a567d"
+      },
+      "manifest": {
+        "bytes": 3645,
+        "path": "pyproject.toml",
+        "sha256": "0bbf17d265d3baebce11ec4ed3038cb34d60f7fbf8a2cebdfff5fd9333e0dc31"
+      },
+      "package_count": 41
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task14_dual_dependency_canary_v1",
+  "project_installations": 0,
+  "repository_runner_executions": 0,
+  "source_build_executions": 0,
+  "state": "READY_FOR_TASK_14_DUAL_UV_DEPENDENCY_CANARY",
+  "trigger_state": "PAUSED"
+}
