@@ -1,0 +1,104 @@
+{
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_dependency_prefetch_canary_v2.json",
+      "sha256": "fd4058e8bc53d4066293fbdde13834007dac73342fac36d6231601abd641ea1f"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_dependency_prefetch_canary_v2.json",
+      "sha256": "a2e0cf83512442846c837e43d0cea758317a11502ece8ba07189492f4fb516b4"
+    },
+    "trusted_build_canaries": {
+      "path": "reports/theseus_vcm_trusted_build_canaries.json",
+      "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"
+    }
+  },
+  "cache_checks": {
+    "all_lock_integrities_matched": true,
+    "cache_bytes_match_report": true,
+    "cache_files_match_report": true,
+    "content_identity_matches_report": true,
+    "exact_two_content_blobs": true,
+    "no_missing_lock_integrities": true
+  },
+  "candidate_or_control_calls": 0,
+  "command_checks": {
+    "offline_args_exact": true,
+    "offline_boundary_clear": true,
+    "offline_cache_flag_exact": true,
+    "offline_lifecycle_flag": true,
+    "offline_network_denied_phase": true,
+    "offline_returncode_zero": true,
+    "online_args_exact": true,
+    "online_boundary_clear": true,
+    "online_cache_flag_exact": true,
+    "online_lifecycle_flag": true,
+    "online_network_enabled_phase": true,
+    "online_returncode_zero": true
+  },
+  "config": {
+    "path": "configs/theseus_vcm_dependency_closure_audit.json",
+    "sha256": "b6fc41f3a8fa32ae56c2f38b29dcec73b91b64dd9270f37f9081ce00de26f0c3"
+  },
+  "created_utc": "2026-08-03T18:26:28.917916Z",
+  "dependency_checks": {
+    "observed_versions_exact": true,
+    "offline_expected_exact": true,
+    "offline_faults_empty": true,
+    "online_expected_exact": true,
+    "online_faults_empty": true,
+    "online_offline_observed_exact": true
+  },
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN independent audit rederives task 3's exact retained cache integrity, source immutability, dependency-version parity, command/lifecycle/network-denial receipts, trusted sandbox qualification, and storage boundaries without network, dependency, repository, evaluator, or model execution. It qualifies only the first dependency-acquisition instrument and does not qualify the task runner, evaluator construct, VCM mechanism, model, D1, D2, or book claim.",
+  "network_or_dependency_execution_performed": false,
+  "observations": {
+    "candidate_or_control_calls": 0,
+    "content_blob_count": 2,
+    "current_free_bytes": 36876648448,
+    "expected_lock_integrity_count": 2,
+    "external_reference_calls": 0,
+    "matched_lock_integrity_count": 2,
+    "parent_target_or_evaluator_executions": 0,
+    "repository_runner_executions": 0,
+    "retained_cache_bytes": 5912042,
+    "retained_cache_file_count": 6,
+    "source_bytes": 7862760,
+    "source_file_count": 560,
+    "task_index": 3
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_dependency_closure_audit_v1",
+  "rederived_cache": {
+    "content_blob_bytes": 5906247,
+    "content_blob_count": 2,
+    "content_blobs_sha256": "60e8e5af98c2f87b1878c56df4dbc5592fe7d2e794ac1c76d2f544bc7662b1d6",
+    "expected_lock_integrity_count": 2,
+    "matched_lock_integrity_count": 2,
+    "missing_lock_integrity_packages": [],
+    "total_cache_bytes": 5912042,
+    "total_cache_file_count": 6
+  },
+  "rederived_source": {
+    "bytes": 7862760,
+    "file_count": 560,
+    "identity_sha256": "273b51c63694c555e84961dd2bca174316d0b7a558b28ff3b539444f00b673c5"
+  },
+  "repository_runner_executions": 0,
+  "retained_store": "runtime/vcm_evaluator/dependency_store/npm/task-03",
+  "source_checks": {
+    "archive_rederivation_matches_after": true,
+    "archive_rederivation_matches_before": true,
+    "before_after_identical": true
+  },
+  "state": "TASK_3_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+  "static_audit_only": true,
+  "storage_checks": {
+    "cache_below_retention_ceiling": true,
+    "current_free_above_reserve": true,
+    "run_free_after_above_reserve": true,
+    "run_free_before_above_reserve": true
+  },
+  "trigger_state": "GREEN"
+}

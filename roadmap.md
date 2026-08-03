@@ -832,6 +832,16 @@ Luna call occurred. Before expanding to task 7 or any wider batch, a separate
 static owner must rederive the cache, command, network-denial, source, and
 storage conclusions without trusting the v2 owner's GREEN flag.
 
+That independent static audit is GREEN. It rederived both cache blob hashes from
+the lock, the exact six-file/5,912,042-byte retained store, the 560-file source
+identity, online/offline commands, lifecycle suppression, dependency versions,
+trusted network-denial scope, and the run/current storage reserve. It performed
+no network, dependency, repository, evaluator, or model execution. This
+qualifies the first npm dependency instrument only. Before task 7, statically
+compare all 48 governing manifests' manager and runtime requirements against
+the exact bound tools; "binary present" is no longer sufficient compatibility
+evidence.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

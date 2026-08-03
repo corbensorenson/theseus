@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_3_DEPENDENCY_CANARY_V2_GREEN_INDEPENDENT_AUDIT_NEXT",
+      "state": "VCM_V3_TASK_3_DEPENDENCY_CLOSURE_INDEPENDENTLY_GREEN_MANAGER_COMPATIBILITY_AUDIT_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -943,7 +943,37 @@
         "local_model_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": "task-3 exact npm dependency acquisition and network-denied offline replay mechanics only; no repository runner evaluator task VCM model or mechanism result",
-        "next_boundary": "independently rehash the retained cache, rederive both lock integrities, audit exact commands and network-denied receipt, confirm source identity and storage reserve, then decide whether sequential expansion is instrument-ready"
+        "next_boundary": "use the GREEN independent closure audit to open a static 48-task manifest/runtime compatibility audit before task 7 or any sequential expansion"
+      },
+      "vcm_dependency_closure_audit": {
+        "config": "configs/theseus_vcm_dependency_closure_audit.json",
+        "owner": "scripts/theseus_vcm_dependency_closure_audit.py",
+        "test": "tests/test_theseus_vcm_dependency_closure_audit.py",
+        "report": "reports/theseus_vcm_dependency_closure_audit.json",
+        "owner_sha256": "f2c65bcf185e8bbb096e0f0939918fea30f8951643c6370946febf5162969b5d",
+        "config_sha256": "b6fc41f3a8fa32ae56c2f38b29dcec73b91b64dd9270f37f9081ce00de26f0c3",
+        "report_sha256": "06d7c635a9522c8e1f4df9a50f033e3a869932c106285d72a35176b094914ecf",
+        "state": "GREEN_TASK_3_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+        "task_index": 3,
+        "content_blob_count": 2,
+        "matched_lock_integrity_count": 2,
+        "expected_lock_integrity_count": 2,
+        "retained_cache_bytes": 5912042,
+        "retained_cache_file_count": 6,
+        "source_file_count": 560,
+        "source_bytes": 7862760,
+        "command_checks_green": true,
+        "cache_checks_green": true,
+        "source_checks_green": true,
+        "dependency_checks_green": true,
+        "storage_checks_green": true,
+        "network_or_dependency_execution_performed": false,
+        "repository_runner_executions": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "independent static qualification of task-3 dependency acquisition and offline-cache mechanics only; no repository runner evaluator task VCM model or mechanism result",
+        "next_boundary": "statically compare all 48 governing manifests and package-manager/runtime requirements against exact local tool versions before a second dependency task is authorized"
       }
     },
     "claim_selection_policy": {

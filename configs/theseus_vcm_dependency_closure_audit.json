@@ -1,0 +1,40 @@
+{
+  "policy": "project_theseus_vcm_dependency_closure_audit_v1",
+  "state": "INDEPENDENT_STATIC_AUDIT_BEFORE_ANY_SECOND_DEPENDENCY_TASK",
+  "owner": "scripts/theseus_vcm_dependency_closure_audit.py",
+  "owner_sha256": "f2c65bcf185e8bbb096e0f0939918fea30f8951643c6370946febf5162969b5d",
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_dependency_prefetch_canary_v2.json",
+      "sha256": "fd4058e8bc53d4066293fbdde13834007dac73342fac36d6231601abd641ea1f"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_dependency_prefetch_canary_v2.json",
+      "sha256": "a2e0cf83512442846c837e43d0cea758317a11502ece8ba07189492f4fb516b4"
+    },
+    "trusted_build_canaries": {
+      "path": "reports/theseus_vcm_trusted_build_canaries.json",
+      "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"
+    }
+  },
+  "retained_store": "runtime/vcm_evaluator/dependency_store/npm/task-03",
+  "report": "reports/theseus_vcm_dependency_closure_audit.json",
+  "authority": {
+    "static_audit_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN independent audit rederives task 3's exact retained cache integrity, source immutability, dependency-version parity, command/lifecycle/network-denial receipts, trusted sandbox qualification, and storage boundaries without network, dependency, repository, evaluator, or model execution. It qualifies only the first dependency-acquisition instrument and does not qualify the task runner, evaluator construct, VCM mechanism, model, D1, D2, or book claim."
+}
