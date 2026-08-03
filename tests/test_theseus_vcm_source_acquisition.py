@@ -170,6 +170,9 @@ def test_vcm_source_acquisition_v6_batches_transport_only() -> None:
     assert v6["graphql_transport"]["live_schema_qualification"][
         "fresh_candidate_queries"
     ] == 0
+    assert v6["graphql_transport"]["live_schema_qualification"][
+        "rest_search_node_id_resolves_as_pull_request"
+    ] is True
     lowered = acquisition_v6.GRAPHQL_QUERY.lower()
     assert "body" not in lowered
     assert "patch" not in lowered

@@ -220,6 +220,7 @@
         "v6_execution_not_before_utc": "2026-08-03T10:43:25Z",
         "v6_required_schema_fields_missing": [],
         "v6_consumed_pr_query_shape_green": true,
+        "v6_rest_search_node_id_resolves_as_pull_request": true,
         "v6_fresh_candidate_queries": 0,
         "v6_source_content_requests": 0,
         "v6_model_or_evaluator_calls": 0,

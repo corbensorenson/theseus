@@ -76,6 +76,7 @@
       "consumed_pr_query_shape_green": true,
       "consumed_pr": "urllib3/urllib3#5102",
       "consumed_pr_was_already_denylisted": true,
+      "rest_search_node_id_resolves_as_pull_request": true,
       "node_id_retained": false,
       "returned_typename": "PullRequest",
       "returned_file_node_count": 3,

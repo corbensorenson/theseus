@@ -473,8 +473,9 @@ the same metadata fields; the REST search population, rank order, filters,
 panels, and authority remain frozen.
 
 V6 is prospectively sealed at zero fresh-candidate queries. GitHub's live
-schema exposes every required field, and the exact `nodes(ids:)` query returned
-the expected PR, repository, file-path, and commit metadata for an already
+schema exposes every required field, the REST search `node_id` resolves as a
+GraphQL pull request, and the exact `nodes(ids:)` query returned the expected
+PR, repository, file-path, and commit metadata for an already
 consumed denylisted pull request without requesting body, patch, or review
 content. It batches at most 40 nodes through one GraphQL request at a time,
 keeps the 40-call REST search population unchanged, and rejects a last-commit

@@ -165,7 +165,8 @@ preserving the REST search population, hash order, and all scientific filters.
 
 The v6 GraphQL-batch successor is now prospectively sealed and live-schema
 qualified at zero fresh-candidate queries. All required schema fields exist,
-and the exact nodes query returned the expected metadata shape for the already
+the REST search node ID resolves as a GraphQL pull request, and the exact nodes
+query returned the expected metadata shape for the already
 consumed denylisted `urllib3/urllib3#5102` surface without body, patch, review,
 or source content. V6 batches 40 nodes through one request at a time, preserves
 the REST search population and all scientific selection rules, and independently

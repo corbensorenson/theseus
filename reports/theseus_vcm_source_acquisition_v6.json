@@ -2,7 +2,7 @@
   "candidate_packet_materialization_opened": false,
   "config": {
     "path": "configs/theseus_vcm_source_acquisition_v6.json",
-    "sha256": "6d5630d8be704cf5c7bb038cfdf735cacf1c8980fc15d9c33cb52e35a2d1fefb"
+    "sha256": "2930126b8303056e47de5fb7977f0e5f602591c9a833e5e4fc094d6195bfb053"
   },
   "counters": {
     "D1_cases_consumed": 0,
@@ -17,7 +17,7 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T10:22:30.345396Z",
+  "created_utc": "2026-08-03T10:26:21.375662Z",
   "faults": [],
   "live_schema_qualification": {
     "body_patch_or_review_content_returned": false,
@@ -28,6 +28,7 @@
     "node_id_retained": false,
     "recorded_utc": "2026-08-03T10:21:35Z",
     "required_schema_fields_missing": [],
+    "rest_search_node_id_resolves_as_pull_request": true,
     "returned_commit_node_count": 1,
     "returned_file_node_count": 3,
     "returned_typename": "PullRequest",
@@ -41,7 +42,7 @@
     "identities_retained": false,
     "sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774"
   },
-  "runtime_ms": 197.778,
+  "runtime_ms": 135.471,
   "selected_repository_count": 0,
   "source_content_retrieval_opened": false,
   "state": "METADATA_SELECTION_V6_GRAPHQL_BATCH_LIVE_SCHEMA_QUALIFIED",
