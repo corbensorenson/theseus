@@ -4,16 +4,16 @@
     "path": "configs/theseus_vcm_task30_dependency_canary.json",
     "sha256": "d9a265715feac13cda0c04d78dc91157afebe5d84ed6ca6e1695ea484dc70144"
   },
-  "created_utc": "2026-08-03T19:38:40.564834Z",
+  "created_utc": "2026-08-03T19:40:14.892301Z",
   "dependency_installations": 0,
-  "execution_performed": false,
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
   "lock_checksum_identity_sha256": "3b813e7ea58818aa787d322cbcc32b3bde495da25b1a32f8fa92fd36783b4dc2",
   "lock_checksum_package_count": 50,
   "maximum_inference": "A GREEN canary proves only that task 30's identical parent/target Cargo lock can fetch all 50 checksum-bearing crates once, replay with network denied, preserve source identity, and retain the bounded Cargo home. It does not compile crates, run build scripts, execute or qualify the repository runner, evaluator, task, VCM mechanism, model, D1, D2, or book claim.",
-  "network_denied_offline_replays": 0,
-  "network_enabled_dependency_fetches": 0,
+  "network_denied_offline_replays": 1,
+  "network_enabled_dependency_fetches": 1,
   "observed_parent_target_dependency_identities": {
     "parent": {
       "lock": {
@@ -42,8 +42,109 @@
   },
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_task30_dependency_canary_v1",
+  "receipts": {
+    "free_bytes_after": 29806276608,
+    "free_bytes_before": 29974634496,
+    "offline_cache": {
+      "bytes": 57402345,
+      "crate_receipts_sha256": "2c26cb1409a43a71ecc06f9b285fceca67733c0194e219c0dc632eed2dc2a0e8",
+      "expected_checksum_count": 50,
+      "faults": [],
+      "file_count": 2639,
+      "files_identity_sha256": "5caa63cf6e6e257455d4679f008b8a7173603a107d4188e3f0cffd087a1456b8",
+      "matched_checksum_count": 50,
+      "missing_packages": [],
+      "path": "/private/tmp/theseus-vcm-task30-deps-hvqa6lrb/cargo-home"
+    },
+    "offline_replay": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false",
+        "--offline"
+      ],
+      "duration_ms": 124.69,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+      "maximum_process_group_rss_mib": 3.984,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "online_cache": {
+      "bytes": 57402345,
+      "crate_receipts_sha256": "2c26cb1409a43a71ecc06f9b285fceca67733c0194e219c0dc632eed2dc2a0e8",
+      "expected_checksum_count": 50,
+      "faults": [],
+      "file_count": 2639,
+      "files_identity_sha256": "5caa63cf6e6e257455d4679f008b8a7173603a107d4188e3f0cffd087a1456b8",
+      "matched_checksum_count": 50,
+      "missing_packages": [],
+      "path": "/private/tmp/theseus-vcm-task30-deps-hvqa6lrb/cargo-home"
+    },
+    "online_fetch": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+        "fetch",
+        "--locked",
+        "--config",
+        "net.git-fetch-with-cli=false"
+      ],
+      "duration_ms": 3785.061,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+      "maximum_process_group_rss_mib": 78.0,
+      "network_denied": false,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 1581,
+      "stderr_head": "    Updating crates.io index\n Downloading crates ...\n  Downloaded num-integer v0.1.46\n  Downloaded equivalent v1.0.2\n  Downloaded leb128fmt v0.1.0\n  Downloaded home v0.5.12\n  Downloaded utf8parse v0.2.2\n  Downloaded windows-link v0.2.1\n  Downloaded nibble_vec v0.1.0\n  Downloaded endian-type v0.2.0\n  Downloaded cfg-if v1.0.4\n  Downloaded cfg_aliases v0.2.2\n  Downloaded wat v1.254.0\n  Downloaded error-code v3.3.2\n  Downloaded autocfg v1.5.1\n  Downloaded wasmi_collections v1.1.0\n  Downloaded quote v1.0.47\n  Downloaded string-interner v0.19.0\n  Downloaded memchr v2.8.3\n  Downloaded clipboard-win v5.4.1\n  Downloaded foldhash v0.1.5\n  Downloaded spin v0.9.9\n  Downloaded smallvec v1.15.2\n  Downloaded wasmi_ir v1.1.0\n  Downloaded wasmi_core v1.1.0\n  Downloaded serde_derive v1.0.229\n  Downloaded proc-macro2 v1.0.107\n  Downloaded num-traits v0.2.19\n  Downloaded log v0.4.33\n  Downloaded bitflags v2.13.1\n  Downloaded unicode-ident v1.0.24\n  Downloaded serde_core v1.0.229\n  Downloaded serde v1.0.229\n  Downloaded bumpalo v3.20.3\n  Downloaded wasm-encoder v0.254.0\n  Downloaded indexmap v2.14.0\n  Downloaded unicode-segmentation v1.13.3\n  Downloaded num-bigint v0.4.8\n  Downloaded libm v0.2.16\n  Downloaded hashbrown v0.15.5\n  Downloaded rustyline v18.0.1\n  Downloaded hashbrown v0.17.1\n  Downloaded wast v254.0.0\n  Downloaded radix_trie v0.3.0\n  Downloaded wasmi v1.1.0\n  Downloaded wasmparser v0.239.0\n  Downloaded wasmparser v0.254.0\n  Downloaded unicode-width v0.2.2\n  Downloaded syn v3.0.3\n  Downloaded nix v0.31.3\n  Downloaded libc v0.2.186\n  Downloaded windows-sys v0.61.2\n",
+      "stderr_sha256": "465c5119cff232775fd59e1b5b1cba704311edc7b2e9091ad1db1ec9be219813",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "repository_extraction": {
+      "member_receipts_sha256": "7ea7b024b6e73b45524136714f696f4a708bf6b3599fd731ba7998e3e1e75908",
+      "regular_file_bytes": 9945623,
+      "regular_file_count": 1545
+    },
+    "repository_source_after": {
+      "bytes": 9945623,
+      "file_count": 1545,
+      "identity_sha256": "485c056ade1728dffed1c9dda60bf6d29afb998bba5fa11c6da746e837871b3b"
+    },
+    "repository_source_before": {
+      "bytes": 9945623,
+      "file_count": 1545,
+      "identity_sha256": "485c056ade1728dffed1c9dda60bf6d29afb998bba5fa11c6da746e837871b3b"
+    },
+    "retained_store": {
+      "bytes": 57402345,
+      "crate_receipts_sha256": "2c26cb1409a43a71ecc06f9b285fceca67733c0194e219c0dc632eed2dc2a0e8",
+      "expected_checksum_count": 50,
+      "faults": [],
+      "file_count": 2639,
+      "files_identity_sha256": "5caa63cf6e6e257455d4679f008b8a7173603a107d4188e3f0cffd087a1456b8",
+      "matched_checksum_count": 50,
+      "missing_packages": [],
+      "path": "runtime/vcm_evaluator/dependency_store/cargo/task-30"
+    }
+  },
   "repository_build_executions": 0,
   "repository_runner_executions": 0,
-  "state": "READY_FOR_TASK_30_EXACT_CARGO_DEPENDENCY_CANARY",
-  "trigger_state": "PAUSED"
+  "state": "TASK_30_EXACT_CARGO_DEPENDENCY_CACHE_ACQUIRED_AND_OFFLINE_REPLAY_QUALIFIED",
+  "trigger_state": "GREEN"
 }

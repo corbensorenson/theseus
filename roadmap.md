@@ -892,9 +892,12 @@ exposed the same 12 lock-compatible runtime distributions, and preserved its
 reparsed both 41-package locks and 24 cached metadata records, and rederived the
 commands, network phases, and storage boundaries without execution. Required
 closures 4 and 5 are qualified. Frozen schedule ordinal 5 is task 30's single
-identical parent/target Cargo closure. Its 50-checksum denominator, exact
-Rust/Cargo 1.97.1 tools, fetch-only command, deny-network replay, bounded store,
-and zero downstream authority are prospectively sealed at zero execution.
+identical parent/target Cargo closure. Its 50-checksum fetch and deny-network
+replay are GREEN: all crates match, 2,639 cache files/57,402,345 bytes are
+retained, and the 1,545-file source tree is immutable. The independent audit
+rederives every closure invariant without execution. Required closure 6 is
+qualified. Frozen schedule ordinal 6 is task 26's single identical parent/target
+uv closure; seal it before either dependency or repository execution.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

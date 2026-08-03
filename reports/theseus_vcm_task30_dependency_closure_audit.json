@@ -1,0 +1,100 @@
+{
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_task30_dependency_canary.json",
+      "sha256": "d9a265715feac13cda0c04d78dc91157afebe5d84ed6ca6e1695ea484dc70144"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_task30_dependency_canary.json",
+      "sha256": "6a7a94dca1afab5537009e48a6c7c0c24b2e37193987ccbaceb7988969277040"
+    },
+    "trusted_build_canaries": {
+      "path": "reports/theseus_vcm_trusted_build_canaries.json",
+      "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "command_checks": {
+    "offline_boundary_clear": true,
+    "offline_command_exact": true,
+    "offline_deny_network_phase": true,
+    "offline_returncode_zero": true,
+    "online_boundary_clear": true,
+    "online_command_exact": true,
+    "online_network_phase": true,
+    "online_returncode_zero": true
+  },
+  "config": {
+    "path": "configs/theseus_vcm_task30_dependency_closure_audit.json",
+    "sha256": "ecb1e7a093534cf15a74c787572878234038ad5b0ba8aadc9be6101b263a8272"
+  },
+  "created_utc": "2026-08-03T19:42:03.140888Z",
+  "dependency_installations": 0,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN independent audit rederives task 30's 50 Cargo lock checksums, retained crate/cache identity, source immutability, exact command and deny-network receipts, trusted sandbox qualification, and storage boundaries without network, dependency, build, repository, evaluator, or model execution. It qualifies only the sixth required dependency closure and does not qualify build scripts, the task runner, evaluator construct, VCM, a model, D1, D2, or a book claim.",
+  "network_or_dependency_execution_performed": false,
+  "observations": {
+    "candidate_or_control_calls": 0,
+    "current_free_bytes": 28937916416,
+    "dependency_installations": 0,
+    "external_reference_calls": 0,
+    "lock_checksum_package_count": 50,
+    "matched_checksum_count": 50,
+    "parent_target_or_evaluator_executions": 0,
+    "repository_build_executions": 0,
+    "repository_runner_executions": 0,
+    "retained_store_bytes": 57402345,
+    "retained_store_file_count": 2639,
+    "source_bytes": 9945623,
+    "source_file_count": 1545,
+    "task_index": 30
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "phase_checks": {
+    "offline_faults_empty": true,
+    "online_faults_empty": true,
+    "online_offline_cache_exact": true
+  },
+  "policy": "project_theseus_vcm_task30_dependency_closure_audit_v1",
+  "rederived_source": {
+    "bytes": 9945623,
+    "file_count": 1545,
+    "identity_sha256": "485c056ade1728dffed1c9dda60bf6d29afb998bba5fa11c6da746e837871b3b"
+  },
+  "rederived_store": {
+    "bytes": 57402345,
+    "crate_receipts_sha256": "2c26cb1409a43a71ecc06f9b285fceca67733c0194e219c0dc632eed2dc2a0e8",
+    "expected_checksum_count": 50,
+    "file_count": 2639,
+    "files_identity_sha256": "5caa63cf6e6e257455d4679f008b8a7173603a107d4188e3f0cffd087a1456b8",
+    "matched_checksum_count": 50,
+    "missing_packages": []
+  },
+  "repository_build_executions": 0,
+  "repository_runner_executions": 0,
+  "retained_store": "runtime/vcm_evaluator/dependency_store/cargo/task-30",
+  "source_checks": {
+    "archive_matches_after": true,
+    "archive_matches_before": true,
+    "before_after_identical": true
+  },
+  "state": "TASK_30_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+  "static_audit_only": true,
+  "storage_checks": {
+    "current_above_reserve": true,
+    "run_after_above_reserve": true,
+    "run_before_above_reserve": true,
+    "store_below_ceiling": true
+  },
+  "store_checks": {
+    "all_crates_matched": true,
+    "bytes_match": true,
+    "checksum_denominator_exact": true,
+    "crate_receipts_match": true,
+    "files_match": true,
+    "identity_matches": true,
+    "no_missing_crates": true
+  },
+  "trigger_state": "GREEN"
+}
