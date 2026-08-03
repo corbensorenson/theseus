@@ -1,0 +1,89 @@
+{
+  "candidate_generation_opened": false,
+  "config_sha256": "734ea1d38ecab70d43b156c5c6118afaea60023c7e80753f5e71d9b6226ae239",
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T08:06:06.930135Z",
+  "faults": [],
+  "frozen_model_contract": {
+    "faults": [],
+    "identity": {
+      "decoder": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "kv_bits": null,
+        "kv_group_size": null,
+        "maximum_tokens": 262144,
+        "quantized_kv_start": null,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "temperature": 0.0,
+        "worker_maximum_action_tokens": 262144
+      },
+      "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+      "generation_boundary": {
+        "ceiling_hit_is_instrument_invalid": true,
+        "model_declared_context_window_tokens": 262144,
+        "numeric_ceiling_source": "model_declared_context_window",
+        "policy": "configs/theseus_generation_completion_policy.json",
+        "project_selected_quality_token_cap": null
+      },
+      "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "runtime": "mlx_lm_local_metal",
+      "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+      "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+    },
+    "model_card": {
+      "chat_template_kwargs": {
+        "enable_thinking": false
+      },
+      "maximum_action_tokens": 262144,
+      "repetition_context_size": 128,
+      "repetition_penalty": 1.05,
+      "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+      "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+      "temperature": 0.0
+    },
+    "ready": true,
+    "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+    "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json"
+  },
+  "generation_indices": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18
+  ],
+  "hidden_evaluation_opened": false,
+  "host_watchdog_seconds": 600,
+  "policy": "project_theseus_semantic_ir_production_adequacy_campaign_audit_v6",
+  "runtime_ms": 7.537,
+  "sealed_task_count": 18,
+  "trigger_state": "GREEN",
+  "watchdog_classifier_precedence": "backend_telemetry_before_route_consequence"
+}

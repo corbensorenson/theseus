@@ -351,8 +351,13 @@ parent, target, benign, required-mechanism mutation, missing-path, and
 unauthorized-path controls before packet creation. Unexposed indices 5-18 were
 regenerated—not byte-copied—under the same compact ABI. The resulting pool has
 18 unique repositories, three tasks in each of six strata, zero candidate/model
-calls, and a 45,113-token maximum exact prompt. Bind the candidate runner and
-blind scorer to this exact pool and runtime before opening candidate generation.
+calls, and a 45,113-token maximum exact prompt. The v6 campaign binding is also
+now GREEN under a call-free audit. It hash-binds the exact compact runtime,
+frozen TMax identity, independent fresh/base evaluators, candidate runner, blind
+scorer, complete-artifact/EOS termination, 600-second infrastructure watchdog,
+and exactly 36 local calls. Its versioned receipt namespace and journal cannot
+collide with or resume from v5. Candidate generation is now the active step;
+hidden scoring remains closed until all 18 candidates and 36 receipts seal.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
@@ -529,11 +534,11 @@ Use existing owners; create no new cleanup or report family.
    evaluator interface, and campaign-derived cost authority with zero calls.
 3. **Complete:** repair the exact Semantic-IR identity/coverage/target/unit
    mechanics on bounded non-claim evidence through the production path.
-4. **Active:** preserve the v5 partial run, replace its redundant statement
-   inventory with one compact integrity-bound ABI, retire all exposed surfaces,
-   and seal a uniform fresh adequacy denominator. If the independent adequacy
-   run then fails, freeze the implementation and select the next
-   architecture-shaping residual; do not open fresh claim tasks.
+4. **Active:** run the prospectively audited v6 compact adequacy denominator,
+   seal all 18 candidates before independent hidden scoring, and classify any
+   watchdog or abnormal completion as invalid infrastructure. If the adequacy
+   score fails, freeze the implementation and select the next architecture-
+   shaping residual; do not open fresh claim tasks.
 5. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
    sealed before the first arm opened.
