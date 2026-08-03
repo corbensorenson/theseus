@@ -861,7 +861,11 @@ parent and target manifest/lock identities match, and the lock contains exact
 `@moshcoder/moshpit-dns@0.2.2`. The lifecycle-disabled online pnpm install and
 network-denied offline replay are GREEN; both produced exact dependency parity,
 the 244 source files stayed immutable, and the bounded store retained 9 files /
-56,759 bytes. Independently audit the closure before any repository runner.
+56,759 bytes. The independent static audit is GREEN: all 8 pnpm-index files,
+store/source identity, dependency parity, commands, deny-network evidence, and
+storage reserve rederive without execution. Frozen schedule ordinal 3, task 36,
+requires Rust 1.97 while the bound profile is 1.90; bind that exact toolchain
+before any third dependency acquisition or repository runner.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

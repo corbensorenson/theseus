@@ -1,0 +1,15 @@
+{
+  "policy": "project_theseus_vcm_task7_dependency_closure_audit_v1",
+  "state": "INDEPENDENT_STATIC_AUDIT_BEFORE_TASK_7_REPOSITORY_RUNNER",
+  "owner": "scripts/theseus_vcm_task7_dependency_closure_audit.py",
+  "owner_sha256": "1b444c2726bef8fe8d17238947e02363284238ff9e46e74afff877015e787754",
+  "artifacts": {
+    "canary_config": {"path": "configs/theseus_vcm_task7_dependency_canary.json", "sha256": "974344944cf2ebcaac56c0032c9d9cf3f8faf6b575d04237114e5dd7b684d617"},
+    "canary_report": {"path": "reports/theseus_vcm_task7_dependency_canary.json", "sha256": "56523685b3eba8b07570813f51b1e745ad5629b25e021e46ccaad93f8b985e95"},
+    "trusted_build_canaries": {"path": "reports/theseus_vcm_trusted_build_canaries.json", "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"}
+  },
+  "retained_store": "runtime/vcm_evaluator/dependency_store/pnpm/task-07",
+  "report": "reports/theseus_vcm_task7_dependency_closure_audit.json",
+  "authority": {"static_audit_authorized": true, "network_calls_authorized": false, "dependency_installation_authorized": false, "repository_runner_execution_authorized": false, "parent_target_evaluator_execution_authorized": false, "candidate_packet_materialization_authorized": false, "local_model_calls_authorized": false, "external_reference_calls_authorized": false, "teacher_calls_authorized": false, "training_rows_authorized": false, "serving_authorized": false, "D1_authorized": false, "D2_authorized": false, "book_support_promotion_authorized": false, "user_or_operator_gate": false},
+  "maximum_inference": "A GREEN independent audit rederives task 7's exact retained pnpm index/content integrity, source immutability, dependency-version parity, command/lifecycle/network-denial receipts, trusted sandbox qualification, and storage boundaries without network, dependency, repository, evaluator, or model execution. It qualifies only the second dependency-acquisition instrument and does not qualify the task runner, evaluator construct, VCM mechanism, model, D1, D2, or book claim."
+}

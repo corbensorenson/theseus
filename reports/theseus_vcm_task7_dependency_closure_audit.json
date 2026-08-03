@@ -1,0 +1,107 @@
+{
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_task7_dependency_canary.json",
+      "sha256": "974344944cf2ebcaac56c0032c9d9cf3f8faf6b575d04237114e5dd7b684d617"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_task7_dependency_canary.json",
+      "sha256": "56523685b3eba8b07570813f51b1e745ad5629b25e021e46ccaad93f8b985e95"
+    },
+    "trusted_build_canaries": {
+      "path": "reports/theseus_vcm_trusted_build_canaries.json",
+      "sha256": "edda934d3df0fb968bc0c3b3e6a539640b52b6f2919c893949bd9de6644960ae"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "command_checks": {
+    "offline_args_exact": true,
+    "offline_boundary_clear": true,
+    "offline_deny_network_phase": true,
+    "offline_lifecycle_disabled": true,
+    "offline_returncode_zero": true,
+    "offline_store_flag_exact": true,
+    "online_args_exact": true,
+    "online_boundary_clear": true,
+    "online_lifecycle_disabled": true,
+    "online_network_phase": true,
+    "online_returncode_zero": true,
+    "online_store_flag_exact": true
+  },
+  "config": {
+    "path": "configs/theseus_vcm_task7_dependency_closure_audit.json",
+    "sha256": "f8c2fb1702074ce5f67902b7a13aaf5178d5e3d7f313fa43a1c831148105a17c"
+  },
+  "created_utc": "2026-08-03T18:53:25.030975Z",
+  "dependency_checks": {
+    "offline_faults_empty": true,
+    "online_faults_empty": true,
+    "online_offline_exact": true,
+    "versions_exact": true
+  },
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN independent audit rederives task 7's exact retained pnpm index/content integrity, source immutability, dependency-version parity, command/lifecycle/network-denial receipts, trusted sandbox qualification, and storage boundaries without network, dependency, repository, evaluator, or model execution. It qualifies only the second dependency-acquisition instrument and does not qualify the task runner, evaluator construct, VCM mechanism, model, D1, D2, or book claim.",
+  "network_or_dependency_execution_performed": false,
+  "observations": {
+    "candidate_or_control_calls": 0,
+    "current_free_bytes": 36714283008,
+    "external_reference_calls": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "pnpm_index_declared_file_count": 8,
+    "pnpm_index_matched_file_count": 8,
+    "repository_runner_executions": 0,
+    "retained_store_bytes": 56759,
+    "retained_store_file_count": 9,
+    "source_bytes": 1717748,
+    "source_file_count": 244,
+    "task_index": 7
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task7_dependency_closure_audit_v1",
+  "rederived_pnpm_index": {
+    "declared_file_count": 8,
+    "index_count": 1,
+    "index_path": "runtime/vcm_evaluator/dependency_store/pnpm/task-07/v10/index/c6/8080573157ec229e0848003b9f1523c78756276ec0416288c6cf5aa135e18c-@moshcoder+moshpit-dns@0.2.2.json",
+    "index_sha256": "c6c0b52e16f923a3b40d3f22906fac1472825139f1f45d04808a1e6494b772f5",
+    "matched_file_count": 8,
+    "name": "@moshcoder/moshpit-dns",
+    "requires_build": false,
+    "version": "0.2.2"
+  },
+  "rederived_source": {
+    "bytes": 1717748,
+    "file_count": 244,
+    "identity_sha256": "29564cd2656ec2551872162a8558ff4125b189759769bb4854cfe1ff0cabf94b"
+  },
+  "rederived_store": {
+    "bytes": 56759,
+    "file_count": 9,
+    "identity_sha256": "07d55efddf6c0caea823638b5624cae4a514c5d21169ab362aab9a65f2654b96"
+  },
+  "repository_runner_executions": 0,
+  "retained_store": "runtime/vcm_evaluator/dependency_store/pnpm/task-07",
+  "source_checks": {
+    "archive_matches_after": true,
+    "archive_matches_before": true,
+    "before_after_identical": true
+  },
+  "state": "TASK_7_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+  "static_audit_only": true,
+  "storage_checks": {
+    "current_above_reserve": true,
+    "run_after_above_reserve": true,
+    "run_before_above_reserve": true,
+    "store_below_ceiling": true
+  },
+  "store_checks": {
+    "all_index_files_present_and_integral": true,
+    "bytes_match": true,
+    "files_match": true,
+    "identity_matches": true,
+    "index_name_exact": true,
+    "index_version_exact": true,
+    "one_index_entry": true
+  },
+  "trigger_state": "GREEN"
+}
