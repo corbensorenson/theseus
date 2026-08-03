@@ -140,6 +140,14 @@ queries. It resolves head chronology through the base PR's commit list and turns
 transport exceptions into PAUSED receipts. The v3 pool, rank order, filters,
 panels, and authority are unchanged. One v4 metadata run is active.
 
+V4 then correctly paused on a transient GitHub repository-metadata failure; the
+same endpoint succeeded on immediate recheck. It retained zero identities and
+opened no source, evaluator, or model path. The emitted preflight-derived zero
+metadata counter was invalid for the interrupted execution and is explicitly
+superseded by an exact-unknown count with a 40-request lower bound. The next
+owner must prospectively add bounded transport retries and checkpointed request
+accounting without changing any scientific selection rule.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -320,7 +328,8 @@ authorize regenerating historical reports or reopening neural work.
    now has a green zero-query preflight that expands only the deterministic
    search pool and batches transport, but its run exposed a fork-head transport
    bug before any identity sealed. It is preserved and v4's owner-only repair is
-   green at zero queries. Run it once. Then
+   preserved; v4 then paused on transient transport with zero identities sealed.
+   Bind only bounded retries and checkpointed accounting. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

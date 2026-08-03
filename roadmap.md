@@ -450,6 +450,13 @@ through the base PR's commit list, including fork-origin PRs, and converts any
 transport exception into a PAUSED receipt. Pool, eligibility, rank order,
 panels, and authority are unchanged. One v4 run is active.
 
+V4 then paused correctly on a transient public-metadata failure, and the same
+endpoint succeeded on immediate recheck. It retained zero identities and opened
+no source, evaluator, or model path. Its inherited zero request counter is
+superseded by exact-unknown accounting with a 40-request lower bound. The next
+repair may add only bounded retries and checkpointed accounting; selection
+science remains frozen.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -637,8 +644,9 @@ Use existing owners; create no new cleanup or report family.
    claim panels. Attempt 1 failed closed with an insufficient Python pool;
    v2 improved eligibility but still failed closed. Preserve both; seal and run
    the pool-expansion v3 exposed a fork-head transport bug. Preserve it, repair
-   only that owner; v4 is green at zero queries. Run it once, then bind exact
-   sources and packets,
+   only that owner; v4 then paused on transient transport with zero identities.
+   Bind bounded retries and checkpointed accounting only, then bind exact sources
+   and packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
