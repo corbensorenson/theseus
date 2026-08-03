@@ -25,7 +25,7 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T02:49:06.239988Z",
+  "created_utc": "2026-08-03T02:52:52.663794Z",
   "evaluator_qualification": {
     "path": "reports/theseus_semantic_ir_production_adequacy_evaluator_qualification.json",
     "sha256": "448544a147595413b0d8d0c7523d9442571651a7f11b49d38b9e5a5c9eb9c35a"
@@ -60,7 +60,7 @@
   "production_create_file_supported": true,
   "repaired_representation_preflight": {
     "path": "reports/theseus_semantic_ir_production_adequacy_task_pool_repaired_preflight.json",
-    "sha256": "a6258a4185bf783f8b997bae46d1084e3a5a68e0d487de6bc3444174ee7eef88"
+    "sha256": "ff3ce07e88b0ab0d4c2e4df3a504fbae9dd25fae9ae1fe4d2325e46ab9088f13"
   },
   "rows": [],
   "sealed_packet_count": 0,
@@ -68,7 +68,7 @@
   "task_count": 18,
   "task_pool_owner": {
     "path": "scripts/theseus_semantic_ir_production_adequacy_task_pool.py",
-    "sha256": "da83f43fceacf1ddf3ea7443f4c7285f9f845a1263061c03f533d02da236adf5"
+    "sha256": "2268635650db18f5a260b6ca6434ff510ea9c128c35602748bd57d7ee9eb07ad"
   },
   "trigger_state": "GREEN"
 }

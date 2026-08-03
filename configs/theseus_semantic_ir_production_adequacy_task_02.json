@@ -1,0 +1,86 @@
+{
+  "allowed_effect_paths": [
+    "sktime/transformations/tsfresh.py"
+  ],
+  "campaign_index": 2,
+  "candidate_visible_context": {
+    "full_selected_parent_sources": true,
+    "missing_allowed_effect_paths": [],
+    "project_selected_character_or_token_cap": null,
+    "reads": [
+      {
+        "end_line": 773,
+        "path": "sktime/transformations/tsfresh.py",
+        "start_line": 1
+      }
+    ],
+    "searches": []
+  },
+  "effect_authority": "disposable_snapshot_only",
+  "family": "licensed_source_disjoint_python_causal_repair",
+  "maximum_inference": "One implementation-adequacy observation only; no treatment, D1, D2, serving, training, or book-support claim.",
+  "natural_request": "Preserve the first-occurrence order of instance identifiers when transformed features are reindexed, including inputs whose identifier column is reordered or contains duplicates. Preserve distinct identifiers and the rest of transformation behavior. Modify only sktime/transformations/tsfresh.py.",
+  "obligation_dependencies": [
+    {
+      "after": "O1",
+      "before": "O2"
+    }
+  ],
+  "obligations": [
+    {
+      "id": "O1",
+      "kind": "require",
+      "text": "Transformed features are reindexed in stable first-occurrence identifier order even when identifiers repeat."
+    },
+    {
+      "id": "O2",
+      "kind": "preserve",
+      "text": "Distinct identifier values and all unrelated transformation behavior remain unchanged."
+    },
+    {
+      "id": "O3",
+      "kind": "non_goal",
+      "text": "Modify only the declared allowed effect paths; do not alter unrelated behavior or files."
+    }
+  ],
+  "opaque_task_id": "semantic-ir-adequacy-02",
+  "partition": "semantic_ir_production_implementation_adequacy",
+  "policy": "project_theseus_p4_cognitive_compilation_task_v1",
+  "semantic_ir_contract": {
+    "create_file_allowed_only_for_declared_missing_effect_paths": true,
+    "maximum_semantic_scope_nodes": 18,
+    "maximum_symbol_nodes": 18,
+    "role_partition_source_target_loss_and_dependency_identity_required": true,
+    "version": "THESEUS_SEMANTIC_IR_V3"
+  },
+  "source_archive": "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/semantic-adequacy-02-parent.tar.gz",
+  "source_archive_root": "semantic-adequacy-02",
+  "source_archive_sha256": "ac8537cce8262f440222d85d5342559581337105052bb05e84616fb7ef87f3a5",
+  "source_provenance": {
+    "license_spdx": "BSD-3-Clause",
+    "revision": "8432dcc3555de9957168055cdcc62e79870c16b8",
+    "url": "https://github.com/sktime/sktime"
+  },
+  "state": "SEALED_BEFORE_CANDIDATE_GENERATION",
+  "visible_feedback_map": [
+    {
+      "marker": "SyntaxError",
+      "obligation_ids": [
+        "O1",
+        "O2",
+        "O3"
+      ]
+    }
+  ],
+  "visible_verifier": {
+    "answer_specific": false,
+    "candidate_prompt_visibility": false,
+    "command": [
+      "python3",
+      "-c",
+      "import ast,sys; [ast.parse(open(p, encoding='utf-8').read(), filename=p) for p in sys.argv[1:]]",
+      "sktime/transformations/tsfresh.py"
+    ],
+    "timeout_seconds": 60
+  }
+}

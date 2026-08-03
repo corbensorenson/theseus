@@ -5436,7 +5436,7 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "evaluator_qualification_green_task_packet_materialization_active",
+        "status": "task_pool_sealed_adequacy_runner_binding_active",
         "source_bindings": {
           "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
           "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
@@ -5474,9 +5474,17 @@
           "construct_amended_materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v4_audit.json",
           "renewed_source_construct_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review_v2.json",
           "evaluator_qualification_owner": "scripts/theseus_semantic_ir_production_adequacy_evaluator_qualification.py",
-          "evaluator_qualification_report": "reports/theseus_semantic_ir_production_adequacy_evaluator_qualification.json"
+          "evaluator_qualification_report": "reports/theseus_semantic_ir_production_adequacy_evaluator_qualification.json",
+          "representation_failure_receipt": "reports/theseus_semantic_ir_production_adequacy_task_pool_representation_failure.json",
+          "adequacy_runtime_owner": "scripts/theseus_semantic_ir_production_adequacy_runtime.py",
+          "representation_repair_preflight": "reports/theseus_semantic_ir_production_adequacy_task_pool_repaired_preflight.json",
+          "task_pool_owner": "scripts/theseus_semantic_ir_production_adequacy_task_pool.py",
+          "task_pool_test": "tests/test_theseus_semantic_ir_production_adequacy_task_pool.py",
+          "sealed_task_pool": "reports/theseus_semantic_ir_production_adequacy_task_pool.json",
+          "candidate_task_manifests": "configs/theseus_semantic_ir_production_adequacy_task_*.json",
+          "candidate_packet_manifests": "configs/theseus_semantic_ir_production_adequacy_candidate_packet_*.json"
         },
-        "current_boundary": "The task-11 construct failure and sandbox transport pause remain preserved, and the v4 source layer remains sealed. Independent evaluator qualification is GREEN for all 18 causal slices: 36 parent/target observations and 72 controls establish parent-negative, target-positive, benign-equivalent acceptance, and required-mechanism, missing-path, and unauthorized-path rejection. The evaluator owner is content-bound and no model/reference call occurred. Candidate-visible task packets must now be materialized from natural requests, callable surfaces, parent source, and obligations only; a recursive anti-cheating audit and final pool seal are still required before model exposure.",
+        "current_boundary": "The task-11 construct failure, sandbox transport pause, and CREATE_FILE representation failure remain preserved. A versioned adequacy runtime repaired the two missing-file causal slices without changing the historical production owner hash. All 18 exact candidate prompts are now sealed from natural requests, obligation roles and dependencies, complete selected parent sources, semantic identities, and declared missing paths only. Recursive forbidden-field checks, target/revision exclusion, exact prompt replay, full-parent inclusion, physical-context headroom, and zero model/reference/teacher/training/D1/D2 counters are GREEN. The next owner is the call-free adequacy campaign runner and independent scoring integration; model exposure remains closed until that runner is source-bound and audited.",
         "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },
