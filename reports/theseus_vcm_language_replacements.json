@@ -1,0 +1,37 @@
+{
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_language_replacements.json",
+    "sha256": "e74189fa991af038d8970744ca56c4f7595244111fd3e503c5428b53d008f890"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_language_scope_classification_calls": 0,
+    "local_model_calls": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "public_metadata_selection_requests": 0,
+    "public_metadata_title_requests": 0,
+    "public_source_content_requests": 0,
+    "source_archives_materialized": 0,
+    "source_bytes_materialized": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T11:47:16.081693Z",
+  "faults": [],
+  "hidden_evaluation_opened": false,
+  "maximum_inference": "A GREEN report proves only that six frozen-rule, source-disjoint, same-panel, same-programming-language replacements have English natural-language requests and content-bound changed source/verifier archives. It does not admit the combined panel until its independent audit passes, execute repositories, qualify an evaluator, authorize candidate or local/Luna calls, establish VCM usefulness, or move D1, D2, serving, training, or book support.",
+  "policy": "project_theseus_vcm_language_replacements_v1",
+  "replacement_set_admitted": false,
+  "selected_repository_count": 0,
+  "source_content_retrieval_opened": false,
+  "source_panel_audit": {
+    "path": "reports/theseus_vcm_source_panel_audit.json",
+    "sha256": "64c2f667f6542a950315f4a92154cb6c2c27caa0af20a88a9649161345a34f83"
+  },
+  "state": "SIX_LANGUAGE_REPLACEMENT_PREFLIGHT_GREEN",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,89 @@
+{
+  "policy": "project_theseus_vcm_language_replacements_v1",
+  "state": "PROSPECTIVE_SIX_SLOT_ENGLISH_SCOPE_REPAIR_BEFORE_QUERIES",
+  "purpose": "Replace only the six non-English natural-language request slots with frozen-rule, same-panel, same-programming-language, English candidates whose selected source and verifier bytes both change.",
+  "scientific_selection_config": "configs/theseus_vcm_source_acquisition_v7.json",
+  "metadata_selection_report": "reports/theseus_vcm_source_acquisition_v7.json",
+  "replacement_28_report": "reports/theseus_vcm_source_replacement_28.json",
+  "source_panel_audit_report": "reports/theseus_vcm_source_panel_audit.json",
+  "source_bindings": [
+    {"id": "graphql_selector_owner", "path": "scripts/theseus_vcm_source_acquisition_v6.py", "sha256": "319b4958e9b7559b8676281a59a09acc2f8323570d80273216cc033fc9a35798"},
+    {"id": "source_materialization_owner", "path": "scripts/theseus_vcm_source_materialization.py", "sha256": "d632093e45e856ce0526dfbe7e544d6b24ab6b688543bc8b24db8921af0334bf"},
+    {"id": "language_classifier_source", "path": "scripts/theseus_language_scope.swift", "sha256": "547c188b979350cb51fb2336b9770a0df4bd40192f39daeb6709cc896e9c284d"},
+    {"id": "scientific_selection_config", "path": "configs/theseus_vcm_source_acquisition_v7.json", "sha256": "0a60abfc70113e4e660f196e5651415a8b8ef61ed7322048a1d4d738777a495f"},
+    {"id": "metadata_selection_report", "path": "reports/theseus_vcm_source_acquisition_v7.json", "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"},
+    {"id": "replacement_28_report", "path": "reports/theseus_vcm_source_replacement_28.json", "sha256": "50136db23d4ead52a9c897f4d923880830eca368be6b70c6ad2c9f86e2e36976"},
+    {"id": "source_panel_audit_report", "path": "reports/theseus_vcm_source_panel_audit.json", "sha256": "64c2f667f6542a950315f4a92154cb6c2c27caa0af20a88a9649161345a34f83"}
+  ],
+  "replacement_slots": [
+    {"index": 1, "panel": "claim", "query_language": "JavaScript", "rejected_title_sha256": "8373ec830c03bdd165b274ef7d982e6ed272d34bc0736f1b98c68b30b33313a8"},
+    {"index": 12, "panel": "claim", "query_language": "Python", "rejected_title_sha256": "f2bd5e776ad087dfb225f9cd258a58d9acbdbb91d0cce32fd94553280d786f64"},
+    {"index": 19, "panel": "claim", "query_language": "Python", "rejected_title_sha256": "f87b37636ee190a09d386c6e90042c8fd9d59c0e3435d139d1dbf50e3234b16a"},
+    {"index": 48, "panel": "claim", "query_language": "TypeScript", "rejected_title_sha256": "f069b082e55761692277658a62924f18b196d0f64cdc173995f47721d989802b"},
+    {"index": 51, "panel": "claim", "query_language": "TypeScript", "rejected_title_sha256": "bbc0a469422ac5362da26fcd9999148ff71e5dfa987b092ddcb721fce07d4cee"},
+    {"index": 56, "panel": "control_qualification", "query_language": "Python", "rejected_title_sha256": "c149c1c170d7532b365a4322d1b0580e98d94e96b839c6d3523dd12c8f1589eb"}
+  ],
+  "replacement_policy": {
+    "same_search_window_query_pages_order_pacing_seed_and_metadata_eligibility_required": true,
+    "same_panel_and_programming_language_required": true,
+    "all_frozen_prior_and_task_28_repositories_excluded": true,
+    "one_pull_request_per_repository": true,
+    "english_natural_language_request_required": true,
+    "selected_source_bytes_must_change": true,
+    "selected_verifier_bytes_must_change": true,
+    "first_ranked_content_and_language_qualified_candidate_required": true,
+    "all_six_or_none_admission": true,
+    "reference_outputs_may_select_replacements": false
+  },
+  "english_language_policy": {
+    "classifier_source": "scripts/theseus_language_scope.swift",
+    "classifier_source_sha256": "547c188b979350cb51fb2336b9770a0df4bd40192f39daeb6709cc896e9c284d",
+    "swift_executable": "/usr/bin/swift",
+    "module_cache_path": "/private/tmp/theseus_swift_module_cache",
+    "required_dominant_language": "en",
+    "forbid_non_latin_scripts": true,
+    "classifier_unavailable_disposition": "PAUSED_NO_ADMISSION",
+    "classifier_is_task_scope_filter_not_candidate_generator_or_evaluator": true
+  },
+  "archive_policy": {
+    "output_roles": ["parent_source", "target_source", "parent_verifier", "target_verifier"],
+    "deterministic_tar_gzip": true,
+    "maximum_single_file_bytes": 2097152,
+    "maximum_total_materialized_bytes": 536870912,
+    "stage_privately_until_all_six_complete": true,
+    "untrusted_code_execution_authorized": false
+  },
+  "transport_retry_policy": {
+    "maximum_attempts_per_logical_request": 8,
+    "retry_delays_seconds": [1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 45.0],
+    "maximum_total_backoff_seconds_per_logical_request": 108.0,
+    "transient_http_statuses": [408, 429, 500, 502, 503, 504],
+    "permanent_candidate_http_statuses": [404, 410],
+    "retry_unknown_network_failures": true,
+    "rate_limited_403_retryable_when_explicit": true,
+    "host_transport_activation_is_not_task_or_mechanism_failure": true
+  },
+  "output_directory": "tests/fixtures/theseus_vcm_language_replacements_v1",
+  "output": "reports/theseus_vcm_language_replacements.json",
+  "checkpoint": "reports/theseus_vcm_language_replacements_checkpoint.json",
+  "authority": {
+    "public_metadata_queries_authorized": true,
+    "public_source_file_retrieval_authorized": true,
+    "public_pr_title_metadata_retrieval_authorized": true,
+    "local_language_scope_classification_authorized": true,
+    "untrusted_code_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report proves only that six frozen-rule, source-disjoint, same-panel, same-programming-language replacements have English natural-language requests and content-bound changed source/verifier archives. It does not admit the combined panel until its independent audit passes, execute repositories, qualify an evaluator, authorize candidate or local/Luna calls, establish VCM usefulness, or move D1, D2, serving, training, or book support."
+}

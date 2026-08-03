@@ -557,6 +557,19 @@ the first frozen-rule English, same-panel, same-programming-language candidates
 whose source and verifier bytes both change. Do not execute repositories or
 open packets/models while repairing language scope.
 
+The six-slot replacement owner is now prospectively sealed and GREEN at zero
+network, source, classifier, execution, and model activity. It reuses the v7
+search windows, pacing, rank seed, metadata eligibility, and retry owner;
+excludes the prior 87, frozen 62, Task 28 replacement, and every replacement
+selected earlier in the same transaction; and preserves each slot's claim or
+control role and programming language. PR titles must resolve as English under
+the bound local language-scope classifier and contain no non-Latin natural-
+language script. Content still must pass changed-source and changed-verifier
+byte gates. All 24 archives stage outside the repository and none publish
+unless all six slots succeed. This classifier is only a task-scope filter; it
+does not generate, evaluate, rank by quality, or enter any candidate/model
+denominator. One bounded replacement run is next.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

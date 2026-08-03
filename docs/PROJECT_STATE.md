@@ -237,6 +237,16 @@ is `SOURCE_PANEL_LANGUAGE_REPLACEMENTS_REQUIRED`. Replace only those six slots
 under the frozen same-panel/same-programming-language rules before evaluator
 qualification. No repository execution or model authority is open.
 
+The six-slot repair owner is now prospectively GREEN and call-free. It preserves
+each rejected slot's panel and programming language, reuses the v7 search,
+eligibility, rank, pacing, and retry contracts, and excludes every prior/frozen
+or already-selected repository. A bound local language-scope classifier admits
+only English-dominant titles and a Unicode-script guard rejects mixed non-Latin
+natural-language requests. Changed source and verifier bytes remain mandatory.
+All 24 archives stage outside the repository and publish only if all six slots
+complete. This grants no repository execution, candidate packet, evaluator,
+local/Luna, training, D1, D2, serving, or book authority.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
