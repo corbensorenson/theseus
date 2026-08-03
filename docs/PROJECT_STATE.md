@@ -155,6 +155,14 @@ writes separate logical/physical request accounting after every attempt without
 retaining repository identities. Pool, chronology, eligibility, ranking,
 panels, and every downstream closure are unchanged. One v5 run is active.
 
+V5 then exhausted its bounded retries under GitHub secondary throttling: 239
+logical requests, 271 physical attempts, 231 successes, 32 retries, and 39 HTTP
+403 attempts are checkpointed. Core quota still had 4,663 of 5,000 requests,
+showing request concurrency rather than quota exhaustion. The run retained zero
+identities and opened no source, evaluator, or model path. The next transport
+owner must batch the identical metadata fields through GraphQL nodes while
+preserving the REST search population, hash order, and all scientific filters.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -336,8 +344,9 @@ authorize regenerating historical reports or reopening neural work.
    search pool and batches transport, but its run exposed a fork-head transport
    bug before any identity sealed. It is preserved and v4's owner-only repair is
    preserved; v4 then paused on transient transport with zero identities sealed.
-   V5's bounded-retry and checkpoint owner is green at zero queries. Run it
-   once. Then
+   V5's retry owner paused on secondary throttling with exact accounting and
+   zero identities. Replace only per-candidate REST fan-out with GraphQL node
+   batches. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

@@ -464,6 +464,14 @@ every attempt without storing repository identities. The pool, eligibility,
 chronology, rank order, panels, and every downstream closure remain frozen. One
 v5 metadata run is active.
 
+V5 then paused after exhausting bounded retries under GitHub secondary
+throttling. Its checkpoint records 239 logical requests, 271 physical attempts,
+231 successes, 32 retries, and 39 HTTP 403 attempts; core quota still had 4,663
+of 5,000 requests. It retained zero identities and opened no downstream path.
+V6 may replace only the per-candidate REST fan-out with GraphQL node batches for
+the same metadata fields; the REST search population, rank order, filters,
+panels, and authority remain frozen.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -652,8 +660,9 @@ Use existing owners; create no new cleanup or report family.
    v2 improved eligibility but still failed closed. Preserve both; seal and run
    the pool-expansion v3 exposed a fork-head transport bug. Preserve it, repair
    only that owner; v4 then paused on transient transport with zero identities.
-   V5's bounded-retry/checkpoint owner is green at zero queries. Run it once,
-   then bind exact sources and packets,
+   V5 paused on secondary throttling with exact checkpoint accounting. Replace
+   only REST fan-out with batched GraphQL metadata, then bind exact sources and
+   packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
