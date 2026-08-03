@@ -881,8 +881,10 @@ stay immutable, and the bounded Cargo home retains 1,302 files/57,161,658 bytes.
 Compilation, build scripts, tests, runners, evaluators, and models stayed closed.
 The independent audit is GREEN: all 32 lock checksums, retained crates/cache,
 source identity, command/network phases, and storage limits rederive without
-execution. Frozen schedule ordinal 4 is compatible task 14; seal its exact uv
-dependency-only canary next.
+execution. The all-task pair audit corrects the target-only denominator: 38
+tasks have identical dependency identities and 10 diverge (11, 14, 17, 19, 33,
+46, 53, 54, 61, 62), so 48 tasks require 58 distinct closures. Frozen task 14
+is compatible but must seal and qualify separate parent and target uv closures.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

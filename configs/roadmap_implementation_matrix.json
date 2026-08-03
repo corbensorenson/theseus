@@ -12,7 +12,7 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_36_CLOSURE_AUDIT_GREEN_TASK_14_DEPENDENCY_CANARY_SEAL_NEXT",
+      "state": "VCM_V3_DEPENDENCY_PAIR_COVERAGE_GREEN_TASK_14_DUAL_CLOSURE_SEAL_NEXT",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1042,6 +1042,12 @@
         "owner_sha256":"0cc044f521e347a55fa0d70a1ef96f48e95db31f278c1a8274f45546a771df4a","config_sha256":"3c7c34a53dc7babda7df8e45f9cb637b6af6ba9c29e5dde12dba55c1a2826afe","test_sha256":"c8495eff1774451a85bea87bc4490c1d50136ebbf8970cb22c6a686938a5ca0a","report_sha256":"848aa849a6580e7fda0bf61f9a676a1b0c63532502aba007baf7d3b7a5a39808",
         "state":"GREEN_TASK_36_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED","task_index":36,"lock_checksum_package_count":32,"matched_checksum_count":32,"retained_store_bytes":57161658,"retained_store_file_count":1302,"source_file_count":851,"source_bytes":2111948,"network_or_dependency_execution_performed":false,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"independent static qualification of task-36 Cargo dependency-fetch and offline-cache mechanics only; no build repository runner evaluator task VCM model or mechanism result","next_boundary":"prospectively seal frozen schedule ordinal 4 task 14's exact uv lock dependency acquisition and deny-network offline replay"
+      },
+      "vcm_dependency_pair_coverage_audit": {
+        "config":"configs/theseus_vcm_dependency_pair_coverage_audit.json","owner":"scripts/theseus_vcm_dependency_pair_coverage_audit.py","test":"tests/test_theseus_vcm_dependency_pair_coverage_audit.py","report":"reports/theseus_vcm_dependency_pair_coverage_audit.json",
+        "owner_sha256":"588335ca0a1310e77c25808a6f5ed99a0d275d9b53d7cf4caba030d789dd6233","config_sha256":"9f83a555897dc48c56ebd61b5a593c2a7ef6436125c3b0efb9a63aba31cab502","test_sha256":"25d4c926a91445591773b6b2128d565b37b663b3d79bb11fa4f68eb54d748ebe","report_sha256":"0c8c3f7e1f00842021b202e021a717f436b45147a7fc04dc2d420858777443de",
+        "state":"GREEN_FORTY_EIGHT_TASK_PARENT_TARGET_DEPENDENCY_PAIR_COVERAGE_CLASSIFIED","locked_task_count":48,"identical_pair_task_count":38,"divergent_pair_task_count":10,"missing_pair_member_task_count":0,"divergent_task_indices":[11,14,17,19,33,46,53,54,61,62],"required_distinct_dependency_closure_count":58,"network_or_dependency_execution_performed":false,"repository_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"static parent/target manifest and lock coverage classification only; 48 tasks require 58 distinct dependency closures because 10 governing dependency identities diverge, but no dependency repository evaluator task VCM or model result is established","next_boundary":"prospectively seal task 14 as separate parent and target uv dependency closures before either side is fetched"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

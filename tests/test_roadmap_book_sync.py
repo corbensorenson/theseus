@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_TASK_36_CLOSURE_AUDIT_GREEN_TASK_14_DEPENDENCY_CANARY_SEAL_NEXT",
+            "VCM_V3_DEPENDENCY_PAIR_COVERAGE_GREEN_TASK_14_DUAL_CLOSURE_SEAL_NEXT",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])

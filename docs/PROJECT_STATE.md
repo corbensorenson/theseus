@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_36_CLOSURE_AUDIT_GREEN_TASK_14_DEPENDENCY_CANARY_SEAL_NEXT` | Task 36's 32-crate closure is independently GREEN. Frozen schedule ordinal 4 is compatible task 14; seal its uv dependency-only canary next |
+| Active VCM claim | `VCM_V3_DEPENDENCY_PAIR_COVERAGE_GREEN_TASK_14_DUAL_CLOSURE_SEAL_NEXT` | Parent/target coverage is GREEN: 48 tasks require 58 distinct closures because 10 governing dependency identities diverge. Task 14 requires separate parent and target uv closures |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -492,7 +492,11 @@ the retained Cargo home is 57,161,658 bytes/1,302 files, and peak RSS was 70.297
 MiB online and 3.906 MiB offline. No compilation or build script ran. The
 independent audit is GREEN: it reparsed all 32 lock checksums and rehashed every
 retained crate, source file, command phase, and storage invariant without
-execution. Frozen schedule ordinal 4, task 14, is already uv/Python compatible.
+execution. A new all-task pair audit corrected the target-only denominator: 38
+tasks have identical parent/target dependency identities, while tasks 11, 14,
+17, 19, 33, 46, 53, 54, 61, and 62 diverge. The 48 tasks therefore require 58
+distinct closures. Frozen task 14 is uv/Python compatible but must qualify its
+parent and target locks separately.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -692,7 +696,9 @@ authorize regenerating historical reports or reopening neural work.
    32-checksum fetch-only canary is prospectively sealed and **Complete:** its
    online fetch and deny-network replay are GREEN with all checksums matched.
    **Complete:** its independent audit rederives every Cargo closure invariant.
-   Seal task 14's uv dependency-only canary before expanding.
+   **Complete:** all parent/target dependency pairs are classified, correcting
+   the denominator to 58 closures. Seal task 14's separate parent and target uv
+   canaries before expanding.
    Resolve the six immutable-resolution
    tasks separately, qualify TypeScript and untrusted Rust builds, and only then
    run parent-fail/target-pass evaluator canaries before packets, scorers, calls,

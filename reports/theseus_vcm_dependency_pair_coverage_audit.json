@@ -1,0 +1,2312 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_dependency_pair_coverage_audit.json",
+    "sha256": "9f83a555897dc48c56ebd61b5a593c2a7ef6436125c3b0efb9a63aba31cab502"
+  },
+  "created_utc": "2026-08-03T19:16:35.023361Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN audit proves only that all 48 exact-lock tasks have source-bound parent and target manifest/lock identities, classifies 38 identical and 10 divergent dependency pairs, and establishes a 58-distinct-closure denominator. It performs no dependency, repository, evaluator, or model execution and does not qualify any task, VCM mechanism, D1, D2, or book claim.",
+  "network_or_dependency_execution_performed": false,
+  "observations": {
+    "candidate_or_control_calls": 0,
+    "divergent_pair_task_count": 10,
+    "divergent_task_indices": [
+      11,
+      14,
+      17,
+      19,
+      33,
+      46,
+      53,
+      54,
+      61,
+      62
+    ],
+    "external_reference_calls": 0,
+    "identical_pair_task_count": 38,
+    "locked_task_count": 48,
+    "missing_pair_member_task_count": 0,
+    "network_or_dependency_execution_performed": false,
+    "repository_executions": 0,
+    "required_distinct_dependency_closure_count": 58
+  },
+  "policy": "project_theseus_vcm_dependency_pair_coverage_audit_v1",
+  "reports": {
+    "closure_materialization": {
+      "path": "reports/theseus_vcm_repository_closure_materialization_v2.json",
+      "sha256": "0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df"
+    },
+    "prefetch_plan": {
+      "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
+      "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
+    },
+    "runner_inventory": {
+      "path": "reports/theseus_vcm_repository_runner_inventory_v3.json",
+      "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"
+    }
+  },
+  "repository_executions": 0,
+  "rows": [
+    {
+      "index": 3,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_parent.tar.gz",
+            "sha256": "3368e4e6ec82bdfc671040a82544644caeb40acc197cd99f01175ad54d75cf7d"
+          },
+          "lock": {
+            "bytes": 1250,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+          },
+          "manifest": {
+            "bytes": 2461,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_target.tar.gz",
+            "sha256": "8859614e83d8edb9aefe3affd77140229419892e39c9457c1635a3412296d64b"
+          },
+          "lock": {
+            "bytes": 1250,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "21170906650b5535d6ba2334a563c837bc3721e691985b3757677e3fdd5fc890"
+          },
+          "manifest": {
+            "bytes": 2461,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "d7d7fd6b5136cb0a5203d60368b1737625e876b0cb12d0ff6f33e4cccf902128"
+          }
+        }
+      },
+      "repository": "QoderAI/better-harness",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 1,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 7,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/07_moshcoder-moshcode_parent.tar.gz",
+            "sha256": "e726ac7ff6f7fceb2896ea1f0ffe8cfd97472e248004defcfb070c159ab3c5e0"
+          },
+          "lock": {
+            "bytes": 479,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"
+          },
+          "manifest": {
+            "bytes": 667,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/07_moshcoder-moshcode_target.tar.gz",
+            "sha256": "b81fa591eaadc4a86612595d0ddfbe4177186177ab9609ad637b2cd7e5b3f974"
+          },
+          "lock": {
+            "bytes": 479,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "ca962f0d490977a3d1bb6b36d05a5f4c8305f984066fb3135c816b206cb54776"
+          },
+          "manifest": {
+            "bytes": 667,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "402834b1b5fed1e2d921177268aa6d977cdfd7df279154d4140178ddec393eff"
+          }
+        }
+      },
+      "repository": "moshcoder/moshcode",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 2,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 36,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_parent.tar.gz",
+            "sha256": "7bfba9fcf161ebeb08cbaca77a8746d628675b728857d0fc345699a81a694b1d"
+          },
+          "lock": {
+            "bytes": 7784,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "680461bbfb2b6e77bbf3387fc7999b0a1737cf340b311adc836db8a215940e42"
+          },
+          "manifest": {
+            "bytes": 884,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_target.tar.gz",
+            "sha256": "806712b8523ab101b3c6388591dc85d3ca084bf641fdb8b2fd9a19b83273f55e"
+          },
+          "lock": {
+            "bytes": 7784,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "680461bbfb2b6e77bbf3387fc7999b0a1737cf340b311adc836db8a215940e42"
+          },
+          "manifest": {
+            "bytes": 884,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "98b9f4dfac7ea27f00d5f4af0aeda8113a187981631e72c02040e98c60b9fca0"
+          }
+        }
+      },
+      "repository": "tomerwave/godlint",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 3,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 14,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/14_scrape-badger-scrapebadger-python_parent.tar.gz",
+            "sha256": "1f10e72d4d0dff7093f5a532d63199e5974a5dfcb178a3f13558aa30ba28da38"
+          },
+          "lock": {
+            "bytes": 181170,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "ea2365c192f61a749acdac7457d1d19aec55eea3d03068dd7ad64d2874002804"
+          },
+          "manifest": {
+            "bytes": 3645,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "4931f0242b2f77adcad6241d61d1ad43758728da5d65b3abd42c487b670b410d"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/14_scrape-badger-scrapebadger-python_target.tar.gz",
+            "sha256": "1b722e7520a98e80a189277de9732e849b1c2ac0ab3f9d3e8345fbb5a88f6be5"
+          },
+          "lock": {
+            "bytes": 181170,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "e9d46f3c4907fa639ce5b41dbb11e6cd7c59b1ae792efaaf5c8f6381830a567d"
+          },
+          "manifest": {
+            "bytes": 3645,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "0bbf17d265d3baebce11ec4ed3038cb34d60f7fbf8a2cebdfff5fd9333e0dc31"
+          }
+        }
+      },
+      "repository": "scrape-badger/scrapebadger-python",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 4,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 30,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/30_kanso-lang-kanso_parent.tar.gz",
+            "sha256": "801990a64c8af1f12000ca616e2cc5b8723cbc535d48b09f419f1811670ea193"
+          },
+          "lock": {
+            "bytes": 11334,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "674d54461401ec1680d22001b7411e505ee026c1d6c0796038ced82765ea23c8"
+          },
+          "manifest": {
+            "bytes": 935,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/30_kanso-lang-kanso_target.tar.gz",
+            "sha256": "1296a0f1d18b9ff5b2b81fece4ad54749e3219dad1225d580d1a5ef3b8d1afe9"
+          },
+          "lock": {
+            "bytes": 11334,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "674d54461401ec1680d22001b7411e505ee026c1d6c0796038ced82765ea23c8"
+          },
+          "manifest": {
+            "bytes": 935,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "2889dd9aa4f3386c0af80222e15b0cccc0c00b52838e0f7e10537087351cfc3d"
+          }
+        }
+      },
+      "repository": "kanso-lang/kanso",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 5,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 26,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/26_quodeq-quodeq_parent.tar.gz",
+            "sha256": "4cd26e0f01847ee30fa6d32bbf0f0f933caad182c92387bcb63cf8c6566b4e7f"
+          },
+          "lock": {
+            "bytes": 166071,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "949801c6cd3c07565926a70c44e26d97cfa542890eebb1574a13a720560a1ad7"
+          },
+          "manifest": {
+            "bytes": 3825,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/26_quodeq-quodeq_target.tar.gz",
+            "sha256": "f6381957cc1f6ef9bbb204f3de73056ce2d42eebafa6b522dcddf65f13e6f703"
+          },
+          "lock": {
+            "bytes": 166071,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "949801c6cd3c07565926a70c44e26d97cfa542890eebb1574a13a720560a1ad7"
+          },
+          "manifest": {
+            "bytes": 3825,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+          }
+        }
+      },
+      "repository": "quodeq/quodeq",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 6,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 24,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/24_openonion-connectonion_parent.tar.gz",
+            "sha256": "01f23f0f358e8df1a1893697057883384b7bce7a26c6eee19d436c313068f642"
+          },
+          "lock": {
+            "bytes": 622929,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "1ff180c0e1e08a3f5bd3a5b2937b256d8bd8198857bc344375b230b740228881"
+          },
+          "manifest": {
+            "bytes": 5117,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "7935bb763b4d3a7a1a51e175abf9a45e8181d502e1fd1e1951c091c26bc2ed1a"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/24_openonion-connectonion_target.tar.gz",
+            "sha256": "fa6d729a366385b6a24f5203d168336edf35c17266379ea6e39b9b6016625069"
+          },
+          "lock": {
+            "bytes": 622929,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "1ff180c0e1e08a3f5bd3a5b2937b256d8bd8198857bc344375b230b740228881"
+          },
+          "manifest": {
+            "bytes": 5117,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "7935bb763b4d3a7a1a51e175abf9a45e8181d502e1fd1e1951c091c26bc2ed1a"
+          }
+        }
+      },
+      "repository": "openonion/connectonion",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 7,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 17,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/17_presidio-v-presidio-hardened-x402_parent.tar.gz",
+            "sha256": "6b1c57b7775904de81a82113733f85791e15261e6741bbb1a333a2b8eed53f36"
+          },
+          "lock": {
+            "bytes": 646467,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "50c36c4d08ecd56a56f94e5c6047036e4951930ddb9b2b87737e6578f14addf6"
+          },
+          "manifest": {
+            "bytes": 5084,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "04e28bc5c15a9488185d621dd7d5bf760a63783619fb2a99e2c114b8149278d7"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/17_presidio-v-presidio-hardened-x402_target.tar.gz",
+            "sha256": "a591b25240c32c4ac75a4a110d3045e8aed832911561a2aadf8838573f3092a0"
+          },
+          "lock": {
+            "bytes": 646698,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "4d5c12441e1b067792e603f980efa7f6e6b2c2011576669583bb7f4af827e5f6"
+          },
+          "manifest": {
+            "bytes": 5934,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "8390c290f142c4abd2c737f469583d357ecf2a2dd16cfeda1ab26ee06d4298cb"
+          }
+        }
+      },
+      "repository": "presidio-v/presidio-hardened-x402",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 8,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 15,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/15_ray-manaloto-macos-development-environment_parent.tar.gz",
+            "sha256": "6cea3d859e4b2a167127ee7f1f0422437eb2df05baf373b603781fe657e965b3"
+          },
+          "lock": {
+            "bytes": 318082,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "1b5b26c1f483480cb28f4d84a32f1fad258680328085a503a03448d58db8d07b"
+          },
+          "manifest": {
+            "bytes": 8486,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "f7d2eabbf51f03a4acefeacee086dc29d7b8ff311c224dcad43afd6db9ae5c46"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/15_ray-manaloto-macos-development-environment_target.tar.gz",
+            "sha256": "1e79b6ce94201260a645a347ff235131e8571069fb983b18a51dfca34965bf2c"
+          },
+          "lock": {
+            "bytes": 318082,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "1b5b26c1f483480cb28f4d84a32f1fad258680328085a503a03448d58db8d07b"
+          },
+          "manifest": {
+            "bytes": 8486,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "f7d2eabbf51f03a4acefeacee086dc29d7b8ff311c224dcad43afd6db9ae5c46"
+          }
+        }
+      },
+      "repository": "ray-manaloto/macos-development-environment",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 9,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 21,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/21_ctsdownloads-easyspeak_parent.tar.gz",
+            "sha256": "f6d4d65ac05ac2b4ed36dd0f7208b392d53cc8e093c605aa316c81be40bad74a"
+          },
+          "lock": {
+            "bytes": 636204,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "90196348cdfc0b6e5c0ca6064276abc7336349fa8374fbbfbe11bc3852b511e9"
+          },
+          "manifest": {
+            "bytes": 7615,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "a570ce005069af9db5ec9fe9e7b5be76acffde568e3f6aee1e9628f6e5c927d7"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/21_ctsdownloads-easyspeak_target.tar.gz",
+            "sha256": "651b7d1ee6ef27d30c9b5cf04aa0041948afbcc923c13e39340816cde6e9fe5f"
+          },
+          "lock": {
+            "bytes": 636204,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "90196348cdfc0b6e5c0ca6064276abc7336349fa8374fbbfbe11bc3852b511e9"
+          },
+          "manifest": {
+            "bytes": 7615,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "a570ce005069af9db5ec9fe9e7b5be76acffde568e3f6aee1e9628f6e5c927d7"
+          }
+        }
+      },
+      "repository": "ctsdownloads/easyspeak",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 10,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 33,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/33_elan8-sysml-v2-parser_parent.tar.gz",
+            "sha256": "dfe2d78abb0d4c89da78ffb51ed222ad2be196ffd9c1fc4d20b132acf665423c"
+          },
+          "lock": {
+            "bytes": 31215,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "75fa9777e45cf66a1919cc2258f7d6ad5ac649f4a1d46c1d6671ff3d90ec4936"
+          },
+          "manifest": {
+            "bytes": 717,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "9be233a2cdc5faaaf0af6e68575e7c0d95d15d101dcf24ee5798b7da625ad6c9"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/33_elan8-sysml-v2-parser_target.tar.gz",
+            "sha256": "a9fd174734cab6cf30f1c0c55278c1a0f1fad903aedd20146d08bf65090c1f72"
+          },
+          "lock": {
+            "bytes": 31215,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "e2824e0819c913725e25b7cf488625827f17383597188b2b8af9f84b427a039a"
+          },
+          "manifest": {
+            "bytes": 717,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "59c7c653ef17e0ce08e6f09c20eafe32a1a736b8d3a1fa7e343a53e1e87f7dd6"
+          }
+        }
+      },
+      "repository": "elan8/sysml-v2-parser",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 11,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 46,
+      "manager": "bun",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/46_celados-gkit_parent.tar.gz",
+            "sha256": "da48c57ed1b673a074a058383329c6e239c46c5e3cd43281a936ff6127716325"
+          },
+          "lock": {
+            "bytes": 33237,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "c2fc72a762ce9730722881cc989fdd0cb83dedf267b357dcb99db0470de7e26f"
+          },
+          "manifest": {
+            "bytes": 1091,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "3e153a41ec85f76d39fc3ee0d1265e47278e4cdf2b0f8999f94960b64e0f2921"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/46_celados-gkit_target.tar.gz",
+            "sha256": "0145bdb0dc2d519ff9cf106fd69b756374cee043c05744638f3e1f3c7f202414"
+          },
+          "lock": {
+            "bytes": 33237,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "c2fc72a762ce9730722881cc989fdd0cb83dedf267b357dcb99db0470de7e26f"
+          },
+          "manifest": {
+            "bytes": 1069,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "138dbe3a326a9d7b3dfa8e037afca7839817c5e786fba5f30bbc35ad99ff3cae"
+          }
+        }
+      },
+      "repository": "celados/gkit",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 12,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 19,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/19_cs0lar-treelang_parent.tar.gz",
+            "sha256": "9e46fe413550a23c80e28046248039df108d8db5c66a17c4e8ca1b2c674e809c"
+          },
+          "lock": {
+            "bytes": 426920,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "a68522def8270ee84a4ddb896cb182bb1a067ca0545ace7ad7ae566b77a5c060"
+          },
+          "manifest": {
+            "bytes": 2721,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "3a1c7150488c68916339272a8b973e8fcf4494a100056c2f40c62e6b727e537b"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/19_cs0lar-treelang_target.tar.gz",
+            "sha256": "0651db57a9a78ff3c848ec7509412f05d633ca78af08fdd7a038a5995dd46289"
+          },
+          "lock": {
+            "bytes": 426920,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "a68522def8270ee84a4ddb896cb182bb1a067ca0545ace7ad7ae566b77a5c060"
+          },
+          "manifest": {
+            "bytes": 2721,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "0cde8dee8a964ee8220468c2951f8469df8e4eb52343ce9b12079fcf1ed25463"
+          }
+        }
+      },
+      "repository": "cs0lar/treelang",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 13,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 38,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/38_surrealdb-surrealkv_parent.tar.gz",
+            "sha256": "0a16b4918f95aa366eb19a9ae9c91f334067adf39caa104e2e1279e358ab71b7"
+          },
+          "lock": {
+            "bytes": 43297,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "06f5a58bf6866260465f029299203dfa6390fc5a01da66b3bb6265505e85920b"
+          },
+          "manifest": {
+            "bytes": 8373,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "45f529e2a4d4c07687cfa139949db1a23ea057792f915922266c4c462a3faeda"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/38_surrealdb-surrealkv_target.tar.gz",
+            "sha256": "bff6c8a9f90903cb5058ec96d73101c4a065b3d12bea42d4a0c3eaf1daf6d8b4"
+          },
+          "lock": {
+            "bytes": 43297,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "06f5a58bf6866260465f029299203dfa6390fc5a01da66b3bb6265505e85920b"
+          },
+          "manifest": {
+            "bytes": 8373,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "45f529e2a4d4c07687cfa139949db1a23ea057792f915922266c4c462a3faeda"
+          }
+        }
+      },
+      "repository": "surrealdb/surrealkv",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 14,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 6,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/06_elkimek-get-based_parent.tar.gz",
+            "sha256": "c3eb9f68d2ae3073c61a7496c64273c314f4d1702f459c73e8df8584cd9aac1e"
+          },
+          "lock": {
+            "bytes": 102032,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "ff4e4312af85e790c86498f9ed8fa88dd29208b60cb214ef4a6b5396855abecb"
+          },
+          "manifest": {
+            "bytes": 2210,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "454c4904261ba755904264d9411fb4b987dc65c720e1cc2e73da7e466ba670c0"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/06_elkimek-get-based_target.tar.gz",
+            "sha256": "c2a9b16ca776ecbc14168d8a8643fe048636611b38b087220c3c216f02f7e528"
+          },
+          "lock": {
+            "bytes": 102032,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "ff4e4312af85e790c86498f9ed8fa88dd29208b60cb214ef4a6b5396855abecb"
+          },
+          "manifest": {
+            "bytes": 2210,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "454c4904261ba755904264d9411fb4b987dc65c720e1cc2e73da7e466ba670c0"
+          }
+        }
+      },
+      "repository": "elkimek/get-based",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 15,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 62,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/62_conorbronsdon-substack-mcp_parent.tar.gz",
+            "sha256": "4ca4cb23460ff67769fed3f6dbb195dc4d390ccce1d2ddbabe35a3d0c88d18d5"
+          },
+          "lock": {
+            "bytes": 98523,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "4fa8deb55ec5347dca372e821d550438e3c359a973039e8bb3a02b3e0eb72fd3"
+          },
+          "manifest": {
+            "bytes": 1240,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "1568b4dc4afed6135792a6085e604729d45806bc1f02f23c8a95ae3f2b91fe98"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/62_conorbronsdon-substack-mcp_target.tar.gz",
+            "sha256": "11beef47897544dbb181b51e50691e3cdb2cb1ef44388c06ceaf4bbecb382c8f"
+          },
+          "lock": {
+            "bytes": 98523,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "4fa8deb55ec5347dca372e821d550438e3c359a973039e8bb3a02b3e0eb72fd3"
+          },
+          "manifest": {
+            "bytes": 1240,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "ab8fbd310512c6cbae42abc832f061047aeb7f8ee657721c77d7a1854a257dd1"
+          }
+        }
+      },
+      "repository": "conorbronsdon/substack-mcp",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 16,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 60,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/60_tsz-org-tsz_parent.tar.gz",
+            "sha256": "de984ec42d12494fb394a2d464888def3e6cf01936f25dbe2fce68c39cbd09f3"
+          },
+          "lock": {
+            "bytes": 47205,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "708707f655cefa30a2e49c7824e7ce92fe1fb524752316dd365e2d68b79e2cb7"
+          },
+          "manifest": {
+            "bytes": 7895,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "f53399b4f5522b2eea231a2522a3a50f5f80509f83908da600809724dc6a6b4c"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/60_tsz-org-tsz_target.tar.gz",
+            "sha256": "9b44aab42ea6d17aa89be9cf810872b8d17e2c5d703713bb3cef83f19fcdfc9e"
+          },
+          "lock": {
+            "bytes": 47205,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "708707f655cefa30a2e49c7824e7ce92fe1fb524752316dd365e2d68b79e2cb7"
+          },
+          "manifest": {
+            "bytes": 7895,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "f53399b4f5522b2eea231a2522a3a50f5f80509f83908da600809724dc6a6b4c"
+          }
+        }
+      },
+      "repository": "tsz-org/tsz",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 17,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 31,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/31_matssun-mcp-re_parent.tar.gz",
+            "sha256": "f8a430324e3ad1e22bd97565d00db6c817ae806856e975af74df5c206d4b46f9"
+          },
+          "lock": {
+            "bytes": 55513,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "86d23a5a694bf4637fc6f4192b75ad24bb8a2526bea7fd56e34029b95b6fc328"
+          },
+          "manifest": {
+            "bytes": 12298,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "311433775370242b843c5495e75482d440a990c08693fe924eb9f7720b5147a4"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/31_matssun-mcp-re_target.tar.gz",
+            "sha256": "7046bcc01ee5a96c9b4d7f3340bf4512f1b7086fd18e3e1aa1ee0433eee85f5f"
+          },
+          "lock": {
+            "bytes": 55513,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "86d23a5a694bf4637fc6f4192b75ad24bb8a2526bea7fd56e34029b95b6fc328"
+          },
+          "manifest": {
+            "bytes": 12298,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "311433775370242b843c5495e75482d440a990c08693fe924eb9f7720b5147a4"
+          }
+        }
+      },
+      "repository": "matssun/mcp-re",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 18,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 18,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/18_nousresearch-hermes-agent_parent.tar.gz",
+            "sha256": "1e86881c53812c699ccd1ff2604256310fe8fc2e30451a40bd5f14b7fd345f87"
+          },
+          "lock": {
+            "bytes": 715010,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "960cda43f7981a88370226c1d7f5d4c50c5c111ab64a5515549f2dc1c4115b07"
+          },
+          "manifest": {
+            "bytes": 23044,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "2d8c6e3391e9d7d32e7988887a357ffc9ea53d2535be7c5657e46a2df7885378"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/18_nousresearch-hermes-agent_target.tar.gz",
+            "sha256": "18d797a836a97717cdbf7884fff3a8b328077af936a25edac3fef20a8ac3fd60"
+          },
+          "lock": {
+            "bytes": 715010,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "960cda43f7981a88370226c1d7f5d4c50c5c111ab64a5515549f2dc1c4115b07"
+          },
+          "manifest": {
+            "bytes": 23044,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "2d8c6e3391e9d7d32e7988887a357ffc9ea53d2535be7c5657e46a2df7885378"
+          }
+        }
+      },
+      "repository": "NousResearch/hermes-agent",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 19,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 28,
+      "manager": "uv",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/28_microsoft-winml-cli_parent.tar.gz",
+            "sha256": "9353f268af2b624ce57953dedac4f4c813e5b31a447f156b9c8a3ee7e975bbcb"
+          },
+          "lock": {
+            "bytes": 253508,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "1956357983bda4308684e543f793fa84e2f31cbb07be85a8fc196ed9d77c14b1"
+          },
+          "manifest": {
+            "bytes": 21912,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "e8c99cc369509712572c2ca53617b004628a3216ea4c88a1d61a52022dd21a8d"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/28_microsoft-winml-cli_target.tar.gz",
+            "sha256": "ea9b11416af3796f1f706aa401824d41a3d8c1824bc90934da7c070959900ed9"
+          },
+          "lock": {
+            "bytes": 253508,
+            "match_count": 1,
+            "path": "uv.lock",
+            "sha256": "1956357983bda4308684e543f793fa84e2f31cbb07be85a8fc196ed9d77c14b1"
+          },
+          "manifest": {
+            "bytes": 21912,
+            "match_count": 1,
+            "path": "pyproject.toml",
+            "sha256": "e8c99cc369509712572c2ca53617b004628a3216ea4c88a1d61a52022dd21a8d"
+          }
+        }
+      },
+      "repository": "microsoft/winml-cli",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 20,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 54,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/54_passionworkeer-obsidian-shared-memory-bus_parent.tar.gz",
+            "sha256": "7261659cec303e8fcb5d2f818869afdfc94a9da2f547dbef406c36abd6234921"
+          },
+          "lock": {
+            "bytes": 128843,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "249b33ca446afaec9122616eb986c3cfd3d82e0732ce364acf0b9d1ee895a7e1"
+          },
+          "manifest": {
+            "bytes": 2962,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "766be1065176048d6a68b69315df633a23a3e18864855831eb17e0519e0cf50b"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/54_passionworkeer-obsidian-shared-memory-bus_target.tar.gz",
+            "sha256": "d3e49bfc01fe002e7eff18002e997982b62643d823cd615d063bad8b8c8811d9"
+          },
+          "lock": {
+            "bytes": 128843,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "249b33ca446afaec9122616eb986c3cfd3d82e0732ce364acf0b9d1ee895a7e1"
+          },
+          "manifest": {
+            "bytes": 3037,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "b08b9ffccd2c5fc2d7c751dc0d2f738c5f9be0083ddc36a6c69f51abbe410fb1"
+          }
+        }
+      },
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 21,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 61,
+      "manager": "bun",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz",
+            "sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e"
+          },
+          "lock": {
+            "bytes": 71077,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "51c3546fdeedf836920ff475827e9b2857141fb40f4d9028305bc392164f37d0"
+          },
+          "manifest": {
+            "bytes": 9791,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "550470286d4de4945756759c15ffaab17e078083e486cc7ad34ba7f02fc66b16"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_target.tar.gz",
+            "sha256": "34d9e05ef2dff353422a85e66c756de22915545a9fdaf2d71b0e5631d549dab3"
+          },
+          "lock": {
+            "bytes": 71077,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "51c3546fdeedf836920ff475827e9b2857141fb40f4d9028305bc392164f37d0"
+          },
+          "manifest": {
+            "bytes": 9816,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "3e25096fa04007d6448cbc182ca438141255396e865a91018eee1a8b3d5f8bd5"
+          }
+        }
+      },
+      "repository": "pocket-stack/pocketjs",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 22,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 29,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/29_tajd-cofferdam_parent.tar.gz",
+            "sha256": "efe7aa0bf32e54ce0b9ff9f2f6e6036a810c41dcbe09df504c0834c4867ac0a3"
+          },
+          "lock": {
+            "bytes": 72245,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "020de05e885ad22122cfa63d314bd4997f52809e76966c03c06739764553770f"
+          },
+          "manifest": {
+            "bytes": 4539,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "be49401bb87b0e58e435fb080115b5ccb4815bb7d5a837718c1c5b350de7bbad"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/29_tajd-cofferdam_target.tar.gz",
+            "sha256": "aaf8821b060e0dedf9ca65632f5fdaa0d39fa24191620b7b3d95a3dd5cc870be"
+          },
+          "lock": {
+            "bytes": 72245,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "020de05e885ad22122cfa63d314bd4997f52809e76966c03c06739764553770f"
+          },
+          "manifest": {
+            "bytes": 4539,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "be49401bb87b0e58e435fb080115b5ccb4815bb7d5a837718c1c5b350de7bbad"
+          }
+        }
+      },
+      "repository": "TAJD/cofferdam",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 23,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 9,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/09_kosalyohyn-vue-route-state_parent.tar.gz",
+            "sha256": "049f491bd62e4784b59ef54fb0dcfa2ba92d0938f0b491f4185f410ce294dd84"
+          },
+          "lock": {
+            "bytes": 166290,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "ef231222c2764d384b01eb518966307706d16471b95171f17acd68b1bf7e7e5d"
+          },
+          "manifest": {
+            "bytes": 2184,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "48078366c01494ed9e03055a702cea823339be75b08ffdca2f05b1868c0f0aea"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/09_kosalyohyn-vue-route-state_target.tar.gz",
+            "sha256": "52da36da26fc59ba85381a9ecae0e314430ba404a9bd0c2e18332750113f674f"
+          },
+          "lock": {
+            "bytes": 166290,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "ef231222c2764d384b01eb518966307706d16471b95171f17acd68b1bf7e7e5d"
+          },
+          "manifest": {
+            "bytes": 2184,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "48078366c01494ed9e03055a702cea823339be75b08ffdca2f05b1868c0f0aea"
+          }
+        }
+      },
+      "repository": "KosAlyohyn/vue-route-state",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 24,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 34,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/34_elan8-spec42_parent.tar.gz",
+            "sha256": "b609b2ece50676c973df9cf18cc310af8e5c4b84e03cac408dcf69fdb3e31c5d"
+          },
+          "lock": {
+            "bytes": 79588,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "2632741f8bc28f8e453995bb9aabdc4a62a6dac5a93f953f1a10d8489710ab00"
+          },
+          "manifest": {
+            "bytes": 885,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "872e8bb442c41c23ee107ef2a7aa1d02bb07cc05f0c789b691542ff002f146b2"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/34_elan8-spec42_target.tar.gz",
+            "sha256": "f720052f1758c65d908f06cd206e791b65a5a78d687f80300c0db01edbf5b016"
+          },
+          "lock": {
+            "bytes": 79588,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "2632741f8bc28f8e453995bb9aabdc4a62a6dac5a93f953f1a10d8489710ab00"
+          },
+          "manifest": {
+            "bytes": 885,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "872e8bb442c41c23ee107ef2a7aa1d02bb07cc05f0c789b691542ff002f146b2"
+          }
+        }
+      },
+      "repository": "elan8/spec42",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 25,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 11,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/11_frootai-frootai_parent.tar.gz",
+            "sha256": "69f61f6f386c951e6072d576f81f4fdd346dfaac0ee2ec0572dbb54530d0d6ec"
+          },
+          "lock": {
+            "bytes": 161009,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "7c182f647a6cae64574e9e0c4a1ca107c33bbf1f461452bf258880359ed1802b"
+          },
+          "manifest": {
+            "bytes": 10378,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "d09b70f4200da4b50300403f0a03b49067f0bcc72241b25c78ef7161b37e4249"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/11_frootai-frootai_target.tar.gz",
+            "sha256": "6fda3428c34b73728394d5bdb5f7ea97ba584e03deb5bf2cd972d4936c35b2cc"
+          },
+          "lock": {
+            "bytes": 161009,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "7c182f647a6cae64574e9e0c4a1ca107c33bbf1f461452bf258880359ed1802b"
+          },
+          "manifest": {
+            "bytes": 10480,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "1a2367bdf677917cac5cd7d3e931416c3c33fe1a19c1af2116ff8e9f29ee06f0"
+          }
+        }
+      },
+      "repository": "frootai/frootai",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 26,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 43,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/43_cwh555-animelist_parent.tar.gz",
+            "sha256": "a41ee546ec9e18ea303daceb0d859f1e80e3a41986310ccc8f4c22c0ec911720"
+          },
+          "lock": {
+            "bytes": 151215,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "a2f250b4f287433801318498c01560bea86ac8dd193c5440be95c029daa9eceb"
+          },
+          "manifest": {
+            "bytes": 2560,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "fbd92b76c29336e552734e3bf8cb0f1af36678ff5c2b9ecf48c904e6ef47fd0b"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/43_cwh555-animelist_target.tar.gz",
+            "sha256": "4cda64899695bea4c0139c0f5691043dd7d069c64adc86944e984a3cf8830406"
+          },
+          "lock": {
+            "bytes": 151215,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "a2f250b4f287433801318498c01560bea86ac8dd193c5440be95c029daa9eceb"
+          },
+          "manifest": {
+            "bytes": 2560,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "fbd92b76c29336e552734e3bf8cb0f1af36678ff5c2b9ecf48c904e6ef47fd0b"
+          }
+        }
+      },
+      "repository": "cwh555/AnimeList",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 27,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 53,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/53_omnist-dev-omnist-ts_parent.tar.gz",
+            "sha256": "fff9d2f0cbc05fa50129a7bc875af2eb23ca2392c6e07976416adcb328b9820d"
+          },
+          "lock": {
+            "bytes": 187649,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "d0a1d4746d00939c036bbe3057f86f6660bfe4a67b25c38c2971cf4982f13281"
+          },
+          "manifest": {
+            "bytes": 2076,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "bf585b2098be64ae11b200398e9fdf05defb468b8a68650ca8210708575056df"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/53_omnist-dev-omnist-ts_target.tar.gz",
+            "sha256": "287b05ccbaadef6ddd6e4bfcc88c48ffab2d3429b58925bceef1db5095182120"
+          },
+          "lock": {
+            "bytes": 187649,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "d0a1d4746d00939c036bbe3057f86f6660bfe4a67b25c38c2971cf4982f13281"
+          },
+          "manifest": {
+            "bytes": 2076,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "182143c1989e637002e6180ac0d03b268dcce1bff83d2701a0ae6593e613bfbd"
+          }
+        }
+      },
+      "repository": "omnist-dev/omnist-ts",
+      "required_distinct_closure_count": 2,
+      "schedule_ordinal": 28,
+      "state": "DIVERGENT_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 40,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/40_ainetus-co-study4grid_parent.tar.gz",
+            "sha256": "5b7bd0cecba86d5d5bccfb48c4d3a9045c1963d23aacb78f6aac44cfbf12b689"
+          },
+          "lock": {
+            "bytes": 186003,
+            "match_count": 1,
+            "path": "frontend/package-lock.json",
+            "sha256": "1c1526341901bc8f9b1aab0f6f2cf51d8cd72d833fd8c26df6f32dccd8c27d12"
+          },
+          "manifest": {
+            "bytes": 1577,
+            "match_count": 1,
+            "path": "frontend/package.json",
+            "sha256": "8282e24fff2b5f87e939becb79786b47a29ce5198f976b916b55be902ad2b72c"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/40_ainetus-co-study4grid_target.tar.gz",
+            "sha256": "86a286eb61ee9817d4d984159ddc761913ae595e1a784ce5ef2f4c883d7a5912"
+          },
+          "lock": {
+            "bytes": 186003,
+            "match_count": 1,
+            "path": "frontend/package-lock.json",
+            "sha256": "1c1526341901bc8f9b1aab0f6f2cf51d8cd72d833fd8c26df6f32dccd8c27d12"
+          },
+          "manifest": {
+            "bytes": 1577,
+            "match_count": 1,
+            "path": "frontend/package.json",
+            "sha256": "8282e24fff2b5f87e939becb79786b47a29ce5198f976b916b55be902ad2b72c"
+          }
+        }
+      },
+      "repository": "ainetus/Co-Study4Grid",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 29,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 47,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/47_handsontable-examples_parent.tar.gz",
+            "sha256": "bfee105cfb8c20635b7ab260cb66fe800c3ac340d7eee32044b520bba8db2c53"
+          },
+          "lock": {
+            "bytes": 85245,
+            "match_count": 1,
+            "path": "runner/pnpm-lock.yaml",
+            "sha256": "10b5422cf41ae5b4ac2b9a933ec7b6ff8d9eb4e25b2dfd32a667d29c0ed792ca"
+          },
+          "manifest": {
+            "bytes": 1052,
+            "match_count": 1,
+            "path": "runner/package.json",
+            "sha256": "cbe39bf2ff3e4f63e544cb9c199ab80717a8693a49b78e4de483f5a76657bda1"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/47_handsontable-examples_target.tar.gz",
+            "sha256": "366359596841e1bac0a61142c5a06f09a8614eb24e6f995a4b48fe6d1595843c"
+          },
+          "lock": {
+            "bytes": 85245,
+            "match_count": 1,
+            "path": "runner/pnpm-lock.yaml",
+            "sha256": "10b5422cf41ae5b4ac2b9a933ec7b6ff8d9eb4e25b2dfd32a667d29c0ed792ca"
+          },
+          "manifest": {
+            "bytes": 1052,
+            "match_count": 1,
+            "path": "runner/package.json",
+            "sha256": "cbe39bf2ff3e4f63e544cb9c199ab80717a8693a49b78e4de483f5a76657bda1"
+          }
+        }
+      },
+      "repository": "handsontable/examples",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 30,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 4,
+      "manager": "yarn",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/04_frappe-draw_parent.tar.gz",
+            "sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79"
+          },
+          "lock": {
+            "bytes": 162726,
+            "match_count": 1,
+            "path": "frontend/yarn.lock",
+            "sha256": "2a1b94bff42f6ad45a0add210306cc9f6e3ba48947c75909d737040af63bfc1c"
+          },
+          "manifest": {
+            "bytes": 1403,
+            "match_count": 1,
+            "path": "frontend/package.json",
+            "sha256": "a398aa97d0453eb5309051936f45c01b7ccd78caf7beb2ada4afccd0585cc2e1"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/04_frappe-draw_target.tar.gz",
+            "sha256": "bf43b7c0c18c462f90185e4e8036a6da351903c32d3bc94589412fcf4db62a7a"
+          },
+          "lock": {
+            "bytes": 162726,
+            "match_count": 1,
+            "path": "frontend/yarn.lock",
+            "sha256": "2a1b94bff42f6ad45a0add210306cc9f6e3ba48947c75909d737040af63bfc1c"
+          },
+          "manifest": {
+            "bytes": 1403,
+            "match_count": 1,
+            "path": "frontend/package.json",
+            "sha256": "a398aa97d0453eb5309051936f45c01b7ccd78caf7beb2ada4afccd0585cc2e1"
+          }
+        }
+      },
+      "repository": "frappe/draw",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 31,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 59,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/59_dcdpr-jp_parent.tar.gz",
+            "sha256": "c15b8e4686703842f4d2ab8e10fd5a32373dba58d9002c0687f9da0c00e06743"
+          },
+          "lock": {
+            "bytes": 134660,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "29e3061fba725775c0a39c348bbba6056efca1e8b43f837b585ddefed5bc44ce"
+          },
+          "manifest": {
+            "bytes": 10878,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "4115e139357dee9f5db58444fd6712784a9de99654f40a546415a8d63bef6387"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/59_dcdpr-jp_target.tar.gz",
+            "sha256": "8152f7f9787451ff323b454c78f34ffa45562eae27dd0548ce9301f53c0a615d"
+          },
+          "lock": {
+            "bytes": 134660,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "29e3061fba725775c0a39c348bbba6056efca1e8b43f837b585ddefed5bc44ce"
+          },
+          "manifest": {
+            "bytes": 10878,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "4115e139357dee9f5db58444fd6712784a9de99654f40a546415a8d63bef6387"
+          }
+        }
+      },
+      "repository": "dcdpr/jp",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 32,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 8,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/08_manufosela-karajan-code_parent.tar.gz",
+            "sha256": "1ab94fdebdc58a39faa02980efed22fc1fd0621fc4c493cf3d0bcf9345600f94"
+          },
+          "lock": {
+            "bytes": 273244,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "004c20526a9993fa9d071c1ce3accc7a76729928336d09c2c9f416e223423cb2"
+          },
+          "manifest": {
+            "bytes": 3723,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "0cf0d523258d81e488f4748e082bd736e25f9a50b7781b41ec0b9c664a7331f4"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/08_manufosela-karajan-code_target.tar.gz",
+            "sha256": "904dd9d348b8651d99c533c5d54d74bcbb99c16392e70766490ab8585d30f360"
+          },
+          "lock": {
+            "bytes": 273244,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "004c20526a9993fa9d071c1ce3accc7a76729928336d09c2c9f416e223423cb2"
+          },
+          "manifest": {
+            "bytes": 3723,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "0cf0d523258d81e488f4748e082bd736e25f9a50b7781b41ec0b9c664a7331f4"
+          }
+        }
+      },
+      "repository": "manufosela/karajan-code",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 33,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 37,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/37_brokkai-bifrost_parent.tar.gz",
+            "sha256": "1fadf1d054071d6b2a08a4ba63fac9db782b5168c5174a5dca6deae3e3c98a9b"
+          },
+          "lock": {
+            "bytes": 143828,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "c6cf872d070f778c2f8e348177b7e1bee60c97c3929cc2621ad105dc17ebc82c"
+          },
+          "manifest": {
+            "bytes": 10199,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "666d3a8109597becf7d7c9686e70d6aa649227c9bba9ac6187902d61f3987049"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/37_brokkai-bifrost_target.tar.gz",
+            "sha256": "f7e9f514bb97a3f62fd16ff808a2b5b1d537e514667f0183cd2af98fba2c183a"
+          },
+          "lock": {
+            "bytes": 143828,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "c6cf872d070f778c2f8e348177b7e1bee60c97c3929cc2621ad105dc17ebc82c"
+          },
+          "manifest": {
+            "bytes": 10199,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "666d3a8109597becf7d7c9686e70d6aa649227c9bba9ac6187902d61f3987049"
+          }
+        }
+      },
+      "repository": "BrokkAi/bifrost",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 34,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 2,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/02_aditya8369-pollution-control-hub_parent.tar.gz",
+            "sha256": "fc4dc2beece741dd631345215415fe9d43798e3cad60d2e7bf4377bd6b9b1829"
+          },
+          "lock": {
+            "bytes": 291344,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "2976bf39a190934a7120bccb3ee533f9275ac4ce372795ef36b5883ee1533006"
+          },
+          "manifest": {
+            "bytes": 1512,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "e1183b245c2a729b05c796c8ca86401379612ca7613ac7f658b84e5439c557dc"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/02_aditya8369-pollution-control-hub_target.tar.gz",
+            "sha256": "b563a35ebc0a156b4a8c1203a3358ac95aea98dfa7b26a3fd49da9532bae2cf5"
+          },
+          "lock": {
+            "bytes": 291344,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "2976bf39a190934a7120bccb3ee533f9275ac4ce372795ef36b5883ee1533006"
+          },
+          "manifest": {
+            "bytes": 1512,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "e1183b245c2a729b05c796c8ca86401379612ca7613ac7f658b84e5439c557dc"
+          }
+        }
+      },
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 35,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 32,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/32_rul1an-assay_parent.tar.gz",
+            "sha256": "50d0435d60ed9132efcf7b9e8948e81415639a6943decaf37ddc913d06617fec"
+          },
+          "lock": {
+            "bytes": 155463,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "6e4b5e534bdf5ff9aa699e25e9be6e874ddb12e7c6c29bb25635a0668c319de3"
+          },
+          "manifest": {
+            "bytes": 3465,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "4bc1b0e657fc6c9342ead7c45f643e01113d9b966eee2a1d5982eddaeee2b2f1"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/32_rul1an-assay_target.tar.gz",
+            "sha256": "27c86478f647b42144dc68ffb208fff9c5baad1db3a0d893b390d0fd82ea60bb"
+          },
+          "lock": {
+            "bytes": 155463,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "6e4b5e534bdf5ff9aa699e25e9be6e874ddb12e7c6c29bb25635a0668c319de3"
+          },
+          "manifest": {
+            "bytes": 3465,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "4bc1b0e657fc6c9342ead7c45f643e01113d9b966eee2a1d5982eddaeee2b2f1"
+          }
+        }
+      },
+      "repository": "Rul1an/assay",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 36,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 5,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/05_didaquis-didibudget-frontend_parent.tar.gz",
+            "sha256": "ea5a0850d0d3192fc0861ad49933af9a4eabefc05a86e3356c000a28afd72745"
+          },
+          "lock": {
+            "bytes": 402420,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "1cc3484b17b973ec5b0d82cb24730c039db551d088463efd609eeadd39e05e57"
+          },
+          "manifest": {
+            "bytes": 1919,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "a4ef0eee2f10cf570cd47f6a9576c951ff5744ea53473ce6bb48563240848962"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/05_didaquis-didibudget-frontend_target.tar.gz",
+            "sha256": "7a067d3d87f1685f3927191f24e98c12569c5f233a04ee96f30b5f3c5468cd74"
+          },
+          "lock": {
+            "bytes": 402420,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "1cc3484b17b973ec5b0d82cb24730c039db551d088463efd609eeadd39e05e57"
+          },
+          "manifest": {
+            "bytes": 1919,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "a4ef0eee2f10cf570cd47f6a9576c951ff5744ea53473ce6bb48563240848962"
+          }
+        }
+      },
+      "repository": "didaquis/didibudget-frontend",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 37,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 39,
+      "manager": "cargo",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/39_syynth-brink_parent.tar.gz",
+            "sha256": "6223ff1b66f8b204cd1276498116fa6cd93f4e192aeda6b545e104dff5c3d48e"
+          },
+          "lock": {
+            "bytes": 201935,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "d3e1681ad2bfb1aa9bb1ab9997e85658168e663b3079a3a0f4ed38bc8d187688"
+          },
+          "manifest": {
+            "bytes": 7308,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "93fa14f81f443b737bc62a68a04ffe2879fc9fdba4d71166990961f066dbbae6"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/39_syynth-brink_target.tar.gz",
+            "sha256": "9d31f418f259c677f925a37359b6ccf8506f6acc5189044369e8c0da845168ae"
+          },
+          "lock": {
+            "bytes": 201935,
+            "match_count": 1,
+            "path": "Cargo.lock",
+            "sha256": "d3e1681ad2bfb1aa9bb1ab9997e85658168e663b3079a3a0f4ed38bc8d187688"
+          },
+          "manifest": {
+            "bytes": 7308,
+            "match_count": 1,
+            "path": "Cargo.toml",
+            "sha256": "93fa14f81f443b737bc62a68a04ffe2879fc9fdba4d71166990961f066dbbae6"
+          }
+        }
+      },
+      "repository": "Syynth/brink",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 38,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 55,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/55_rickfelix-ehg-engineer_parent.tar.gz",
+            "sha256": "eb63cbbdb902ad0c568773b639a8b1231c9b618f2c8384d539e886fb4efac3b2"
+          },
+          "lock": {
+            "bytes": 439028,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "7d85b1d82fd7ee439a7c96b9bac94f5caf0dca36c4124806076e11b04a02c2c3"
+          },
+          "manifest": {
+            "bytes": 45888,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "db5a307c1713115be55e803d0d34ead7fb6357c52695be47ffb034876d1db6cd"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/55_rickfelix-ehg-engineer_target.tar.gz",
+            "sha256": "bc096da9bd1ef3b23c3d31fc7c55b4f9c7a0fa520179592992ab951d4897317c"
+          },
+          "lock": {
+            "bytes": 439028,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "7d85b1d82fd7ee439a7c96b9bac94f5caf0dca36c4124806076e11b04a02c2c3"
+          },
+          "manifest": {
+            "bytes": 45888,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "db5a307c1713115be55e803d0d34ead7fb6357c52695be47ffb034876d1db6cd"
+          }
+        }
+      },
+      "repository": "rickfelix/EHG_Engineer",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 39,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 48,
+      "manager": "bun",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/48_pokle-glidecomp_parent.tar.gz",
+            "sha256": "b2959e4c77ea1076b571f4cc303b6310c8eb781a1e63166267d50da39d268a5a"
+          },
+          "lock": {
+            "bytes": 251788,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "1ade9cca4e7f50219c07033c25111bdb2f9595e4ac870fb991652b6f8b83f128"
+          },
+          "manifest": {
+            "bytes": 5109,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "d739d33b5ff4eae43349ba4bb5f6495e4f4ff461e5562532e723aa189f9041e8"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/48_pokle-glidecomp_target.tar.gz",
+            "sha256": "6362e74552635abde3356b527558b1083c132b3f9c599e141bcb457137374879"
+          },
+          "lock": {
+            "bytes": 251788,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "1ade9cca4e7f50219c07033c25111bdb2f9595e4ac870fb991652b6f8b83f128"
+          },
+          "manifest": {
+            "bytes": 5109,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "d739d33b5ff4eae43349ba4bb5f6495e4f4ff461e5562532e723aa189f9041e8"
+          }
+        }
+      },
+      "repository": "pokle/glidecomp",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 40,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 45,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/45_embassy-of-the-free-mind-sourcelibrary-v2_parent.tar.gz",
+            "sha256": "7cbd6670726bd2533184f1f13286a660600793ab7e28d294e3fe89bcc710c2f9"
+          },
+          "lock": {
+            "bytes": 676365,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "6a8511c282eaae7ee005e73d3445421424b52a74ee3ba9c68871c1b243cb3ce5"
+          },
+          "manifest": {
+            "bytes": 3993,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "6fa6d8dc7d0e90d3bf83d90e08f39713fb1cd7aa3a95537317c68bf4a38511cc"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/45_embassy-of-the-free-mind-sourcelibrary-v2_target.tar.gz",
+            "sha256": "db14f0e293935bae986ee50cfdd73d38c83cc00b69ec3b552eea3d6ed581596e"
+          },
+          "lock": {
+            "bytes": 676365,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "6a8511c282eaae7ee005e73d3445421424b52a74ee3ba9c68871c1b243cb3ce5"
+          },
+          "manifest": {
+            "bytes": 3993,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "6fa6d8dc7d0e90d3bf83d90e08f39713fb1cd7aa3a95537317c68bf4a38511cc"
+          }
+        }
+      },
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 41,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 49,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/49_akogut-flakemetry_parent.tar.gz",
+            "sha256": "e63654f976f006fa5d72d3bd3d0e89288ec8506ff59908e7a101a32259264ee2"
+          },
+          "lock": {
+            "bytes": 301985,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "6ea944f1ee587f6b2fd676427b86ad6d2637bef992f71c6d9fae56e99eadbef4"
+          },
+          "manifest": {
+            "bytes": 1186,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "783532e287a1242c9fce2acbbf99921fd08d2c32d24219cfd1c099ebf72aafdb"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/49_akogut-flakemetry_target.tar.gz",
+            "sha256": "6af93fc7a5fe57bdd9210ff53b44474bb112aeb24079b22540dde1d5ec3c8b2b"
+          },
+          "lock": {
+            "bytes": 301985,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "6ea944f1ee587f6b2fd676427b86ad6d2637bef992f71c6d9fae56e99eadbef4"
+          },
+          "manifest": {
+            "bytes": 1186,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "783532e287a1242c9fce2acbbf99921fd08d2c32d24219cfd1c099ebf72aafdb"
+          }
+        }
+      },
+      "repository": "AKogut/flakemetry",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 42,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 41,
+      "manager": "npm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/41_positonic-exponential_parent.tar.gz",
+            "sha256": "2d473d5402167f3e68ab0fc11b2441c5241bbe7be8aa2a7ee3c7408a444fcd94"
+          },
+          "lock": {
+            "bytes": 780183,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "2b90944f33e60a3023d6c236b00dc9b6461d8c583a98aba3ef450dd8468cf02d"
+          },
+          "manifest": {
+            "bytes": 6945,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "30027248e53b8a9df2c65dd00309a2d3f7a08dadec7a3008514595cf53d5d415"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/41_positonic-exponential_target.tar.gz",
+            "sha256": "fa28a992741750fffe58b5bbc5c42bd515c9f0c7db4b5bab49a52d5ae62d1e27"
+          },
+          "lock": {
+            "bytes": 780183,
+            "match_count": 1,
+            "path": "package-lock.json",
+            "sha256": "2b90944f33e60a3023d6c236b00dc9b6461d8c583a98aba3ef450dd8468cf02d"
+          },
+          "manifest": {
+            "bytes": 6945,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "30027248e53b8a9df2c65dd00309a2d3f7a08dadec7a3008514595cf53d5d415"
+          }
+        }
+      },
+      "repository": "positonic/exponential",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 43,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 44,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/44_gigadrive-sdk_parent.tar.gz",
+            "sha256": "8fce9817e7cc8eed2b63a648b51b0cb515280d08a751f6a8eac39ddf72297daa"
+          },
+          "lock": {
+            "bytes": 490982,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "aef3b6482d284294e3197b9b8402dd94b562abe3aff3bc47f1ca968ba91f7ae7"
+          },
+          "manifest": {
+            "bytes": 2207,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "e29664536ac991568a0673aa0a0f7333d6b29a803d8301934b6ff85afcfb9fe0"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/44_gigadrive-sdk_target.tar.gz",
+            "sha256": "6d48ce91760b6b1d9db77b8fc361dfdbea8175631501d02fe5ea7ebdd60f5770"
+          },
+          "lock": {
+            "bytes": 490982,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "aef3b6482d284294e3197b9b8402dd94b562abe3aff3bc47f1ca968ba91f7ae7"
+          },
+          "manifest": {
+            "bytes": 2207,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "e29664536ac991568a0673aa0a0f7333d6b29a803d8301934b6ff85afcfb9fe0"
+          }
+        }
+      },
+      "repository": "Gigadrive/sdk",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 44,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 42,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/42_constructive-io-constructive_parent.tar.gz",
+            "sha256": "f86b5bafe63772cdc108a2305c6ef134654585984e2de183c7538cf5932b5742"
+          },
+          "lock": {
+            "bytes": 721358,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "1c0bf3efbc63e2b1eef9c6b622220a43f11812c17f4894c9743bc89c0fdd4b34"
+          },
+          "manifest": {
+            "bytes": 1953,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "822e0aac373a49a8fde2be44a01de581b43cea8c80d73c7d73f9f6df12b88706"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/42_constructive-io-constructive_target.tar.gz",
+            "sha256": "eab8287baa6b484e6910c9d7b059e17021f415ce8858feca1b5d360f53bbcd26"
+          },
+          "lock": {
+            "bytes": 721358,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "1c0bf3efbc63e2b1eef9c6b622220a43f11812c17f4894c9743bc89c0fdd4b34"
+          },
+          "manifest": {
+            "bytes": 1953,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "822e0aac373a49a8fde2be44a01de581b43cea8c80d73c7d73f9f6df12b88706"
+          }
+        }
+      },
+      "repository": "constructive-io/constructive",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 45,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 52,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/52_masumi-network-sokosumi_parent.tar.gz",
+            "sha256": "0c26db774fd5caaa8c1bf5b350c6e339211d2554f1c1d10bda18a5612b87d2d7"
+          },
+          "lock": {
+            "bytes": 696109,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "2f80b6a269200d77f890507c6fc20f2520854340c5ff40faf1f0170ec49d6f9c"
+          },
+          "manifest": {
+            "bytes": 5422,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "3a2b80f162988e20c1d8ab54cb064b219491f3ae218a3739085c167df5aa852d"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/52_masumi-network-sokosumi_target.tar.gz",
+            "sha256": "f86a0d41d630cda5feb2a0a969093a4f13bdb9d9f09c2d601bf038ac1318e1fb"
+          },
+          "lock": {
+            "bytes": 696109,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "2f80b6a269200d77f890507c6fc20f2520854340c5ff40faf1f0170ec49d6f9c"
+          },
+          "manifest": {
+            "bytes": 5422,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "3a2b80f162988e20c1d8ab54cb064b219491f3ae218a3739085c167df5aa852d"
+          }
+        }
+      },
+      "repository": "masumi-network/sokosumi",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 46,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 50,
+      "manager": "bun",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/50_tutur3u-platform_parent.tar.gz",
+            "sha256": "7912001eb3e9e0f6fd96dc8d665c24a9089421bf8d7767755c76829c5bc48edc"
+          },
+          "lock": {
+            "bytes": 879064,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "2ef5251dd830d330f85d106cf11e4ed94fdf375f08e0aad35dd5336c8a9b913f"
+          },
+          "manifest": {
+            "bytes": 22718,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "6cdeea20488004b2d8860a218166a5e31b0beb7b3cf17f89a123778f38b69a66"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/50_tutur3u-platform_target.tar.gz",
+            "sha256": "5ab5750b6a4633c49236e7b4bf1525483ffc664ec7aff6507cd9a4dde92d044e"
+          },
+          "lock": {
+            "bytes": 879064,
+            "match_count": 1,
+            "path": "bun.lock",
+            "sha256": "2ef5251dd830d330f85d106cf11e4ed94fdf375f08e0aad35dd5336c8a9b913f"
+          },
+          "manifest": {
+            "bytes": 22718,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "6cdeea20488004b2d8860a218166a5e31b0beb7b3cf17f89a123778f38b69a66"
+          }
+        }
+      },
+      "repository": "tutur3u/platform",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 47,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    },
+    {
+      "index": 51,
+      "manager": "pnpm",
+      "network_or_dependency_execution_performed": false,
+      "pair": {
+        "parent": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/51_inkeep-open-knowledge_parent.tar.gz",
+            "sha256": "0a0f1732f2c4fdcbc59f5f45d9e39a3af19c580679feb1ed90fa602a54683f57"
+          },
+          "lock": {
+            "bytes": 803264,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "cb00a3e29cba353f45bd668ab5cb287b0334ac1686e5f1e9c60b496a6dac6cd5"
+          },
+          "manifest": {
+            "bytes": 3467,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "8deb6c9c2c7e908fcd3ffc2741dc1a6776d14579fcc173d6ffeaf4bde8631142"
+          }
+        },
+        "target": {
+          "archive": {
+            "path": "runtime/vcm_evaluator/source_archives/51_inkeep-open-knowledge_target.tar.gz",
+            "sha256": "9d1f9afb76c0de436bc3a776befadd8b49c6033e2b4e2f447b5e00366d9a93e5"
+          },
+          "lock": {
+            "bytes": 803264,
+            "match_count": 1,
+            "path": "pnpm-lock.yaml",
+            "sha256": "cb00a3e29cba353f45bd668ab5cb287b0334ac1686e5f1e9c60b496a6dac6cd5"
+          },
+          "manifest": {
+            "bytes": 3467,
+            "match_count": 1,
+            "path": "package.json",
+            "sha256": "8deb6c9c2c7e908fcd3ffc2741dc1a6776d14579fcc173d6ffeaf4bde8631142"
+          }
+        }
+      },
+      "repository": "inkeep/open-knowledge",
+      "required_distinct_closure_count": 1,
+      "schedule_ordinal": 48,
+      "state": "IDENTICAL_PARENT_TARGET_DEPENDENCY_IDENTITY"
+    }
+  ],
+  "state": "FORTY_EIGHT_TASK_PARENT_TARGET_DEPENDENCY_PAIR_COVERAGE_CLASSIFIED",
+  "static_audit_only": true,
+  "trigger_state": "GREEN"
+}
