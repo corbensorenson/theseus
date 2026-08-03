@@ -1,0 +1,73 @@
+{
+  "policy": "project_theseus_semantic_ir_production_adequacy_source_construct_review_v1",
+  "trigger_state": "RED",
+  "panel_admitted_for_evaluator_qualification": false,
+  "materialization_report": "reports/theseus_semantic_ir_production_adequacy_materialization_v3.json",
+  "materialization_report_sha256": "2aaf9eb8fe85256d45786f9def49828233956a239e7f998f0b9f4aaf0f7bfa24",
+  "materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v3_audit.json",
+  "materialization_audit_sha256": "631f951fdc478b0a11b81094ceacd98f514675bb5073639b1e08848b8197a32a",
+  "review_method": "Evaluator-custody source review of all 18 sealed selected-source parent/target diffs before task packets, evaluator execution, or model exposure. Byte difference is necessary but does not establish a causal edit construct.",
+  "reviewed_task_count": 18,
+  "provisionally_scopeable_task_count": 17,
+  "invalid_tasks": [
+    {
+      "index": 11,
+      "repository": "OregonDigital/od2_md_scripts",
+      "pull_request": 45,
+      "declared_stratum": "insert_guard_or_setup_before",
+      "selected_source_path": "od2validation.py",
+      "parent_source_sha256": "fa6cf32b8def0956a3a1fe5a9c5f5cac1a38d2651da2883ec6a18c2ae2c2f198",
+      "target_source_sha256": "b57f77fb242787db478ece1d89617cdc1835be788c6684c22f27670aa7c6b407",
+      "unified_diff_sha256": "0a7fb9fc28a425074c0c13be83e50bd087adc03dee61e27df3759af0aec27d24",
+      "observed_change": "one blank line inserted between errors initialization and the next comment",
+      "fault": "NO_CAUSAL_GUARD_OR_SETUP_MECHANISM_IN_SELECTED_SOURCE_DELTA",
+      "disposition": "REPLACE_SOURCE_TASK_BEFORE_ANY_EVALUATOR_OR_MODEL_CALL"
+    }
+  ],
+  "replacement_contract": {
+    "same_stratum_required": "insert_guard_or_setup_before",
+    "distinct_post_snapshot_repository_required": true,
+    "license_allowlist_unchanged": true,
+    "public_pull_base_head_source_identity_required": true,
+    "parent_negative_target_positive_required": true,
+    "selection_may_not_use_candidate_control_or_evaluator_outcomes": true,
+    "statistical_design_changed": false,
+    "user_or_operator_gate": false
+  },
+  "replacement_search_receipt": {
+    "public_metadata_and_patch_calls_after_source_seal": 14,
+    "rejected_candidates": [
+      {
+        "repository": "tilershub/usdjpy-research-lab",
+        "pull_request": 11,
+        "reason": "no repository license file or recognized license"
+      },
+      {
+        "repository": "abdosaeed95/agent",
+        "pull_request": 17,
+        "reason": "AGPL-3.0 is outside the frozen license allowlist"
+      },
+      {
+        "repository": "Chris0Jeky/llm-release-gate",
+        "pull_request": 6,
+        "reason": "MIT licensed, but the PR changes tests and documentation only rather than a production guard/setup source path"
+      },
+      {
+        "repository": "david-anata/Lead-scraper",
+        "pull_request": 325,
+        "reason": "no repository license file or recognized license"
+      }
+    ]
+  },
+  "prohibited_counters": {
+    "parent_target_evaluator_executions": 0,
+    "candidate_or_control_calls": 0,
+    "local_model_calls": 0,
+    "external_inference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0
+  },
+  "maximum_inference": "The sealed source archive set is byte-valid but the 18-task construct panel is not yet valid because task 11 has no causal guard/setup change. This is a pre-model instrument defect, not evidence for or against Semantic-IR mechanics or the ASI Stack claim."
+}

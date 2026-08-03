@@ -5436,7 +5436,7 @@
       {
         "id": "S3",
         "title": "Independent implementation adequacy",
-        "status": "source_materialization_green_evaluator_qualification_open",
+        "status": "source_construct_review_red_task11_replacement_open",
         "source_bindings": {
           "preregistration": "configs/theseus_semantic_ir_production_adequacy.json",
           "independent_auditor": "scripts/theseus_semantic_ir_production_adequacy.py",
@@ -5462,9 +5462,10 @@
           "failed_v2_source_revision_receipt": "reports/theseus_semantic_ir_production_adequacy_materialization_v2_source_revision_failure.json",
           "v3_materialization_preflight": "reports/theseus_semantic_ir_production_adequacy_materialization_v3_preflight.json",
           "v3_materialization_report": "reports/theseus_semantic_ir_production_adequacy_materialization_v3.json",
-          "independent_materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v3_audit.json"
+          "independent_materialization_audit": "reports/theseus_semantic_ir_production_adequacy_materialization_v3_audit.json",
+          "source_construct_review": "reports/theseus_semantic_ir_production_adequacy_source_construct_review.json"
         },
-        "current_boundary": "The repaired public pull base.sha to head.sha policy materialized 18/18 task pairs into 36 deterministic selected-source-plus-license archives through 78 source calls. The independent network-free audit verified all 36 archive receipts, 76 member receipts, normalization and path safety, exact directory membership, and a selected-source byte difference for every task. The two prior task-4 RED receipts remain preserved. Evaluator, model, reference, training, D1, and D2 counters remain zero; independent parent-negative/target-positive evaluator qualification is now the active boundary.",
+        "current_boundary": "The archive layer remains GREEN, but evaluator-custody construct review failed the panel closed before evaluator or model execution: task 11's entire selected-source delta is one blank line and therefore contains no guard/setup mechanism. The exact RED receipt is preserved; 17 rows remain provisional rather than admitted. Autonomous replacement search rejected four candidates on frozen license or source-mechanism grounds. Evaluator, model, reference, training, D1, and D2 counters remain zero.",
         "design": "Eighteen distinct post-snapshot repositories balanced across six edit strata. Pass requires at least 13/18 exact production-mechanics successes, at least 2/3 in every stratum, all known-positive/corruption/identity controls, zero unsafe effects, and zero physical-context boundary hits. The exact one-sided binomial false-positive probability under p=0.50 is 0.048126220703125 and power at p=0.80 is 0.867083665757176.",
         "exit": "Mechanism fidelity, known-positive reachability, corruption rejection, identity stability, intervention sensitivity, dependency locality, weak tails, and a power-derived competence floor pass independently; otherwise freeze the implementation without opening fresh claim tasks."
       },

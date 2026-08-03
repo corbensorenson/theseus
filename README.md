@@ -118,9 +118,11 @@ replay is GREEN for all 18 nondegenerate pairs, and the hash-bound v3 source
 materialization is GREEN for 18/18 pairs and 36 deterministic archives. An
 independent network-free audit verified 36 archive receipts, 76 member receipts,
 normalization, safe membership, and selected-source differences for every task.
-No evaluator or model call informed either repair. Independent
-parent-negative/target-positive evaluator qualification is now active; the panel
-is not sealed and no adequacy observation is yet authorized.
+No evaluator or model call informed either repair. Evaluator-custody construct
+review then failed the panel closed: task 11's selected-source delta is only a
+blank line and cannot represent its guard/setup stratum. Its RED receipt is
+preserved and autonomous licensed replacement search is active. The panel is not
+sealed and no adequacy observation is yet authorized.
 
 ## Repository Map
 

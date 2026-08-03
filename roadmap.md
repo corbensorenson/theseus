@@ -226,6 +226,12 @@ and member receipts, normalization, path safety, exact membership, and selected
 source differences. Parent-negative/target-positive evaluator qualification is
 the active boundary; no model or reference call is yet authorized.
 
+Evaluator-custody construct review then found that task 11's selected source
+diff is only one blank line. The archive layer remains valid, but the task panel
+is RED because a byte difference is not a causal guard/setup mechanism. Replace
+that task from a distinct licensed post-snapshot repository under the unchanged
+stratum and statistical design before any evaluator or model call.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
