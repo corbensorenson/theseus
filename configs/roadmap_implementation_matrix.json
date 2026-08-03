@@ -316,6 +316,30 @@
         "checkpoint_embedded_hash_matches_final_file": true,
         "parent_target_or_evaluator_executions": 0,
         "next_repair_boundary": "preserve 61 source-bound rows and replace only Python claim task 28 under frozen rank and eligibility plus changed source and verifier byte gates"
+      },
+      "vcm_source_replacement_28": {
+        "config": "configs/theseus_vcm_source_replacement_28.json",
+        "preflight": "reports/theseus_vcm_source_replacement_28.json",
+        "checkpoint": "reports/theseus_vcm_source_replacement_28_checkpoint.json",
+        "owner": "scripts/theseus_vcm_source_replacement_28.py",
+        "state": "GREEN_PREFLIGHT_ZERO_QUERIES_SINGLE_PYTHON_CLAIM_SLOT_ONLY",
+        "task_index": 28,
+        "panel": "claim",
+        "language": "Python",
+        "all_v7_repositories_excluded": true,
+        "same_search_window_query_pages_order_pacing_seed_and_metadata_eligibility": true,
+        "first_ranked_content_qualified_candidate_required": true,
+        "selected_source_bytes_must_change": true,
+        "selected_verifier_bytes_must_change": true,
+        "replacement_admitted": false,
+        "metadata_queries_executed": 0,
+        "source_requests_executed": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "candidate_packet_materialization_authorized": false,
+        "hidden_evaluation_authorized": false,
+        "local_model_calls_authorized": false,
+        "external_reference_calls_authorized": false,
+        "user_or_operator_gate": false
       }
     },
     "claim_selection_policy": {

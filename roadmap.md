@@ -538,6 +538,15 @@ Python-claim slot using the same frozen rank/eligibility rules plus the now-
 required changed-verifier-byte gate. Do not weaken the verifier requirement or
 rerun the accepted 61 as if the failure did not occur.
 
+The Task 28 replacement transaction is now prospectively sealed and GREEN at
+zero queries. It reruns only the frozen Python search window, pages, order,
+pacing, metadata eligibility, and selection seed; excludes all 62 v7
+repositories; keeps the claim-panel role; and admits only the first ranked
+candidate whose selected source and verifier bytes both differ at exact
+base/head revisions. It may write only the four Task 28 archives and cannot
+modify the other 61 tasks, execute code, build packets, evaluate, or call a
+model. One replacement run is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -735,8 +744,8 @@ Use existing owners; create no new cleanup or report family.
    evaluator qualification to that exact report. The execution-free materializer
    preserved 61 source pairs but rejected Python claim Task 28 because its only
    verifier path was byte-identical across revisions. Preserve those 61 rows and
-   select/materialize one prospectively ranked Python-claim replacement with
-   changed source and verifier bytes. Then qualify evaluators and bind
+   run the sealed single-slot Python-claim replacement owner, which requires
+   changed source and verifier bytes before admission. Then qualify evaluators and bind
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.

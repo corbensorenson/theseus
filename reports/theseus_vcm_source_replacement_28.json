@@ -1,0 +1,39 @@
+{
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_source_replacement_28.json",
+    "sha256": "1cb30b7e9d61880abad01944c188272b322989e0ee91fce044de9054e2a321eb"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "public_metadata_title_requests": 0,
+    "public_source_content_requests": 0,
+    "source_archives_materialized": 0,
+    "source_bytes_materialized": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T11:29:21.839151Z",
+  "failed_materialization": {
+    "path": "reports/theseus_vcm_source_materialization.json",
+    "sha256": "d38e58eccf4fd9a103a921018a9f7c6b20f460f71011d2fe36771f8af6206f18"
+  },
+  "faults": [],
+  "hidden_evaluation_opened": false,
+  "maximum_inference": "A GREEN replacement report proves only that one source-disjoint Python claim replacement for failed Task 28 was chosen by the unchanged frozen rank and metadata rules, passed changed-source and changed-verifier byte gates, and was content-bound into deterministic archives. It does not admit the 62-task panel until an independent combined-panel audit passes, execute untrusted code, qualify an evaluator, authorize candidate or model calls, establish VCM usefulness, or move D1, D2, serving, training, or book support.",
+  "metadata_selection": {
+    "path": "reports/theseus_vcm_source_acquisition_v7.json",
+    "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"
+  },
+  "policy": "project_theseus_vcm_source_replacement_28_v1",
+  "replacement_admitted": false,
+  "selected_repository_count": 0,
+  "source_content_retrieval_opened": false,
+  "state": "TASK_28_PYTHON_CLAIM_REPLACEMENT_PREFLIGHT_GREEN",
+  "trigger_state": "GREEN"
+}

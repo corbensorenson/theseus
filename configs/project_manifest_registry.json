@@ -825,7 +825,7 @@
       "canonical_surface": "theseus_assistant_runtime",
       "canonical_path": "configs/theseus_vcm_claim_instrument.json",
       "promotion_role": "prospective_vcm_claim_design_and_bounded_source_metadata_selection",
-      "successor_policy": "The claim instrument remains canonical. Source-acquisition configs v1-v6 are immutable negative transport/pool evidence; v7 is the GREEN frozen 62-identity metadata owner. The separate source-materialization config is the active source-byte boundary and may retrieve only frozen changed source/verifier paths, PR title, and license into deterministic archives without execution or candidate/model authority. Search science, zero-inference authority, and every consumed predecessor remain immutable."
+      "successor_policy": "The claim instrument remains canonical. Source-acquisition configs v1-v6 are immutable negative transport/pool evidence; v7 is the GREEN frozen 62-identity metadata owner. The source-materialization report is immutable evidence for 61 source pairs and one verifier-byte false positive. The active replacement owner may replace only Python claim Task 28 under the frozen rank/eligibility rules plus changed source/verifier byte gates, without execution or candidate/model authority."
     },
     {
       "root": "scripts",
@@ -834,7 +834,7 @@
       "canonical_surface": "theseus_assistant_runtime",
       "canonical_path": "scripts/theseus_runtime.py",
       "promotion_role": "orthogonal_runtime_claim_instrument_and_metadata_only_acquisition_boundaries",
-      "successor_policy": "theseus_runtime.py remains the canonical runtime. The VCM claim auditor, source-acquisition v1-v7 lineage, and execution-free source materializer are non-serving experimental boundaries. V7 owns the frozen identities; the materializer may content-bind only selected files and licenses. Earlier owners remain exact evidence for consumed attempts; none can route serving or authorize model calls."
+      "successor_policy": "theseus_runtime.py remains the canonical runtime. The VCM claim auditor, source-acquisition v1-v7 lineage, execution-free source materializer, and one-slot Task 28 replacement owner are non-serving experimental boundaries. V7 owns the frozen identities; only the failed Python claim slot may change. Earlier owners remain exact evidence; none can route serving or authorize model calls."
     },
     {
       "root": "scripts",
@@ -6919,6 +6919,7 @@
         "scripts/theseus_vcm_source_acquisition_v6.py",
         "scripts/theseus_vcm_source_acquisition_v7.py",
         "scripts/theseus_vcm_source_materialization.py",
+        "scripts/theseus_vcm_source_replacement_28.py",
         "scripts/theseus_openai_reference_adapter.py",
         "configs/theseus_assistant_p2a_instrument.json",
         "configs/theseus_assistant_p2b_instrument.json",
@@ -6974,6 +6975,7 @@
         "configs/theseus_vcm_source_acquisition_v6.json",
         "configs/theseus_vcm_source_acquisition_v7.json",
         "configs/theseus_vcm_source_materialization.json",
+        "configs/theseus_vcm_source_replacement_28.json",
         "tests/fixtures/theseus_semantic_ir_production_non_claim/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/**/*",
@@ -7141,6 +7143,8 @@
         "reports/theseus_vcm_source_acquisition_v7_checkpoint.json",
         "reports/theseus_vcm_source_materialization.json",
         "reports/theseus_vcm_source_materialization_checkpoint.json",
+        "reports/theseus_vcm_source_replacement_28.json",
+        "reports/theseus_vcm_source_replacement_28_checkpoint.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.json",
@@ -9909,6 +9913,7 @@
         "scripts/theseus_vcm_source_acquisition_v6.py",
         "scripts/theseus_vcm_source_acquisition_v7.py",
         "scripts/theseus_vcm_source_materialization.py",
+        "scripts/theseus_vcm_source_replacement_28.py",
         "scripts/theseus_p2c_disposition.py",
         "scripts/theseus_p3_local_model_freeze.py",
         "scripts/theseus_p3_task_pool.py",
@@ -9964,6 +9969,7 @@
         "configs/theseus_vcm_source_acquisition_v6.json",
         "configs/theseus_vcm_source_acquisition_v7.json",
         "configs/theseus_vcm_source_materialization.json",
+        "configs/theseus_vcm_source_replacement_28.json",
         "configs/theseus_assistant_p3_instrument.json",
         "configs/theseus_p3_task_sources.json",
         "configs/theseus_p3_task_pool.json",

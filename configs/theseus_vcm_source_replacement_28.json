@@ -1,0 +1,81 @@
+{
+  "policy": "project_theseus_vcm_source_replacement_28_v1",
+  "state": "PROSPECTIVE_SINGLE_PYTHON_CLAIM_REPLACEMENT_BEFORE_QUERIES",
+  "purpose": "Replace only failed source Task 28 with the first frozen-rule ranked Python claim candidate outside all v7 repositories whose selected source and verifier bytes both change across exact base/head revisions.",
+  "scientific_selection_config": "configs/theseus_vcm_source_acquisition_v7.json",
+  "metadata_selection_report": "reports/theseus_vcm_source_acquisition_v7.json",
+  "failed_materialization_report": "reports/theseus_vcm_source_materialization.json",
+  "failed_materialization_checkpoint": "reports/theseus_vcm_source_materialization_checkpoint.json",
+  "source_bindings": [
+    {"id": "replacement_owner", "path": "scripts/theseus_vcm_source_replacement_28.py", "sha256": "0970d7f6c8aae2109601dad9f7cf4445d66541e285bbfeba5678a2c3c4fec836"},
+    {"id": "graphql_selector_owner", "path": "scripts/theseus_vcm_source_acquisition_v6.py", "sha256": "319b4958e9b7559b8676281a59a09acc2f8323570d80273216cc033fc9a35798"},
+    {"id": "source_materialization_owner", "path": "scripts/theseus_vcm_source_materialization.py", "sha256": "d632093e45e856ce0526dfbe7e544d6b24ab6b688543bc8b24db8921af0334bf"},
+    {"id": "scientific_selection_config", "path": "configs/theseus_vcm_source_acquisition_v7.json", "sha256": "0a60abfc70113e4e660f196e5651415a8b8ef61ed7322048a1d4d738777a495f"},
+    {"id": "metadata_selection_report", "path": "reports/theseus_vcm_source_acquisition_v7.json", "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"},
+    {"id": "failed_materialization_config", "path": "configs/theseus_vcm_source_materialization.json", "sha256": "134fd3f3d7765d32657d1062a9f767cdfe2300f64f6aaffa4fc0679a87023b7d"},
+    {"id": "failed_materialization_report", "path": "reports/theseus_vcm_source_materialization.json", "sha256": "d38e58eccf4fd9a103a921018a9f7c6b20f460f71011d2fe36771f8af6206f18"},
+    {"id": "failed_materialization_checkpoint", "path": "reports/theseus_vcm_source_materialization_checkpoint.json", "sha256": "81ee2af9e8c29b307e5239a5a20876ade3319a87a268174237bf92d417029da7"}
+  ],
+  "replacement_policy": {
+    "task_index": 28,
+    "panel": "claim",
+    "language": "Python",
+    "same_search_window_query_pages_order_and_pacing_required": true,
+    "same_selection_seed_required": true,
+    "same_metadata_eligibility_required": true,
+    "all_v7_repositories_excluded": true,
+    "one_pull_request_per_repository": true,
+    "selected_source_bytes_must_change": true,
+    "selected_verifier_bytes_must_change": true,
+    "first_ranked_content_qualified_candidate_required": true,
+    "reference_outputs_may_select_replacement": false,
+    "failed_repository_remains_consumed": true
+  },
+  "archive_policy": {
+    "output_roles": ["parent_source", "target_source", "parent_verifier", "target_verifier"],
+    "output_index": 28,
+    "deterministic_tar_gzip": true,
+    "maximum_single_file_bytes": 2097152,
+    "maximum_total_materialized_bytes": 536870912,
+    "untrusted_code_execution_authorized": false
+  },
+  "transport_retry_policy": {
+    "maximum_attempts_per_logical_request": 8,
+    "retry_delays_seconds": [1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 45.0],
+    "maximum_total_backoff_seconds_per_logical_request": 108.0,
+    "transient_http_statuses": [408, 429, 500, 502, 503, 504],
+    "permanent_candidate_http_statuses": [404, 410],
+    "retry_unknown_network_failures": true,
+    "rate_limited_403_retryable_when_explicit": true,
+    "host_transport_activation_is_not_task_or_mechanism_failure": true
+  },
+  "checkpoint_policy": {
+    "path": "reports/theseus_vcm_source_replacement_28_checkpoint.json",
+    "response_and_endpoint_hashes_only": true,
+    "candidate_identities_retained": false,
+    "source_content_retained": false,
+    "credentials_retained": false,
+    "finalize_before_report_artifact_hash": true
+  },
+  "output_directory": "tests/fixtures/theseus_vcm_claim_sources_v1",
+  "output": "reports/theseus_vcm_source_replacement_28.json",
+  "authority": {
+    "public_metadata_queries_authorized": true,
+    "public_source_file_retrieval_authorized": true,
+    "public_pr_title_metadata_retrieval_authorized": true,
+    "untrusted_code_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN replacement report proves only that one source-disjoint Python claim replacement for failed Task 28 was chosen by the unchanged frozen rank and metadata rules, passed changed-source and changed-verifier byte gates, and was content-bound into deterministic archives. It does not admit the 62-task panel until an independent combined-panel audit passes, execute untrusted code, qualify an evaluator, authorize candidate or model calls, establish VCM usefulness, or move D1, D2, serving, training, or book support."
+}
