@@ -55,7 +55,7 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
-| Semantic-IR independent adequacy | `PAUSED_INVALID_INFRASTRUCTURE_REPLACEMENT_AND_WATCHDOG_REBIND_ACTIVE` | The prospectively sealed run produced one complete candidate, then Task 2's repair call failed to reach parser-complete or EOS for at least 1,228 seconds. Host protection interrupted it after 4 attempted local calls (3 completed), with zero hidden-evaluator, Luna, teacher, training, D1, or D2 activity. This is invalid infrastructure, not model or mechanism failure; Task 2 is consumed and cannot be rerun. The canonical backend remains byte-stable. An isolated adequacy-only 600-second host watchdog now passes regression tests; the next gate is a fresh licensed same-stratum Task-2 replacement plus a prospective resumability/scorer rebind |
+| Semantic-IR independent adequacy | `REPLACEMENT_RESUME_AUDIT_GREEN_LOCAL_RUN_AUTHORIZED` | The infrastructure-invalid interrupted run remains preserved with one sealed Task-1 candidate and no hidden evaluation. Consumed Task 2 was replaced—not rerun—by a post-snapshot, Apache-2.0, source-disjoint `single_expression_replacement` from `Universal-Commerce-Protocol/conformance`; its exact source, independent evaluator, parent-only packet, and balanced 18-task denominator were sealed in separate transactions. The v2 audit is GREEN and call-free. It authorizes 34 new local calls, journals every exposure, uses an isolated real-time 600-second host interlock, and treats any watchdog or abnormal completion as invalid infrastructure rather than model or mechanism failure. Luna, teacher, training, D1, and D2 remain closed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -240,10 +240,11 @@ authorize regenerating historical reports or reopening neural work.
    contract, and campaign-derived cost authority with zero reference calls.
 3. **Complete:** repair Semantic-IR identity/coverage/target/unit mechanics on
    bounded non-claim evidence through the exact production path.
-4. **Active:** preserve the infrastructure-invalid interrupted run, replace the
-   consumed Task 2 with a fresh licensed same-stratum surface, prospectively
-   bind the isolated host watchdog and Task-1 resume custody, then complete and
-   independently score the 18-task frozen-local adequacy denominator.
+4. **Active:** run the prospectively audited v2 resume for replacement Task 2
+   and Tasks 3-18 (34 new frozen-local calls), preserve Task 1 without
+   regeneration, then independently score only after all 18 candidates are
+   sealed. Any watchdog or abnormal completion consumes that surface and
+   pauses for another fresh replacement without capability inference.
 5. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
 6. Qualify a development survivor once on fresh D1.
