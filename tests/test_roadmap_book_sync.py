@@ -40,8 +40,12 @@ class RoadmapBookSyncTests(unittest.TestCase):
         self.assertEqual("SUBSYSTEM_PROOF_ACTIVE_NEURAL_HOLD", recenter["state"])
         self.assertEqual("ASI_STACK_SUBSYSTEM_CAUSAL_PROOF", recenter["active_track"])
         self.assertEqual(
-            "cognitive-compilation-and-semantic-ir.core",
+            "virtual-context-abi.core",
             recenter["active_claim"]["claim_id"],
+        )
+        self.assertEqual(
+            "VCM_V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE",
+            recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
         self.assertEqual(

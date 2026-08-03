@@ -1,0 +1,35 @@
+{
+  "policy": "project_theseus_vcm_dependency_class_audit_v1",
+  "state": "STATIC_EVALUATOR_DEPENDENCY_CLASSIFICATION_BEFORE_RESOLUTION_INSTALLATION_OR_EXECUTION",
+  "runner_inventory": {
+    "path": "reports/theseus_vcm_repository_runner_inventory_v3.json",
+    "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"
+  },
+  "expected_observations": {
+    "task_count": 62,
+    "tasks_with_exact_lock_receipt": 49,
+    "tasks_dependency_classified": 62,
+    "tasks_evaluator_execution_ready": 0,
+    "dependency_resolutions": 0,
+    "parent_target_or_evaluator_executions": 0
+  },
+  "report": "reports/theseus_vcm_dependency_class_audit.json",
+  "authority": {
+    "normalized_archive_static_read_authorized": true,
+    "archive_extraction_authorized": false,
+    "dependency_resolution_authorized": false,
+    "dependency_installation_authorized": false,
+    "repository_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN dependency-class audit distinguishes exact lock receipts, statically closed standard-library evaluator paths, and tasks requiring immutable dependency resolution. It does not prove that a lock is complete for this host, that dependencies are installed, that dynamic behavior is safe, or that any parent/target evaluator is valid or executable."
+}

@@ -724,6 +724,25 @@ The v3 closure transaction is GREEN: 110 unchanged exact derivatives reused,
 14 replacement parent/head archives fetched, 124/124 current artifacts admitted,
 and zero independent hash or physical-boundary faults. No repository code ran.
 
+The repaired-panel static inventory found 59 root manifests, 48 root locks, and
+58 independently declared runners. A narrow selected-verifier successor closed
+the four runner residuals without inventing repository-specific commands: one
+self-contained Node built-in test, two standard-library `unittest` files, and
+one verifier-embedded `pytest` command. All 62 tasks now have source-bound runner
+candidates; no repository ran.
+
+The dependency-class audit replaces the misleading blanket lock gap with three
+exact classes. Forty-nine tasks have relevant lock receipts. Seven scoped
+evaluators (indices 1, 10, 20, 22, 23, 27, and 58) have a statically closed
+standard-library or Node-built-in import path, with `pytest` tracked separately
+as evaluator harness where needed, so a project lock is not required for that
+exact evaluator path. Six tasks (12, 13, 16, 25, 35, and 56) expose third-party
+dependencies and require immutable resolution before execution. Lock presence
+is not installed-closure proof, dynamic behavior is not qualified, and all 62
+tasks remain evaluator-not-ready. Next materialize and independently verify the
+offline dependency/harness closure, then qualify TypeScript transpilation and
+untrusted Rust compilation before any parent-fail/target-pass canary.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

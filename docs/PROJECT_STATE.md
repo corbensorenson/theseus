@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `INSTRUMENT_AUDIT_GREEN_POWER_BOUND_SOURCE_ACQUISITION_ACTIVE` | The call-free audit replays the existing governor/resolver/certificate/consumer owners and fail-closed packet/route controls, then binds a 9-task local control-qualification panel and 53-task claim panel. The 53-task count is the first with at least 0.80 numerically minimized exact paired-test power for a decision-relevant 35-point gain over the closed feasible discordance interval; its minimum is 0.8173 and 52 tasks fail. Correct VCM is compared with a source-disjoint frozen strongest local control; Luna receives the same two packets in a separate denominator. Licensed source acquisition is active; local and Luna calls remain zero-authority until every task, evaluator, packet, host canary, runner, scorer, call/spend ceiling, and stop condition is sealed |
+| Active VCM claim | `V3_SOURCE_AND_STATIC_EVALUATOR_CLOSURE_GREEN_DEPENDENCY_BUILD_QUALIFICATION_ACTIVE` | The repaired 62-task English panel, all 124 exact parent/head closures, and source-bound runner candidates are GREEN. Forty-nine tasks have exact lock receipts, seven scoped evaluators need no project lock under static closure, and six require immutable resolution. No task is execution-ready; local and Luna calls remain zero-authority until dependency/build qualification, parent-fail/target-pass canaries, packets, scorers, call/spend ceilings, and stop conditions are sealed |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -89,8 +89,9 @@ information-matched plain-context, and maximal-context paths are distinct and
 fail closed where required. A nine-task local-only qualification panel freezes
 the strongest eligible control; a fresh 53-task panel provides at least 0.80
 worst-case exact paired power for the 35-point minimum useful effect. Autonomous
-licensed source and evaluator acquisition is active. Model and Luna authority
-remain zero until the complete campaign is sealed.
+licensed source acquisition has completed for the repaired v3 panel. Static
+evaluator materialization is active. Model and Luna authority remain zero until
+the complete campaign is sealed.
 
 The metadata-selection preflight is also GREEN before any candidate identity is
 retained. It binds four in-scope language quotas, 87 prior-repository
@@ -368,6 +369,16 @@ network transport. Superseded closures remain preserved.
 The incremental closure run completed GREEN with exactly 14 new fetches and 110
 reused derivatives. All 124 current parent/head artifacts independently match
 their report hashes; repository and model execution remain zero.
+
+The v3 runner baseline then found 59 root manifests, 48 root locks, and 58
+independently declared runners. Exact selected-verifier conventions closed the
+four runner residuals, giving 62/62 source-bound runner candidates with zero
+execution. Static dependency classification found 49 relevant lock receipts,
+seven evaluator paths whose reachable imports are standard-library or Node
+built-ins only, and six tasks requiring immutable dependency resolution. A lock
+receipt is not installed closure proof, and no task is evaluator-ready. The next
+owner is offline dependency/harness materialization plus TypeScript and untrusted
+Rust build qualification, followed only then by parent-fail/target-pass canaries.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
