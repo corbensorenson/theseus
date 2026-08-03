@@ -538,14 +538,24 @@ Python-claim slot using the same frozen rank/eligibility rules plus the now-
 required changed-verifier-byte gate. Do not weaken the verifier requirement or
 rerun the accepted 61 as if the failure did not occur.
 
-The Task 28 replacement transaction is now prospectively sealed and GREEN at
-zero queries. It reruns only the frozen Python search window, pages, order,
-pacing, metadata eligibility, and selection seed; excludes all 62 v7
-repositories; keeps the claim-panel role; and admits only the first ranked
-candidate whose selected source and verifier bytes both differ at exact
-base/head revisions. It may write only the four Task 28 archives and cannot
-modify the other 61 tasks, execute code, build packets, evaluate, or call a
-model. One replacement run is active.
+The Task 28 replacement completed GREEN. It selected
+`moritan777/chat-trpg-gm-mvp#30`, outside both the frozen 62 and prior 87,
+after 20 metadata requests, one title request, and six source requests. All
+four exact-revision archives and the final checkpoint passed an independent
+receipt audit. Selected source and verifier bytes both change; no code,
+evaluator, candidate, local model, Luna, training, D1, or D2 path ran.
+
+The first combined-panel audit then found a more important charter violation
+before admission. Archive integrity is GREEN across exactly 62 unique
+repositories, 248 archives, 695 member receipts, all 62 changed-source pairs,
+all 62 changed-verifier pairs, and the exact 9/53 panel-language quotas. But six
+PR titles are not English: claim slots 1 (JavaScript), 12 and 19 (Python), 48
+and 51 (TypeScript), and control-qualification slot 56 (Python). Rule 7 makes
+those requests ineligible for this seed. The panel therefore remains RED and
+non-admitted. Preserve every valid archive; replace only those six slots with
+the first frozen-rule English, same-panel, same-programming-language candidates
+whose source and verifier bytes both change. Do not execute repositories or
+open packets/models while repairing language scope.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
@@ -743,9 +753,13 @@ Use existing owners; create no new cleanup or report family.
    final checkpoint hash. Bind immutable source retrieval and independent
    evaluator qualification to that exact report. The execution-free materializer
    preserved 61 source pairs but rejected Python claim Task 28 because its only
-   verifier path was byte-identical across revisions. Preserve those 61 rows and
-   run the sealed single-slot Python-claim replacement owner, which requires
-   changed source and verifier bytes before admission. Then qualify evaluators and bind
+   verifier path was byte-identical across revisions. Its sealed single-slot
+   replacement completed GREEN with changed source and verifier bytes and no
+   execution/model activity. The combined audit verified all 248 archives but
+   rejected six non-English natural-language requests under Rule 7. Preserve
+   all eligible rows and replace only slots 1, 12, 19, 48, 51, and 56 with
+   frozen-rule same-panel, same-programming-language English tasks. Then rerun
+   the combined audit, qualify evaluators, and bind
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.

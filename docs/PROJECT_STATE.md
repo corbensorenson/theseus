@@ -220,12 +220,22 @@ checkpoint hash is valid. Preserve the 61 rows and replace only this Python-
 claim slot under the same rank/eligibility rules plus a changed-verifier-byte
 gate; do not relax the requirement.
 
-The Task 28 replacement owner is now prospectively sealed and GREEN at zero
-queries. It keeps the exact frozen Python search/rank/eligibility policy,
-excludes all 62 v7 repositories, preserves the claim-panel slot, and can admit
-only the first ranked candidate with changed selected source and verifier bytes.
-It may write only four Task 28 archives and has no execution, packet, evaluator,
-or model authority. One replacement run is active.
+The Task 28 replacement completed GREEN. It selected
+`moritan777/chat-trpg-gm-mvp#30`, outside the frozen 62 and prior 87, using 20
+metadata requests, one title request, and six source requests. The four exact-
+revision archives and final checkpoint independently match every receipt;
+selected source and verifier bytes both change. Execution, packets, evaluators,
+local/Luna calls, training, D1, and D2 remained at zero.
+
+The execution-free combined audit verified 62 unique repositories, 248
+normalized archives, 695 member receipts, changed source and verifier bytes for
+all 62 slots, and exact 9/53 panel-language quotas. It correctly refused panel
+admission because six natural-language requests violate the English-only seed:
+claim slots 1 (JavaScript), 12 and 19 (Python), 48 and 51 (TypeScript), plus
+control-qualification slot 56 (Python). Archive integrity is GREEN; panel state
+is `SOURCE_PANEL_LANGUAGE_REPLACEMENTS_REQUIRED`. Replace only those six slots
+under the frozen same-panel/same-programming-language rules before evaluator
+qualification. No repository execution or model authority is open.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -415,8 +425,11 @@ authorize regenerating historical reports or reopening neural work.
    bounded retry horizon and final checkpoint hash ordering. V7 completed GREEN
    with all 62 exact-panel identities and a verified final checkpoint hash.
    The execution-free materializer preserved 61 source pairs but rejected the
-   Python claim Task 28 verifier as byte-identical. Run the sealed single-slot
-   Python-claim replacement owner, then qualify evaluators before
+   Python claim Task 28 verifier as byte-identical. Its single-slot replacement
+   completed GREEN. The combined archive audit then rejected six non-English
+   requests under Rule 7 while verifying all archive receipts. Replace only
+   slots 1, 12, 19, 48, 51, and 56 under frozen panel/language constraints, then
+   qualify evaluators before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.
 11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit

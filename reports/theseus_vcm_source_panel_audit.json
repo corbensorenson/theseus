@@ -1,0 +1,132 @@
+{
+  "D1_cases_consumed": 0,
+  "D2_cases_consumed": 0,
+  "archive_integrity_green": true,
+  "archive_receipt_count": 248,
+  "assembled_task_count": 62,
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_source_panel_audit.json",
+    "sha256": "ce7479371788801e8e435db7bd7860bf896317a98835aaf3b1b63e7024333444"
+  },
+  "created_utc": "2026-08-03T11:39:21.583823Z",
+  "english_eligible_task_count": 56,
+  "external_reference_calls": 0,
+  "faults": [
+    "task_01:natural_language_out_of_scope",
+    "task_12:natural_language_out_of_scope",
+    "task_19:natural_language_out_of_scope",
+    "task_48:natural_language_out_of_scope",
+    "task_51:natural_language_out_of_scope",
+    "task_56:natural_language_out_of_scope"
+  ],
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN report would prove only that exactly 62 source-disjoint, license-bound, English-request source tasks have complete normalized parent/target source and verifier archives with changed selected bytes. A RED language disposition preserves otherwise valid archives while refusing panel admission and identifying exact same-panel, same-language replacement slots. Neither state establishes parent failure, target success, evaluator independence or adequacy, candidate competence, a VCM effect, D1, D2, serving, training value, or ASI Stack support.",
+  "member_receipt_count": 695,
+  "panel_language_quotas": [
+    {
+      "count": 11,
+      "panel": "claim",
+      "query_language": "JavaScript"
+    },
+    {
+      "count": 17,
+      "panel": "claim",
+      "query_language": "Python"
+    },
+    {
+      "count": 11,
+      "panel": "claim",
+      "query_language": "Rust"
+    },
+    {
+      "count": 14,
+      "panel": "claim",
+      "query_language": "TypeScript"
+    },
+    {
+      "count": 2,
+      "panel": "control_qualification",
+      "query_language": "JavaScript"
+    },
+    {
+      "count": 3,
+      "panel": "control_qualification",
+      "query_language": "Python"
+    },
+    {
+      "count": 2,
+      "panel": "control_qualification",
+      "query_language": "Rust"
+    },
+    {
+      "count": 2,
+      "panel": "control_qualification",
+      "query_language": "TypeScript"
+    }
+  ],
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_source_panel_audit_v1",
+  "prior_repository_count_recomputed": 87,
+  "replacement_slots_required": [
+    {
+      "index": 1,
+      "panel": "claim",
+      "query_language": "JavaScript",
+      "title_sha256": "8373ec830c03bdd165b274ef7d982e6ed272d34bc0736f1b98c68b30b33313a8"
+    },
+    {
+      "index": 12,
+      "panel": "claim",
+      "query_language": "Python",
+      "title_sha256": "f2bd5e776ad087dfb225f9cd258a58d9acbdbb91d0cce32fd94553280d786f64"
+    },
+    {
+      "index": 19,
+      "panel": "claim",
+      "query_language": "Python",
+      "title_sha256": "f87b37636ee190a09d386c6e90042c8fd9d59c0e3435d139d1dbf50e3234b16a"
+    },
+    {
+      "index": 48,
+      "panel": "claim",
+      "query_language": "TypeScript",
+      "title_sha256": "f069b082e55761692277658a62924f18b196d0f64cdc173995f47721d989802b"
+    },
+    {
+      "index": 51,
+      "panel": "claim",
+      "query_language": "TypeScript",
+      "title_sha256": "bbc0a469422ac5362da26fcd9999148ff71e5dfa987b092ddcb721fce07d4cee"
+    },
+    {
+      "index": 56,
+      "panel": "control_qualification",
+      "query_language": "Python",
+      "title_sha256": "c149c1c170d7532b365a4322d1b0580e98d94e96b839c6d3523dd12c8f1589eb"
+    }
+  ],
+  "reports": {
+    "failed_materialization": {
+      "path": "reports/theseus_vcm_source_materialization.json",
+      "sha256": "d38e58eccf4fd9a103a921018a9f7c6b20f460f71011d2fe36771f8af6206f18"
+    },
+    "metadata_selection": {
+      "path": "reports/theseus_vcm_source_acquisition_v7.json",
+      "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"
+    },
+    "replacement_28": {
+      "path": "reports/theseus_vcm_source_replacement_28.json",
+      "sha256": "50136db23d4ead52a9c897f4d923880830eca368be6b70c6ad2c9f86e2e36976"
+    }
+  },
+  "selected_source_difference_count": 62,
+  "selected_verifier_difference_count": 62,
+  "source_panel_admitted": false,
+  "state": "SOURCE_PANEL_LANGUAGE_REPLACEMENTS_REQUIRED",
+  "task_28_replacement_bound": true,
+  "title_set_sha256": "0c558d34cb38634825d007cf05f017348ee9795c6e01a140d491243e143239b0",
+  "total_member_bytes": 14096408,
+  "trigger_state": "RED",
+  "unique_repository_count": 62
+}

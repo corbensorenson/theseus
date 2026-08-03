@@ -1,0 +1,58 @@
+{
+  "policy": "project_theseus_vcm_source_panel_audit_v1",
+  "state": "PROSPECTIVE_EXECUTION_FREE_COMBINED_SOURCE_PANEL_AUDIT",
+  "purpose": "Independently verify all source receipts, substitute only the sealed Task 28 replacement, preserve panel quotas and source disjointness, and enforce the charter's English-only natural-language boundary before panel admission.",
+  "reports": {
+    "metadata_selection": {"path": "reports/theseus_vcm_source_acquisition_v7.json", "sha256": "e4958bf3cbb8b1fc93016c614b8208264ab998c541a9790446b77cd31da1f4e2"},
+    "failed_materialization": {"path": "reports/theseus_vcm_source_materialization.json", "sha256": "d38e58eccf4fd9a103a921018a9f7c6b20f460f71011d2fe36771f8af6206f18"},
+    "replacement_28": {"path": "reports/theseus_vcm_source_replacement_28.json", "sha256": "50136db23d4ead52a9c897f4d923880830eca368be6b70c6ad2c9f86e2e36976"}
+  },
+  "expected_panel": {
+    "task_count": 62,
+    "archive_count": 248,
+    "member_receipt_count": 695,
+    "total_member_bytes": 14096408,
+    "output_directory": "tests/fixtures/theseus_vcm_claim_sources_v1",
+    "quotas": [
+      {"panel": "claim", "query_language": "JavaScript", "count": 11},
+      {"panel": "claim", "query_language": "Python", "count": 17},
+      {"panel": "claim", "query_language": "Rust", "count": 11},
+      {"panel": "claim", "query_language": "TypeScript", "count": 14},
+      {"panel": "control_qualification", "query_language": "JavaScript", "count": 2},
+      {"panel": "control_qualification", "query_language": "Python", "count": 3},
+      {"panel": "control_qualification", "query_language": "Rust", "count": 2},
+      {"panel": "control_qualification", "query_language": "TypeScript", "count": 2}
+    ]
+  },
+  "english_language_review": {
+    "reviewed_title_set_sha256": "0c558d34cb38634825d007cf05f017348ee9795c6e01a140d491243e143239b0",
+    "all_62_titles_independently_reviewed": true,
+    "replacement_slots_required": [1, 12, 19, 48, 51, 56],
+    "non_english_title_adjudications": [
+      {"index": 1, "title_sha256": "8373ec830c03bdd165b274ef7d982e6ed272d34bc0736f1b98c68b30b33313a8", "english_eligible": false, "language": "German"},
+      {"index": 12, "title_sha256": "f2bd5e776ad087dfb225f9cd258a58d9acbdbb91d0cce32fd94553280d786f64", "english_eligible": false, "language": "German"},
+      {"index": 19, "title_sha256": "f87b37636ee190a09d386c6e90042c8fd9d59c0e3435d139d1dbf50e3234b16a", "english_eligible": false, "language": "Romanian"},
+      {"index": 48, "title_sha256": "f069b082e55761692277658a62924f18b196d0f64cdc173995f47721d989802b", "english_eligible": false, "language": "German"},
+      {"index": 51, "title_sha256": "bbc0a469422ac5362da26fcd9999148ff71e5dfa987b092ddcb721fce07d4cee", "english_eligible": false, "language": "Korean"},
+      {"index": 56, "title_sha256": "c149c1c170d7532b365a4322d1b0580e98d94e96b839c6d3523dd12c8f1589eb", "english_eligible": false, "language": "Russian"}
+    ]
+  },
+  "authority": {
+    "network_calls_authorized": false,
+    "untrusted_code_execution_authorized": false,
+    "dependency_installation_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "hidden_evaluation_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output": "reports/theseus_vcm_source_panel_audit.json",
+  "maximum_inference": "A GREEN report would prove only that exactly 62 source-disjoint, license-bound, English-request source tasks have complete normalized parent/target source and verifier archives with changed selected bytes. A RED language disposition preserves otherwise valid archives while refusing panel admission and identifying exact same-panel, same-language replacement slots. Neither state establishes parent failure, target success, evaluator independence or adequacy, candidate competence, a VCM effect, D1, D2, serving, training value, or ASI Stack support."
+}
