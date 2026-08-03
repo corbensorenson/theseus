@@ -114,7 +114,8 @@ this rebased PR's `merge_commit_sha` identifies a docs-only final commit rather
 than the PR-head source repair. Both RED receipts are preserved. A prospective
 revision policy now uses the public PR `base.sha` and `head.sha` for task bytes
 while retaining merge commit and first parent as lineage only; its metadata
-preflight is GREEN with zero calls. No evaluator or model call informed either
+replay is GREEN for all 18 nondegenerate pairs, and the hash-bound v3 source
+materialization preflight is GREEN with zero calls. No evaluator or model call informed either
 repair. Source-byte materialization and
 parent-negative/target-positive evaluator qualification remain active; the
 panel is not sealed and no adequacy observation is yet authorized.
