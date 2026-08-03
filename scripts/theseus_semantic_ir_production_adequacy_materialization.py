@@ -23,7 +23,7 @@ import theseus_semantic_ir_production_adequacy as adequacy  # noqa: E402
 
 
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_semantic_ir_production_adequacy_materialization.json"
-DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_materialization.json"
+DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_materialization_v2.json"
 POLICY = "project_theseus_semantic_ir_production_adequacy_materialization_v1"
 
 
@@ -93,7 +93,11 @@ def preflight(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     faults: list[str] = []
     if config.get("policy") != POLICY:
         faults.append("config_policy_invalid")
-    if config.get("state") != "FIXED_BEFORE_SOURCE_BYTE_RETRIEVAL":
+    state = config.get("state")
+    if state not in {
+        "FIXED_BEFORE_SOURCE_BYTE_RETRIEVAL",
+        "AMENDED_AND_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL",
+    }:
         faults.append("config_state_invalid")
     loaded: dict[str, dict[str, Any]] = {}
     for path_key, hash_key in (
@@ -111,6 +115,14 @@ def preflight(config_path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         faults.append("metadata_selection_not_green")
     if len(adequacy.dictionaries(metadata.get("rows"))) != 18:
         faults.append("metadata_row_count_invalid")
+    if state == "AMENDED_AND_FIXED_BEFORE_RENEWED_SOURCE_BYTE_RETRIEVAL":
+        for path_key, hash_key in (
+            ("prior_source_failure_report", "prior_source_failure_report_sha256"),
+            ("prior_source_failure_audit", "prior_source_failure_audit_sha256"),
+        ):
+            path = resolve(str(config.get(path_key) or ""))
+            if not path.is_file() or sha256_file(path) != str(config.get(hash_key) or ""):
+                faults.append(f"binding_invalid:{path_key}")
     policy = adequacy.mapping(config.get("archive_policy"))
     expected_policy = {
         "selected_source_and_license_files_only": True,

@@ -109,8 +109,10 @@ The first selected-file materialization failed closed because task 4's selected
 file was byte-identical across the exact revisions. The RED receipt is
 preserved, including an audited 36-to-34 archive-counter overcount. A versioned
 single-path amendment now selects the actual `cli.py` predicate repair from the
-same frozen PR and stratum; renewed metadata acquisition is preflight-GREEN.
-No evaluator or model call informed the repair. Source-byte materialization and
+same frozen PR and stratum. Renewed metadata acquisition is GREEN for 18/18
+through a fresh 90-request digest chain, and a v2 materialization contract binds
+that result plus the prior failure before renewed source retrieval. No evaluator
+or model call informed the repair. Source-byte materialization and
 parent-negative/target-positive evaluator qualification remain active; the
 panel is not sealed and no adequacy observation is yet authorized.
 
