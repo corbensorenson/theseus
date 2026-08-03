@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_TASK_36_RUST_1_97_1_BOOTSTRAP_PROSPECTIVELY_SEALED",
+            "VCM_V3_TASK_36_RUST_1_97_1_QUALIFIED_COMPATIBILITY_REGENERATION_NEXT",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])

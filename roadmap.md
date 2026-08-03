@@ -867,8 +867,10 @@ storage reserve rederive without execution. Frozen schedule ordinal 3, task 36,
 requires Rust 1.97 while the bound profile is 1.90. Exact Rust 1.97.1 is now
 prospectively sealed because it satisfies the minimum and fixes the 1.97.0
 miscompilation. The official manifest plus minimal Apple ARM64 `rustc`, `cargo`,
-and `rust-std` hashes are bound before acquisition. No Cargo dependency fetch or
-repository runner is authorized.
+and `rust-std` hashes were bound before acquisition. The isolated minimal
+toolchain is GREEN: rustc and Cargo report 1.97.1 on Apple ARM64, retaining 153
+files/567,822,045 bytes. No Cargo dependency fetch or repository runner ran.
+Regenerate compatibility before task 36 advances.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development

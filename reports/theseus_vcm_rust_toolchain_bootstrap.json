@@ -1,19 +1,58 @@
 {
-  "acquisition_executed": false,
+  "acquisition_executed": true,
   "candidate_or_control_calls": 0,
   "cargo_dependency_fetches": 0,
   "config": {
     "path": "configs/theseus_vcm_rust_toolchain_bootstrap.json",
     "sha256": "32cc6239883f581a7e9326f68751fc0b7c8fe4e23079ba8b9c5b6b77ff4863aa"
   },
-  "created_utc": "2026-08-03T18:57:42.505333Z",
+  "created_utc": "2026-08-03T18:59:07.975260Z",
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN report proves only that official-manifest-bound minimal Rust 1.97.1 for Apple ARM64 was isolated, materialized, and version-probed for VCM task 36. It does not fetch Cargo dependencies or qualify repository execution, evaluators, tasks, VCM, models, D1, D2, or book support.",
   "network_metadata_requests_before_contract": 2,
   "policy": "project_theseus_vcm_rust_toolchain_bootstrap_v1",
+  "receipt": {
+    "command": [
+      "/Users/corbensorenson/.cargo/bin/rustup",
+      "toolchain",
+      "install",
+      "1.97.1-aarch64-apple-darwin",
+      "--profile",
+      "minimal",
+      "--no-self-update"
+    ],
+    "free_bytes_after": 36082380800,
+    "free_bytes_before": 36661047296,
+    "returncode": 0,
+    "stderr_bytes": 562,
+    "stderr_sha256": "f695ce62ea1d9fd1cb7cc1e1e86dfa15d70065f88c35aa7ef88ebfaa0f07f56e",
+    "stderr_tail": "info: syncing channel updates for '1.97.1-aarch64-apple-darwin'\ninfo: latest update on 2026-07-16, rust version 1.97.1 (8bab26f4f 2026-07-14)\ninfo: downloading component 'cargo'\ninfo: downloading component 'rust-std'\ninfo: downloading component 'rustc'\ninfo: installing component 'cargo'\ninfo: installing component 'rust-std'\ninfo: installing component 'rustc'\ninfo: default toolchain set to '1.97.1-aarch64-apple-darwin'\ninfo: self-update is disabled for this build of rustup\ninfo: any updates to rustup will need to be fetched with your system package manager\n",
+    "stdout_bytes": 80,
+    "stdout_sha256": "5b81eb2fe152287c78da145140ecf0e5e3eee71229734b2e4186aa62c4e5eba3",
+    "toolchain": {
+      "bytes": 567822045,
+      "faults": [],
+      "file_count": 153,
+      "path": "runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin",
+      "probes": {
+        "cargo": {
+          "binary_sha256": "7672ead309d505577c018fff2cafb3433601f073e38cbe87359ac1f7b944bbf5",
+          "returncode": 0,
+          "stdout": "cargo 1.97.1 (c980f4866 2026-06-30)\nrelease: 1.97.1\ncommit-hash: c980f4866141969fab6254a680546a277789d6f0\ncommit-date: 2026-06-30\nhost: aarch64-apple-darwin\nlibgit2: 1.9.2 (sys:0.20.4 vendored)\nlibcurl: 8.7.1 (sys:0.4.88+curl-8.20.0 system ssl:(SecureTransport) LibreSSL/3.3.6)\nssl: OpenSSL 3.6.2 7 Apr 2026\nos: Mac OS 15.0.0 [64-bit]",
+          "stdout_sha256": "e0542d6acc4f4123a1871ebb7e369f2a7a4af1f97b3b43b573369f7e7dac61c2"
+        },
+        "rustc": {
+          "binary_sha256": "210df6794001b73ec3d453878707fa1e0bdcb63c427024a6e6574bbe5615a4da",
+          "returncode": 0,
+          "stdout": "rustc 1.97.1 (8bab26f4f 2026-07-14)\nbinary: rustc\ncommit-hash: 8bab26f4f68e0e26f0bb7960be334d5b520ea452\ncommit-date: 2026-07-14\nhost: aarch64-apple-darwin\nrelease: 1.97.1\nLLVM version: 22.1.6",
+          "stdout_sha256": "e794146d99fad54562fdcbd4a7c8b22b0240d2b0312ff6d879d67939b3131850"
+        }
+      }
+    }
+  },
   "repository_executions": 0,
-  "state": "READY_FOR_EXACT_RUST_1_97_1_ACQUISITION",
-  "toolchain_acquisition_executions": 0,
-  "trigger_state": "PAUSED"
+  "state": "EXACT_RUST_1_97_1_MINIMAL_TOOLCHAIN_MATERIALIZED_AND_VERSION_QUALIFIED",
+  "toolchain_acquisition_executions": 1,
+  "trigger_state": "GREEN"
 }
