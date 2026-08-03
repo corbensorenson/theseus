@@ -47,7 +47,15 @@ availability alone cannot resume neural training.
 - The replacement role-aware Semantic-IR production owner passes 10/10
   deterministic conformance fixtures and one source-disjoint project-authored
   TMax canary with 2/2 naturally completed production-path artifacts. This
-  closes bounded mechanics repair only; independent adequacy is active.
+  closed bounded mechanics repair only. Its prospectively audited fresh-v6
+  adequacy run then sealed one candidate before a 45,113-token Task 2 prompt
+  produced zero tokens at the 600-second host wall. The exact implementation is
+  terminal `INCONCLUSIVE_EXPERIMENT` for this TMax/host block; no hidden
+  evaluator ran and no broad Semantic-IR negative is allowed.
+- The sole active claim is now `virtual-context-abi.core`, selected because the
+  terminal residual is model-visible context materialization and prompt-ingest
+  burden. The existing VCM owner is in call-free prospective instrument binding;
+  no local or Luna claim call is authorized yet.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
   separately denominated OpenAI measurement-only reference. Its exact
   Responses API adapter is source-bound and offline-qualified; calls remain
@@ -213,9 +221,13 @@ and autonomous resource and rollback readiness. D2 remains sealed until then.
 ## Honest Walls
 
 - No ASI Stack mechanism has yet earned source-disjoint D1 qualification.
-- The exact Semantic-IR implementation failed its mechanics floor; the broader
-  cognitive-compilation claim remains unresolved. Its replacement production
-  owner has passed bounded mechanics evidence but not independent adequacy.
+- The exact Semantic-IR implementation is frozen for the current TMax/host
+  block after an infrastructure-invalid fresh adequacy run. The broader
+  cognitive-compilation claim remains unresolved, and another current-block
+  Semantic-IR reseal is forbidden.
+- VCM has substantial deterministic mechanics evidence but no prospectively
+  sealed natural-work causal campaign showing that governed context helps the
+  frozen model beyond information-matched plain context at visible total cost.
 - The Luna transport is bound but no future four-cell claim pool, independent
   evaluator, custody path, and spend authority are prospectively sealed, so no
   hosted reference call is authorized.

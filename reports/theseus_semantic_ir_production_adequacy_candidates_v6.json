@@ -1,0 +1,571 @@
+{
+  "completed_task_count": 1,
+  "config": {
+    "path": "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
+    "sha256": "734ea1d38ecab70d43b156c5c6118afaea60023c7e80753f5e71d9b6226ae239"
+  },
+  "config_audit": {
+    "candidate_generation_opened": false,
+    "config_sha256": "734ea1d38ecab70d43b156c5c6118afaea60023c7e80753f5e71d9b6226ae239",
+    "counters": {
+      "D1_cases_consumed": 0,
+      "D2_cases_consumed": 0,
+      "candidate_or_control_calls": 0,
+      "external_inference_calls": 0,
+      "hidden_evaluator_executions": 0,
+      "local_model_calls": 0,
+      "teacher_calls": 0,
+      "training_rows_written": 0
+    },
+    "created_utc": "2026-08-03T08:08:01.138054Z",
+    "faults": [],
+    "frozen_model_contract": {
+      "faults": [],
+      "identity": {
+        "decoder": {
+          "chat_template_kwargs": {
+            "enable_thinking": false
+          },
+          "kv_bits": null,
+          "kv_group_size": null,
+          "maximum_tokens": 262144,
+          "quantized_kv_start": null,
+          "repetition_context_size": 128,
+          "repetition_penalty": 1.05,
+          "temperature": 0.0,
+          "worker_maximum_action_tokens": 262144
+        },
+        "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+        "generation_boundary": {
+          "ceiling_hit_is_instrument_invalid": true,
+          "model_declared_context_window_tokens": 262144,
+          "numeric_ceiling_source": "model_declared_context_window",
+          "policy": "configs/theseus_generation_completion_policy.json",
+          "project_selected_quality_token_cap": null
+        },
+        "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "runtime": "mlx_lm_local_metal",
+        "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+        "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+      },
+      "model_card": {
+        "chat_template_kwargs": {
+          "enable_thinking": false
+        },
+        "maximum_action_tokens": 262144,
+        "repetition_context_size": 128,
+        "repetition_penalty": 1.05,
+        "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+        "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+        "temperature": 0.0
+      },
+      "ready": true,
+      "runtime_preflight": "reports/core_evidence_tmax_9b_runtime_preflight.json",
+      "worker_config": "configs/core_evidence_tmax_9b_completion_worker.json"
+    },
+    "generation_indices": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18
+    ],
+    "hidden_evaluation_opened": false,
+    "host_watchdog_seconds": 600,
+    "policy": "project_theseus_semantic_ir_production_adequacy_campaign_audit_v6",
+    "runtime_ms": 9.035,
+    "sealed_task_count": 18,
+    "trigger_state": "GREEN",
+    "watchdog_classifier_precedence": "backend_telemetry_before_route_consequence"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 2,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 2,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T08:27:59.827647Z",
+  "expected_task_count": 18,
+  "faults": [
+    "host_watchdog_infrastructure_invalid:task_02:call_1"
+  ],
+  "hidden_evaluation_opened": false,
+  "maximum_inference": "Candidate generation and syntax-visible mechanics only. Host-watchdog activation or abnormal completion is invalid infrastructure, not capability evidence. Hidden evaluation, implementation adequacy, subsystem effects, D1, D2, training value, serving, and book support remain unestablished until independent scoring.",
+  "new_candidate_count": 1,
+  "policy": "project_theseus_semantic_ir_production_adequacy_candidates_v6",
+  "preserved_candidate_count": 0,
+  "rows": [
+    {
+      "apply_faults": [],
+      "authorized_effect": true,
+      "candidate_mechanics_ready_for_hidden_evaluation": false,
+      "candidate_packet": "configs/theseus_semantic_ir_production_adequacy_fresh_v6_candidate_packet_01.json",
+      "candidate_payload": {
+        "actions": [
+          {
+            "end_line": 73,
+            "op": "REPLACE",
+            "path": "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py",
+            "replacement": "        def _select_experts(\n        self,\n        input_tensor: torch.Tensor,\n        router_logits: torch.Tensor,\n        correction_bias: Optional[torch.Tensor],\n        top_k: int,\n        renormalize: bool,\n        use_grouped_topk: bool,\n        topk_group: int,\n        num_expert_group: int,\n        scoring_func: str,\n        per_expert_scale: Optional[torch.Tensor] = None,\n        shared_expert_gate: Optional[torch.Tensor] = None,\n    ):\n        \"\"\"Select experts and return topk weights and ids.\"\"\"\n        assert shared_expert_gate is None, \"fused shared expert as MoE is not supported by DeepGEMM fused MoE\"\n        from lightllm.common.basemodel.triton_kernel.fused_moe.topk_select import select_experts\n\n        topk_weights, topk_ids, _ = select_experts(\n            hidden_states=input_tensor,\n            router_logits=router_logits,\n            correction_bias=correction_bias,\n            use_grouped_topk=use_grouped_topk,\n            top_k=top_k,\n            renormalize=renormalize,\n            topk_group=topk_group,\n            num_expert_group=num_expert_group,\n            scoring_func=scoring_func,\n        )\n        if self.routed_scaling_factor != 1.0:\n            topk_weights.mul_(self.routed_scaling_factor)\n        if per_expert_scale is not None:\n            topk_weights = topk_weights * per_expert_scale[topk_ids.to(torch.long)].to(topk_weights.dtype)\n        origin_topk_ids = topk_ids\n        if self.redundancy_expert_num > 0:\n            # \u56e0\u4e3a redundancy_topk_ids_repair \u4f1a\u4fee\u6539 topk_ids\uff0c\u6240\u4ee5\u9700\u8981\u5148\u590d\u5236\u4e00\u4efd\n            origin_topk_ids = topk_ids.clone()\n            redundancy_topk_ids_repair(\n                topk_ids=topk_ids,\n                redundancy_expert_ids=self.redundancy_expert_ids_tensor,\n                ep_expert_num=self.ep_n_routed_experts,\n                global_rank=self.global_rank_,\n                expert_counter=self.routed_expert_counter_tensor,\n                enable_counter=self.auto_update_redundancy_expert,\n            )\n        return topk_weights, topk_ids",
+            "start_line": 28
+          }
+        ],
+        "changed_paths": [
+          "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py"
+        ],
+        "final_inventory_sha256": "75f7d6561796e96009acceaa6fd3942d1bda8d422e06d4ffa93a392a7272eb9d",
+        "semantic_receipt": {
+          "answer_bearing_repair": false,
+          "candidate_supplied_full_node_sha256": false,
+          "canonicalization": {
+            "answer_bearing_transformation": false,
+            "fields": [
+              {
+                "field": "ALL_OBLIGATIONS",
+                "identifier_count": 3,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 3,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              },
+              {
+                "field": "CHANGE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 4,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "PRESERVE_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 5,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "NON_GOAL_OBLIGATIONS",
+                "identifier_count": 1,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 6,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "whitespace_list"
+              },
+              {
+                "field": "OBLIGATIONS",
+                "identifier_count": 2,
+                "identifier_order_changed": false,
+                "identifier_values_invented": 0,
+                "line": 8,
+                "state": "ALREADY_CANONICAL",
+                "surface_class": "comma_list"
+              }
+            ],
+            "identifier_order_changed": false,
+            "identifier_values_invented": 0,
+            "normalized_field_count": 0,
+            "policy": "project_theseus_semantic_ir_production_canonicalization_v1",
+            "rejected_field_count": 0,
+            "replacement_source_touched": false,
+            "target_identity_touched": false
+          },
+          "compact_integrity_abi": {
+            "descriptive_label_candidate_visible": false,
+            "full_node_sha256_candidate_visible": false,
+            "full_node_sha256_resolved_independently": true,
+            "handle_bits": 128,
+            "inventory_complete": true,
+            "inventory_truncated": false,
+            "path_grouped_once": true,
+            "policy": "semantic_node_handle_128bit_collision_checked_v1",
+            "project_selected_node_cap_applied": false
+          },
+          "deterministic_lowerer": true,
+          "full_node_sha256_resolved_independently": true,
+          "hidden_evaluator_fields_consumed": [],
+          "loss_obligation_ids": [],
+          "lowered_action_sha256": "9794331e0514939c9178d58085db7176ce8e0d93934a7dc64c4815e0b603131f",
+          "model_generated_ir": true,
+          "node_identity_resolution": [
+            {
+              "candidate_supplied_full_digest": false,
+              "full_digest_resolved_independently": true,
+              "node_id": "N-5B17BEAA720A98F32CC09A4072B5C3BE",
+              "resolved": true,
+              "unit_id": "U1"
+            }
+          ],
+          "obligation_roles": {
+            "change": [
+              "O1"
+            ],
+            "non_goal": [
+              "O3"
+            ],
+            "preserve": [
+              "O2"
+            ]
+          },
+          "path_normalization": [
+            {
+              "answer_bearing_transformation": false,
+              "canonical": "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py",
+              "state": "EXACT",
+              "surface": "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py"
+            }
+          ],
+          "policy": "project_theseus_semantic_ir_production_receipt_v1",
+          "schema": "THESEUS_SEMANTIC_IR_V4_COMPACT",
+          "semantic_source_digest": "b24887bfc7d6b6ca373ca1b26c08a6edfc165f6b75509395169f1584c14587df",
+          "units": [
+            {
+              "change_obligation_ids": [
+                "O1"
+              ],
+              "id": "U1",
+              "node_id": "N-5B17BEAA720A98F32CC09A4072B5C3BE",
+              "node_sha256": "fbbc600f961a88b9beb18b4aaa8dab019f91efda8177f2e3169579f3365cecb8",
+              "obligation_ids": [
+                "O1",
+                "O2"
+              ],
+              "operation": "REPLACE",
+              "path": "lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py",
+              "preserve_obligation_ids": [
+                "O2"
+              ],
+              "replacement_sha256": "83a0bf766e82b9576b8a21748a400859ff34eb6eddadcc401c6193d2a2f9232c"
+            }
+          ]
+        }
+      },
+      "candidate_seal": {
+        "candidate_packet_sha256": "1e8223927bfd6907be59669c6949b575b87cf76e16470966890d441624e5cd35",
+        "candidate_payload_sha256": "1e7bebf9dddd4391f5830dbc9ae59429fda14a8b0d297d934fc4446f2fd5d86e",
+        "final_output_sha256": "7a330452c72d85e21462a43e75795bcc831a48cce74ab35e2bc901781a727641",
+        "first_output_sha256": "7a330452c72d85e21462a43e75795bcc831a48cce74ab35e2bc901781a727641",
+        "sealed_before_hidden_evaluation": true,
+        "serialized_prompt_sha256": "49a9480d122eb0ff80db52e0a8b2b88acc3a61326245ac7b6069fca0e29db7c9",
+        "task_manifest_sha256": "2e5013efbd863db9143d3be36d7db975f927257c69529c4e69fc6aca81e9c45e"
+      },
+      "hidden_evaluator_executions": 0,
+      "index": 1,
+      "infrastructure_faults": [],
+      "model_outputs": {
+        "final": "THESEUS_SEMANTIC_IR_V4_COMPACT\nSOURCE b24887bfc7d6b6ca373ca1b26c08a6edfc165f6b75509395169f1584c14587df\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py\nNODE N-5B17BEAA720A98F32CC09A4072B5C3BE\n<<<\n    def _select_experts(\n        self,\n        input_tensor: torch.Tensor,\n        router_logits: torch.Tensor,\n        correction_bias: Optional[torch.Tensor],\n        top_k: int,\n        renormalize: bool,\n        use_grouped_topk: bool,\n        topk_group: int,\n        num_expert_group: int,\n        scoring_func: str,\n        per_expert_scale: Optional[torch.Tensor] = None,\n        shared_expert_gate: Optional[torch.Tensor] = None,\n    ):\n        \"\"\"Select experts and return topk weights and ids.\"\"\"\n        assert shared_expert_gate is None, \"fused shared expert as MoE is not supported by DeepGEMM fused MoE\"\n        from lightllm.common.basemodel.triton_kernel.fused_moe.topk_select import select_experts\n\n        topk_weights, topk_ids, _ = select_experts(\n            hidden_states=input_tensor,\n            router_logits=router_logits,\n            correction_bias=correction_bias,\n            use_grouped_topk=use_grouped_topk,\n            top_k=top_k,\n            renormalize=renormalize,\n            topk_group=topk_group,\n            num_expert_group=num_expert_group,\n            scoring_func=scoring_func,\n        )\n        if self.routed_scaling_factor != 1.0:\n            topk_weights.mul_(self.routed_scaling_factor)\n        if per_expert_scale is not None:\n            topk_weights = topk_weights * per_expert_scale[topk_ids.to(torch.long)].to(topk_weights.dtype)\n        origin_topk_ids = topk_ids\n        if self.redundancy_expert_num > 0:\n            # \u56e0\u4e3a redundancy_topk_ids_repair \u4f1a\u4fee\u6539 topk_ids\uff0c\u6240\u4ee5\u9700\u8981\u5148\u590d\u5236\u4e00\u4efd\n            origin_topk_ids = topk_ids.clone()\n            redundancy_topk_ids_repair(\n                topk_ids=topk_ids,\n                redundancy_expert_ids=self.redundancy_expert_ids_tensor,\n                ep_expert_num=self.ep_n_routed_experts,\n                global_rank=self.global_rank_,\n                expert_counter=self.routed_expert_counter_tensor,\n                enable_counter=self.auto_update_redundancy_expert,\n            )\n        return topk_weights, topk_ids\n>>>\nEND_UNIT\nLOSS NONE\nEND",
+        "first": "THESEUS_SEMANTIC_IR_V4_COMPACT\nSOURCE b24887bfc7d6b6ca373ca1b26c08a6edfc165f6b75509395169f1584c14587df\nALL_OBLIGATIONS O1,O2,O3\nCHANGE_OBLIGATIONS O1\nPRESERVE_OBLIGATIONS O2\nNON_GOAL_OBLIGATIONS O3\nUNIT U1\nOBLIGATIONS O1,O2\nOP REPLACE\nPATH lightllm/common/basemodel/layer_weights/meta_weights/fused_moe/impl/deepgemm_impl.py\nNODE N-5B17BEAA720A98F32CC09A4072B5C3BE\n<<<\n    def _select_experts(\n        self,\n        input_tensor: torch.Tensor,\n        router_logits: torch.Tensor,\n        correction_bias: Optional[torch.Tensor],\n        top_k: int,\n        renormalize: bool,\n        use_grouped_topk: bool,\n        topk_group: int,\n        num_expert_group: int,\n        scoring_func: str,\n        per_expert_scale: Optional[torch.Tensor] = None,\n        shared_expert_gate: Optional[torch.Tensor] = None,\n    ):\n        \"\"\"Select experts and return topk weights and ids.\"\"\"\n        assert shared_expert_gate is None, \"fused shared expert as MoE is not supported by DeepGEMM fused MoE\"\n        from lightllm.common.basemodel.triton_kernel.fused_moe.topk_select import select_experts\n\n        topk_weights, topk_ids, _ = select_experts(\n            hidden_states=input_tensor,\n            router_logits=router_logits,\n            correction_bias=correction_bias,\n            use_grouped_topk=use_grouped_topk,\n            top_k=top_k,\n            renormalize=renormalize,\n            topk_group=topk_group,\n            num_expert_group=num_expert_group,\n            scoring_func=scoring_func,\n        )\n        if self.routed_scaling_factor != 1.0:\n            topk_weights.mul_(self.routed_scaling_factor)\n        if per_expert_scale is not None:\n            topk_weights = topk_weights * per_expert_scale[topk_ids.to(torch.long)].to(topk_weights.dtype)\n        origin_topk_ids = topk_ids\n        if self.redundancy_expert_num > 0:\n            # \u56e0\u4e3a redundancy_topk_ids_repair \u4f1a\u4fee\u6539 topk_ids\uff0c\u6240\u4ee5\u9700\u8981\u5148\u590d\u5236\u4e00\u4efd\n            origin_topk_ids = topk_ids.clone()\n            redundancy_topk_ids_repair(\n                topk_ids=topk_ids,\n                redundancy_expert_ids=self.redundancy_expert_ids_tensor,\n                ep_expert_num=self.ep_n_routed_experts,\n                global_rank=self.global_rank_,\n                expert_counter=self.routed_expert_counter_tensor,\n                enable_counter=self.auto_update_redundancy_expert,\n            )\n        return topk_weights, topk_ids\n>>>\nEND_UNIT\nLOSS NONE\nEND"
+      },
+      "opaque_task_id": "semantic-ir-adequacy-01r4",
+      "parse_faults": [],
+      "route_integrity_rounds": [
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "8a60642e762e2010b8b30e6a601fa53b33f2114ba14ad15e26491afa529db02c",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "49a9480d122eb0ff80db52e0a8b2b88acc3a61326245ac7b6069fca0e29db7c9",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "ad026393a6355b72b793d79f666224cfc0cd54b13a97b5c45acc9e3a01f16c40",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "49a9480d122eb0ff80db52e0a8b2b88acc3a61326245ac7b6069fca0e29db7c9"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        },
+        {
+          "checks": {
+            "D2_consumption_zero": true,
+            "authority_controls_effect_scope": true,
+            "backend_completed": true,
+            "backend_model_identity_bound": true,
+            "backend_prompt_bound": true,
+            "backend_route_bound": true,
+            "backend_user_facing_effects_zero": true,
+            "compiled_plan_executed_or_held": true,
+            "decorative_labels_cannot_satisfy_integrated_route": true,
+            "effect_observation_and_exact_rollback_bound": true,
+            "execution_mode_bound": true,
+            "external_inference_zero": true,
+            "fallback_returns_zero": true,
+            "local_model_backend_owned_by_canonical_assistant_runtime": true,
+            "public_calibration_consumption_zero": true,
+            "public_training_rows_zero": true,
+            "request_binding_digest_valid": true,
+            "response_present": true,
+            "route_changes_callable_capability_budget_tool_or_hold": true,
+            "selected_vcm_content_consumed_by_model": true,
+            "single_model_call_budget": true,
+            "supported_execution_mode": true,
+            "teacher_calls_zero": true,
+            "verification_controls_release_or_repair": true
+          },
+          "disposition": "RELEASE_STRUCTURALLY_VERIFIED_LOCAL_RESPONSE",
+          "execution_mode": "direct_local_model",
+          "expected_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "failed_checks": [],
+          "non_claims": [
+            "This receipt verifies route mechanics and response release integrity, not task correctness or subsystem utility.",
+            "A passing receipt does not establish Theseus-model credit, public transfer, or causal subsystem value."
+          ],
+          "observed_model_identity": {
+            "decoder_sha256": "bca631cf4e1a9d62b5460f491f27f0c52c29fe604970fba08e05ef7a72dfe531",
+            "identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "repo_id": "mlx-community/Tmax-9B-MLX-8bit",
+            "revision": "33812d6cf04f88856f25eb828de4f3144a194560",
+            "runtime": "mlx_lm_local_metal",
+            "snapshot_manifest_sha256": "a399b12d768ebf45ff5ce1f873fefc5525c980d953379394f4d5deb3201cb3dc",
+            "worker_config_sha256": "a8ee5186cd9dc19ab865adb23427205dae3a978da0894ef779f74102d752e2ed"
+          },
+          "pair_contract": {
+            "automatic_effects": 0,
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1"
+          },
+          "policy": "project_theseus_live_route_integrity_v2",
+          "ready": true,
+          "receipt_sha256": "2ee8f7401ba645667a924d09ddf31a148101ede020ec50e9869291f2e20d42a7",
+          "release_allowed": true,
+          "request_binding": {
+            "automatic_effects": 0,
+            "context_content_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+            "context_pages": [],
+            "effect_sandbox_id": "theseus_assistant_no_automatic_effects_v1",
+            "execution_mode": "direct_local_model",
+            "maximum_model_calls": 1,
+            "model_identity_sha256": "efd56c15b1d86292082cabba1c3c489a0709a513cd7c26e79efe53203689f225",
+            "model_prompt_sha256": "a44f8f7ba9e61241a7a9605dc7ced3a2526e5170deeea7454ae7383315354d4e",
+            "policy": "project_theseus_live_route_integrity_v1",
+            "raw_context_text_stored": false,
+            "raw_prompt_stored": false,
+            "request_binding_sha256": "85d7bc73675889491f85e8d50a4883ac5c28cf9740f7e395da2e8ef43d05c1be",
+            "route_packet": {
+              "automatic_effects": 0,
+              "planning": "none",
+              "route_kind": "direct_fixed_model",
+              "tool_calls": 0,
+              "vcm": "none"
+            },
+            "route_packet_sha256": "188d7a4257a85c579342430b609085cbbb6b68e559b16fd61036d93fbc87f29f",
+            "structural_verifier_id": "theseus_local_response_integrity_verifier_v1",
+            "user_prompt_sha256": "a44f8f7ba9e61241a7a9605dc7ced3a2526e5170deeea7454ae7383315354d4e"
+          },
+          "structural_verification": {
+            "checks": {
+              "D2_consumption_zero": true,
+              "backend_completed": true,
+              "backend_model_identity_bound": true,
+              "backend_prompt_bound": true,
+              "backend_route_bound": true,
+              "backend_user_facing_effects_zero": true,
+              "external_inference_zero": true,
+              "fallback_returns_zero": true,
+              "public_calibration_consumption_zero": true,
+              "public_training_rows_zero": true,
+              "response_present": true,
+              "single_model_call_budget": true,
+              "teacher_calls_zero": true
+            },
+            "independent_from_backend": true,
+            "passed": true,
+            "task_correctness_evaluated": false,
+            "verification_sha256": "38d693faa1bae1ab1d64269df5ab0cbb96d244e1b8356983ab8087e81eedaff3",
+            "verifier_id": "theseus_local_response_integrity_verifier_v1"
+          }
+        }
+      ],
+      "runtime_calls": [
+        {
+          "call_number": 1,
+          "candidate_output_sha256": "7a330452c72d85e21462a43e75795bcc831a48cce74ab35e2bc901781a727641",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_fresh_v6_01_direct_local_model_1.json",
+          "report_sha256": "90fee5a843549d09538c2f5527d016935d22965f4e6e73b39e701ae3eca8b984",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 253656.249,
+          "runtime_trigger_state": "GREEN"
+        },
+        {
+          "call_number": 2,
+          "candidate_output_sha256": "7a330452c72d85e21462a43e75795bcc831a48cce74ab35e2bc901781a727641",
+          "report_path": "runtime/p2a/p2a_semantic_ir_adequacy_fresh_v6_01_direct_local_model_2.json",
+          "report_sha256": "b3acf6e9d1db00c4be75f1831ad1d5a90804f3cf663b9f9dbdf2c6a36d7c8adf",
+          "returncode": 0,
+          "route_integrity_ready": true,
+          "runtime_failed_gates": [],
+          "runtime_ms": 324800.65,
+          "runtime_trigger_state": "GREEN"
+        }
+      ],
+      "task_manifest": "configs/theseus_semantic_ir_production_adequacy_fresh_v6_task_01.json",
+      "termination_telemetry": [
+        {
+          "arm_id": "semantic_ir_adequacy_fresh_v6_01",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_fresh_v6_01_direct_local_model_1_39f4f389336e011c.json",
+          "backend_report_sha256": "a1510bee2d40c1d6a29eaef5bab983d8bf86d9df6c3b49534891a6c60fd52869",
+          "call_number": 1,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 253922,
+          "generated_tokens": 705,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 8222,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_fresh_v6_01_direct_local_model_1.json",
+          "runtime_report_sha256": "90fee5a843549d09538c2f5527d016935d22965f4e6e73b39e701ae3eca8b984",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        },
+        {
+          "arm_id": "semantic_ir_adequacy_fresh_v6_01",
+          "backend_finish_reason": null,
+          "backend_report": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_fresh_v6_01_direct_local_model_2_56b18e23d98df9cc.json",
+          "backend_report_sha256": "53cc302316030fb206042d7eb92977c19a50211793a66351f86ce9e9b36e1f53",
+          "call_number": 2,
+          "completion_predicate_enabled": true,
+          "effective_maximum_tokens": 252972,
+          "generated_tokens": 705,
+          "model_context_window_tokens": 262144,
+          "prompt_tokens": 9172,
+          "runtime_report": "runtime/p2a/p2a_semantic_ir_adequacy_fresh_v6_01_direct_local_model_2.json",
+          "runtime_report_sha256": "b3acf6e9d1db00c4be75f1831ad1d5a90804f3cf663b9f9dbdf2c6a36d7c8adf",
+          "safety_ceiling_hit": false,
+          "termination_reason": "parser_complete"
+        }
+      ],
+      "visible_verifier_passed": false
+    }
+  ],
+  "runtime_ms": 1198683.525,
+  "state": "BLOCKED_INFRASTRUCTURE_REPLACEMENT_REQUIRED",
+  "trigger_state": "RED"
+}

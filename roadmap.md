@@ -173,11 +173,16 @@ campaigns.
 
 ### 1. Bind the current claim
 
-Active claim: `cognitive-compilation-and-semantic-ir.core`.
+Active claim: `virtual-context-abi.core`.
 
-Current maximum inference: the exact frozen TMax plus Semantic-IR v2r2
-implementation did not meet its own mechanics floor on the consumed P4 surface.
-That result says nothing decisive about cognitive compilation generally.
+Prior-claim terminal disposition: the exact frozen TMax plus compact Semantic-IR
+v6 campaign sealed one candidate, then a fresh 45,113-token full-source prompt
+generated zero tokens before the prospectively declared 600-second host wall.
+The exact implementation is `INCONCLUSIVE_EXPERIMENT` and frozen for this
+TMax/host block. That result says nothing decisive about cognitive compilation
+or Semantic IR generally. The residual directly activates governed model-visible
+context materialization, so VCM is next by causal relevance rather than chapter
+order or implementation convenience.
 
 ### 2. Qualify the repaired mechanics owner independently
 
@@ -359,6 +364,30 @@ and exactly 36 local calls. Its versioned receipt namespace and journal cannot
 collide with or resume from v5. Candidate generation is now the active step;
 hidden scoring remains closed until all 18 candidates and 36 receipts seal.
 
+The v6 execution then sealed Task 1 through two normal local calls. Task 2 call
+1 received the panel's largest 45,113-token prompt and reached the host wall
+with zero generated tokens after 609.5 seconds. The physical context boundary
+was not touched, no project-selected answer-length cap existed, the route held
+the empty response, and no hidden evaluator ran. The terminal independent
+disposition is `INCONCLUSIVE_EXPERIMENT`: preserve Task 1, consume Task 2 without
+rerun, freeze this exact Semantic-IR implementation for the current model/host
+block, and do not spend another fresh denominator on representation repair.
+
+### 3. Bind the VCM claim instrument
+
+Use the existing VCM owner rather than creating a new context lane. First prove
+that correct, omitted, stale, shuffled, wrong-scope, tainted, revoked, and
+declared-insufficient packets traverse distinct production paths and that the
+actual selected packet reaches the frozen model. Then prospectively bind a
+source-disjoint natural-work experiment comparing correct VCM context with no
+added context, information-matched plain context, and maximal ungoverned context.
+Measure useful completion, requirement preservation, unsafe release, false
+block, latency, exact prompt/generated tokens, retrieval/materialization work,
+and total cost. Context size and retrieval work are causal resources and may be
+prospectively matched; generated answer length may not be capped for quality.
+No model or Luna call opens until the complete instrument, tasks, evaluators,
+controls, contamination checks, and inference bounds are sealed call-free.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -369,7 +398,7 @@ unresolved, and repair or exclude the implementation owner. Do not translate
 that scoped result into a broad negative for cognitive compilation or the book
 claim, and do not manufacture a nearby green reseal.
 
-### 3. Freeze one claim-development experiment
+### 4. Freeze one claim-development experiment
 
 Only after Exit A, autonomously acquire a new licensed, source-disjoint task
 cohort. Pool size and task diversity come from the predeclared effect and power
@@ -534,18 +563,21 @@ Use existing owners; create no new cleanup or report family.
    evaluator interface, and campaign-derived cost authority with zero calls.
 3. **Complete:** repair the exact Semantic-IR identity/coverage/target/unit
    mechanics on bounded non-claim evidence through the production path.
-4. **Active:** run the prospectively audited v6 compact adequacy denominator,
-   seal all 18 candidates before independent hidden scoring, and classify any
-   watchdog or abnormal completion as invalid infrastructure. If the adequacy
-   score fails, freeze the implementation and select the next architecture-
-   shaping residual; do not open fresh claim tasks.
-5. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
+4. **Complete:** run the prospectively audited v6 compact adequacy denominator;
+   preserve its one candidate and zero-token Task 2 watchdog; issue
+   `INCONCLUSIVE_EXPERIMENT`; freeze this exact implementation without a broad
+   negative or another Semantic-IR reseal in the current block.
+5. **Active:** bind the existing VCM owner to a production-path mechanics bench
+   and one prospective matched claim design with correct, omitted, stale,
+   shuffled, wrong-scope, tainted, revoked, plain-context, no-context, and
+   maximal-context controls. Authorize zero model calls until the audit is green.
+6. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
    sealed before the first arm opened.
-6. Advance a development survivor once to fresh D1; otherwise retain the exact
+7. Advance a development survivor once to fresh D1; otherwise retain the exact
    terminal state and move the portfolio forward.
-7. Return the claim packet to governed book review with support unchanged.
-8. Repeat the single-claim cycle until the Subsystem Architecture Freeze can be
+8. Return the claim packet to governed book review with support unchanged.
+9. Repeat the single-claim cycle until the Subsystem Architecture Freeze can be
    decided. Only then reassess neural training and D2.
 
 ## Explicitly Sidelined

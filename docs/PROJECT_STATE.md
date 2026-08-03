@@ -55,7 +55,8 @@ change.
 | Historical P3 | `TERMINAL_BOUNDED_NULL` | Direct and integrated each solved 1/10; parseability was 5/10 versus 9/10 with zero unsafe outcomes. The 1,536-token project ceiling limits this to historical instrument evidence |
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
-| Semantic-IR independent adequacy | `FRESH_V6_CAMPAIGN_AUDIT_GREEN_CANDIDATE_RUN_ACTIVE` | V5 evidence remains immutable and unscored. The v6 pool contains 18 unique repositories, six strata × three, a uniform collision-checked compact ABI, no v5 prompt/candidate reuse, and a 45,113-token maximum exact prompt. The GREEN zero-call campaign audit hash-binds the pool, frozen TMax identity, runtime, evaluators, versioned runner/journal, blind scorer, complete-artifact/EOS completion, watchdog custody, and exactly 36 local calls. Candidate generation is authorized; hidden evaluation remains closed until all 18 candidates and 36 receipts seal. Luna, teacher, training, claim development, D1, and D2 remain closed |
+| Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
+| Active VCM claim | `PROSPECTIVE_INSTRUMENT_BINDING_ZERO_CALLS` | The terminal residual is full-source model-visible context ingestion, directly activating `virtual-context-abi.core`. The existing VCM owner must pass production-path packet/use/taint/staleness/revocation mechanics and bind correct-VCM, no-context, information-matched plain-context, and maximal-ungoverned controls before any local or Luna call |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -63,7 +64,7 @@ change.
 
 ## Active Claim And Residual
 
-The active claim is `cognitive-compilation-and-semantic-ir.core`.
+The active claim is `virtual-context-abi.core`.
 
 The completed P4V2R2R3 campaign is terminal and will not be replayed, rescored,
 or resealed. It showed that the prior implementation was inadequate: only two
@@ -75,11 +76,18 @@ a model or mechanism negative.
 
 V5 stopped correctly after sealing Tasks 1-3 when Task 4 hit a zero-token
 prefill watchdog; those candidates and receipts remain immutable and unscored.
-V6 replaces all four exposed sources, uniformly regenerates every compact
-packet, and now has a GREEN prospective campaign audit with an isolated receipt
-namespace and journal. The next work is the 18-task v6 candidate run, followed
-by independent hidden scoring only after all candidates seal. A host watchdog
-is infrastructure evidence and cannot be scored as incompetence.
+V6 replaced all four exposed sources, uniformly regenerated every compact
+packet, and passed its prospective campaign audit. Execution sealed Task 1,
+then Task 2 hit a zero-token prompt-ingest watchdog at 45,113 tokens. The route
+held it and no hidden evaluator ran. The terminal disposition preserves the
+evidence as `INCONCLUSIVE_EXPERIMENT`, freezes this exact implementation for the
+current block, and forbids another Semantic-IR fresh reseal.
+
+The observed residual selects VCM next. Work now binds the existing VCM owner
+to production-path packet/use mechanics and a prospective source-disjoint
+causal design. No model or Luna call is authorized until correct, omitted,
+stale, shuffled, wrong-scope, tainted, revoked, no-context, information-matched
+plain-context, and maximal-context controls plus evaluator blindness are sealed.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -248,14 +256,16 @@ authorize regenerating historical reports or reopening neural work.
 7. **Complete:** bind and audit the v6 candidate runner and blind scorer against
    the exact pool, runtime, model, completion policy, and zero-cross-stage
    authority with zero calls.
-8. **Active:** run all 18 frozen-local v6 tasks, seal 36 receipts, then open the
-   independent scorer exactly once; preserve any infrastructure wall without a
-   capability negative.
-9. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
+8. **Complete:** preserve the terminal v6 observation, issue
+   `INCONCLUSIVE_EXPERIMENT`, freeze the exact implementation, and authorize no
+   current-block Semantic-IR reseal or hidden scoring.
+9. **Active:** bind and call-free audit the existing VCM production-path
+   mechanics bench and prospective matched causal instrument.
+10. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
    rather than backfill Luna if it was not sealed in advance.
-10. Qualify a development survivor once on fresh D1.
-11. Return the claim packet to book review with support unchanged.
-12. Repeat one claim at a time until the Subsystem Architecture Freeze can make
+11. Qualify a development survivor once on fresh D1.
+12. Return the claim packet to book review with support unchanged.
+13. Repeat one claim at a time until the Subsystem Architecture Freeze can make
    an evidence-based neural re-entry decision.
 
 ## Work That Is Not Active

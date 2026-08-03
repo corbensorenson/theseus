@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_semantic_ir_production_adequacy_campaign_v6 as campaign  # noqa: E402
+import theseus_semantic_ir_production_adequacy_disposition_v6 as disposition  # noqa: E402
 import theseus_semantic_ir_production_adequacy_fresh_v6_acquisition as acquisition  # noqa: E402
 import theseus_semantic_ir_production_adequacy_fresh_v6_evaluator as evaluator  # noqa: E402
 import theseus_semantic_ir_production_adequacy_fresh_v6_task_pool as task_pool  # noqa: E402
@@ -161,3 +162,21 @@ def test_v6_watchdog_remains_infrastructure_not_capability() -> None:
     assert campaign.completion_fault(1, 1, telemetry, {"ready": False}) == (
         "host_watchdog_infrastructure_invalid:task_01:call_1"
     )
+
+
+def test_v6_terminal_disposition_freezes_only_the_exact_implementation() -> None:
+    report = disposition.dispose()
+    assert report["trigger_state"] == "GREEN"
+    assert report["scientific_status"] == "INCONCLUSIVE_EXPERIMENT"
+    assert report["implementation_disposition"] == "FROZEN_FOR_CURRENT_TMAX_HOST_BLOCK"
+    assert report["claim_effect_decision_authorized"] is False
+    assert report["book_support_effect"] == "none"
+    assert report["preserved_candidate_indices"] == [1]
+    assert report["consumed_unsealed_indices"] == [2]
+    assert report["hidden_evaluation_opened"] is False
+    assert report["observation"]["exact_prompt_tokens"] == 45_113
+    assert report["observation"]["generated_tokens"] == 0
+    assert report["portfolio_transition"]["next_claim_id"] == "virtual-context-abi.core"
+    assert report["portfolio_transition"]["semantic_ir_fresh_reseal_authorized_in_current_block"] is False
+    assert report["portfolio_transition"]["next_stage_model_calls_authorized"] == 0
+    assert report["faults"] == []

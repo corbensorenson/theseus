@@ -1,0 +1,74 @@
+{
+  "book_support_effect": "none",
+  "claim_effect_decision_authorized": false,
+  "claim_id": "cognitive-compilation-and-semantic-ir.core",
+  "consumed_unsealed_indices": [
+    2
+  ],
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "external_inference_calls": 0,
+    "hidden_evaluator_executions": 0,
+    "local_model_calls": 2,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T08:35:37.844834Z",
+  "evidence": {
+    "candidate_report": {
+      "path": "reports/theseus_semantic_ir_production_adequacy_candidates_v6.json",
+      "sha256": "81990bfb7fbc8dd29798e536630f4920209617cb64e2ba0a0d0628128141398a"
+    },
+    "journal": {
+      "path": "reports/theseus_semantic_ir_production_adequacy_campaign_v6_journal.json",
+      "sha256": "6a9982313a1171a8d36f5632d2deff66a14d6e25dc2f6924301cf934179bcd56"
+    },
+    "task2_checkpoint": {
+      "path": "reports/theseus_assistant_checkpoint_chat_p2a_semantic_ir_adequacy_fresh_v6_02_direct_local_model_1_388c2124672d012e.json",
+      "sha256": "7b35aab09172097f711e3e5f5a40258077ad28806bfd966b50662daf53851c28"
+    },
+    "task2_runtime": {
+      "path": "runtime/p2a/p2a_semantic_ir_adequacy_fresh_v6_02_direct_local_model_1.json",
+      "sha256": "db452e29cf4bc3e80700bbeb3298782dafef05da78fe28baf871e5be6fe3febe"
+    }
+  },
+  "faults": [],
+  "hidden_evaluation_opened": false,
+  "implementation_disposition": "FROZEN_FOR_CURRENT_TMAX_HOST_BLOCK",
+  "maximum_inference": "The prospectively bound v6 campaign could not complete on the exact frozen TMax MLX runtime and current host: one candidate sealed, then a fresh 45,113-token prompt hit the 600-second host wall before producing a token. This is INCONCLUSIVE_EXPERIMENT and freezes this Semantic-IR implementation only for the current model/host block. It does not falsify Semantic IR, cognitive compilation, TMax capability, or the ASI Stack claim.",
+  "observation": {
+    "exact_prompt_tokens": 45113,
+    "generated_tokens": 0,
+    "generation_wall_ms": 609515.173,
+    "host_safety_wall_seconds": 600.0,
+    "physical_context_boundary_hit": false,
+    "project_selected_quality_token_cap": null,
+    "termination_reason": "host_safety_wall_time"
+  },
+  "policy": "project_theseus_semantic_ir_production_adequacy_v6_terminal_disposition_v1",
+  "portfolio_transition": {
+    "activation_reason": "The terminal residual is model-visible context materialization and prompt-ingestion burden; the VCM claim directly controls source-bound selection, omission, adequacy, and cost under matched information.",
+    "next_claim_id": "virtual-context-abi.core",
+    "next_stage_external_inference_authorized": false,
+    "next_stage_model_calls_authorized": 0,
+    "next_stage_user_gate": false,
+    "semantic_ir_fresh_reseal_authorized_in_current_block": false
+  },
+  "preserved_candidate_indices": [
+    1
+  ],
+  "residual": {
+    "class": "FULL_SOURCE_PROMPT_INGESTION_NOT_HOST_OPERABLE",
+    "evidence": "The compact address ABI removed repeated labels and digests, but the fresh 45,113-token full-source packet produced zero tokens before the 600-second host wall.",
+    "not_established": [
+      "model incompetence",
+      "Semantic-IR mechanism failure",
+      "cognitive-compilation claim falsification",
+      "context-window exhaustion"
+    ]
+  },
+  "runtime_ms": 1.418,
+  "scientific_status": "INCONCLUSIVE_EXPERIMENT",
+  "trigger_state": "GREEN"
+}
