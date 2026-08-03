@@ -496,6 +496,14 @@ embedded checkpoint hash. The next repair may change only the bounded transport
 backoff and finalize the checkpoint before report hashing; selection science
 and every downstream closure remain frozen.
 
+V7 is now prospectively sealed and GREEN at zero queries. It invokes the exact
+v6 REST-search, GraphQL query, pacing, qualification, ranking, and panel owner;
+only the transient/unknown retry horizon changes to eight attempts across at
+most 108 seconds. It finalizes the checkpoint before hashing it into the report
+and fails if the embedded and final file hashes differ. All source-content,
+evaluator, local/Luna, training, D1/D2, serving, and book authority remains
+closed. One unchanged metadata run is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -687,9 +695,9 @@ Use existing owners; create no new cleanup or report family.
    V5 paused on secondary throttling with exact checkpoint accounting. V6
    passed live schema, node-bridge, quota pacing, and full selector rehearsal,
    then failed closed on a rapid unknown-network exhaustion after 57 successful
-   requests. Preserve it; extend only bounded backoff and repair final
-   checkpoint hashing, then rerun the unchanged batched metadata selector. If
-   it seals, bind exact sources and
+   requests. Preserve it. V7 now seals the bounded 108-second recovery horizon
+   and final checkpoint hash verification at zero queries; run the unchanged
+   batched metadata selector. If it seals, bind exact sources and
    packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.

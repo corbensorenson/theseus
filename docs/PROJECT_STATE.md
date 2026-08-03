@@ -185,6 +185,13 @@ receipt-ordering bug: the report embedded a checkpoint hash computed before
 checkpoint finalization. Preserve both actual artifacts. The next owner may
 only lengthen bounded transport backoff and finalize before hashing.
 
+The v7 successor is now prospectively sealed and GREEN at zero queries. It
+reuses v6 search, GraphQL, pacing, eligibility, ranking, panels, and authority
+without modification. Only bounded transient/unknown recovery changes: eight
+attempts over at most 108 seconds. The checkpoint is finalized before its
+artifact hash enters the report, and the owner verifies the embedded hash
+against the final file. All downstream authority remains closed.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -370,8 +377,8 @@ authorize regenerating historical reports or reopening neural work.
    zero identities. V6's single-request GraphQL node batches passed live schema,
    node-bridge, pacing, and full-selector rehearsal, then paused on a rapid
    unknown-network exhaustion after 57 successes. Preserve it; repair only the
-   bounded retry horizon and final checkpoint hash ordering, rerun the unchanged
-   metadata selector, and then
+   bounded retry horizon and final checkpoint hash ordering. V7 now seals both
+   repairs at zero queries; run its unchanged metadata selector, and then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

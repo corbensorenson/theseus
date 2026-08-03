@@ -14,6 +14,7 @@ import theseus_vcm_source_acquisition_v3 as acquisition_v3  # noqa: E402
 import theseus_vcm_source_acquisition_v4 as acquisition_v4  # noqa: E402
 import theseus_vcm_source_acquisition_v5 as acquisition_v5  # noqa: E402
 import theseus_vcm_source_acquisition_v6 as acquisition_v6  # noqa: E402
+import theseus_vcm_source_acquisition_v7 as acquisition_v7  # noqa: E402
 
 
 def test_vcm_source_acquisition_preflight_is_green_and_call_free() -> None:
@@ -409,6 +410,74 @@ def test_v6_full_selector_rehearsal_seals_exact_disjoint_panels(
     assert report["candidate_packet_materialization_opened"] is False
     assert all(row["candidate_content_retrieved"] is False for row in rows)
     assert all(len(row["title_sha256"]) == 64 for row in rows)
+
+
+def test_v7_changes_only_bounded_recovery_and_final_hash_custody() -> None:
+    report = acquisition_v7.preflight()
+    v6 = p2a.read_json(acquisition_v6.DEFAULT_CONFIG)
+    v7 = p2a.read_json(acquisition_v7.DEFAULT_CONFIG)
+    assert report["trigger_state"] == "GREEN"
+    assert report["state"] == (
+        "METADATA_SELECTION_V7_EXTENDED_RECOVERY_FINAL_HASH_PREFLIGHT_GREEN"
+    )
+    for key in ("search", "graphql_transport", "selection", "panels", "chronology", "authority"):
+        assert v7[key] == v6[key]
+    policy = v7["extended_transport_retry_policy"]
+    assert policy["maximum_attempts_per_logical_request"] == 8
+    assert sum(policy["retry_delays_seconds"]) == 108.0
+    assert v7["receipt_finalization_policy"][
+        "checkpoint_finalize_before_artifact_hash"
+    ] is True
+
+
+def test_v7_extended_recovery_outlives_v6_short_horizon(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    calls = 0
+
+    def flaky(
+        resource: str, fields: dict[str, object]
+    ) -> tuple[dict[str, bool], str]:
+        nonlocal calls
+        calls += 1
+        if calls <= 4:
+            raise acquisition_v5.subprocess.CalledProcessError(
+                1, ["gh"], stderr="connection reset"
+            )
+        return {"ok": True}, "a" * 64
+
+    policy = p2a.read_json(acquisition_v7.DEFAULT_CONFIG)[
+        "extended_transport_retry_policy"
+    ]
+    monkeypatch.setattr(acquisition_v5.time, "sleep", lambda _seconds: None)
+    ledger = acquisition_v5.RequestLedger(
+        tmp_path / "checkpoint.json", acquisition_v7.DEFAULT_CONFIG, policy
+    )
+    client = acquisition_v5.RetryingClient(flaky, ledger, policy)
+    payload, _digest = client.call("graphql:nodes", {"ids": ["PR_fixture"]})
+    assert payload == {"ok": True}
+    assert ledger.summary()["physical_attempt_count"] == 5
+    assert ledger.summary()["retry_attempt_count"] == 4
+    assert ledger.summary()["transport_failure_count"] == 0
+
+
+def test_v7_embeds_final_checkpoint_hash(tmp_path: Path) -> None:
+    policy = p2a.read_json(acquisition_v7.DEFAULT_CONFIG)[
+        "extended_transport_retry_policy"
+    ]
+    ledger = acquisition_v5.RequestLedger(
+        tmp_path / "checkpoint.json", acquisition_v7.DEFAULT_CONFIG, policy
+    )
+    report = {
+        "state": "FIXTURE_TERMINAL",
+        "selected_repository_count": 0,
+        "counters": acquisition.zero_counters(),
+        "transport": {},
+    }
+    finalized = acquisition_v7.finalize_receipt(report, ledger)
+    assert finalized["checkpoint_artifact_hash_verified_final"] is True
+    assert finalized["checkpoint"]["sha256"] == p2a.sha256_file(ledger.path)
+    assert p2a.read_json(ledger.path)["state"] == "FIXTURE_TERMINAL"
 
 
 def test_panel_quotas_are_exact_and_source_disjoint_by_construction() -> None:

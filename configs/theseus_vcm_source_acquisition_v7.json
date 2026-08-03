@@ -1,0 +1,193 @@
+{
+  "policy": "project_theseus_vcm_source_acquisition_v1",
+  "state": "PROSPECTIVE_METADATA_SELECTION_ZERO_CANDIDATE_CONTENT",
+  "purpose": "Reuse the exact v6 REST-search and GraphQL-batched selector while extending only bounded transient recovery and finalizing the checkpoint before its report artifact hash.",
+  "repair": {
+    "predecessor_config": "configs/theseus_vcm_source_acquisition_v6.json",
+    "predecessor_config_sha256": "1afb9b6cb0c50691656f6fa96668d702ac6f3ebd4f3e6cc835439c4756de8c06",
+    "predecessor_report": "reports/theseus_vcm_source_acquisition_v6.json",
+    "predecessor_report_sha256": "74618209157428cd3fb9fe348608d9c3f4e847e15cd737b446001f5f803b5351",
+    "predecessor_checkpoint": "reports/theseus_vcm_source_acquisition_v6_checkpoint.json",
+    "predecessor_checkpoint_sha256": "dfea6963fc8af25979fc3584cbe0206b3b43fd7942afb360eb0363a9be5d76fe",
+    "predecessor_state": "GRAPHQL_METADATA_TRANSPORT_PAUSED_NO_SOURCE_EXPOSURE",
+    "predecessor_logical_requests": 58,
+    "predecessor_physical_attempts": 62,
+    "predecessor_successful_requests": 57,
+    "predecessor_unknown_network_attempts": 4,
+    "predecessor_report_embedded_checkpoint_hash_valid": false,
+    "changes": [
+      "extend only transient and unknown-network recovery from four attempts over 1.75 seconds to eight attempts over 108 seconds",
+      "finalize the checkpoint before computing and embedding its report artifact hash",
+      "verify the embedded checkpoint hash equals the final checkpoint file hash before report emission"
+    ],
+    "unchanged": [
+      "v6 REST search query population order pacing and title digest custody",
+      "v6 GraphQL query fields node batch size and single-request execution",
+      "selection chronology eligibility license ranking panels and seeds",
+      "source and verifier path rules",
+      "all source-content candidate evaluator model training serving D1 D2 and book closures"
+    ]
+  },
+  "source_bindings": [
+    {"id": "acquisition_owner_v7", "path": "scripts/theseus_vcm_source_acquisition_v7.py", "sha256": "b2b8591863e4894de0b301bc8f366e87d3bc1fe215346ef93bd9c734112766c9"},
+    {"id": "graphql_selector_owner_v6", "path": "scripts/theseus_vcm_source_acquisition_v6.py", "sha256": "319b4958e9b7559b8676281a59a09acc2f8323570d80273216cc033fc9a35798"},
+    {"id": "retry_checkpoint_owner_v5", "path": "scripts/theseus_vcm_source_acquisition_v5.py", "sha256": "a2cb6c0bddda3c98b506d48f55990abe07ade6bf31359481122fc5d1e5aa2087"},
+    {"id": "eligibility_owner", "path": "scripts/theseus_vcm_source_acquisition.py", "sha256": "8754306311cd5b064ba7896705b51ed22edcd3319c79372cdc8f46e51a7f1ca9"},
+    {"id": "vcm_claim_instrument", "path": "configs/theseus_vcm_claim_instrument.json", "sha256": "b991705c9d41c9660810dc7a877d0e33e55810eb3dec1e0a1f1d711569a52947"},
+    {"id": "vcm_claim_instrument_audit", "path": "reports/theseus_vcm_claim_instrument_audit.json", "sha256": "dbb47e3eda37491513e6f0f07d3310b55f2b393297e02656f28eaa4574d172dc"},
+    {"id": "predecessor_config", "path": "configs/theseus_vcm_source_acquisition_v6.json", "sha256": "1afb9b6cb0c50691656f6fa96668d702ac6f3ebd4f3e6cc835439c4756de8c06"},
+    {"id": "predecessor_report", "path": "reports/theseus_vcm_source_acquisition_v6.json", "sha256": "74618209157428cd3fb9fe348608d9c3f4e847e15cd737b446001f5f803b5351"},
+    {"id": "predecessor_checkpoint", "path": "reports/theseus_vcm_source_acquisition_v6_checkpoint.json", "sha256": "dfea6963fc8af25979fc3584cbe0206b3b43fd7942afb360eb0363a9be5d76fe"}
+  ],
+  "chronology": {
+    "frozen_model_snapshot_created_utc": "2026-07-30T12:35:41.833397Z",
+    "search_window_start_utc": "2026-07-30T12:35:42Z",
+    "search_window_end_utc": "2026-08-03T08:54:12Z",
+    "pr_created_after_snapshot_required": true,
+    "pr_merged_in_window_required": true,
+    "head_commit_after_snapshot_required": true
+  },
+  "search": {
+    "provider": "GitHub public REST API via authenticated gh CLI",
+    "resource": "search/issues only",
+    "qualifiers": ["is:pr", "is:merged", "archived:false"],
+    "languages": ["Python", "TypeScript", "JavaScript", "Rust"],
+    "sort": "created",
+    "order": "desc",
+    "pages_per_language": 10,
+    "items_per_page": 100,
+    "maximum_search_metadata_rows": 4000,
+    "qualification_workers": 8,
+    "qualification_batch_size": 40,
+    "rank_order_consumption_required": true,
+    "raw_response_bodies_retained": false,
+    "response_digest_chain_required": true
+  },
+  "graphql_transport": {
+    "provider": "GitHub public GraphQL API via authenticated gh CLI",
+    "execution_not_before_utc": "2026-08-03T10:43:25Z",
+    "rest_search_population_unchanged": true,
+    "node_batch_size": 40,
+    "maximum_parallel_graphql_requests": 1,
+    "observed_authenticated_rest_search_limit_per_minute": 30,
+    "rest_search_minimum_interval_seconds": 2.1,
+    "search_pacing_is_transport_not_task_or_mechanism_outcome": true,
+    "rank_order_consumption_required": true,
+    "requested_metadata": [
+      "search-returned pull request title digest without raw title retention",
+      "pull request identity state chronology revisions and change counts",
+      "repository identity state primary language stars and SPDX license",
+      "first 13 changed file paths and change types",
+      "last pull request commit identity and committed time"
+    ],
+    "live_schema_qualification": {
+      "recorded_utc": "2026-08-03T10:21:35Z",
+      "required_schema_fields_missing": [],
+      "consumed_pr_query_shape_green": true,
+      "consumed_pr": "urllib3/urllib3#5102",
+      "consumed_pr_was_already_denylisted": true,
+      "rest_search_node_id_resolves_as_pull_request": true,
+      "node_id_retained": false,
+      "returned_typename": "PullRequest",
+      "returned_file_node_count": 3,
+      "returned_commit_node_count": 1,
+      "body_patch_or_review_content_returned": false,
+      "fresh_candidate_queries": 0,
+      "source_content_requests": 0
+    },
+    "query_may_request_body_patch_or_review_content": false,
+    "candidate_identities_in_checkpoint": false,
+    "source_content_retrieval_authorized": false
+  },
+  "transport_retry_policy": {
+    "maximum_attempts_per_logical_request": 4,
+    "retry_delays_seconds": [0.25, 0.5, 1.0],
+    "transient_http_statuses": [408, 429, 500, 502, 503, 504],
+    "permanent_candidate_http_statuses": [404, 410],
+    "retry_unknown_network_failures": true,
+    "rate_limited_403_retryable_when_explicit": true,
+    "retry_exhaustion_state": "GRAPHQL_METADATA_TRANSPORT_PAUSED_NO_SOURCE_EXPOSURE",
+    "host_transport_activation_is_not_task_or_mechanism_failure": true
+  },
+  "extended_transport_retry_policy": {
+    "maximum_attempts_per_logical_request": 8,
+    "retry_delays_seconds": [1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 45.0],
+    "maximum_total_backoff_seconds_per_logical_request": 108.0,
+    "transient_http_statuses": [408, 429, 500, 502, 503, 504],
+    "permanent_candidate_http_statuses": [404, 410],
+    "retry_unknown_network_failures": true,
+    "rate_limited_403_retryable_when_explicit": true,
+    "retry_exhaustion_state": "GRAPHQL_METADATA_EXTENDED_RETRIES_EXHAUSTED_NO_SOURCE_EXPOSURE",
+    "host_transport_activation_is_not_task_or_mechanism_failure": true
+  },
+  "checkpoint_policy": {
+    "path": "reports/theseus_vcm_source_acquisition_v7_checkpoint.json",
+    "write_after_every_logical_request_begin": true,
+    "write_after_every_physical_attempt": true,
+    "logical_and_physical_counts_separate": true,
+    "response_and_endpoint_hashes_only": true,
+    "candidate_identities_retained": false,
+    "source_content_retained": false,
+    "credentials_retained": false,
+    "checkpoint_is_task_or_claim_evidence": false
+  },
+  "receipt_finalization_policy": {
+    "checkpoint_finalize_before_artifact_hash": true,
+    "no_checkpoint_mutation_after_artifact_hash": true,
+    "embedded_hash_must_equal_final_file_hash": true,
+    "v6_stale_embedded_checkpoint_hash_preserved_as_negative_evidence": true
+  },
+  "selection": {
+    "ranking": "ascending sha256(selection_seed + normalized_repository + '#' + pull_request_number)",
+    "selection_seed": "theseus-vcm-source-selection-v1-2026-08-03",
+    "one_pull_request_per_repository": true,
+    "prior_repository_denylist_source": "all tracked configs/*.json repository fields matching owner/name before this config was created",
+    "prior_repository_denylist_count": 87,
+    "prior_repository_denylist_sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774",
+    "minimum_repository_stars": 1,
+    "repository_must_not_be_fork_archived_or_disabled": true,
+    "draft_pull_requests_forbidden": true,
+    "bot_authors_forbidden": true,
+    "changed_file_count_min": 2,
+    "changed_file_count_max": 12,
+    "changed_line_count_min": 2,
+    "changed_line_count_max": 800,
+    "require_non_test_source_change": true,
+    "require_machine_verifier_change": true,
+    "deleted_only_source_changes_forbidden": true,
+    "lockfile_generated_vendor_only_changes_forbidden": true,
+    "license_spdx_allowlist": [
+      "0BSD", "AGPL-3.0", "Apache-2.0", "BSD-2-Clause", "BSD-3-Clause",
+      "BSL-1.0", "EPL-2.0", "EUPL-1.2", "GPL-2.0", "GPL-3.0", "ISC",
+      "LGPL-2.1", "LGPL-3.0", "MIT", "MPL-2.0", "PSF-2.0", "Unlicense", "Zlib"
+    ],
+    "eligibility_is_computed_without_model_outputs": true,
+    "candidate_visible_packet_materialization_authorized": false,
+    "target_source_content_retrieval_authorized": false
+  },
+  "panels": {
+    "control_qualification": {"task_count": 9, "language_quotas": {"Python": 3, "TypeScript": 2, "JavaScript": 2, "Rust": 2}},
+    "claim": {"task_count": 53, "language_quotas": {"Python": 17, "TypeScript": 14, "JavaScript": 11, "Rust": 11}},
+    "total_task_count": 62,
+    "source_disjoint": true,
+    "assignment": "Within each language, take the prospectively ranked eligible total, then assign the lowest independent panel hashes to the control quota and the remainder to claim.",
+    "assignment_seed": "theseus-vcm-panel-assignment-v1-2026-08-03",
+    "reference_outputs_may_select_or_assign_tasks": false
+  },
+  "authority": {
+    "public_metadata_queries_authorized_after_green_preflight": true,
+    "public_source_content_retrieval_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": 0,
+    "external_reference_calls_authorized": 0,
+    "hidden_evaluation_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "output": "reports/theseus_vcm_source_acquisition_v7.json",
+  "maximum_inference": "A GREEN v7 preflight authorizes one unchanged GraphQL-batched public metadata run with a longer bounded transport recovery horizon and final checkpoint hash verification. A GREEN acquisition report proves only that 62 fresh, licensed, structurally machine-verifiable, mutually source-disjoint repository/PR identities were selected by the frozen rule. It does not authorize source-content retrieval, task packets, candidate generation, local or Luna calls, hidden evaluation, D1, D2, training, serving, book support movement, or a VCM usefulness claim."
+}
