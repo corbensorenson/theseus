@@ -128,6 +128,13 @@ boundary and checks candidates in bounded eight-worker batches while consuming
 results in the original hash order. Eligibility, chronology, randomization,
 panels, and authority are unchanged. One v3 metadata run is active.
 
+V3 was then interrupted before sealing any identities: a fork-origin PR head
+commit was not addressable through the base repository, and the concurrent
+owner let that 404 escape. The preserved receipt records zero selected tasks,
+zero source-content/evaluator/model calls, and no source-pool adequacy inference.
+V4 may only resolve chronology through the PR commit-list endpoint and add a
+fail-paused transport receipt; pool and eligibility changes are forbidden.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -306,7 +313,8 @@ authorize regenerating historical reports or reopening neural work.
    but attempt 1 failed closed on an inadequate Python pool. It is preserved;
    the v2 repair improved eligibility but still failed closed. Preserve it; V3
    now has a green zero-query preflight that expands only the deterministic
-   search pool and batches transport. Run it once. Then
+   search pool and batches transport, but its run exposed a fork-head transport
+   bug before any identity sealed. Preserve it; repair only that owner. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

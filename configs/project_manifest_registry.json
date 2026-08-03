@@ -7119,6 +7119,7 @@
         "reports/theseus_vcm_source_acquisition.json",
         "reports/theseus_vcm_source_acquisition_v2.json",
         "reports/theseus_vcm_source_acquisition_v3.json",
+        "reports/theseus_vcm_source_acquisition_v3_interruption.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.json",

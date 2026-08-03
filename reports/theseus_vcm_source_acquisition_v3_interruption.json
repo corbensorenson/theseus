@@ -1,0 +1,44 @@
+{
+  "policy": "project_theseus_vcm_source_acquisition_v3_interruption_v1",
+  "created_utc": "2026-08-03T09:45:54.734923Z",
+  "trigger_state": "PAUSED",
+  "state": "TRANSPORT_OWNER_REPLACEMENT_REQUIRED_NO_SOURCE_OR_MODEL_EXPOSURE",
+  "config": {
+    "path": "configs/theseus_vcm_source_acquisition_v3.json",
+    "sha256": "5e5ff4f6b8afabff841ad0f02b91ba3fbe89b8c1acace36f1b324d9e7422f1ca"
+  },
+  "owner": {
+    "path": "scripts/theseus_vcm_source_acquisition_v3.py",
+    "sha256": "6a4930e06b4a8bda47fe5a7efff42347be238e23e7e8ea44a8eff0ff9cd33790"
+  },
+  "preflight": {
+    "path": "reports/theseus_vcm_source_acquisition_v3.json",
+    "sha256": "a9c4e6901c352826e10600703fe6756d8b8c089acf01edcb4139df530842cd66",
+    "trigger_state": "GREEN"
+  },
+  "failure": {
+    "type": "subprocess.CalledProcessError",
+    "operation": "base-repository head-commit metadata lookup",
+    "repository": "Mu-L/open-design",
+    "head_revision": "dceac12f70df2b9eb0fae9c90aff1fe75da309c0",
+    "failed_endpoint_sha256": "b66ddf284005bd9de3abe3de969d952118a8799d18cf54f551e50663d90544d9",
+    "root_cause": "A fork-origin PR head commit need not be addressable through the base repository. The v3 owner used the base repository commit endpoint and did not catch the candidate-specific 404 inside its concurrent batch.",
+    "required_repair": "Resolve head chronology from the pull request commit list owned by the base PR endpoint, retain rank order and all eligibility rules, and emit a paused receipt for any transport exception rather than an uncaught traceback."
+  },
+  "custody": {
+    "selected_repository_count": 0,
+    "selected_source_identities_retained": false,
+    "source_content_retrieval_opened": false,
+    "candidate_packet_materialization_opened": false,
+    "hidden_evaluation_opened": false,
+    "local_model_calls": 0,
+    "external_reference_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0,
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "public_metadata_request_count_exact": null,
+    "public_metadata_request_count_lower_bound": 40
+  },
+  "maximum_inference": "This receipt proves only that the prospectively sealed v3 metadata run was interrupted by an incorrect fork-head lookup in the acquisition transport owner. It provides no source-pool adequacy result, no task, evaluator, model, VCM, D1, D2, training, serving, or book evidence, and cannot justify relaxing any selection or inference gate."
+}
