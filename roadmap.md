@@ -457,6 +457,13 @@ superseded by exact-unknown accounting with a 40-request lower bound. The next
 repair may add only bounded retries and checkpointed accounting; selection
 science remains frozen.
 
+V5 is prospectively sealed and GREEN at zero queries. It permits at most four
+physical attempts for transient metadata failures, treats stable candidate
+404/410 gaps as rejections, and checkpoints logical and physical counts after
+every attempt without storing repository identities. The pool, eligibility,
+chronology, rank order, panels, and every downstream closure remain frozen. One
+v5 metadata run is active.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -645,8 +652,8 @@ Use existing owners; create no new cleanup or report family.
    v2 improved eligibility but still failed closed. Preserve both; seal and run
    the pool-expansion v3 exposed a fork-head transport bug. Preserve it, repair
    only that owner; v4 then paused on transient transport with zero identities.
-   Bind bounded retries and checkpointed accounting only, then bind exact sources
-   and packets,
+   V5's bounded-retry/checkpoint owner is green at zero queries. Run it once,
+   then bind exact sources and packets,
    host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim

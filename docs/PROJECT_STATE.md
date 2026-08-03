@@ -148,6 +148,13 @@ superseded by an exact-unknown count with a 40-request lower bound. The next
 owner must prospectively add bounded transport retries and checkpointed request
 accounting without changing any scientific selection rule.
 
+The v5 transport successor is now prospectively sealed and GREEN at zero
+queries. It retries transient or unknown-network failures for at most four
+physical attempts, rejects stable candidate-specific 404/410 metadata gaps, and
+writes separate logical/physical request accounting after every attempt without
+retaining repository identities. Pool, chronology, eligibility, ranking,
+panels, and every downstream closure are unchanged. One v5 run is active.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next
@@ -329,7 +336,8 @@ authorize regenerating historical reports or reopening neural work.
    search pool and batches transport, but its run exposed a fork-head transport
    bug before any identity sealed. It is preserved and v4's owner-only repair is
    preserved; v4 then paused on transient transport with zero identities sealed.
-   Bind only bounded retries and checkpointed accounting. Then
+   V5's bounded-retry and checkpoint owner is green at zero queries. Run it
+   once. Then
    separately authorize source contents and evaluator qualification before
    sealing packets, host canaries, runners, scorers, calls, spend, and stop
    rules without user gates.

@@ -821,20 +821,20 @@
     {
       "root": "configs",
       "family": "theseus",
-      "classification": "canonical_vcm_claim_instrument_with_immutable_failed_acquisition_and_single_policy_repair",
+      "classification": "canonical_vcm_claim_instrument_with_immutable_bounded_acquisition_repair_lineage",
       "canonical_surface": "theseus_assistant_runtime",
       "canonical_path": "configs/theseus_vcm_claim_instrument.json",
       "promotion_role": "prospective_vcm_claim_design_and_bounded_source_metadata_selection",
-      "successor_policy": "The claim instrument remains canonical. The original source-acquisition config is immutable evidence for the failed-closed 1,212-request attempt. V2 is its single prospectively sealed policy repair, removing only an arbitrary popularity proxy and extending common OSI license metadata while preserving search, chronology, structure, randomization, quotas, disjointness, and zero-inference authority."
+      "successor_policy": "The claim instrument remains canonical. Source-acquisition configs v1-v4 are immutable evidence for two inadequate-pool results, one fork-head interruption, and one transient transport pause. V5 is the active metadata-only transport successor: v2 repaired only arbitrary popularity and narrow license policy, v3 expanded only the deterministic search head and batching, v4 repaired only fork chronology, and v5 adds only bounded retries and checkpoint accounting. Search science, zero-inference authority, and every consumed predecessor remain immutable."
     },
     {
       "root": "scripts",
       "family": "theseus",
-      "classification": "canonical_runtime_with_distinct_vcm_claim_and_source_acquisition_owners",
+      "classification": "canonical_runtime_with_distinct_vcm_claim_and_immutable_acquisition_transport_lineage",
       "canonical_surface": "theseus_assistant_runtime",
       "canonical_path": "scripts/theseus_runtime.py",
       "promotion_role": "orthogonal_runtime_claim_instrument_and_metadata_only_acquisition_boundaries",
-      "successor_policy": "theseus_runtime.py remains the canonical runtime. theseus_vcm_claim_instrument.py is a call-free causal-design auditor, and theseus_vcm_source_acquisition.py is a bounded public-metadata selector. Neither is a runtime successor or serving route; both authorize zero model calls and are registered as deliberate, orthogonal experimental owners rather than interchangeable variants."
+      "successor_policy": "theseus_runtime.py remains the canonical runtime. The VCM claim auditor and source-acquisition v1-v5 owners are non-serving experimental boundaries. The base owner fixes eligibility, v3 fixes the expanded pool and rank-ordered batching, v4 fixes fork chronology, and v5 adds bounded retries and durable request accounting. Earlier owners remain exact evidence for consumed attempts; none can route serving or authorize model calls."
     },
     {
       "root": "scripts",
@@ -6915,6 +6915,7 @@
         "scripts/theseus_vcm_source_acquisition.py",
         "scripts/theseus_vcm_source_acquisition_v3.py",
         "scripts/theseus_vcm_source_acquisition_v4.py",
+        "scripts/theseus_vcm_source_acquisition_v5.py",
         "scripts/theseus_openai_reference_adapter.py",
         "configs/theseus_assistant_p2a_instrument.json",
         "configs/theseus_assistant_p2b_instrument.json",
@@ -6966,6 +6967,7 @@
         "configs/theseus_vcm_source_acquisition_v2.json",
         "configs/theseus_vcm_source_acquisition_v3.json",
         "configs/theseus_vcm_source_acquisition_v4.json",
+        "configs/theseus_vcm_source_acquisition_v5.json",
         "tests/fixtures/theseus_semantic_ir_production_non_claim/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy/**/*",
         "tests/fixtures/theseus_semantic_ir_production_adequacy_v4/**/*",
@@ -7123,6 +7125,8 @@
         "reports/theseus_vcm_source_acquisition_v3.json",
         "reports/theseus_vcm_source_acquisition_v3_interruption.json",
         "reports/theseus_vcm_source_acquisition_v4.json",
+        "reports/theseus_vcm_source_acquisition_v5.json",
+        "reports/theseus_vcm_source_acquisition_v5_checkpoint.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_02_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_source.json",
         "reports/theseus_semantic_ir_production_adequacy_replacement_04_evaluator.json",
@@ -9887,6 +9891,7 @@
         "scripts/theseus_vcm_source_acquisition.py",
         "scripts/theseus_vcm_source_acquisition_v3.py",
         "scripts/theseus_vcm_source_acquisition_v4.py",
+        "scripts/theseus_vcm_source_acquisition_v5.py",
         "scripts/theseus_p2c_disposition.py",
         "scripts/theseus_p3_local_model_freeze.py",
         "scripts/theseus_p3_task_pool.py",
@@ -9938,6 +9943,7 @@
         "configs/theseus_vcm_source_acquisition_v2.json",
         "configs/theseus_vcm_source_acquisition_v3.json",
         "configs/theseus_vcm_source_acquisition_v4.json",
+        "configs/theseus_vcm_source_acquisition_v5.json",
         "configs/theseus_assistant_p3_instrument.json",
         "configs/theseus_p3_task_sources.json",
         "configs/theseus_p3_task_pool.json",

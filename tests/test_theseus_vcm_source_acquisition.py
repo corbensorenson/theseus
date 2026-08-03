@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 
@@ -11,6 +12,7 @@ import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_source_acquisition as acquisition  # noqa: E402
 import theseus_vcm_source_acquisition_v3 as acquisition_v3  # noqa: E402
 import theseus_vcm_source_acquisition_v4 as acquisition_v4  # noqa: E402
+import theseus_vcm_source_acquisition_v5 as acquisition_v5  # noqa: E402
 
 
 def test_vcm_source_acquisition_preflight_is_green_and_call_free() -> None:
@@ -66,6 +68,81 @@ def test_vcm_source_acquisition_v4_repairs_transport_only() -> None:
     assert v4["authority"] == v3["authority"]
     assert report["metadata_selection_opened"] is False
     assert all(value == 0 for value in report["counters"].values())
+
+
+def test_vcm_source_acquisition_v5_adds_retry_custody_only() -> None:
+    report = acquisition_v5.preflight()
+    v4 = p2a.read_json(acquisition_v4.DEFAULT_CONFIG)
+    v5 = p2a.read_json(acquisition_v5.DEFAULT_CONFIG)
+    assert report["trigger_state"] == "GREEN"
+    assert report["state"] == "METADATA_SELECTION_V5_RETRY_CHECKPOINT_PREFLIGHT_GREEN"
+    assert v5["search"] == v4["search"]
+    assert v5["selection"] == v4["selection"]
+    assert v5["panels"] == v4["panels"]
+    assert v5["chronology"] == v4["chronology"]
+    assert v5["authority"] == v4["authority"]
+    assert v5["transport_retry_policy"]["maximum_attempts_per_logical_request"] == 4
+    assert v5["checkpoint_policy"]["candidate_identities_retained"] is False
+    assert report["metadata_selection_opened"] is False
+    assert all(value == 0 for value in report["counters"].values())
+
+
+def test_v5_retry_client_records_transient_retry_without_identity(tmp_path: Path) -> None:
+    calls = 0
+
+    def flaky(resource: str, fields: dict[str, object]) -> tuple[dict[str, bool], str]:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            raise acquisition_v5.subprocess.CalledProcessError(
+                1, ["gh"], stderr="connection reset"
+            )
+        return {"ok": True}, "a" * 64
+
+    policy = {
+        "maximum_attempts_per_logical_request": 4,
+        "retry_delays_seconds": [0.0, 0.0, 0.0],
+    }
+    ledger = acquisition_v5.RequestLedger(
+        tmp_path / "checkpoint.json", acquisition_v5.DEFAULT_CONFIG, policy
+    )
+    client = acquisition_v5.RetryingClient(flaky, ledger, policy)
+    payload, digest = client.call("repos/example/project", {})
+    assert payload == {"ok": True}
+    assert digest == "a" * 64
+    summary = ledger.summary()
+    assert summary["logical_request_count"] == 1
+    assert summary["physical_attempt_count"] == 2
+    assert summary["retry_attempt_count"] == 1
+    checkpoint = p2a.read_json(tmp_path / "checkpoint.json")
+    assert checkpoint["selected_source_identities_retained"] is False
+    assert "example/project" not in json.dumps(checkpoint)
+
+
+def test_v5_retry_client_rejects_permanent_candidate_404_without_retry(tmp_path: Path) -> None:
+    def missing(resource: str, fields: dict[str, object]) -> tuple[dict[str, bool], str]:
+        raise acquisition_v5.subprocess.CalledProcessError(
+            1, ["gh"], stderr="gh: Not Found (HTTP 404)"
+        )
+
+    policy = {
+        "maximum_attempts_per_logical_request": 4,
+        "retry_delays_seconds": [0.0, 0.0, 0.0],
+    }
+    ledger = acquisition_v5.RequestLedger(
+        tmp_path / "checkpoint.json", acquisition_v5.DEFAULT_CONFIG, policy
+    )
+    client = acquisition_v5.RetryingClient(missing, ledger, policy)
+    try:
+        client.call("repos/missing/project", {})
+    except acquisition_v5.CandidateMetadataUnavailable as exc:
+        assert exc.status == 404
+    else:
+        raise AssertionError("permanent candidate metadata failure was not raised")
+    summary = ledger.summary()
+    assert summary["physical_attempt_count"] == 1
+    assert summary["retry_attempt_count"] == 0
+    assert summary["permanent_candidate_failure_count"] == 1
 
 
 def test_panel_quotas_are_exact_and_source_disjoint_by_construction() -> None:
