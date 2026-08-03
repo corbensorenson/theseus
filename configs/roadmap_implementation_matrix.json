@@ -586,6 +586,24 @@
         "parent_target_or_evaluator_executions": 0,
         "maximum_inference": "English-seed scope violation only; no task repository model VCM mechanism multilingual capability or book negative",
         "next_boundary": "replace all seven slots with same-panel same-language English-title and English-selected-content tasks then rematerialize only their exact closures and rerun panel inventory and feasibility audits"
+      },
+      "vcm_content_language_replacements": {
+        "config": "configs/theseus_vcm_content_language_replacements.json",
+        "owner": "scripts/theseus_vcm_content_language_replacements.py",
+        "test": "tests/test_theseus_vcm_content_language_replacements.py",
+        "report": "reports/theseus_vcm_content_language_replacements.json",
+        "owner_sha256": "87096b9780a6fb48e0358dd51f35b1a81406cdb07af63105bd5ad3c19dbfa532",
+        "config_sha256": "bb5e281fcea066421d88416af951a9cde107ea586765a35f05f201646bd7f51c",
+        "report_sha256": "36f47f1657ecc45f62eacb7167ba4cdbb4366c00c00f1a675e1973411a5a141e",
+        "state": "GREEN_PREFLIGHT_SEVEN_SAME_PANEL_SAME_PROGRAMMING_LANGUAGE_TITLE_AND_SELECTED_CONTENT_REPLACEMENTS",
+        "replacement_indices": [14, 19, 21, 28, 32, 54, 60],
+        "replacement_set_admitted": false,
+        "public_metadata_or_source_requests": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "local_model_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": "replacement instrument readiness only; no replacement panel evaluator task model VCM mechanism or book claim",
+        "next_boundary": "run the frozen autonomous search and accept only the first ranked candidates whose exact title and selected source and verifier bytes pass English scope"
       }
     },
     "claim_selection_policy": {

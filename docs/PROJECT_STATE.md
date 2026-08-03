@@ -343,6 +343,12 @@ the English-only seed unless quarantined. The closures remain valid evidence of
 what was fetched, but no evaluator or model may consume this panel. Replace only
 those seven slots under the same quotas and re-audit content before proceeding.
 
+The prospective seven-slot replacement transaction is GREEN at preflight with
+zero network requests. It keeps panel and programming-language quotas exact,
+denies all current repositories, and requires both English title classification
+and zero forbidden scripts in selected source/verifier text before all-or-none
+admission. No execution or model authority is present.
+
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
 `INCONCLUSIVE_IMPLEMENTATION`, freeze this implementation, and move to the next

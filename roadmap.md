@@ -690,6 +690,14 @@ English seed. Preserve all closures and inventory evidence, replace exactly the
 seven slots with same-panel/same-programming-language English-content tasks, and
 rerun admission before any evaluator execution.
 
+The seven-slot replacement owner is now GREEN at preflight. It preserves each
+slot's claim/control role and programming language, denies every repository in
+the current 62-task panel, retains the original frozen search/rank/chronology
+rules, and extends acceptance from English title alone to exact selected source
+and verifier byte scans. All seven must succeed or none are admitted. It opens
+only public metadata/source retrieval and local language classification; model,
+repository, dependency, evaluator, D1, D2, and book effects remain closed.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.

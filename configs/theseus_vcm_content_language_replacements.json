@@ -1,0 +1,34 @@
+{
+  "policy": "project_theseus_vcm_content_language_replacements_v1",
+  "state": "PROSPECTIVE_SEVEN_SLOT_REPLACEMENT_AFTER_SELECTED_BYTE_SCOPE_AUDIT",
+  "base_replacement_config": "configs/theseus_vcm_language_replacements_v2.json",
+  "scientific_selection_config": "configs/theseus_vcm_source_acquisition_v7.json",
+  "source_panel": "reports/theseus_vcm_source_panel_audit_v2.json",
+  "content_language_audit": "reports/theseus_vcm_content_language_audit.json",
+  "source_bindings": [
+    {"id":"base_owner","path":"scripts/theseus_vcm_language_replacements.py","sha256":"df007f82774f4d1ccf2c29a81ab4a51a1c8510991379e366a22ead626972792f"},
+    {"id":"materializer","path":"scripts/theseus_vcm_source_materialization.py","sha256":"d632093e45e856ce0526dfbe7e544d6b24ab6b688543bc8b24db8921af0334bf"},
+    {"id":"source_panel","path":"reports/theseus_vcm_source_panel_audit_v2.json","sha256":"a067998ea18f9b7225d864ca2496fc90256b9a7ab81f01d984f30a3a95744ce7"},
+    {"id":"content_audit","path":"reports/theseus_vcm_content_language_audit.json","sha256":"0888a4e8277c36bd86f2e6876d4484c63a8c50c11a1afa7180c484910c92a19d"},
+    {"id":"scientific_selection","path":"configs/theseus_vcm_source_acquisition_v7.json","sha256":"0a60abfc70113e4e660f196e5651415a8b8ef61ed7322048a1d4d738777a495f"}
+  ],
+  "replacement_slots": [
+    {"index":14,"panel":"claim","query_language":"Python","rejected_repository":"denysdovhan/ha-aerial-danger","rejected_title_sha256":"b7ff8097dffa9512d8bbcb5103702edd527a17aa2b7f29348506a1b2c8a9f2c3"},
+    {"index":19,"panel":"claim","query_language":"Python","rejected_repository":"Ganesh-403/semantic-plagiarism-detector","rejected_title_sha256":"922ecbecb502fbb9cead43a7b70d766931f39c0304d881167f4185a615faf597"},
+    {"index":21,"panel":"claim","query_language":"Python","rejected_repository":"mfat/sshpilot","rejected_title_sha256":"afc197525334eb44950f59e80533124ed90068dd0588cc0d9a095a497a4769f0"},
+    {"index":28,"panel":"claim","query_language":"Python","rejected_repository":"moritan777/chat-trpg-gm-mvp","rejected_title_sha256":"ab7320b14dca9a10dc81b80a8c083b5e3414d7738cc3a21aa9bca8260fb026c6"},
+    {"index":32,"panel":"claim","query_language":"Rust","rejected_repository":"maelguimet/catomic","rejected_title_sha256":"029edfb2647da078a0d724a8845411a3418e9641ebe3723c185e9846de270926"},
+    {"index":54,"panel":"control_qualification","query_language":"JavaScript","rejected_repository":"bd-makers/team-harness","rejected_title_sha256":"051f61f8c5150097a2c167741711abce971e86ae429ead5034ba905023869d9f"},
+    {"index":60,"panel":"control_qualification","query_language":"Rust","rejected_repository":"breferrari/vigia","rejected_title_sha256":"f45889491b65169d50a1a772cfbb55a988c7c74bd3bfb016ef1979465638a71e"}
+  ],
+  "forbidden_unicode_scripts": [
+    {"name":"Cyrillic","start":"0400","end":"052F"},{"name":"Hebrew","start":"0590","end":"05FF"},{"name":"Arabic","start":"0600","end":"06FF"},{"name":"Devanagari","start":"0900","end":"097F"},{"name":"Thai","start":"0E00","end":"0E7F"},{"name":"Hiragana","start":"3040","end":"309F"},{"name":"Katakana","start":"30A0","end":"30FF"},{"name":"CJK","start":"3400","end":"9FFF"},{"name":"Hangul","start":"AC00","end":"D7AF"}
+  ],
+  "binary_extensions":[".png",".jpg",".jpeg",".gif",".webp",".ico",".pdf",".zip",".gz",".wasm",".bin"],
+  "transport_retry_policy":{"maximum_attempts_per_logical_request":8,"retry_delays_seconds":[1.0,2.0,4.0,8.0,16.0,32.0,45.0],"maximum_total_backoff_seconds_per_logical_request":108.0,"transient_http_statuses":[408,429,500,502,503,504],"permanent_candidate_http_statuses":[404,410],"retry_unknown_network_failures":true,"rate_limited_403_retryable_when_explicit":true,"host_transport_activation_is_not_task_or_mechanism_failure":true},
+  "output_directory":"tests/fixtures/theseus_vcm_content_language_replacements_v1",
+  "report":"reports/theseus_vcm_content_language_replacements.json",
+  "checkpoint":"reports/theseus_vcm_content_language_replacements_checkpoint.json",
+  "authority":{"public_metadata_queries_authorized":true,"public_source_file_retrieval_authorized":true,"public_pr_title_metadata_retrieval_authorized":true,"local_language_scope_classification_authorized":true,"selected_content_static_language_scan_authorized":true,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference":"A GREEN report proves only seven same-panel same-programming-language replacement tasks whose PR titles and selected source/verifier text contain no forbidden non-English scripts. It does not admit the combined panel until independent audit or authorize repository, evaluator, local-model, Luna, training, D1, D2, serving, or book-support effects."
+}
