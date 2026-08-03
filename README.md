@@ -105,6 +105,11 @@ repositories with a 13/18 overall floor and 2/3 weak-tail floor in each of six
 edit strata. One easy project-authored canary is not task-distribution
 competence, a subsystem effect, or authority to open D1.
 
+The 18 exact public PR identities and license files have now passed independent
+metadata recomputation with zero model calls. Source materialization and
+parent-negative/target-positive evaluator qualification are active; the panel
+is not sealed and no adequacy observation is yet authorized.
+
 ## Repository Map
 
 | Path | Purpose |
