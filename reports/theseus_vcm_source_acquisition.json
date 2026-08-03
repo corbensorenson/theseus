@@ -11,25 +11,49 @@
     "external_inference_calls": 0,
     "hidden_evaluator_executions": 0,
     "local_model_calls": 0,
-    "public_metadata_requests": 0,
+    "public_metadata_requests": 1212,
     "public_metadata_rows_selected": 0,
     "public_source_content_requests": 0,
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T09:03:38.582950Z",
-  "faults": [],
+  "created_utc": "2026-08-03T09:17:36.551420Z",
+  "faults": [
+    "language_quota_unfilled:Python:4/20"
+  ],
   "maximum_inference": "A GREEN preflight authorizes bounded public metadata retrieval only. A GREEN acquisition report proves only that 62 fresh, licensed, structurally machine-verifiable, mutually source-disjoint repository/PR identities were selected by the frozen rule. It does not authorize source-content retrieval, task packets, candidate generation, local or Luna calls, hidden evaluation, D1, D2, training, serving, book support movement, or a VCM usefulness claim.",
-  "metadata_selection_opened": false,
+  "metadata_selection_opened": true,
   "policy": "project_theseus_vcm_source_acquisition_report_v1",
   "prior_repository_denylist": {
     "count": 87,
     "identities_retained": false,
     "sha256": "f1b9dc39247e2ce7f6fd3beef0477c309256ba00a50f2b40eccb5f220893d774"
   },
-  "runtime_ms": 94.792,
+  "rejection_counts": {
+    "bot_author": 75,
+    "changed_file_count": 132,
+    "changed_line_count": 83,
+    "chronology": 1,
+    "generated_vendor_lock_only": 3,
+    "license_not_allowlisted": 184,
+    "no_machine_verifier_change": 162,
+    "no_non_test_source_change": 128,
+    "not_merged_closed_nondraft": 1,
+    "primary_language_mismatch": 1,
+    "repository_below_star_floor": 285,
+    "repository_state": 65
+  },
+  "runtime_ms": 74.743,
   "selected_repository_count": 0,
+  "selected_source_identities": [],
   "source_content_retrieval_opened": false,
-  "state": "METADATA_SELECTION_PREFLIGHT_GREEN",
-  "trigger_state": "GREEN"
+  "state": "METADATA_SELECTION_INCOMPLETE",
+  "transport": {
+    "credentials_retained": false,
+    "provider": "GitHub_public_REST_API_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "request_count": 1212,
+    "response_digest_chain_sha256": "acf91f5a412d474614dc6d5808a0ebbaef16089dc816e10f3c79dcd04235c617"
+  },
+  "trigger_state": "RED"
 }

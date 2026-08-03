@@ -414,6 +414,14 @@ chronology plus a licensed in-scope source change and machine-verifier change,
 and uses independent hashes for selection and control/claim assignment. Source
 contents, task packets, hidden evaluation, TMax, and Luna remain closed.
 
+Metadata attempt 1 terminated RED after 1,212 requests because only 4 of 20
+required Python repositories passed; it retained zero task identities and made
+zero source-content, evaluator, TMax, or Luna calls. Its rejection distribution
+identified the 50-star floor as an arbitrary popularity proxy and the metadata
+license allowlist as needlessly narrow relative to the charter. Preserve this
+attempt and prospectively repair those policy defects without weakening
+freshness, source-plus-test structure, source disjointness, or inference closure.
+
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
 denominator.
@@ -598,8 +606,9 @@ Use existing owners; create no new cleanup or report family.
    panel, separate Luna denominator, and zero-inference authority.
 6. **Active:** autonomously acquire and independently evaluator-qualify 62
    licensed repositories split into source-disjoint 9-task control and 53-task
-   claim panels. The metadata selection preflight is green at zero queries;
-   execute it, then bind exact sources, packets, host-operability canaries,
+   claim panels. Attempt 1 failed closed with an insufficient Python pool;
+   prospectively repair its irrelevant popularity and license-policy filters,
+   rerun once, then bind exact sources, packets, host-operability canaries,
    runners, blind scorers, calls, spend, and stop conditions before inference.
 7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
    campaign, with Luna omitted rather than backfilled if its transport was not
