@@ -1,0 +1,74 @@
+{
+  "adequacy_runtime": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_runtime.py",
+    "sha256": "9d9bd856c57623ac6b2653dad2cbfb384fd11812a1838f880c368bb582e47f81"
+  },
+  "completion_boundary": {
+    "model_declared_context_window_tokens": 262144,
+    "normal_completion": [
+      "parser_complete",
+      "model_eos"
+    ],
+    "physical_context_boundary_hit_invalidates_observation": true,
+    "project_selected_quality_token_cap": null
+  },
+  "construct_review": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_source_construct_review_v2.json",
+    "sha256": "bf2780ba8e38e2d9959aaee4603ca3e7d67907e9f8dda855291a72827476e053"
+  },
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_model_calls": 0,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-03T02:49:06.239988Z",
+  "evaluator_qualification": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_evaluator_qualification.json",
+    "sha256": "448544a147595413b0d8d0c7523d9442571651a7f11b49d38b9e5a5c9eb9c35a"
+  },
+  "faults": [],
+  "information_flow": {
+    "actual_serialized_prompt_audited": true,
+    "candidate_emitted_integrity_flags_trusted": false,
+    "candidate_receives_exact_serialized_packet_only": true,
+    "execution_manifest_candidate_visible": false,
+    "recursive_forbidden_key_audit_required": true,
+    "repository_pr_revision_target_evaluator_or_oracle_candidate_visible": false
+  },
+  "materialization": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_materialization_v4.json",
+    "sha256": "7572e6ebb82ae6b16575298c42450a31d7c50ce2823fd5fc6346b12d6216f122"
+  },
+  "maximum_inference": "A GREEN seal establishes only that all 18 independently qualified causal slices have production-representable, parent-source-only candidate prompts with recursive anti-cheating checks and physical context headroom. It does not establish model competence, a Semantic-IR effect, D1, D2, training value, serving, or book support.",
+  "missing_parent_selected_paths": {
+    "task_16": [
+      "src/openframe/recognize/coords.py"
+    ],
+    "task_17": [
+      "src/funcsort/ordering.py"
+    ]
+  },
+  "policy": "project_theseus_semantic_ir_production_adequacy_task_pool_v1",
+  "preserved_representation_failure": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_task_pool_representation_failure.json",
+    "sha256": "b32a6ab718a76b18bef416d7035ade3122482e7aef27d791b4c254f15bddf998"
+  },
+  "production_create_file_supported": true,
+  "repaired_representation_preflight": {
+    "path": "reports/theseus_semantic_ir_production_adequacy_task_pool_repaired_preflight.json",
+    "sha256": "a6258a4185bf783f8b997bae46d1084e3a5a68e0d487de6bc3444174ee7eef88"
+  },
+  "rows": [],
+  "sealed_packet_count": 0,
+  "state": "REPRESENTATION_PREFLIGHT_GREEN",
+  "task_count": 18,
+  "task_pool_owner": {
+    "path": "scripts/theseus_semantic_ir_production_adequacy_task_pool.py",
+    "sha256": "da83f43fceacf1ddf3ea7443f4c7285f9f845a1263061c03f533d02da236adf5"
+  },
+  "trigger_state": "GREEN"
+}

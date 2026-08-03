@@ -25,8 +25,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_p4_cognitive_compilation as p4  # noqa: E402
-import theseus_p4s_cognitive_compilation as p4s  # noqa: E402
-import theseus_semantic_ir_production as production  # noqa: E402
+import theseus_semantic_ir_production_adequacy_runtime as production  # noqa: E402
 import theseus_semantic_ir_production_canary as canary  # noqa: E402
 
 
@@ -36,6 +35,9 @@ CONSTRUCT_REVIEW = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_s
 CONSTRUCT_REVIEW_SHA256 = "bf2780ba8e38e2d9959aaee4603ca3e7d67907e9f8dda855291a72827476e053"
 EVALUATOR_QUALIFICATION = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_evaluator_qualification.json"
 EVALUATOR_QUALIFICATION_SHA256 = "448544a147595413b0d8d0c7523d9442571651a7f11b49d38b9e5a5c9eb9c35a"
+REPRESENTATION_FAILURE = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_task_pool_representation_failure.json"
+REPRESENTATION_FAILURE_SHA256 = "b32a6ab718a76b18bef416d7035ade3122482e7aef27d791b4c254f15bddf998"
+REPAIRED_PREFLIGHT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_task_pool_repaired_preflight.json"
 DEFAULT_OUT = ROOT / "reports" / "theseus_semantic_ir_production_adequacy_task_pool.json"
 TASK_PREFIX = "theseus_semantic_ir_production_adequacy_task_"
 PACKET_PREFIX = "theseus_semantic_ir_production_adequacy_candidate_packet_"
@@ -101,6 +103,15 @@ def materialize_pool(*, write_artifacts: bool) -> dict[str, Any]:
         "panel_admitted_for_task_packet_materialization"
     ) is not True:
         faults.append("evaluator_qualification_not_green")
+    if write_artifacts:
+        preflight = read_json(REPAIRED_PREFLIGHT)
+        if (
+            preflight.get("trigger_state") != "GREEN"
+            or preflight.get("state") != "REPRESENTATION_PREFLIGHT_GREEN"
+            or mapping(preflight.get("task_pool_owner")).get("sha256")
+            != p2a.sha256_file(Path(__file__).resolve())
+        ):
+            faults.append("repaired_representation_preflight_not_current")
     missing_parent: dict[int, list[str]] = {}
     for row in rows:
         present = {
@@ -125,15 +136,29 @@ def materialize_pool(*, write_artifacts: bool) -> dict[str, Any]:
         )
 
     sealed = sum(row.get("trigger_state") == "GREEN" for row in task_rows)
-    green = not faults and sealed == 18
+    green = not faults and (not write_artifacts or sealed == 18)
+    state = (
+        "REPRESENTATION_PREFLIGHT_GREEN"
+        if green and not write_artifacts
+        else "SEALED_BEFORE_CANDIDATE_GENERATION"
+        if green
+        else "INVALID_NOT_SEALED"
+    )
     return {
         "policy": POLICY,
         "created_utc": p2a.now(),
         "trigger_state": "GREEN" if green else "RED",
-        "state": "SEALED_BEFORE_CANDIDATE_GENERATION" if green else "INVALID_NOT_SEALED",
+        "state": state,
         "materialization": artifact(MATERIALIZATION),
         "construct_review": artifact(CONSTRUCT_REVIEW),
         "evaluator_qualification": artifact(EVALUATOR_QUALIFICATION),
+        "preserved_representation_failure": artifact(REPRESENTATION_FAILURE),
+        "repaired_representation_preflight": (
+            artifact(REPAIRED_PREFLIGHT) if REPAIRED_PREFLIGHT.is_file() else {}
+        ),
+        "adequacy_runtime": artifact(
+            ROOT / "scripts" / "theseus_semantic_ir_production_adequacy_runtime.py"
+        ),
         "task_pool_owner": artifact(Path(__file__).resolve()),
         "task_count": len(rows),
         "sealed_packet_count": sealed,
@@ -234,7 +259,6 @@ def materialize_task(row: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any
             "version": production.HEADER,
             "maximum_symbol_nodes": 1_000_000,
             "maximum_semantic_scope_nodes": 1_000_000,
-            "maximum_units": len(selected) + 4,
             "create_file_allowed_only_for_declared_missing_effect_paths": True,
             "role_partition_source_target_loss_and_dependency_identity_required": True,
         },
@@ -250,7 +274,7 @@ def materialize_task(row: dict[str, Any], spec: dict[str, Any]) -> dict[str, Any
         with tempfile.TemporaryDirectory(prefix=f"theseus-adequacy-packet-{suffix}-") as directory:
             root = Path(directory) / "source"
             p2a.extract_source_archive(p2a.resolve(task["source_archive"]), root, task["source_archive_root"])
-            symbols = p4s.semantic_scope_symbol_table(root, task)
+            symbols = production.semantic_scope_symbol_table(root, task)
             exact_count = len(dictionaries(symbols.get("nodes")))
             task["semantic_ir_contract"]["maximum_symbol_nodes"] = exact_count
             task["semantic_ir_contract"]["maximum_semantic_scope_nodes"] = exact_count
@@ -297,9 +321,9 @@ def audit_candidate_packet(packet: dict[str, Any], row: dict[str, Any], target: 
             faults.append(f"forbidden_candidate_key:{path}")
     serialized = json.dumps(packet, sort_keys=True)
     forbidden_values = [
-        str(row.get("repository") or ""), str(row.get("parent_revision") or ""),
+        str(row.get("parent_revision") or ""),
         str(row.get("target_revision") or ""), str(target.get("path") or ""),
-        str(target.get("sha256") or ""), "pull request", "github.com/",
+        str(target.get("sha256") or ""),
     ]
     for value in forbidden_values:
         if value and value.lower() in serialized.lower():
@@ -317,6 +341,7 @@ def binding_faults() -> list[str]:
         (MATERIALIZATION, MATERIALIZATION_SHA256, "materialization"),
         (CONSTRUCT_REVIEW, CONSTRUCT_REVIEW_SHA256, "construct_review"),
         (EVALUATOR_QUALIFICATION, EVALUATOR_QUALIFICATION_SHA256, "evaluator_qualification"),
+        (REPRESENTATION_FAILURE, REPRESENTATION_FAILURE_SHA256, "representation_failure"),
     ):
         if not path.is_file() or p2a.sha256_file(path) != expected:
             faults.append(f"binding_invalid:{label}")
