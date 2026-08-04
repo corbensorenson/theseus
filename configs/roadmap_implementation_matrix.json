@@ -1,6 +1,6 @@
 {
   "policy": "project_theseus_roadmap_implementation_matrix_v1",
-  "schema_version": "1.1.0",
+  "schema_version": "1.2.0",
   "purpose": "Machine-readable implementation state for the AI_book-derived Theseus roadmap. This is the governed bridge between roadmap.md prose and registry-owned implementation work.",
   "research_program_recenter": {
     "policy": "project_theseus_subsystem_first_recenter_v1",
@@ -24,9 +24,107 @@
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their role-separated audits are GREEN. Frozen schedule ordinal 6, task 26, has one identical 58-package uv lock; its wheel-only sync and offline-replay boundary is prospectively sealed at zero execution. Repository runners, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their role-separated audits are GREEN. Frozen schedule ordinal 6, task 26, has one identical 58-package uv lock; its wheel-only sync and offline-replay boundary is prospectively sealed at zero execution. The v1 candidate protocol still exposes target-derived allowed effect paths and no external-task parent-only production VCM materializer exists, so both require repair and independent audit before packet materialization. Repository runners, parent-fail/target-pass canaries, natural-task packets, scorers, local calls, and Luna calls remain closed.",
       "decision_acceleration_contract": {
-        "state": "PROSPECTIVE_VCM_SCOPE_COST_BASELINE_AND_DECISION_FREEZE_BEFORE_MODEL_CALLS",
+        "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
+        "review_anchor": {
+          "theseus_commit": "5e4b2b38b7c967148af25fafe6b9b4d0f00a20f9",
+          "audit_date": "2026-08-03",
+          "vcm_commits_since_claim_binding": 82,
+          "vcm_transaction_files_changed": 509,
+          "vcm_transaction_insertions": 137162,
+          "vcm_transaction_report_file_count": 59,
+          "vcm_transaction_report_bytes_approximate": 5033165,
+          "vcm_runtime_bytes_approximate": 2469606195,
+          "repository_reports_bytes_approximate": 3990425600,
+          "repository_runtime_bytes_approximate": 46559014912,
+          "repository_checkpoints_bytes_approximate": 9703993344,
+          "host_free_bytes_approximate": 33804881920,
+          "host_volume_used_percent": 97,
+          "host_available_memory_gb_approximate": 4.403,
+          "resource_policy_profile": "conservative",
+          "resource_policy_max_parallel_heavy_closures": 1,
+          "storage_values_are_observational_and_must_be_remeasured_by_preflight": true,
+          "scheduled_locked_package_entry_count": 32290,
+          "finding": "The source panel and early closure mechanics are real, but evidence and evaluator construction have become the dominant project cost before any claim-bearing VCM call. Forward work must consolidate rather than continue per-task owner expansion."
+        },
+        "book_claim_binding": {
+          "chapter_id": "virtual-context-abi",
+          "core_claim_id": "virtual-context-abi.core",
+          "authoritative_experiment_pin": "17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0",
+          "live_book_observed_commit": "61c74d65a2f47aeb34b25ddfb4d5348ef608a303",
+          "core_claim_semantics_unchanged_from_pin": true,
+          "live_delta_scope": "formal refinement and proof-count growth only; the core claim, next honest natural-work minimum, comparator obligations, and support state remain unchanged",
+          "support_state": "argument",
+          "support_auto_promotion_authorized": false,
+          "claim_layers": [
+            {
+              "id": "L0_CONFORMANCE",
+              "question": "Does the exact request resolve into the exact emitted packet with complete source, field, transformation, omission, authority, lease, cost, fault, and residual custody?",
+              "evidence": "deterministic source-to-packet replay and producer-independent audit",
+              "usefulness_required": false
+            },
+            {
+              "id": "L1_INTEGRITY",
+              "question": "Do stale, revoked, tainted, wrong-scope, conflicting, poisoned, cache-invalid, mandatory-miss, and omitted-frontier cases produce the predeclared typed behavior without authority widening or silent best effort?",
+              "evidence": "mutation and intervention controls",
+              "usefulness_required": false
+            },
+            {
+              "id": "L2_MODEL_USE_AND_UTILITY",
+              "question": "Does the frozen model use a correct governed packet to improve useful-safe task completion beyond a strong non-VCM route, and do ablations show the predicted causal signature?",
+              "evidence": "blind paired local campaign",
+              "usefulness_required": true
+            },
+            {
+              "id": "L3_ECONOMICS",
+              "question": "Is any integrity or utility gain worth retrieval, transformation, token, latency, memory, storage, verifier, repair, privacy, and maintenance cost?",
+              "evidence": "complete total-system cost ledger",
+              "usefulness_required": false
+            },
+            {
+              "id": "L4_TRANSFER",
+              "question": "Does a survivor reproduce on fresh sources and transfer across a second model and memory backend without changing its claim identity?",
+              "evidence": "fresh D1, separately denominated OpenAI reference, alternate-backend replay, and eventual external reproduction",
+              "usefulness_required": true
+            }
+          ],
+          "maximum_current_campaign_inference": "K3 may establish L0-L3 only for the exact TMax, task population, VCM implementation, parent-only store, controls, evaluator, and host regime. Full chapter-core promotion remains unavailable without L4 and book-side review."
+        },
+        "information_flow_contract": {
+          "candidate_store_source": "exact parent snapshot only",
+          "target_snapshot_visible_to_generation_or_ranking": false,
+          "target_patch_visible_to_generation_or_ranking": false,
+          "selected_source_paths_visible_to_generation_or_ranking": false,
+          "selected_verifier_paths_visible_to_generation_or_ranking": false,
+          "target_derived_allowed_effect_paths_authorized": false,
+          "repository_pull_request_or_source_task_identity_visible": false,
+          "candidate_visible_fields": [
+            "natural_language_request",
+            "callable_signature_when_intrinsic_to_request",
+            "disposable_parent_snapshot_write_root",
+            "arm_specific_parent_only_model_visible_context"
+          ],
+          "common_output_protocol": "one identical minimal patch artifact protocol in every arm; Semantic IR and other optional subsystems remain disabled",
+          "retrieval_and_packet_selection_inputs": [
+            "natural_language_request",
+            "candidate_visible_parent_snapshot",
+            "prospectively frozen route policy"
+          ],
+          "forbidden_selector_inputs": [
+            "target snapshot",
+            "target patch",
+            "changed-file list",
+            "selected source paths",
+            "selected verifier paths",
+            "hidden tests",
+            "source task identity",
+            "reference outputs"
+          ],
+          "same_parent_store_query_output_protocol_tools_effect_root_and_verifier_opportunity_within_task": true,
+          "independent_packet_audit_recomputes_forbidden_field_absence": true,
+          "violation_disposition": "INVALID_INFORMATION_FLOW_NO_REPAIR_BY_RELABELING"
+        },
         "scope_freeze": {
           "source_panel_task_count": 62,
           "control_qualification_task_count": 9,
@@ -34,11 +132,29 @@
           "new_task_or_repository_slots_authorized": 0,
           "replacement_only_after_predeclared_invalidation": true,
           "replacement_preserves_panel_programming_language_source_disjointness_and_rank_rule": true,
-          "task_family_or_evaluator_semantic_expansion_authorized": false
+          "predeclared_invalidation_classes": [
+            "source_archive_or_revision_identity_is_corrupt_or_unrecoverable",
+            "license_or_permitted_use_is_revoked_or_cannot_be_established",
+            "parent_fail_target_pass_evaluator_cannot_be_qualified_without_answer_leakage",
+            "task_is_intrinsically_unexecutable_in_the_supported_language_or_runtime_scope",
+            "frozen_source_pair_does_not_contain_the_required_source_and_verifier_change"
+          ],
+          "task_family_or_evaluator_semantic_expansion_authorized": false,
+          "replacement_after_K2_freeze_authorized": false,
+          "exact_consumed_surface_rerun_authorized": false
         },
         "K2_completion_boundary": {
           "task26_is_final_bespoke_per_task_dependency_canary": true,
+          "locked_task_count": 48,
+          "distinct_parent_target_dependency_closure_count": 58,
+          "closures_green_before_task26": 6,
+          "task26_closure_count": 1,
+          "locked_closures_remaining_after_task26": 51,
+          "immutable_resolution_task_count": 6,
+          "no_project_lock_static_task_count": 8,
           "remaining_dependency_closures_use_one_manifest_driven_generic_owner": true,
+          "planned_generic_owner": "scripts/theseus_vcm_instrument_builder.py",
+          "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
             "yarn",
@@ -46,31 +162,231 @@
             "untrusted_rust_compilation"
           ],
           "per_task_script_config_test_or_report_families_after_task26_authorized": false,
-          "all_parent_fail_target_pass_evaluator_receipts_required_before_K2_freeze": true,
-          "evaluator_change_after_K2_freeze_requires_predeclared_invalidation_class_and_new_campaign_identity": true
-        },
-        "K3_baseline_contract": {
-          "qualification_panel_selects_strongest_simple_control_without_reference_outputs": true,
-          "required_simple_controls": [
-            "no_added_context",
-            "information_matched_direct_injection",
-            "ordinary_retrieval_same_store_and_budget",
-            "compressed_summary_cache_same_budget",
-            "limited_sliding_window_context",
-            "source_bound_oracle_single_memory_upper_bound",
-            "maximal_candidate_authorized_context_upper_bound"
+          "shared_content_addressed_manager_stores_required": true,
+          "installed_parent_and_target_environments_are_disposable": true,
+          "per_task_duplicate_package_cache_authorized": false,
+          "resource_preflight_required_fields": [
+            "projected_download_bytes",
+            "projected_installed_bytes",
+            "projected_peak_temporary_bytes",
+            "shared_store_deduplicated_bytes",
+            "host_free_bytes",
+            "host_reserve_bytes",
+            "projected_wall_time",
+            "untrusted_build_risk_class"
           ],
-          "required_negative_and_mechanism_controls": [
+          "all_parent_fail_target_pass_evaluator_receipts_required_before_K2_freeze": true,
+          "parent_only_vcm_store_and_real_materializer_required_before_K2_freeze": true,
+          "evaluator_change_after_K2_freeze_requires_predeclared_invalidation_class_and_new_campaign_identity": true,
+          "bounded_failure_dispositions": {
+            "generic_owner_fidelity_or_mechanics_failure": "INCONCLUSIVE_IMPLEMENTATION",
+            "host_storage_time_cost_or_evaluator_adequacy_failure": "INCONCLUSIVE_EXPERIMENT"
+          },
+          "failure_action": "preserve_the_62_task_panel_and_redesign_a_simpler_instrument_under_a_new_identity_without_returning_to_per_task_owners"
+        },
+        "execution_work_packages": [
+          {
+            "id": "K2_01_TASK26_FINAL_BESPOKE_CANARY",
+            "status": "ACTIVE",
+            "depends_on": [],
+            "action": "Execute the exact prospectively sealed Task 26 uv wheel-only parent-target closure and complete role-separated audit without changing its lock, runtime, network, or authority contract.",
+            "exit": "Closure seven is content-bound and GREEN, or the exact canary fails closed with a scoped implementation or host wall; no model or hidden-evaluator call occurs."
+          },
+          {
+            "id": "K2_02_GENERIC_INSTRUMENT_BUILDER",
+            "status": "PENDING",
+            "depends_on": [
+              "K2_01_TASK26_FINAL_BESPOKE_CANARY"
+            ],
+            "action": "Create one manifest-driven owner that consolidates the existing npm, pnpm, Cargo, and uv mechanics, uses shared content-addressed manager stores plus disposable installed environments, and emits row-oriented receipts.",
+            "exit": "Existing GREEN closure evidence replays through one schema; no task-specific owner is added; builder source plus compact prospective contract fit in one bounded transaction."
+          },
+          {
+            "id": "K2_03_RESOURCE_AND_RISK_CANARIES",
+            "status": "PENDING",
+            "depends_on": [
+              "K2_02_GENERIC_INSTRUMENT_BUILDER"
+            ],
+            "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
+            "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization."
+          },
+          {
+            "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",
+            "status": "PENDING",
+            "depends_on": [
+              "K2_03_RESOURCE_AND_RISK_CANARIES"
+            ],
+            "action": "Build the actual VCM store and packet materializer from exact parent snapshots only, qualify it on already GREEN closure and risk-canary rows, route requests through the production VCM ABI, remove target-derived allowed paths, and independently audit every candidate-visible byte and selector input.",
+            "exit": "The natural request plus parent snapshot can materialize typed governed packets and matched non-VCM contexts on representative qualified rows without target snapshot, target patch, changed paths, verifier paths, hidden tests, source identity, or reference output leakage."
+          },
+          {
+            "id": "K2_05_BATCH_CLOSURES_AND_EVALUATORS",
+            "status": "PENDING",
+            "depends_on": [
+              "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER"
+            ],
+            "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
+            "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden."
+          },
+          {
+            "id": "K2_06_INSTRUMENT_FREEZE",
+            "status": "PENDING",
+            "depends_on": [
+              "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",
+              "K2_05_BATCH_CLOSURES_AND_EVALUATORS"
+            ],
+            "action": "Freeze one contiguous 62-task evaluator, sandbox, parent-only store, model-visible packet, output patch ABI, verifier, intervention, custody, and cost-ledger identity.",
+            "exit": "A producer-independent replay and role-separated blindness audit are GREEN; evaluator semantics can change only through a listed invalidation and a new campaign identity."
+          },
+          {
+            "id": "K3_01_CALL_FREE_CAMPAIGN_FREEZE",
+            "status": "PENDING",
+            "depends_on": [
+              "K2_06_INSTRUMENT_FREEZE"
+            ],
+            "action": "Implement and call-free audit the matched baseline routes, common output protocol, competence/futility rules, exact paired analysis, family tails, arm-order counterbalancing, host canaries, total-cost ledger, and terminal decisions. Freeze the optional VCM reference envelope and its mandatory exact rebind-or-omit checkpoint after local control selection but before claim-panel calls.",
+            "exit": "All local routes are information-flow matched and callable; physical host walls are separated from capability; the local denominator, prospective reference envelope, maximum spend method, and no-cap completion policy are sealed."
+          },
+          {
+            "id": "K3_02_NINE_TASK_ADEQUACY_AND_CONTROL_SCREEN",
+            "status": "PENDING",
+            "depends_on": [
+              "K3_01_CALL_FREE_CAMPAIGN_FREEZE"
+            ],
+            "action": "Run the nine control-qualification tasks locally to test task opportunity, frozen-model competence, route operability, hard-fault behavior, intervention reachability, and select the strongest eligible non-VCM control without Luna outputs.",
+            "exit": "The screen admits K3 only if the predeclared minimum-worthwhile effect is observable with adequate power and host operation; otherwise stop as inconclusive experiment. The selected control is frozen deterministically."
+          },
+          {
+            "id": "K3_03_REFERENCE_REBIND_OR_OMIT",
+            "status": "PENDING",
+            "depends_on": [
+              "K3_02_NINE_TASK_ADEQUACY_AND_CONTROL_SCREEN"
+            ],
+            "action": "With the strongest control now frozen but before any 53-task claim candidate call, bind the optional OpenAI reference to the exact VCM claim, 53 tasks, VCM and selected-control routes, candidate-visible protocol, evaluator, custody, 106-call maximum, and spend authority, or record immutable prospective omission.",
+            "exit": "The VCM reference is exact and disabled pending sealed local candidates, or MISSING_PROSPECTIVE_REFERENCE is final for this campaign; no future outcome-dependent backfill is possible."
+          },
+          {
+            "id": "K3_04_POWERED_LOCAL_CLAIM_CAMPAIGN",
+            "status": "PENDING",
+            "depends_on": [
+              "K3_03_REFERENCE_REBIND_OR_OMIT"
+            ],
+            "action": "On all 53 fresh claim tasks, counterbalance and run governed VCM, the frozen strongest simple control, and the mandatory information-matched flat-context ablation. Seal every candidate before independent hidden scoring.",
+            "exit": "The complete paired denominator, uncertainty, programming-language weak tails, model-use interventions, safety, and total-system cost are immutable; no exact consumed surface is rerun."
+          },
+          {
+            "id": "K3_05_OPTIONAL_LUNA_REFERENCE",
+            "status": "PENDING_OPTIONAL",
+            "depends_on": [
+              "K3_04_POWERED_LOCAL_CLAIM_CAMPAIGN"
+            ],
+            "action": "If and only if the VCM-specific reference contract and spend authority were sealed before local claim outcomes, execute the same candidate-visible packet and independent evaluator as separately denominated Luna reference cells.",
+            "exit": "Reference outputs remain quarantined from local selection, tuning, training, serving, and denominators; provider/model/effort, information differences, contamination uncertainty, tokens, latency, and cost are reported. Otherwise record the reference as prospectively omitted."
+          },
+          {
+            "id": "K3_06_LAYERED_DISPOSITION",
+            "status": "PENDING",
+            "depends_on": [
+              "K3_04_POWERED_LOCAL_CLAIM_CAMPAIGN"
+            ],
+            "action": "Issue separate L0 conformance, L1 integrity, L2 model-use/utility, and L3 economics findings, then select one full candidate, narrow governed-transport candidate, new-identity revision, exact-implementation retirement, or scoped inconclusive disposition.",
+            "exit": "Every positive and negative statement is bounded to the exact implementation, model, data, controls, evaluator, host, and cost regime; only a candidate survivor may open D1."
+          },
+          {
+            "id": "K4_01_FRESH_D1_AND_TRANSFER",
+            "status": "PENDING",
+            "depends_on": [
+              "K3_06_LAYERED_DISPOSITION"
+            ],
+            "action": "Qualify one survivor once on fresh source-disjoint D1, replay its contract on a second memory backend, and use the separately denominated OpenAI reference only as the prospectively sealed second-model measurement.",
+            "exit": "L4 transfer is either supported for the exact survivor or the survivor receives its predeclared scoped failure disposition; no repeated fresh-pool search is allowed."
+          },
+          {
+            "id": "K5_01_BOOK_HANDOFF_AND_NEXT_RESIDUAL",
+            "status": "PENDING",
+            "depends_on": [
+              "K4_01_FRESH_D1_AND_TRANSFER"
+            ],
+            "action": "Return one compact claim-level packet to the pinned/live ASI Stack reconciliation path with support unchanged, issue the neural-seed interface disposition, and activate exactly one next subsystem from the observed residual.",
+            "exit": "The book receives replayable claim evidence without automatic promotion; VCM has a terminal engineering disposition; no second claim is active until the first is closed."
+          }
+        ],
+        "K3_baseline_contract": {
+          "qualification_panel_is_instrument_adequacy_not_claim_evidence": true,
+          "qualification_panel_selects_strongest_simple_control_without_reference_outputs": true,
+          "current_campaign_routes": [
+            "no_added_context_floor",
+            "information_matched_flat_direct_context",
+            "ordinary_direct_retrieval_same_parent_store_query_and_context_opportunity",
+            "hierarchical_summary_or_prompt_compression_same_parent_store_and_context_opportunity",
+            "maximal_full_parent_context_when_physically_addressable_and_host_operable",
+            "governed_vcm"
+          ],
+          "claim_panel_required_local_arms": [
+            "governed_vcm",
+            "frozen_strongest_simple_control",
+            "information_matched_flat_direct_context"
+          ],
+          "book_minimum_routes_before_full_interface_qualification": [
+            "full_parent_context",
+            "direct_retrieval_augmented_generation",
+            "graph_retrieval",
+            "hierarchical_summary_or_prompt_compression",
+            "persistent_memory",
+            "human_curated_or_external_reproduction",
+            "governed_vcm",
+            "no_added_context"
+          ],
+          "missing_mature_graph_persistent_or_human_comparator_caps_maximum_inference": true,
+          "target_derived_oracle_control_authorized": false,
+          "hard_faults_must_prevent_model_call": [
+            "stale_mandatory_memory",
+            "wrong_scope_memory",
+            "tainted_or_unauthorized_memory",
+            "revoked_or_expired_memory",
+            "mandatory_field_or_frontier_miss"
+          ],
+          "required_model_use_interventions": [
             "irrelevant_or_random_memory",
-            "stale_memory",
-            "conflicting_memory",
-            "poisoned_or_tainted_memory",
             "shuffled_memory",
+            "conflicting_or_poisoned_memory",
             "retrieval_disabled",
             "retrieval_degraded"
           ],
-          "primary_comparison": "local_vcm_correct_minus_local_frozen_strongest_simple_control",
+          "strongest_control_selection_rule": "highest useful-safe completion; tie break by lower total-system cost, then greater parent-only information opportunity, under the frozen screen",
+          "primary_comparison": "local_vcm_minus_local_frozen_strongest_simple_control",
+          "mandatory_mechanism_attribution_comparison": "local_vcm_minus_information_matched_flat_direct_context",
           "reference_denominator_separate": true
+        },
+        "K3_screen_and_execution_contract": {
+          "screen_task_count": 9,
+          "claim_task_count": 53,
+          "screen_uses_local_model_only": true,
+          "screen_pass_count_threshold_authorized": false,
+          "screen_admission_basis": "predeclared task-opportunity, known-positive evaluator reachability, frozen-model competence, host operability, minimum-worthwhile-effect observability, and exact paired power",
+          "screen_failure_disposition": "INCONCLUSIVE_EXPERIMENT_MODEL_TASK_HOST_OR_EVALUATOR_ADEQUACY",
+          "candidate_sealed_before_hidden_scoring": true,
+          "deterministic_model_task_is_statistical_unit": true,
+          "seed_pseudoreplication_authorized": false,
+          "arm_order_counterbalanced_for_host_cache_and_order_effects": true,
+          "confirmatory_hypothesis_order": [
+            "H1_local_vcm_superiority_by_minimum_worthwhile_effect_over_frozen_strongest_control",
+            "H2_local_vcm_predicted_mechanism_effect_over_information_matched_flat_context",
+            "H3_narrow_governed_transport_noninferiority_to_information_matched_flat_context_if_full_candidate_not_established"
+          ],
+          "fixed_sequence_or_other_valid_multiplicity_control_must_be_frozen_before_outcomes": true,
+          "flat_attribution_minimum_effect_and_power_must_be_bound_before_model_calls": true,
+          "family_tails_are_heterogeneity_and_harm_checks_not_separately_powered_claims": true,
+          "fixed_53_task_panel_may_not_expand_if_secondary_or_narrow_gate_is_underpowered": true,
+          "same_candidate_visible_request_parent_snapshot_output_protocol_tools_effect_root_and_verifier_opportunity_within_task": true,
+          "local_screen_maximum_unique_core_route_calls_before_interventions": 54,
+          "local_claim_minimum_unique_core_route_calls_when_flat_is_selected_control": 106,
+          "local_claim_maximum_unique_core_route_calls": 159,
+          "optional_reference_core_route_calls": 106,
+          "intervention_call_denominator_must_be_frozen_before_outcomes": true,
+          "quality_completion": "prospectively declared complete patch artifact or model EOS; no project-selected generated-token quality cap",
+          "physical_context_or_host_safety_stop_disposition": "invalid_or_host_operability_observation_not_model_or_mechanism_failure",
+          "exact_consumed_surface_rerun_authorized": false
         },
         "decision_rule": {
           "minimum_useful_absolute_effect": 0.35,
@@ -82,13 +398,41 @@
           "family_rule": "positive_direction_in_at_least_three_of_four_programming_language_families_with_no_material_family_harm",
           "cost_rule": "VCM must remain nondominated after actual prompt tokens, generated tokens, retrieval work, latency, memory, storage, verifier work, repair work, and total cost; no project-selected generation cap may manufacture compliance",
           "overhead_boundary_rule": "freeze task-deadline and cost-break-even boundaries from the source-disjoint control panel before the claim panel, without inspecting claim outcomes",
-          "terminal_outcomes": [
-            "PROMOTE_FULL_INTERFACE",
-            "PROMOTE_NARROW_GOVERNED_TRANSPORT_ONLY",
+          "narrow_noninferiority_margin_must_be_bound_before_model_calls": true,
+          "material_family_harm_boundary_must_be_bound_before_model_calls": true,
+          "full_candidate_requires": [
+            "L0_conformance_green",
+            "L1_integrity_green",
+            "powered_L2_utility_effect_at_or_above_minimum_against_strongest_control",
+            "predicted_model_use_signature_against_information_matched_flat_ablation",
+            "acceptable_L3_total_system_cost",
+            "no_safety_or_weak_tail_veto"
+          ],
+          "narrow_governed_transport_candidate_requires": [
+            "L0_conformance_green",
+            "L1_integrity_green",
+            "prospectively_powered_noninferiority_to_information_matched_flat_context",
+            "acceptable_L3_total_system_cost",
+            "no_retrieval_superiority_or_full_interface_claim"
+          ],
+          "K3_terminal_outcomes": [
+            "ADVANCE_FULL_INTERFACE_CANDIDATE_TO_K4",
+            "ADVANCE_NARROW_GOVERNED_TRANSPORT_CANDIDATE_TO_K4",
             "REVISE_NEW_CAMPAIGN_IDENTITY",
-            "RETIRE"
+            "RETIRE_EXACT_IMPLEMENTATION_AND_REGIME",
+            "INCONCLUSIVE_IMPLEMENTATION",
+            "INCONCLUSIVE_EXPERIMENT",
+            "INVALID_INFORMATION_FLOW"
+          ],
+          "K4_engineering_interface_dispositions": [
+            "SELECT",
+            "SELECT_NARROW",
+            "EXCLUDE_CURRENT_SEED_INCONCLUSIVE",
+            "RETIRE_EXACT_IMPLEMENTATION"
           ],
           "fresh_D1_once_for_survivor_only": true,
+          "full_book_claim_requires_L4_and_book_side_review": true,
+          "negative_inference_scoped_to_exact_implementation_data_scale_objective_model_budget_evaluator_and_host": true,
           "book_support_auto_promotion_authorized": false
         },
         "evidence_proportionality": {
@@ -99,9 +443,14 @@
             "model_and_reference_cost",
             "manual_or_agent_interventions",
             "commits_per_closure",
-            "role_separated_evidence_fraction"
+            "role_separated_evidence_fraction",
+            "shared_store_deduplicated_bytes",
+            "projected_and_actual_peak_host_bytes",
+            "host_reserve_bytes",
+            "evidence_work_to_claim_call_ratio"
           ],
           "transaction_limit": "at most one prospective seal commit and one final audited closure commit per bounded closure; no per-seed or per-condition commits",
+          "generic_owner_construction_transaction_limit": "one prospective builder transaction and one audited qualification transaction",
           "compact_disposition_required": true,
           "new_dashboard_or_report_family_authorized": false,
           "evidence_cost_cannot_count_as_mechanism_progress": true

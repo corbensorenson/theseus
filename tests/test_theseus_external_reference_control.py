@@ -89,10 +89,23 @@ def test_luna_price_basis_and_physical_limits_are_explicit() -> None:
 def test_charter_and_roadmap_bind_the_measurement_only_exception() -> None:
     charter = (ROOT / "AGENTS.md").read_text(encoding="utf-8")
     roadmap = (ROOT / "roadmap.md").read_text(encoding="utf-8")
+    matrix = json.loads(
+        (ROOT / "configs" / "roadmap_implementation_matrix.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    work_package_ids = {
+        package["id"]
+        for package in matrix["research_program_recenter"]["active_claim"][
+            "decision_acceleration_contract"
+        ]["execution_work_packages"]
+    }
 
     assert "measurement-only reference control" in charter
     assert "mixed into local-model denominators" in charter
-    assert "P3 hosted reference control" in roadmap
+    assert "Optional Luna measurement reference" in roadmap
+    assert "separately denominated" in roadmap
+    assert "K3_03_REFERENCE_REBIND_OR_OMIT" in work_package_ids
     assert "gpt-5.6-luna" in roadmap
 
 

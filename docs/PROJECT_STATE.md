@@ -1,6 +1,6 @@
 # Project Theseus: Current State
 
-Last recentered: 2026-08-03 UTC.
+Last deeply reviewed and recentered: 2026-08-03 UTC.
 
 This is the canonical plain-English statement of what is true now. It does not
 override machine policy, source-bound reports, or the experiment registry, and
@@ -48,7 +48,7 @@ change.
 | Surface | State | Maximum inference |
 | --- | --- | --- |
 | North star | `ASI_STACK_SUBSYSTEM_CAUSAL_PROOF_ACTIVE` | Theseus exists to earn evidence for the book's largest claims; repository tasks are the substrate, not the product |
-| Book binding | `84_CHAPTER_EXPERIMENT_PIN_STABLE_LIVE_SOURCE_MOVING` | Experiment semantics stay pinned to AI_book commit `17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`; the concurrently advancing book was observed at `1280fdfa457735ae39289d42a82173f9485434fc` during final audit, and live uncommitted work remains intake-only |
+| Book binding | `84_CHAPTER_EXPERIMENT_PIN_STABLE_LIVE_CORE_CLAIM_UNCHANGED` | Experiment semantics stay pinned to AI_book commit `17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`; the clean live book was observed at `61c74d65a2f47aeb34b25ddfb4d5348ef608a303`. VCM core semantics and `argument` support are unchanged; the live delta is formal refinement and proof growth |
 | Bound portfolio | `13_EXACT_CORE_CLAIMS` | Exactly one architecture-shaping candidate may be active; synthesis claims require multiple independent survivors |
 | Local controlled variable | `FROZEN_TMAX_BLOCK` | `mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560` remains fixed for the current mechanism block |
 | Canonical runtime | `P1_ROUTE_MECHANICS_GREEN` | Direct and integrated requests traverse the same local backend and effect sandbox; integrated receipts reach live downstream execution, but usefulness is unproven |
@@ -56,7 +56,10 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` | Required closures 1-6 and their role-separated audits are GREEN. Task 26's one identical 58-package UV closure is prospectively sealed at zero execution |
+| Active VCM claim | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` | Required closures 1-6 and their role-separated audits are GREEN. Task 26's one identical 58-package UV closure is prospectively sealed at zero execution and is the final bespoke per-task owner |
+| VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
+| VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
+| VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
@@ -92,15 +95,29 @@ held it and no hidden evaluator ran. The terminal disposition preserves the
 evidence as `INCONCLUSIVE_EXPERIMENT`, freezes this exact implementation for the
 current block, and forbids another Semantic-IR fresh reseal.
 
-The observed residual selects VCM next. Its call-free instrument audit is GREEN:
-correct, omitted, stale, shuffled, wrong-scope, tainted, revoked, no-context,
-information-matched plain-context, and maximal-context paths are distinct and
-fail closed where required. A nine-task local-only qualification panel freezes
-the strongest eligible control; a fresh 53-task panel provides at least 0.80
-worst-case exact paired power for the 35-point minimum useful effect. Autonomous
-licensed source acquisition has completed for the repaired v3 panel. Static
-evaluator materialization is active. Model and Luna authority remain zero until
-the complete campaign is sealed.
+The observed residual selects VCM next. Its synthetic/call-free mechanics show
+that correct, omitted, stale, shuffled, wrong-scope, tainted, revoked,
+no-context, information-matched plain-context, and maximal-context states can be
+represented distinctly. That is mechanics evidence, not a natural-work
+instrument pass. The v1 candidate protocol still lists target-derived
+`allowed_effect_paths`, and no owner yet materializes the external task archives
+into a parent-only production VCM store. Both must be repaired and independently
+audited before a candidate packet exists.
+
+A nine-task local-only panel will test model/task/evaluator/host adequacy and
+freeze the strongest eligible control; it is not claim evidence. A fresh
+53-task panel provides at least 0.80 worst-case exact paired power for the
+35-point minimum useful utility effect. K3 will report L0 conformance, L1
+integrity, L2 model use/utility, and L3 economics separately. L4 transfer needs
+fresh D1, another backend, and a prospectively sealed second-model measurement.
+Model and Luna authority remain zero until the complete relevant contracts are
+sealed.
+
+### Retained VCM instrument-build chronology — evidence only
+
+The following detailed chronology preserves why the source panel and early
+dependency receipts have their current identities. It grants no forward
+authority and does not replace the dependency-ordered plan in `roadmap.md`.
 
 The metadata-selection preflight is also GREEN before any candidate identity is
 retained. It binds four in-scope language quotas, 87 prior-repository
@@ -551,12 +568,13 @@ Luna outputs. That winner must then remain fixed for the block.
 The primary causal estimand is always within the local model:
 
 ```text
-local treatment - local direct control
+local VCM - local frozen strongest simple control
 ```
 
-Mechanism-specific controls such as an information-matched natural-language
-plan or deterministic compiler are added when they are stronger than a plain
-direct baseline.
+For VCM, an information-matched flat parent-context arm is mandatory even when
+it is not the selected strongest control, because it separates typed governance
+and selection from merely receiving useful information. No target-derived
+oracle or effect path is eligible.
 
 ### OpenAI reference
 
@@ -575,7 +593,10 @@ claim pool opens. If Luna is unavailable at seal time, omit it and record the
 missing reference; never backfill it after local outcomes are visible.
 
 No Luna call has been made. The current contract is
-`configs/theseus_external_reference_control.json`.
+`configs/theseus_external_reference_control.json`, and it still names the prior
+Semantic-IR claim. It must be rebound to exact VCM tasks, routes, evaluator,
+custody, call count, and spend before any local claim outcome or Luna must be
+omitted for VCM.
 
 ### Completion and cost
 
@@ -597,6 +618,12 @@ Generation and ranking see no hidden tests, solutions, expected answers,
 source-task IDs, answer-family labels, or target-derived decoder fields. Task
 selection, development, D1, D2, training, and public calibration remain
 source-disjoint. Consumed tasks do not become training rows.
+
+For VCM, the candidate store, retrieval query, ranking, compression, and packet
+must be derived from the exact parent snapshot and natural request only. The
+target patch, changed paths, verifier paths, repository/PR identity, and
+reference outputs are forbidden. Every arm shares one broad disposable parent
+write root, output patch ABI, tools, and verifier opportunity.
 
 ## Neural State And Hold
 
@@ -622,22 +649,24 @@ launch:
 - runtime stop request: `runtime/control/neural_seed_yield_after_segment`.
 
 The hold is strategic, not a negative result. Re-entry requires the
-machine-readable Subsystem Architecture Freeze in the roadmap matrix: terminal
-interface dispositions for the architecture-shaping claims, no unresolved
-topology/data/route/verifier changes, a production-equivalent composition
-canary, continued decision relevance of modular-versus-dense, exact source and
-checkpoint rebinding, and autonomous resource/transaction/rollback readiness.
+machine-readable Subsystem Architecture Freeze in the roadmap matrix: a
+seed-facing `SELECT`, `SELECT_NARROW`, `EXCLUDE_CURRENT_SEED_INCONCLUSIVE`, or
+`RETIRE_EXACT_IMPLEMENTATION` disposition for every architecture-shaping
+interface; no unresolved selected topology/data/route/verifier changes; a
+production-equivalent composition canary; continued decision relevance of
+modular-versus-dense; exact source and checkpoint rebinding; and autonomous
+resource/transaction/rollback readiness. Scientific uncertainty may remain if
+the current seed explicitly excludes that approximation.
 
 ## Book Binding
 
 The experiment pin remains the 84-chapter snapshot at AI_book commit
-`17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`. The living-book source advanced
-while this review was running and was observed at
-`1280fdfa457735ae39289d42a82173f9485434fc` during the final audit. Both its
-committed and working manifests still had 84 chapters, and its selected
-core-claim vector file was unchanged from the pin at that observation. Other
-book surfaces and uncommitted work remain moving intake rather than experiment
-authority.
+`17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`. The clean living-book source was
+observed at `61c74d65a2f47aeb34b25ddfb4d5348ef608a303` during this audit. Its VCM
+core claim semantics, next-honest natural-work minimum, comparator obligations,
+and `argument` support state are unchanged from the pin. The live VCM delta is
+formal refinement and proof-count growth only. Other book movement remains
+intake rather than experiment authority.
 
 Policy:
 
@@ -651,18 +680,24 @@ Policy:
 
 ## Repository And Maintenance State
 
-At review time the Theseus runtime surface was about 41 GiB and 250,030 files;
-reports were about 2.1 GiB and 10,790 files; checkpoints were about 9.0 GiB.
-The top-level source surface included roughly 828 scripts, 416 configs, and 261
-tests. Those counts are an ownership and retention smell, not a reason for a
-new cleanup program.
+At review time the Theseus runtime surface was about 43 GiB;
+`runtime/vcm_evaluator/` alone was about 2.3 GiB and 11,115 files; reports were
+about 3.7 GiB; checkpoints were about 9.0 GiB; and the host volume was 97% used.
+The refreshed resource policy saw about 4.4 GiB available memory, selected its
+`conservative` profile, and allows one heavy closure at a time. The frozen
+dependency schedule contains 32,290 locked package entries. Those counts make
+storage, memory, concurrency, and package-store duplication
+instrument-feasibility variables, not a reason for a new cleanup research
+program.
 
 The existing reference-aware retention controller is the owner. It has already
 archived substantial replay-safe material. Maintenance should preserve
 terminal evidence, negative results, active pointers, irreproducible source
 acquisitions, checkpoint lineage, and independent recovery. Consolidation is
 incremental when an active family is touched; no repository-wide rewrite or
-evidence deletion is authorized.
+evidence deletion is authorized. Forward K2 work must use shared
+content-addressed package stores and disposable installed environments, with
+projected peak use and a protected host reserve frozen before bulk work.
 
 The latest roadmap audit is `YELLOW` with zero hard gaps because pretraining is
 deliberately not current or authorized and the living book differs from the
@@ -674,27 +709,38 @@ authorize regenerating historical reports or reopening neural work.
 ## Immediate Execution Order
 
 1. Execute and role-separately audit the sealed Task 26 UV dependency canary.
-2. Make Task 26 the final bespoke per-task closure. Route the remaining frozen
-   closures through one generic manifest-driven owner, with only Bun, Yarn,
-   TypeScript-transpilation, and untrusted-Rust risk-class canaries.
-3. Produce all 62 parent-fail/target-pass receipts, blind packet audits, and one
-   contiguous K2 freeze. No evaluator change follows unless a predeclared
-   invalidation opens a new campaign identity.
-4. Before calls, seal the K3 simple-baseline ladder, 0.35 minimum useful effect,
-   weak-tail and safety vetoes, cost-break-even rule, and terminal disposition.
-5. Use the nine-task panel to select the strongest simple local control without
-   Luna outputs. Then run the 53-task local claim panel. Any Luna arms remain a
-   separately denominated measurement-only reference.
-6. Issue exactly one full-interface, narrow-transport, revise-new-identity, or
-   retire disposition. Qualify a survivor once on fresh D1 and return one
-   compact claim packet to the book with support unchanged.
+2. End bespoke per-task ownership; build one manifest-driven generic owner with
+   shared package stores, then replay existing npm/pnpm/Cargo/uv evidence.
+3. Preflight host reserve and qualify only Bun, Yarn, TypeScript-transpilation,
+   and untrusted-Rust risk classes. Stop if the instrument is not feasible.
+4. Build the production parent-only VCM store/materializer on qualified rows and
+   remove target-derived effect paths before any candidate packet exists.
+5. Produce the remaining closures, parent-only packet receipts, all 62
+   parent-fail/target-pass receipts, blindness audit, and one contiguous K2
+   freeze through the generic owner.
+6. Implement and call-free freeze the local baseline routes, host canaries,
+   competence/futility rules, paired analysis, cost ledger, and decisions.
+   Freeze the optional VCM reference envelope.
+7. Run the nine-task local adequacy/control screen; proceed only if model, task,
+   evaluator, intervention, power, and host requirements pass. Then bind Luna
+   to the exact selected VCM/control campaign or prospectively omit it before
+   the first claim-panel call.
+8. Run the 53-task local VCM/strongest-control/flat-ablation campaign, seal every
+   candidate before scoring, and optionally execute the already sealed Luna
+   reference under a separate denominator.
+9. Report L0-L3 separately and issue one scoped K3 disposition. Let only one
+   survivor consume D1 and transfer tests, then issue its neural-seed interface
+   disposition.
+10. Return one compact L0-L4 packet to the book with support unchanged and
+    activate exactly one next subsystem from the observed residual.
 
-The panel is frozen at 62 tasks (nine control, 53 claim). Evidence accounting
-includes files, artifact bytes, wall time, interventions, commits, costs, and
-role-separated evidence fraction. The default transaction limit is one
-prospective and one final commit per bounded closure. Repository-local
-rederivation is called role-separated; only a separately provisioned operator
-and environment can support an external-reproduction claim.
+The panel is frozen at 62 tasks (nine adequacy/control, 53 claim). Evidence
+accounting includes files, artifact bytes, wall time, interventions, commits,
+costs, shared-store bytes, peak host use and reserve, and role-separated
+evidence fraction. The default transaction limit is one prospective and one
+final commit per bounded closure. Repository-local rederivation is called
+role-separated; only a separately provisioned operator and environment can
+support an external-reproduction claim.
 
 ## Work That Is Not Active
 
@@ -717,10 +763,15 @@ and environment can support an external-reproduction claim.
 - The historical Semantic-IR implementation was inadequate. The replacement
   production mechanics are bounded-green, but independent adequacy and the
   broader claim remain unresolved.
-- The Luna transport is source-bound and offline-qualified; it remains disabled
-  and has made zero project calls.
+- The Luna transport is source-bound and offline-qualified for the prior claim,
+  not VCM; it remains disabled and has made zero project calls.
 - The neural checkpoint has no capability result and D2 remains sealed.
-- The generated surface is large and ownership is diffuse.
+- The natural-task parent-only VCM materializer does not yet exist, and the v1
+  candidate protocol contains target-derived effect paths that must be removed
+  before packet generation.
+- The generated surface is large, ownership is diffuse, and host storage was at
+  97% used during review; resource feasibility must be demonstrated before bulk
+  dependency materialization.
 - Local security evidence does not authorize LAN or public exposure.
 - Concurrent living-book work means the observed HEAD and worktree must be
   treated as intake, not silently absorbed into the experiment pin.

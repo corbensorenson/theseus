@@ -54,9 +54,12 @@ availability alone cannot resume neural training.
   evaluator ran and no broad Semantic-IR negative is allowed.
 - The sole active claim is now `virtual-context-abi.core`, selected because the
   terminal residual is model-visible context materialization and prompt-ingest
-  burden. Its call-free instrument audit is GREEN and binds a nine-task local
-  control-qualification panel plus a fresh 53-task powered claim panel. Licensed
-  source acquisition is active; no local or Luna claim call is authorized yet.
+  burden. The frozen source panel binds nine local instrument/control tasks plus
+  a fresh 53-task powered claim panel. Its deterministic mechanics are useful,
+  but the natural-task instrument is not campaign-ready: Task 26 is still
+  prospective, no parent-only external-task VCM materializer exists, and the v1
+  candidate protocol must remove target-derived `allowed_effect_paths`. No local
+  or Luna claim call is authorized.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
   separately denominated OpenAI measurement-only reference. Its exact
   Responses API adapter is source-bound and offline-qualified; calls remain
@@ -98,11 +101,12 @@ ASI Stack claim
   -> faithful causal implementation
   -> production-path mechanics and adequacy bench
   -> frozen task/model/evaluator/cost contract
-  -> matched local direct vs treatment comparison
-  -> separately denominated Luna direct vs treatment reference
-  -> blind disposition and weak-tail/cost analysis
+  -> nine-task local adequacy and control screen
+  -> powered local VCM vs strongest-control vs flat-ablation comparison
+  -> optional separately denominated Luna reference sealed before outcomes
+  -> separate conformance/integrity/utility/economics disposition
   -> one fresh D1 qualification for a survivor
-  -> claim-level book handoff with support unchanged
+  -> backend/model transfer and claim-level book handoff with support unchanged
 ```
 
 The machine-readable active state is:
@@ -121,17 +125,21 @@ The machine-readable active state is:
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 is the
 last bespoke per-task dependency canary. Remaining closures must use one
-generic manifest-driven owner, with special handling limited to Bun, Yarn,
-TypeScript transpilation, and untrusted Rust risk classes.
+generic manifest-driven owner with shared content-addressed package stores and
+disposable installed environments. Special handling is limited to Bun, Yarn,
+TypeScript transpilation, and untrusted Rust risk classes; a storage/host-reserve
+preflight may stop the instrument before bulk materialization.
 
-K3 begins only after all parent-fail/target-pass evaluator receipts and the
-candidate-blindness audit freeze under one campaign identity. Its nine-task
-stage selects the strongest simple local control—direct injection, ordinary
-retrieval, summary cache, sliding window, or source-bound upper bounds—without
-Luna outputs. The 53-task stage then compares frozen local control and VCM;
-Luna remains a separate reference denominator. Actual tokens, time, memory,
-storage, verifier work, interventions, commits, and total cost are outcomes.
-Evidence volume is not mechanism progress.
+K3 begins only after all parent-fail/target-pass receipts, the real parent-only
+VCM materializer, and the independently recomputed blindness audit freeze under
+one campaign identity. Its nine-task stage is adequacy—not claim evidence—and
+selects the strongest eligible local control from flat context, ordinary
+retrieval, summary/compression, and operable full-parent context without Luna.
+The 53-task stage compares VCM, that frozen control, and mandatory
+information-matched flat context. Results are reported separately as L0
+conformance, L1 integrity, L2 model use/utility, L3 economics, and later L4
+transfer. Luna remains a separate reference denominator and must be rebound to
+VCM before local outcomes or omitted. Evidence volume is not mechanism progress.
 
 ## Repository Map
 
@@ -216,14 +224,17 @@ and autonomous resource and rollback readiness. D2 remains sealed until then.
   Semantic-IR reseal is forbidden.
 - VCM has substantial deterministic mechanics evidence but no prospectively
   sealed natural-work causal campaign showing that governed context helps the
-  frozen model beyond information-matched plain context at visible total cost.
-- The Luna transport is bound but no future four-cell claim pool, independent
-  evaluator, custody path, and spend authority are prospectively sealed, so no
-  hosted reference call is authorized.
+  frozen model beyond strong parent-only controls at visible total cost. The v1
+  candidate protocol's target-derived effect paths must be removed before use.
+- The Luna transport is bound to the prior Semantic-IR claim, not VCM. No VCM
+  task/evaluator/arm/custody/spend contract is prospectively sealed, so no
+  hosted reference call is authorized and later backfill is forbidden.
 - The neural checkpoint has no capability result, both matched dense controls
   are incomplete, and D2 is unconsumed.
-- Large generated surfaces and broad script/config ownership remain a real
-  maintenance burden; cleanup must use existing replay-safe retention owners.
+- Large generated surfaces, a 97%-used host volume at the review boundary, and
+  broad script/config ownership are real feasibility risks; cleanup must use
+  replay-safe retention owners and forward dependency work must use shared
+  stores rather than per-task cache families.
 - Local security evidence does not qualify LAN or public exposure.
 - The existing public Git history is not an approved release surface.
 

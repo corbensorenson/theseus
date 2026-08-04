@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last recentered: 2026-08-03 UTC.
+Last deeply reviewed and recentered: 2026-08-03 UTC.
 
 This is the canonical forward execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; durable rules belong in `AGENTS.md`; exact machine
@@ -72,6 +72,80 @@ or evaluator semantic expansion is authorized. A slot may be replaced only
 after a predeclared invalidation, preserving language, source-disjointness, and
 the frozen rank rule.
 
+## Deep-Review Findings That Change Execution
+
+The subsystem-first direction is correct, but the implementation path had begun
+to optimize for producing evidence artifacts rather than reaching a causal
+decision. The review therefore preserves the VCM panel and completed closure
+evidence while changing how all forward work is organized.
+
+| Finding | Evidence observed at the review boundary | Roadmap correction |
+| --- | --- | --- |
+| Book semantics remain stable | The experiment is pinned to ASI Stack commit `17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`; the clean live book was observed at `61c74d65a2f47aeb34b25ddfb4d5348ef608a303`. The VCM core claim and `argument` support state are unchanged; live changes are formal refinement and proof growth | Keep the exact claim identity. Do not invent a broader or easier VCM claim, and do not promote book support automatically |
+| Instrument work is dominating decision work | From the VCM claim-binding boundary through commit `5e4b2b38`, the effort spans 82 commits, 509 changed files, roughly 137,000 insertions, and 59 transaction reports before a claim-bearing VCM model call | Task 26 ends bespoke per-task owners. One generic builder, one row schema, one compact report, and one test family own the rest |
+| Host resources are a scientific feasibility variable | At review, `reports/` was about 3.7 GiB, `runtime/` about 43 GiB, `runtime/vcm_evaluator/` about 2.3 GiB with 11,115 files, checkpoints about 9 GiB, and the host volume was 97% used. The refreshed resource policy saw about 4.4 GiB available memory, selected `conservative`, and allows one heavy closure at a time. The frozen schedule contains 32,290 locked package entries | Require shared content-addressed package stores, disposable installed environments, projected peak-space/memory/host-reserve preflight, serialized heavy work, and a bounded stop before bulk closure work |
+| The current candidate protocol contains an answer-leak risk | The frozen v1 claim instrument lists `allowed_effect_paths` as candidate-visible even though those paths originate in target-diff source selection | Remove target-derived path restrictions before packet materialization. Give every arm the same broad disposable parent write root and audit every visible byte independently |
+| The task panel is source-bound but no natural-task VCM materializer exists yet | The repository has VCM schema, synthetic mechanics, and a call-free claim contract, but no owner currently turns each external parent archive into the real task-specific VCM store and governed packet | K2 now requires a parent-only store and production VCM materializer before any campaign freeze |
+| Existing baseline names are not implementations | Ordinary retrieval, summary/compression, full-context, graph, persistent-memory, and human-curated comparators are not all production-qualified campaign routes | Implement only the minimum causal screen now; treat missing mature book comparators as a cap on inference, then qualify extended routes only for a survivor |
+| A target-derived oracle would violate blindness | A “source-bound single-memory oracle” selected from the hidden target would reveal answer location | Forbid target-derived oracle controls. Use parent-only no-context, flat, ordinary-retrieval, summary/compression, full-parent, and VCM routes |
+| The nine-task panel cannot establish the claim | It was sized for control qualification, not a VCM treatment estimate | Use it only to test model/task/evaluator/host adequacy and freeze the strongest eligible control; reserve causal inference for the powered 53-task panel |
+| The reference-control contract is bound to the wrong claim | `configs/theseus_external_reference_control.json` still names `cognitive-compilation-and-semantic-ir.core` and authorizes zero calls | Rebind it prospectively to the exact VCM task/evaluator/arm/spend contract before local claim outcomes, or omit Luna permanently for this campaign |
+| “Accuracy gain or retire” is too coarse | The book claim includes typed governance, lineage, omission, authority, freshness, revocation, fault, cost, and residual custody—not just retrieval usefulness | Issue separate conformance, integrity, model-use, economics, and transfer findings; allow a narrow governed-transport survivor when governance value is real but retrieval superiority is not |
+
+These observations are an audit snapshot, not a standing resource allowance.
+Every execution owner must remeasure actual host capacity and bind its own
+resource ceiling before mutation.
+
+## Exact Book Claim And Evidence Layers
+
+The VCM claim is not “retrieval usually helps.” It is that context should cross
+a static, typed, consumer- and purpose-relative request-to-materialization
+boundary that accounts for source and field lineage, transformations, omissions
+and loss, provenance and taint, authority and permitted use, freshness and
+revocation, selection and unresolved frontier, adequacy, cost, faults, and
+residual custody.
+
+Admission across that boundary does **not** by itself imply that the material is
+true, sufficient, useful, safe, used by the model, or supportive of the book
+claim. The campaign must therefore report five layers independently:
+
+| Layer | Question | Minimum evidence | What it cannot prove alone |
+| --- | --- | --- | --- |
+| L0 — Conformance | Did the exact request produce the exact packet with complete lineage, transformations, omissions, authority, lease, cost, faults, and residuals? | Deterministic source-to-packet replay plus producer-independent audit | Integrity under attack or model usefulness |
+| L1 — Integrity | Do stale, revoked, tainted, wrong-scope, conflicting, poisoned, cache-invalid, mandatory-miss, and omitted-frontier cases produce the declared typed behavior without silent authority widening? | Mutation tests, hard-fault gates, and independent intervention audit | That a correct packet helps the model |
+| L2 — Model use and utility | Does frozen TMax use the governed packet and improve useful-safe completion beyond a strong simple route, with the predicted ablation signature? | Blind paired local campaign and mechanism interventions | Transfer or acceptable economics |
+| L3 — Economics | Is any governance or utility benefit worth tokens, retrieval, transformation, latency, memory, storage, verifier, repair, privacy, and maintenance cost? | Complete total-system ledger and frozen break-even rule | Generalization to another model or backend |
+| L4 — Transfer | Does a survivor reproduce on fresh sources and transfer across a second memory backend and separately denominated second model? | One fresh D1 qualification, alternate-backend replay, prospective OpenAI reference, and eventually external reproduction | Automatic book-support promotion |
+
+K3 can establish at most L0-L3 for the exact TMax, task population, VCM
+implementation, controls, evaluator, host, and cost regime. Full interface
+selection requires L4. Book support remains `argument` until the book's own
+claim-review workflow changes it.
+
+## Experimental Information-Flow Boundary
+
+For every local or reference arm, the candidate-visible world is limited to:
+
+- the natural-language request;
+- a callable signature only when it is intrinsic to that request;
+- a disposable copy of the exact parent snapshot with the same broad write
+  root; and
+- the arm-specific context produced from that parent snapshot under a frozen
+  parent-only route policy.
+
+Generation, retrieval, ranking, compression, and packet selection may not use
+the target snapshot, target patch, changed-file list, selected source paths,
+selected verifier paths, hidden tests, repository or pull-request identity,
+source-task ID, expected answer, or reference output. In particular,
+target-derived `allowed_effect_paths` must be removed before any natural-task
+packet is materialized.
+
+Every arm receives the same request, parent store, output patch ABI, tools,
+effect root, and verifier opportunity. Semantic IR and every other optional
+subsystem remain disabled. A separate audit recomputes the visible packet and
+selector inputs; it does not trust candidate-emitted flags. Any violation is
+`INVALID_INFORMATION_FLOW` and cannot be repaired by relabeling the report.
+
 ## Scientific Contract
 
 ### Hold the model fixed
@@ -84,11 +158,15 @@ claim-task-disjoint bakeoff and a new instrument identity; denominators may not
 be pooled.
 
 `gpt-5.6-luna` at fixed `xhigh` effort is a separately denominated,
-measurement-only OpenAI reference. It may receive the same candidate-visible
-packet and independent hidden evaluator only after the local campaign is
-prospectively sealed. Its outputs may not select tasks or controls, tune the
-local system, train the local model, serve a user, or enter the local
-denominator.
+measurement-only OpenAI reference. The existing transport contract is still
+bound to Semantic IR, so it grants VCM zero-call authority. A VCM-specific
+reference must bind the exact tasks, routes, candidate-visible packet,
+independent evaluator, call count, custody, and maximum spend before any local
+claim outcome exists, or be omitted permanently for this campaign. Execution
+may occur only after the corresponding local candidate cells are sealed. Luna
+outputs may not select tasks or controls, tune the local system, train the
+local model, serve a user, or enter the local denominator. Public-task
+contamination remains unknown and is reported as a model non-equivalence.
 
 The model is the controlled instrument, not the treatment. A subsystem must
 change real execution: admitted context, dependency availability, tool or route
@@ -179,6 +257,24 @@ Exactly one candidate is active. Each terminal result selects the next claim by
 observed residual and architecture decision value, never by chapter order or
 implementation convenience.
 
+The architecture freeze does not require every scientific question to be
+solved forever. It requires one seed-facing engineering disposition for each
+architecture-shaping interface:
+
+| Disposition | Meaning for the neural seed | Scientific meaning |
+| --- | --- | --- |
+| `SELECT` | Include the qualified full interface | Exact implementation survived its required evidence layers |
+| `SELECT_NARROW` | Include only the bounded sub-interface that survived | Broader claim remains unresolved |
+| `EXCLUDE_CURRENT_SEED_INCONCLUSIVE` | Do not build the current approximation into this seed | Cost, host, implementation, or experimental adequacy was insufficient; mechanism is not falsified |
+| `RETIRE_EXACT_IMPLEMENTATION` | Exclude this exact implementation and regime | An adequate negative applies only to the tested implementation and regime |
+
+After VCM, the default dependency order is verification bandwidth/context
+adequacy, planning control, then routing/specialist cores. Procedural memory
+enters only if an observed residual activates it. Semantic IR remains excluded
+from the current seed unless a genuinely adequate successor receives a new
+identity. An observed VCM result may change this order, but implementation
+convenience may not.
+
 ## Phase Ladder
 
 ### K0 — Claim contract
@@ -209,44 +305,200 @@ special handling: Bun, Yarn, TypeScript transpilation, and untrusted Rust
 compilation. They extend the generic owner; they do not create per-task
 script/config/test/report families.
 
+The exact forward denominator is:
+
+| Class | Frozen count | Current boundary |
+| --- | ---: | --- |
+| Tasks with project locks | 48 | 58 distinct parent/target closures because ten parent and target locks diverge |
+| Closures GREEN before Task 26 | 6 | npm, pnpm, Cargo, and uv mechanics are represented |
+| Task 26 uv closure | 1 | Final prospectively sealed bespoke canary; execution and role-separated audit are next |
+| Locked closures after Task 26 | 51 | Must use the generic owner |
+| Immutable-resolution tasks | 6 | Must receive a source-bound static/immutable execution classification |
+| No-project-lock static tasks | 8 | Must receive an explicit static evaluator path; no fabricated dependency lock |
+
+The generic owner must:
+
+1. consume one frozen row manifest rather than task-specific constants;
+2. verify source, parent, target, license, lock, toolchain, and evaluator hashes;
+3. use shared content-addressed npm, pnpm, Yarn, Bun, Cargo, and uv stores while
+   treating installed parent and target environments as disposable;
+4. run installs, builds, and verifiers inside the existing bounded sandbox with
+   network and untrusted-build behavior explicit;
+5. emit one row-oriented report with content-bound stdout, stderr, exit,
+   duration, storage, and failure receipts;
+6. resume idempotently without treating partial success as panel admission; and
+7. replay completed npm, pnpm, Cargo, and uv evidence before claiming the
+   generic path is faithful.
+
+Before bulk materialization, the owner must measure projected download,
+installed, temporary, and deduplicated-store bytes; projected wall time; host
+free space and protected reserve; memory; and untrusted-build risk. If the
+generic instrument cannot fit safely or qualify the risk classes in bounded
+transactions, stop as `INCONCLUSIVE_IMPLEMENTATION` when the generic owner is
+unfaithful or mechanically broken, or `INCONCLUSIVE_EXPERIMENT` when host,
+storage, cost, time, or evaluator adequacy blocks a valid instrument. Preserve
+the 62-task panel and design a simpler instrument under a new identity. Do not
+fall back to another chain of per-task caches and owners.
+
 K2 must establish for all 62 tasks:
 
 - exact source, parent, target, license, and contamination identity;
 - reproducible parent and target dependency closures;
 - parent-fail/target-pass hidden-evaluator receipts;
-- candidate packet blindness and independent forbidden-field audit;
+- a VCM store constructed from the exact parent snapshot only;
+- a production-path VCM request-to-packet materializer rather than a synthetic
+  fixture or report renderer;
+- candidate packet blindness and independent forbidden-field and selector-input
+  audit;
 - compatible sandbox, verifier, and effect boundaries;
-- intervention sensitivity and false-context rejection; and
+- hard-fault rejection before model invocation and model-use intervention
+  reachability;
+- one common output patch ABI and broad disposable parent write root; and
 - one contiguous frozen evaluator/instrument campaign identity.
 
 After K2 freezes, evaluator semantics may change only for a predeclared
 invalidation class and under a new campaign identity. Cosmetic report changes
-do not reopen the experiment.
+do not reopen the experiment. Exact consumed surfaces may not be rerun.
 
 ### K3 — Matched causal VCM campaign
 
-K3 has two sealed stages.
+K3 has a call-free freeze, a nine-task adequacy screen, an exact reference
+rebind-or-omit checkpoint, a powered local claim campaign, an optional
+separately denominated reference execution, and a layered disposition.
 
-First, use only the nine-task control panel to qualify the strongest simple
-eligible control. Luna output is forbidden during this choice. Required local
-controls are:
+#### K3.1 — Implement and freeze the routes before model calls
 
-- no added context;
-- information-matched direct injection;
-- ordinary retrieval over the same store and candidate-visible budget;
-- compressed summary cache under the same budget;
-- limited sliding-window context;
-- a source-bound single-memory oracle upper bound; and
-- maximal candidate-authorized context as an upper bound.
+All current-campaign routes use the exact natural request and parent-only store:
 
-Required mechanism and negative controls are irrelevant/random, stale,
-conflicting, poisoned/tainted, shuffled, retrieval-disabled, and
-retrieval-degraded memory.
+| Route | Experimental role | Matching rule |
+| --- | --- | --- |
+| No added context | Competence floor | Same model, output ABI, tools, sandbox, verifier opportunity, and parent write root |
+| Information-matched flat direct context | Mandatory mechanism ablation | Same parent-only information items and visible context opportunity as VCM, without typed governance or lifecycle machinery |
+| Ordinary direct retrieval | Strong simple control candidate | Same parent store, request-derived query, retrieval opportunity, and visible context boundary |
+| Hierarchical summary or prompt compression | Strong simple control candidate | Same parent store and visible context opportunity; transformation and loss are recorded |
+| Maximal full-parent context | Addressability upper bound | Runs only if synthetic size-bucket canaries establish physical and host operability; a boundary hit is invalid/host evidence, not model failure |
+| Governed VCM | Treatment | Real typed request, materialization, lineage, omission, authority, freshness, fault, cost, and residual path |
 
-Second, freeze the selected strongest control and run the fresh 53-task claim
-panel. The primary comparison is local VCM-correct minus that local control.
-Luna direct and Luna-integrated arms, if opened, are reported separately and
-never change the local treatment estimate.
+A target-derived oracle is forbidden. Graph retrieval, persistent memory, and
+human-curated or external-context reproduction remain required by the book
+before a full general interface claim, but building all three before the first
+causal VCM decision would recreate the breadth problem. Their absence caps K3's
+maximum inference; a K3 survivor qualifies those comparators in K4 under the
+same claim identity. “Human-curated” means a prospectively frozen,
+license-compatible independent public artifact or external reproduction—not a
+request for Corben to provide context or judge an outcome.
+
+Stale mandatory memory, wrong-scope memory, tainted or unauthorized memory,
+revoked or expired memory, and mandatory-field/frontier miss must fail before a
+model call. Irrelevant/random, shuffled, conflicting/poisoned,
+retrieval-disabled, and retrieval-degraded interventions test whether the model
+actually uses packet content. Their denominator and whether each is powered or
+descriptive are frozen before outcomes.
+
+The call-free freeze also binds candidate custody, exact tokenizer accounting,
+complete-artifact/EOS completion, model and host watchdogs, counterbalanced arm
+order, exact paired analysis, weak tails, false-context veto, total-cost ledger,
+the flat-ablation attribution threshold and power, the narrow-interface
+noninferiority margin and power, valid fixed-sequence or other multiplicity
+control, the material family-harm boundary, and all terminal outcomes.
+Programming-language tails are heterogeneity and harm checks, not separately
+powered family claims. Synthetic size-bucket host canaries use no claim task. A
+physical context or host-safety boundary makes that observation invalid for
+capability inference.
+
+The prospective core call shape is explicit:
+
+| Stage | Unique core-route calls | Notes |
+| --- | ---: | --- |
+| Nine-task local screen | At most 54 | Nine tasks by six routes; fewer only when a route is prospectively declared physically inoperable, never because an outcome is inconvenient |
+| 53-task local claim panel | 106 to 159 | Two unique arms when flat context is the selected strongest control; otherwise three |
+| Optional Luna reference | 106 | VCM and frozen-control cells only, separately denominated |
+| Hard-fault checks | Zero model calls | Must stop before inference |
+| Model-use interventions | Prospectively frozen before outcomes | Additional denominator must state whether it is powered or descriptive |
+
+If Luna is desired, this stage freezes a VCM reference envelope: common packet,
+evaluator, custody, two-cell shape, maximum-call rule, pricing method, and the
+requirement to bind or omit immediately after the local screen selects its
+control. Two reference cells across 53 tasks would authorize 106 calls. At the
+current physical worst-case price bound of $0.6504 per call, the preflight
+ceiling would be about $68.94; expected cost should be lower, but the exact
+prospective spend authority—not an output-token quality cap—must govern whether
+the cells open.
+
+#### K3.2 — Nine-task local adequacy and control screen
+
+The nine tasks are not claim evidence. They answer whether the frozen model,
+task construction, evaluator, route implementation, interventions, and host can
+support the predeclared 0.35 minimum worthwhile effect. Luna is forbidden.
+
+The screen must predeclare competence and futility from task opportunity,
+known-positive evaluator reachability, exact paired power, and host operation;
+it may not invent a conventional pass-count threshold. If the model cannot
+complete enough tasks, the contexts do not contain usable parent-only evidence,
+the evaluator is insensitive, or the host cannot run the routes, stop before
+the 53-task panel as
+`INCONCLUSIVE_EXPERIMENT_MODEL_TASK_HOST_OR_EVALUATOR_ADEQUACY`.
+
+Among eligible non-VCM routes, select the strongest control by:
+
+1. highest useful-safe completion;
+2. then lower total-system cost; and
+3. then greater parent-only information opportunity.
+
+The rule and tie breaks freeze before the screen runs. Reference output, hidden
+target structure, and implementation preference never enter the selection.
+
+Immediately after the control is frozen—and before the first 53-task candidate
+call—the OpenAI contract must either bind the exact VCM claim, task and evaluator
+hashes, VCM and selected-control routes, 106-call maximum, custody, and spend,
+or record `MISSING_PROSPECTIVE_REFERENCE`. This checkpoint exists after the
+screen because the control identity was previously unknown, and before the
+claim panel because outcome-dependent backfill is forbidden.
+
+#### K3.3 — Powered 53-task local claim campaign
+
+Run up to three unique local arms per task:
+
+1. governed VCM;
+2. the frozen strongest simple control; and
+3. information-matched flat direct context as the mandatory mechanism ablation.
+
+If the strongest control is already the flat arm, do not duplicate it. Seal
+every candidate artifact before the independent hidden evaluator runs.
+Temperature-zero TMax makes the task the statistical unit; repeated deterministic
+seeds are not independent observations. Counterbalance route order across tasks
+to expose cache, thermal, and host-order effects. Do not rerun an exact consumed
+task surface to repair a loss.
+
+The confirmatory order is frozen. First test VCM superiority by the 0.35
+minimum worthwhile effect against the strongest control. Only under the sealed
+multiplicity procedure may the VCM-versus-flat mechanism-attribution hypothesis
+and, if full selection is not established, narrow noninferiority be interpreted.
+If flat context is the strongest control, deduplicate the hypotheses as well as
+the calls. The fixed 53-task panel may not be expanded when a secondary or
+narrow gate is underpowered; the maximum inference is reduced instead.
+
+VCM minus information-matched flat context attributes any supported difference
+to typed governance and selection rather than merely receiving useful parent
+information. Report exact paired uncertainty, all four programming-language
+tails, unsafe or invalid outcomes, prompt/reasoning/generated tokens, latency,
+retrieval and transformation work, verifier and repair work, memory, storage,
+and total cost.
+
+#### K3.4 — Optional Luna measurement reference
+
+If and only if its VCM-specific contract was sealed before local claim outcomes,
+run the corresponding VCM and frozen-control cells after the local candidates
+are immutable. Use the same candidate-visible packet and independent evaluator.
+Report provider/model/effort, wrapper, tokenization and reasoning differences,
+public-task contamination uncertainty, actual usage, latency, and money.
+
+Luna is neither a local denominator nor an oracle. Its outputs cannot select or
+tune tasks, controls, prompts, packets, routes, evaluators, or the local model;
+cannot become training rows; cannot receive source-effect credit; and cannot be
+backfilled if it was not prospectively bound.
+
+#### K3.5 — Layered decision
 
 The prospective VCM decision rule is:
 
@@ -261,23 +513,37 @@ The prospective VCM decision rule is:
   memory, storage, verifier/repair work, and total cost.
 
 Task-deadline and cost-break-even boundaries are derived from the control panel
-and frozen before claim-panel outcomes are visible. The terminal disposition is
-exactly one of:
+and frozen before claim-panel outcomes are visible. L0-L3 are reported
+separately, then K3 issues exactly one disposition:
 
-1. `PROMOTE_FULL_INTERFACE`;
-2. `PROMOTE_NARROW_GOVERNED_TRANSPORT_ONLY`;
-3. `REVISE_NEW_CAMPAIGN_IDENTITY`; or
-4. `RETIRE`.
-
-An adequate null can retire only this exact implementation and operating
-regime. Missing fidelity, mechanics, power, source independence, or evaluator
-validity makes the result inconclusive.
+| Disposition | Required evidence | Maximum inference |
+| --- | --- | --- |
+| `ADVANCE_FULL_INTERFACE_CANDIDATE_TO_K4` | L0/L1 GREEN; powered L2 effect at or above 0.35 against the strongest control; predicted flat-ablation signature; acceptable L3 cost; no safety or weak-tail veto | Full VCM candidate for transfer, not yet selected and not book support |
+| `ADVANCE_NARROW_GOVERNED_TRANSPORT_CANDIDATE_TO_K4` | L0/L1 GREEN; prospectively powered noninferiority to information-matched flat context; acceptable L3 cost | Typed governance/transport candidate only; no retrieval-superiority claim |
+| `REVISE_NEW_CAMPAIGN_IDENTITY` | A specific repair is justified but changes claim implementation, evaluator, population, or causal contract | Old campaign remains closed; no pooled denominator |
+| `RETIRE_EXACT_IMPLEMENTATION_AND_REGIME` | Faithful implementation and every adequacy requirement pass, followed by an adequate negative | Only the exact implementation, data, model, controls, evaluator, budget, host, and regime are retired |
+| `INCONCLUSIVE_IMPLEMENTATION` | Faithfulness, learning/mechanics, intervention, or production-path adequacy fails | Repair or exclude this approximation; no mechanism negative |
+| `INCONCLUSIVE_EXPERIMENT` | Power, task opportunity, evaluator validity, source independence, host, or cost adequacy fails | Preserve evidence and repair the experiment; no mechanism negative |
+| `INVALID_INFORMATION_FLOW` | Candidate or selector sees answer-identifying information | No claim inference and no relabeling repair |
 
 ### K4 — Fresh D1 survivor qualification
 
 Only a K3 survivor may consume D1, once, on fresh source-disjoint tasks. D1 is
 qualification, not another tuning loop. Failure returns the exact interface to
 its predeclared disposition; it does not trigger repeated fresh-pool search.
+
+K4 completes L4 by qualifying the survivor on a second memory backend and,
+when prospectively bound, the separately denominated OpenAI model. A full-
+interface candidate must also close the graph, persistent-memory, and
+human-curated/external comparator obligations required for the broader book
+interface claim. A narrow governed-transport candidate transfers only its
+declared narrow contract and makes no broader retrieval claim. A comparator
+that is not mature caps the inference rather than being represented by a toy
+stand-in.
+
+K4 ends with exactly one neural-seed engineering disposition: `SELECT`,
+`SELECT_NARROW`, `EXCLUDE_CURRENT_SEED_INCONCLUSIVE`, or
+`RETIRE_EXACT_IMPLEMENTATION`.
 
 ### K5 — Claim-level book handoff
 
@@ -304,14 +570,25 @@ Every bounded closure records:
 - evaluator wall time;
 - local and reference cost;
 - manual or agent interventions;
-- commits per closure; and
-- role-separated evidence fraction.
+- commits per closure;
+- role-separated evidence fraction;
+- shared-store deduplicated bytes;
+- projected and actual peak host bytes plus protected reserve; and
+- evidence work per claim-bearing model observation.
 
 The default transaction limit is one prospective-seal commit and one final
 audited-closure commit per bounded closure. Do not create per-seed,
 per-condition, or per-task commits. Do not create a new dashboard or report
 family when the canonical matrix, generic owner, and compact disposition can
-carry the evidence.
+carry the evidence. Building the generic K2 owner is itself limited to one
+prospective builder transaction and one audited qualification transaction.
+
+Keep only the evidence needed to establish identity, replay the causal path,
+audit information flow, reconstruct the decision, or satisfy legal custody.
+Deduplicate immutable packages and generated environments through governed
+retention owners; do not ad hoc-delete negative or superseded evidence. If a
+new artifact does not alter a predeclared gate, disposition, cost estimate, or
+maximum inference, it is not authorized merely because it is easy to report.
 
 A report is evidence, not progress. Progress means a book claim receives
 stronger causal evidence, an inadequate owner is repaired, a subsystem survives
@@ -322,7 +599,10 @@ a fair comparison, or the harness becomes materially more honest or cheaper.
 The neural seed remains at step 11,992, `NOT_EVALUATED`, with D2 sealed. It may
 resume only after all of the following are machine-readable and green:
 
-1. architecture-shaping subsystem interfaces have terminal dispositions;
+1. architecture-shaping subsystem interfaces have terminal seed-facing
+   dispositions—selection, narrow selection, current-seed exclusion as
+   inconclusive, or exact-implementation retirement—without pretending every
+   scientific question is permanently solved;
 2. selected interfaces and common safety containment are frozen;
 3. autonomous source, custody, contamination, and teacher-share gates pass;
 4. modular, dense-active, and dense-total controls receive matched raw data,
@@ -348,25 +628,41 @@ retention through governed custody rather than ad hoc cleanup.
 ## Immediate Execution Order
 
 1. Execute and role-separately audit the prospectively sealed Task 26 UV
-   dependency canary.
-2. End bespoke per-task closure expansion and implement one generic,
-   manifest-driven dependency/evaluator batch owner.
-3. Qualify only the Bun, Yarn, TypeScript-transpilation, and untrusted-Rust risk
-   classes needed by that owner.
-4. Materialize the remaining frozen dependency closures and all 62
-   parent-fail/target-pass evaluator receipts through the generic owner.
-5. Freeze one contiguous K2 campaign plus its evidence-cost packet. Stop
-   evaluator changes unless a predeclared invalidation fires.
-6. Version and seal the K3 baseline, decision, cost, weak-tail, and terminal
-   disposition contract before any claim-bearing call.
-7. Run the nine-task local control qualification panel and select the strongest
-   simple eligible control without Luna outputs.
-8. Run the 53-task local direct/control/VCM campaign; optionally run the sealed
-   Luna reference arms under a separate denominator.
-9. Issue one full, narrow, revise, or retire disposition. A survivor consumes
-   fresh D1 once.
-10. Return one compact claim packet to the book with support unchanged, then
-    select the next subsystem only from the observed residual.
+   dependency canary. This is the final bespoke per-task closure owner.
+2. Build one manifest-driven generic instrument owner and replay the completed
+   npm, pnpm, Cargo, and uv closure evidence through its common row schema.
+3. Preflight storage, memory, wall time, host reserve, and untrusted-build risk;
+   then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust as
+   generic-owner risk classes. Stop K2 if the instrument is not resource-feasible.
+4. Build and independently audit the real parent-only VCM store and
+   request-to-packet materializer on already qualified rows. Remove all
+   target-derived effect paths and selector inputs before any task packet exists.
+5. Materialize the remaining frozen dependency closures, static/immutable
+   execution classes, parent-only stores, and all 62 parent-fail/target-pass
+   evaluator receipts through the generic owner.
+6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/
+   intervention/cost identity and complete producer-independent replay plus the
+   role-separated blindness audit.
+7. Implement and call-free audit the six current local routes, host canaries,
+   competence/futility rules, exact analysis, counterbalancing, cost ledger, and
+   terminal decisions. Freeze the optional VCM reference envelope.
+8. Run the nine-task local-only adequacy/control screen. Stop as scoped
+   inconclusive if the model, tasks, evaluator, interventions, or host cannot
+   expose the useful effect; otherwise freeze the strongest eligible control,
+   then bind Luna to that exact VCM/control campaign or prospectively omit it.
+9. Run the 53-task local VCM, strongest-control, and information-matched-flat
+   campaign, deduplicating the flat arm if it is already the selected control.
+   Seal candidates before hidden scoring and never rerun a consumed surface.
+10. If prospectively authorized, run the separately denominated Luna VCM and
+    control cells. Then issue separate L0, L1, L2, and L3 findings and one K3
+    terminal disposition.
+11. Let one survivor consume fresh D1 once, qualify alternate-backend and
+    remaining mature-comparator transfer obligations, and issue `SELECT`,
+    `SELECT_NARROW`, `EXCLUDE_CURRENT_SEED_INCONCLUSIVE`, or
+    `RETIRE_EXACT_IMPLEMENTATION`.
+12. Return one compact L0-L4 claim packet to the book with support unchanged,
+    freeze the VCM seed interface, and activate exactly one next subsystem from
+    the observed residual and dependency order.
 
 No item in this sequence requires Corben to supply tasks, labels, routine
 approval, or timing. Actions outside machine-readable bounded authority fail
@@ -378,7 +674,10 @@ closed and record the wall.
 - user-supplied task collection;
 - omnibus full-stack A/B claims;
 - exact consumed-surface replay or public benchmark training;
+- candidate-visible target-derived effect paths or target-selected oracles;
 - arbitrary generated-token quality caps;
+- per-task dependency, evaluator, packet, test, cache, report, or commit families
+  after Task 26;
 - new private task-suite families and evidence dashboards;
 - neural optimizer steps or D2 consumption before re-entry;
 - externally served reference outputs;
@@ -389,8 +688,9 @@ closed and record the wall.
 
 This era is complete when:
 
-1. every architecture-shaping claim has a terminal, causally attributable
-   interface disposition;
+1. every architecture-shaping interface has a terminal, evidence-scoped
+   seed-facing disposition, including explicit current-seed exclusion when the
+   scientific result remains inconclusive;
 2. survivors have one fresh D1 qualification and compact costed memo;
 3. the subsystem architecture freeze is machine-readable;
 4. the neural seed re-entry gates are either green or have plain unresolved
@@ -408,6 +708,7 @@ python3 scripts/theseus_asi_stack_claim_handoff.py
 python3 -m pytest -q tests/test_active_status_sync.py \
   tests/test_roadmap_book_sync.py \
   tests/test_roadmap_pretraining_gate.py \
+  tests/test_theseus_external_reference_control.py \
   tests/test_theseus_vcm_claim_instrument.py \
   tests/test_theseus_vcm_task26_dependency_canary.py
 ```

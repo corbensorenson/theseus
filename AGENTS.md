@@ -73,6 +73,11 @@ metadata, including `category`, `solution`, `solution_expr`, `solution_body`,
 labels, answer-family labels, or decoder fields derived from the hidden target
 such as `return_shape`, `type_family`, or `required_constructs`.
 
+Candidate-visible effect paths, retrieval scopes, selected source paths,
+selected verifier paths, and oracle memories may not be derived from the target
+snapshot or target diff. Use a prospectively declared broad parent-side effect
+root and parent-only selection policy instead.
+
 Candidate integrity must be recomputed by an independent audit. Do not trust
 candidate-emitted flags for family, fallback/template status, learned status,
 promotion eligibility, public-data use, or contamination status.
