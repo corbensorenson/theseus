@@ -1,6 +1,6 @@
 # Project Theseus: Current State
 
-Last recentered: 2026-08-02 UTC.
+Last recentered: 2026-08-03 UTC.
 
 This is the canonical plain-English statement of what is true now. It does not
 override machine policy, source-bound reports, or the experiment registry, and
@@ -56,11 +56,20 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` | Required closures 1-6 are independently GREEN. Task 26's one identical 58-package UV closure is prospectively sealed at zero execution |
+| Active VCM claim | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` | Required closures 1-6 and their role-separated audits are GREEN. Task 26's one identical 58-package UV closure is prospectively sealed at zero execution |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
 | Repository state | `SOURCE_BOUND_REGISTRY_GREEN` | The recenter and registry repairs are committed. The last complete registry gate reported zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities, with 11 eligible routes source-bound |
+
+The authoritative active record additionally binds phase
+`K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
+`task26_uv_dependency_canary_v1_prospective`, last closed task 30, and the wall
+`task26_exact_uv_closure_not_executed_or_role_separated_audited`. The next legal
+action is
+`execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion`.
+These values come from `configs/roadmap_implementation_matrix.json`; prose does
+not supersede them.
 
 ## Active Claim And Residual
 
@@ -664,76 +673,28 @@ authorize regenerating historical reports or reopening neural work.
 
 ## Immediate Execution Order
 
-1. **Complete:** install and verify the source-controlled program recentering,
-   neural hold, route bindings, and registry repair.
-2. **Complete:** source-bind and offline-qualify the Luna adapter, exact
-   receipt, completion telemetry, no-serving/no-training boundary, evaluator
-   contract, and campaign-derived cost authority with zero reference calls.
-3. **Complete:** repair Semantic-IR identity/coverage/target/unit mechanics on
-   bounded non-claim evidence through the exact production path.
-4. **Complete:** preserve v5 Tasks 1-3 and the Task 4 prefill-watchdog receipt;
-   record six admitted local calls, one invalid call, and zero hidden evaluation.
-5. **Complete:** replace the redundant label/full-hash statement inventory with
-   a compact integrity-bound protocol and independently prove complete
-   addressability, exact lowering, and prompt reduction without truncation.
-6. **Complete:** acquire and evaluator-qualify four fresh post-snapshot sources
-   for consumed indices 1-4, uniformly regenerate unexposed indices 5-18, and
-   seal the fresh compact denominator.
-7. **Complete:** bind and audit the v6 candidate runner and blind scorer against
-   the exact pool, runtime, model, completion policy, and zero-cross-stage
-   authority with zero calls.
-8. **Complete:** preserve the terminal v6 observation, issue
-   `INCONCLUSIVE_EXPERIMENT`, freeze the exact implementation, and authorize no
-   current-block Semantic-IR reseal or hidden scoring.
-9. **Complete:** bind and call-free audit the existing VCM production-path
-   mechanics bench, 9-task control qualification, 53-task powered claim design,
-   separate Luna denominator, and zero-call authority.
-10. **Active:** complete the VCM evaluator instrument without opening model
-   authority. The source-disjoint 62-task English panel, 124 parent/head
-   closures, runner candidates, dependency classes, exact manager set, and
-   trusted offline build mechanics are GREEN. A static plan binds all 48 exact
-   lock tasks and schedules task 3 first. First materialize and version-qualify
-   its exact checksum-bound Node 22.20.0/npm 10.9.3 runtime. **Complete:** that
-   runtime is GREEN. Preserve the v1 `SIGXFSZ` instrument failure. **Complete:**
-   v2 is sealed with separate captured-output and dependency-file limits, and
-   its acquisition/offline replay is GREEN. **Complete:** the independent static
-   closure audit is GREEN. **Complete:** all 48 locked tasks have declared-
-   version compatibility classifications. Exact pnpm 10.32.1 acquisition for
-   task 7 is GREEN after one registry-digest-verified acquisition and exact Node
-   22.20.0 version probe. **Complete:** the successor compatibility audit changes
-   only task 7 to compatible (19 compatible, 16 no-declaration, 13 incompatible,
-   zero unresolved). **Complete:** task 7's dependency-only canary is
-   prospectively sealed and **Complete:** its lifecycle-disabled online
-   acquisition and network-denied offline replay are GREEN with exact dependency
-   parity and immutable source. **Complete:** its independent audit rederives all
-   8 pnpm-index content files and every closure invariant. Exact minimal Rust
-   1.97.1 for task 36 is **Complete:** the bound minimal toolchain is GREEN with
-   exact rustc/Cargo probes. **Complete:** successor compatibility changes only
-   tasks 36 and 29, producing 21/16/11/0 classes. **Complete:** task 36's
-   32-checksum fetch-only canary is prospectively sealed and **Complete:** its
-   online fetch and deny-network replay are GREEN with all checksums matched.
-   **Complete:** its independent audit rederives every Cargo closure invariant.
-   **Complete:** all parent/target dependency pairs are classified, correcting
-   the denominator to 58 closures. **Complete:** task 14's separate parent and
-   target uv dependency canary is prospectively sealed at zero execution.
-   **Complete:** both wheel-only online syncs and both deny-network replays are
-   GREEN. **Complete:** an independent static audit rederives both closures.
-   **Complete:** task 30's single identical parent/target Cargo closure is
-   prospectively sealed at zero execution. **Complete:** its one fetch-only
-   phase and one deny-network replay are GREEN. **Complete:** the independent
-   static audit rederives the 50-checksum closure. **Complete:** task 26's
-   single identical parent/target uv closure is prospectively sealed at zero
-   execution. Execute and independently audit it before expanding.
-   Resolve the six immutable-resolution
-   tasks separately, qualify TypeScript and untrusted Rust builds, and only then
-   run parent-fail/target-pass evaluator canaries before packets, scorers, calls,
-   spend, and stop rules are sealed without user gates.
-11. If admitted, run one source-disjoint local-plus-Luna claim campaign; omit
-   rather than backfill Luna if it was not sealed in advance.
-12. Qualify a development survivor once on fresh D1.
-13. Return the claim packet to book review with support unchanged.
-14. Repeat one claim at a time until the Subsystem Architecture Freeze can make
-   an evidence-based neural re-entry decision.
+1. Execute and role-separately audit the sealed Task 26 UV dependency canary.
+2. Make Task 26 the final bespoke per-task closure. Route the remaining frozen
+   closures through one generic manifest-driven owner, with only Bun, Yarn,
+   TypeScript-transpilation, and untrusted-Rust risk-class canaries.
+3. Produce all 62 parent-fail/target-pass receipts, blind packet audits, and one
+   contiguous K2 freeze. No evaluator change follows unless a predeclared
+   invalidation opens a new campaign identity.
+4. Before calls, seal the K3 simple-baseline ladder, 0.35 minimum useful effect,
+   weak-tail and safety vetoes, cost-break-even rule, and terminal disposition.
+5. Use the nine-task panel to select the strongest simple local control without
+   Luna outputs. Then run the 53-task local claim panel. Any Luna arms remain a
+   separately denominated measurement-only reference.
+6. Issue exactly one full-interface, narrow-transport, revise-new-identity, or
+   retire disposition. Qualify a survivor once on fresh D1 and return one
+   compact claim packet to the book with support unchanged.
+
+The panel is frozen at 62 tasks (nine control, 53 claim). Evidence accounting
+includes files, artifact bytes, wall time, interventions, commits, costs, and
+role-separated evidence fraction. The default transaction limit is one
+prospective and one final commit per bounded closure. Repository-local
+rederivation is called role-separated; only a separately provisioned operator
+and environment can support an external-reproduction claim.
 
 ## Work That Is Not Active
 

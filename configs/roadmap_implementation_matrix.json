@@ -13,11 +13,106 @@
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
       "state": "VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED",
+      "subsystem_id": "virtual_context_abi",
+      "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
+      "selected_task_index": 26,
+      "active_attempt_id": "task26_uv_dependency_canary_v1_prospective",
+      "current_blocker": "task26_exact_uv_closure_not_executed_or_role_separated_audited",
+      "last_closed_task_index": 30,
+      "next_legal_action": "execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their independent audits are GREEN. Frozen schedule ordinal 6, task 26, has one identical 58-package uv lock; its wheel-only sync and offline-replay boundary is prospectively sealed at zero execution. Repository runners, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their role-separated audits are GREEN. Frozen schedule ordinal 6, task 26, has one identical 58-package uv lock; its wheel-only sync and offline-replay boundary is prospectively sealed at zero execution. Repository runners, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
+      "decision_acceleration_contract": {
+        "state": "PROSPECTIVE_VCM_SCOPE_COST_BASELINE_AND_DECISION_FREEZE_BEFORE_MODEL_CALLS",
+        "scope_freeze": {
+          "source_panel_task_count": 62,
+          "control_qualification_task_count": 9,
+          "claim_task_count": 53,
+          "new_task_or_repository_slots_authorized": 0,
+          "replacement_only_after_predeclared_invalidation": true,
+          "replacement_preserves_panel_programming_language_source_disjointness_and_rank_rule": true,
+          "task_family_or_evaluator_semantic_expansion_authorized": false
+        },
+        "K2_completion_boundary": {
+          "task26_is_final_bespoke_per_task_dependency_canary": true,
+          "remaining_dependency_closures_use_one_manifest_driven_generic_owner": true,
+          "remaining_ecosystem_risk_canaries": [
+            "bun",
+            "yarn",
+            "typescript_transpilation",
+            "untrusted_rust_compilation"
+          ],
+          "per_task_script_config_test_or_report_families_after_task26_authorized": false,
+          "all_parent_fail_target_pass_evaluator_receipts_required_before_K2_freeze": true,
+          "evaluator_change_after_K2_freeze_requires_predeclared_invalidation_class_and_new_campaign_identity": true
+        },
+        "K3_baseline_contract": {
+          "qualification_panel_selects_strongest_simple_control_without_reference_outputs": true,
+          "required_simple_controls": [
+            "no_added_context",
+            "information_matched_direct_injection",
+            "ordinary_retrieval_same_store_and_budget",
+            "compressed_summary_cache_same_budget",
+            "limited_sliding_window_context",
+            "source_bound_oracle_single_memory_upper_bound",
+            "maximal_candidate_authorized_context_upper_bound"
+          ],
+          "required_negative_and_mechanism_controls": [
+            "irrelevant_or_random_memory",
+            "stale_memory",
+            "conflicting_memory",
+            "poisoned_or_tainted_memory",
+            "shuffled_memory",
+            "retrieval_disabled",
+            "retrieval_degraded"
+          ],
+          "primary_comparison": "local_vcm_correct_minus_local_frozen_strongest_simple_control",
+          "reference_denominator_separate": true
+        },
+        "decision_rule": {
+          "minimum_useful_absolute_effect": 0.35,
+          "one_sided_alpha": 0.05,
+          "minimum_power": 0.8,
+          "false_context_acceptance_maximum": 0,
+          "unsafe_release_veto": true,
+          "weak_tail_harm_veto": true,
+          "family_rule": "positive_direction_in_at_least_three_of_four_programming_language_families_with_no_material_family_harm",
+          "cost_rule": "VCM must remain nondominated after actual prompt tokens, generated tokens, retrieval work, latency, memory, storage, verifier work, repair work, and total cost; no project-selected generation cap may manufacture compliance",
+          "overhead_boundary_rule": "freeze task-deadline and cost-break-even boundaries from the source-disjoint control panel before the claim panel, without inspecting claim outcomes",
+          "terminal_outcomes": [
+            "PROMOTE_FULL_INTERFACE",
+            "PROMOTE_NARROW_GOVERNED_TRANSPORT_ONLY",
+            "REVISE_NEW_CAMPAIGN_IDENTITY",
+            "RETIRE"
+          ],
+          "fresh_D1_once_for_survivor_only": true,
+          "book_support_auto_promotion_authorized": false
+        },
+        "evidence_proportionality": {
+          "required_metrics": [
+            "source_files_changed_per_closure",
+            "generated_artifact_count_and_bytes_per_sample",
+            "evaluator_wall_time",
+            "model_and_reference_cost",
+            "manual_or_agent_interventions",
+            "commits_per_closure",
+            "role_separated_evidence_fraction"
+          ],
+          "transaction_limit": "at most one prospective seal commit and one final audited closure commit per bounded closure; no per-seed or per-condition commits",
+          "compact_disposition_required": true,
+          "new_dashboard_or_report_family_authorized": false,
+          "evidence_cost_cannot_count_as_mechanism_progress": true
+        },
+        "independence_vocabulary": {
+          "same_repository_separate_owner": "role-separated rederivation",
+          "closed_bundle_without_producer_state": "producer-independent replay",
+          "different_operator_and_separately_provisioned_environment": "external reproduction",
+          "public_full_independence_claim_requires_external_reproduction": true
+        }
+      },
       "adequacy_campaign_binding": {
       "config": "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v6.json",

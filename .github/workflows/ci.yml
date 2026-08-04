@@ -39,6 +39,7 @@ jobs:
           tests/test_workspace_hygiene_audit.py
           tests/test_teacher_share_accounting_ledger.py
           tests/test_dogfood_outcome_accounting.py
+          tests/test_active_status_sync.py
           tests/test_vcm_consumer_integration_archive.py
       - name: Lint
         run: >-
@@ -68,6 +69,7 @@ jobs:
           tests/test_workspace_hygiene_audit.py
           tests/test_teacher_share_accounting_ledger.py
           tests/test_dogfood_outcome_accounting.py
+          tests/test_active_status_sync.py
           tests/test_vcm_consumer_integration_archive.py
       - name: Repository-wide Python hard errors
         run: ruff check --select F821 scripts tests
@@ -87,6 +89,7 @@ jobs:
           tests/test_workspace_hygiene_audit.py
           tests/test_teacher_share_accounting_ledger.py
           tests/test_dogfood_outcome_accounting.py
+          tests/test_active_status_sync.py
           tests/test_vcm_consumer_integration_archive.py
       - name: Evidence-protocol capsule
         run: >-
@@ -144,6 +147,8 @@ jobs:
           python -m json.tool configs/project_manifest_registry.json >/dev/null
           python -m json.tool configs/roadmap_implementation_matrix.json >/dev/null
           python -m json.tool configs/teacher_distillation_policy.json >/dev/null
+      - name: Active evidence-state synchronization
+        run: python -m pytest -q tests/test_active_status_sync.py
       - uses: actions/dependency-review-action@v4
         if: github.event_name == 'pull_request'
         with:

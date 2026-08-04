@@ -105,45 +105,33 @@ ASI Stack claim
   -> claim-level book handoff with support unchanged
 ```
 
-The active claim is `cognitive-compilation-and-semantic-ir.core`. The immediate
-production mechanics repair is complete: one canonical role-aware schema now
-passes deterministic conformance, corruption rejection, and an exact-route
-model-produced non-claim canary. The active work is the independent adequacy
-audit. Its prospective design is frozen at 18 distinct post-snapshot
-repositories with a 13/18 overall floor and 2/3 weak-tail floor in each of six
-edit strata. One easy project-authored canary is not task-distribution
-competence, a subsystem effect, or authority to open D1.
+The machine-readable active state is:
 
-The first selected-file materialization failed closed because task 4's selected
-file was byte-identical across the exact revisions. The RED receipt is
-preserved, including an audited 36-to-34 archive-counter overcount. A versioned
-single-path amendment now selects the actual `cli.py` predicate repair from the
-same frozen PR and stratum. A second source-only failure then established that
-this rebased PR's `merge_commit_sha` identifies a docs-only final commit rather
-than the PR-head source repair. Both RED receipts are preserved. A prospective
-revision policy now uses the public PR `base.sha` and `head.sha` for task bytes
-while retaining merge commit and first parent as lineage only; its metadata
-replay is GREEN for all 18 nondegenerate pairs, and the hash-bound v3 source
-materialization is GREEN for 18/18 pairs and 36 deterministic archives. An
-independent network-free audit verified 36 archive receipts, 76 member receipts,
-normalization, safe membership, and selected-source differences for every task.
-No evaluator or model call informed either repair. Evaluator-custody construct
-review then failed the panel closed: task 11's selected-source delta is only a
-blank line and cannot represent its guard/setup stratum. Its RED receipt is
-preserved. Autonomous source-only search selected MIT-licensed
-`stn1slv/md-fetch#27`, whose production delta inserts an optional-dependency
-setup guard before client construction. The unchanged 18-task registry passes
-zero-call preflight and full independent metadata replay for all 18 rows in 90
-public calls. The initial sandbox transport pause is preserved with zero admitted
-rows. A new hash-bound source contract preserves the v3 archives, targets a
-separate v4 directory, and passes zero-call preflight. Its source replay is now
-GREEN for 18/18 pairs and 36 archives; an explicit-hash network-free audit
-verified all receipts and selected-source differences. Renewed construct review
-names one causal slice per task and opens evaluator qualification only. The pool
-is not sealed and no adequacy observation is yet authorized. Independent
-dependency-stubbed evaluator qualification is now GREEN for all 18 slices across
-36 parent/target observations and 72 controls. Candidate-visible packet
-materialization and a recursive anti-cheating audit remain before any model call.
+| Field | Value |
+| --- | --- |
+| Claim | `virtual-context-abi.core` |
+| Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
+| State | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` |
+| Selected task | 26 |
+| Active attempt | `task26_uv_dependency_canary_v1_prospective` |
+| Current wall | `task26_exact_uv_closure_not_executed_or_role_separated_audited` |
+| Last closed task | 30 |
+| Next legal action | `execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion` |
+
+The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
+control qualification and 53 for the powered claim campaign. Task 26 is the
+last bespoke per-task dependency canary. Remaining closures must use one
+generic manifest-driven owner, with special handling limited to Bun, Yarn,
+TypeScript transpilation, and untrusted Rust risk classes.
+
+K3 begins only after all parent-fail/target-pass evaluator receipts and the
+candidate-blindness audit freeze under one campaign identity. Its nine-task
+stage selects the strongest simple local control—direct injection, ordinary
+retrieval, summary cache, sliding window, or source-bound upper bounds—without
+Luna outputs. The 53-task stage then compares frozen local control and VCM;
+Luna remains a separate reference denominator. Actual tokens, time, memory,
+storage, verifier work, interventions, commits, and total cost are outcomes.
+Evidence volume is not mechanism progress.
 
 ## Repository Map
 

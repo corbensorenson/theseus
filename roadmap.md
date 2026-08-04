@@ -1,10 +1,10 @@
 # Project Theseus Roadmap
 
-Last recentered: 2026-08-02 UTC.
+Last recentered: 2026-08-03 UTC.
 
 This is the canonical forward execution map. Current facts belong in
-`docs/PROJECT_STATE.md`; durable operating rules belong in `AGENTS.md`; exact
-machine obligations and the book crosswalk belong in
+`docs/PROJECT_STATE.md`; durable rules belong in `AGENTS.md`; exact machine
+obligations and the book crosswalk belong in
 `configs/roadmap_implementation_matrix.json`; implementation ownership belongs
 in `configs/project_manifest_registry.json`. Historical reports are evidence,
 not an alternate roadmap.
@@ -14,1170 +14,400 @@ not an alternate roadmap.
 Project Theseus exists to implement and rigorously test the largest,
 highest-leverage ideas in *The ASI Stack*.
 
-The near-term product is not a personal assistant and it is not a newly trained
-Theseus model. The near-term product is a trustworthy proving system that can:
+The current product is a trustworthy proving system, not a personal assistant
+and not yet a newly trained Theseus model. It must:
 
-1. convert an exact book claim into a causally active subsystem intervention;
-2. hold the underlying model fixed;
-3. compare the intervention with strong information-, tool-, verifier-, and
-   cost-matched controls on autonomous machine-verifiable work;
-4. distinguish a mechanism result from an inadequate implementation;
+1. bind an exact book claim to a causally active subsystem;
+2. hold the underlying model fixed while the mechanism changes;
+3. compare the mechanism with strong, simple, matched controls on autonomous,
+   machine-verifiable work;
+4. distinguish mechanism failure from implementation or experiment failure;
 5. qualify a survivor once on fresh source-disjoint evidence; and
-6. return a claim-level packet to the living book without automatically moving
-   support.
+6. return a claim-level packet to the book without automatically changing its
+   support state.
 
-Autonomous repository work is the experimental substrate. It is not the reason
-Theseus exists. Corben is not a task source, labeler, acceptance gate,
-scheduler, or routine approval dependency.
+Autonomous repository work is the experimental substrate, not the primary
+goal. Corben is not a task source, labeler, acceptance gate, scheduler, or
+routine approval dependency.
 
-## The Program Is Deliberately Bifurcated
+## Program Selection
 
-| Track | State | Job | Boundary |
+| Track | State | Purpose | Boundary |
 | --- | --- | --- | --- |
-| A — ASI Stack subsystem proof | **ACTIVE FLAGSHIP** | Test one architecture-shaping book mechanism at a time with a frozen local model and a separately denominated OpenAI reference | The only track allowed to open new claim-development work |
-| B — Theseus neural seed | **HOLD: SUBSYSTEM PROOF FIRST** | Preserve the current modular/dense experiment, checkpoint, corpus, controls, and sealed D2 identity | No optimizer steps, architecture changes, or D2 consumption until the subsystem architecture freeze below |
-| M — maintenance | **SERVICE ONLY** | Keep source binding, custody, storage, tests, and evidence replay honest enough for A and B | May remove a real blocker or material storage wall; may not become a research program |
+| ASI Stack subsystem proof | **ACTIVE FLAGSHIP** | Test one architecture-shaping book mechanism at a time with a frozen local model and separately denominated OpenAI reference | The only track allowed to open new claim-development work |
+| Theseus neural seed | **HOLD AT STEP 11,992** | Preserve the modular-versus-dense experiment, checkpoint, corpus, controls, and sealed D2 identity | No optimizer steps, architecture changes, or D2 consumption before the subsystem architecture freeze |
+| Maintenance | **SERVICE ONLY** | Keep source binding, custody, storage, tests, and evidence replay honest | May remove a real proof-track blocker; may not become a separate research program |
 
-The previous roadmap treated neural training as parallel progress. That was the
-wrong strategic selection. Training a model while the interfaces, control
-layers, and causal value of its intended subsystems remain unresolved risks
-baking untested assumptions into an expensive experiment. The neural state is
-therefore preserved but inactive.
+Training the model before resolving the interfaces and causal value of its
+intended subsystems would bake untested assumptions into an expensive
+experiment. The neural state therefore remains preserved but inactive.
 
-## Current Evidence Boundary
+## Single Active-State Contract
 
-| Surface | Current state | What it means |
-| --- | --- | --- |
-| ASI Stack source | `84_CHAPTER_PIN_STABLE_LIVING_BOOK_MOVING` | The experiment claim identities remain pinned to AI_book commit `17c6ece80f771d3bce5f89c6b85c99ca9b6c2ea0`. The concurrently advancing living book was observed at `1280fdfa457735ae39289d42a82173f9485434fc` during the final audit; committed and working manifests still had 84 chapters, and its uncommitted work remains intake-only. The selected core-claim vector file was unchanged from the pin at that observation. Freeze experiment semantics, observe book drift, and return evidence by stable claim ID. |
-| Local controlled variable | `FROZEN_TMAX_BLOCK` | `mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560` is the static local base for the current mechanism block. A later local model creates a new instrument version and cannot be mixed into this denominator. |
-| Canonical runtime | `P1_ROUTE_MECHANICS_GREEN` | Direct and integrated routes use the same frozen model and effect sandbox; enabled subsystem receipts reach downstream execution. This proves route mechanics, not usefulness. |
-| Historical P3 | `TERMINAL_BOUNDED_NULL` | Ten matched tasks yielded direct 1/10 useful and integrated 1/10 useful, with parseability 5/10 versus 9/10 and zero unsafe outcomes. Its project-selected 1,536-token ceiling makes it historical bounded evidence, not current claim proof. |
-| Cognitive-compilation P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | The source-locked run completed 10 tasks, 60 learned calls, 10 evaluator replays, and zero physical-boundary hits. Direct was useful on 3/10, plan control on 1/10, and Semantic IR on 0/10; Semantic IR parsed/lowered only 2/10 against the frozen 8/10 mechanics floor. The implementation is inadequate, so no treatment-effect or broad negative inference is authorized. |
-| D1 | `CLOSED_NO_SURVIVOR` | No fresh qualification is allowed for the failed Semantic-IR implementation. The prepared D1 machinery remains unconsumed. |
-| OpenAI reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort is source-bound and passes offline positive and negative controls. Calls remain disabled; it has made zero project calls and cannot open until a future four-cell claim pool is prospectively sealed. |
-| Neural checkpoint | `HELD_STEP_11992_NOT_EVALUATED` | Nine transactional 64-step segments advanced the preserved shared trunk from step 11,416 to 11,992 and from 87,441,996 to 91,869,446 optimizer positions. D2 remains sealed and capability remains `NOT_EVALUATED`. |
-| Repository | `SOURCE_BOUND_REGISTRY_GREEN` | The earlier 88-file mixed transaction is historical. The recenter and registry repair are committed, and the complete registry gate reports zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities with 11 eligible routes source-bound. The large generated surface remains real: about 41 GiB/250,030 runtime files, 2.1 GiB/10,790 report files, and 9.0 GiB of checkpoints. |
+The machine-readable authority is
+`configs/roadmap_implementation_matrix.json` at
+`research_program_recenter.active_claim`. Human-facing documents summarize
+that record and may not independently redefine it.
+
+| Field | Current value |
+| --- | --- |
+| Claim | `virtual-context-abi.core` |
+| Subsystem | `virtual_context_abi` |
+| Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
+| State | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` |
+| Selected task | 26 |
+| Active attempt | `task26_uv_dependency_canary_v1_prospective` |
+| Current wall | `task26_exact_uv_closure_not_executed_or_role_separated_audited` |
+| Last closed task | 30 |
+| Next legal action | `execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion` |
+
+The exact Semantic-IR implementation is terminal
+`INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
+prompt-ingest residual selected governed model-visible context materialization
+as the next causal target. That is the reason VCM is active.
+
+The frozen VCM source panel contains exactly 62 tasks: nine control-
+qualification tasks and 53 claim tasks. No task, repository slot, task family,
+or evaluator semantic expansion is authorized. A slot may be replaced only
+after a predeclared invalidation, preserving language, source-disjointness, and
+the frozen rank rule.
 
 ## Scientific Contract
 
 ### Hold the model fixed
 
-The current local model, exact revision, tokenizer, chat template, decoder,
-completion policy, and runtime stay fixed across a mechanism comparison.
-Model-shopping after outcomes are visible is forbidden. If the local model is
-replaced, every baseline needed for the new claim block is re-established under
-a new identity.
+The current local instrument is
+`mlx-community/Tmax-9B-MLX-8bit@33812d6cf04f88856f25eb828de4f3144a194560`.
+Its tokenizer, chat template, decoder, completion policy, and runtime remain
+fixed within the VCM block. A successor model requires a prospective,
+claim-task-disjoint bakeoff and a new instrument identity; denominators may not
+be pooled.
 
-TMax is the current qualified local instrument, not a timeless claim that it is
-the best model the host can ever run. A successor block may select a stronger
-local model only through a prospectively frozen, claim-task-disjoint competence,
-runtime-stability, context, and total-cost bakeoff conducted before that block's
-tasks or subsystem outcomes are visible. Selection never uses Luna outputs. The
-winner is then frozen across the whole block; old and new denominators are not
-pooled.
+`gpt-5.6-luna` at fixed `xhigh` effort is a separately denominated,
+measurement-only OpenAI reference. It may receive the same candidate-visible
+packet and independent hidden evaluator only after the local campaign is
+prospectively sealed. Its outputs may not select tasks or controls, tune the
+local system, train the local model, serve a user, or enter the local
+denominator.
 
-The model is a controlled instrument, not the treatment. Theseus subsystems
-must change real execution: admitted context, executable dependencies, tool or
-route eligibility, verification allocation, repair scope, authority, or
-rollback. A label, prompt decoration, report, or rendered plan is not an active
-mechanism.
+The model is the controlled instrument, not the treatment. A subsystem must
+change real execution: admitted context, dependency availability, tool or route
+eligibility, verification allocation, repair scope, authority, or rollback.
+Labels, prompt decoration, rendered plans, and reports are not mechanisms.
 
 ### Test one causal variable
 
-Every claim packet must bind before task selection:
+Before any claim-bearing call, bind:
 
 - exact book claim and immutable claim hash;
-- causal variable and faithful implementation;
+- causal mechanism and faithful production implementation;
 - primary outcome and minimum worthwhile effect;
-- competence and mechanics requirements;
+- competence, mechanics, and intervention requirements;
 - strongest matched controls and ablations;
-- candidate-visible information and hidden evaluator information;
-- task population, source-disjointness, and power method;
+- candidate-visible and hidden-evaluator information;
+- frozen task population, source-disjointness, and power method;
 - safety, rollback, weak-tail, latency, verifier, token, and total-cost
   accounting;
 - terminal states and maximum positive and negative inference; and
-- the next action for a positive, adequate null, implementation failure,
-  experiment failure, or invalid observation.
+- actions for a positive, adequate null, implementation failure, experiment
+  failure, or invalid observation.
 
 Do not test an omnibus “full stack” treatment when the result cannot be
-attributed. Common safety containment remains in every arm; optional mechanisms
-change one at a time.
+attributed. Common safety containment remains fixed in every arm; optional
+mechanisms change one at a time.
 
-### Separate mechanics from claim evidence
+### Separate mechanics, adequacy, and causal evidence
 
-A mechanism first passes a non-claim mechanics bench. That bench may use
-synthetic or reconstructed fixtures, known-positive artifacts, corruption
-tests, overfit/learnability checks, and production-path round trips. It receives
-no usefulness or book-support credit.
+A mechanism first passes a non-claim production-path mechanics bench. It then
+passes an evaluator and instrument adequacy stage. Neither earns usefulness or
+book-support credit.
 
-No fresh claim denominator opens until the exact production renderer,
-tokenizer, model-visible protocol, returned transport, canonicalizer, parser,
-lowerer, applier, verifier, intervention, and repair path pass together. A green
-test-only renderer is insufficient.
-
-If a mechanics owner fails its prospectively declared adequacy contract, retain
-`INCONCLUSIVE_IMPLEMENTATION`, freeze that implementation, and move the
-portfolio to the next decision-relevant residual. Do not consume another fresh
-task pool to rediscover the same parser or transport defect.
+No claim denominator opens until the production renderer, tokenizer,
+model-visible protocol, transport, parser, applier, dependency environment,
+verifier, interventions, and repair path pass together. A failed mechanics
+floor remains `INCONCLUSIVE_IMPLEMENTATION`. An invalid, underpowered, or
+operationally blocked campaign remains `INCONCLUSIVE_EXPERIMENT` or invalid.
+Neither falsifies the broader book mechanism.
 
 ### Preserve blind information flow
 
 Generation and ranking see only the natural request, callable signature,
-parent/source snapshot, and explicitly allowed runtime context. Later patches,
-hidden tests, source-task identities, answers, labels, target-derived families,
-and answer-identifying decoder fields remain hidden. An independent audit
-recomputes candidate integrity and route blindness.
+parent/source snapshot, and explicitly admitted runtime context. They may not
+see later patches, hidden tests, source-task identities, answers, labels,
+target-derived families, or answer-identifying decoder fields. A separate
+audit recomputes candidate integrity and route blindness.
 
 ### Do not manufacture quality with token scissors
 
-Quality-bearing generation ends on a prospectively defined complete artifact
+Quality-bearing generation ends on a prospectively declared complete artifact
 or model EOS. There is no project-selected generated-token quality cap. The
-exact residual of the pinned model context after exact prompt tokenization is a
-physical addressability boundary; touching it invalidates the observation and
-cannot count as a model, mechanism, arm, or architecture failure. Host-safety
-stops are handled the same way.
+exact residual of the pinned model context is a physical addressability
+boundary; touching it invalidates capability inference. Host-safety stops are
+reported separately and cannot be scored as mechanism failure.
 
-Calls, verifier work, effects, time, and money may be bounded because they are
-causal or safety resources. Record actual prompt, reasoning, generated tokens,
-wall time, verifier work, retries, and cost. Do not force models to emit equal
-token counts.
+Record actual prompt, reasoning, and generated tokens, wall time, verifier
+work, retries, memory, storage, and money. Equality is obtained through matched
+opportunity and information, not forced output truncation.
 
-### Scope negative evidence
+### Use precise independence claims
 
-Only a faithful, adequate, powered implementation with strong matched controls
-can earn a scoped negative. Failed mechanics, underpowered pools, weak models,
-missing interventions, evaluator defects, or boundary hits produce
-`INCONCLUSIVE_IMPLEMENTATION`, `INCONCLUSIVE_EXPERIMENT`, or an invalid
-observation. They never falsify the broader book mechanism.
+Use only these evidence labels:
+
+| Label | Meaning |
+| --- | --- |
+| Role-separated rederivation | A separate owner or path recomputes the result inside this repository |
+| Producer-independent replay | A closed bundle is replayed without mutable producer state |
+| External reproduction | A different operator uses a separately provisioned environment |
+
+Do not call repository-local role separation “fully independent.” Public
+claims of full independence require external reproduction.
 
 ## Bound Claim Portfolio
 
-The existing 13-claim portfolio remains the decision boundary; the 84-chapter
-crosswalk is planning coverage, not a mandate to implement 84 simultaneous
-lanes.
+The existing 13-claim portfolio is the decision boundary. The 84-chapter
+crosswalk is coverage, not a mandate to build 84 lanes.
 
 | Role | Claims | Program use |
 | --- | --- | --- |
-| Integrity prerequisites | `integrated-reference-architecture.core`; `evidence-states-and-claim-discipline.core` | Common evidence requirements; never counted as a usefulness win |
-| Architecture-shaping candidates | `cognitive-compilation-and-semantic-ir.core`; `planning-as-a-control-layer.core`; `virtual-context-abi.core`; `verification-bandwidth-and-context-adequacy.core`; `routing-heads-and-specialist-cores.core` | Must receive terminal interface dispositions before the neural architecture freeze |
-| Runtime amplifiers | `procedural-memory-and-cognitive-loop-closure.core`; `system-boundaries-and-authority.core`; `capability-replacement-and-rollback.core` | Enter when an observed residual activates them; authority and rollback remain common constraints |
-| Independent neural claim | `replaceable-cognitive-substrates-beyond-transformer-monoculture.core` | Held D2 modular-versus-dense experiment after subsystem architecture freeze |
-| Synthesis | `the-efficient-asi-hypothesis.core`; `asi-is-a-stack-not-a-model.core` | Require multiple independently qualified mechanisms and a later composition experiment |
-
-The queue is a dependency graph, not a checklist. Exactly one candidate is
-active. After each terminal result, the observed residual and architecture
-decision value choose the next candidate; claim order never licenses a batch of
-campaigns.
-
-## Active Proof Cycle
-
-### 1. Bind the current claim
-
-Active claim: `virtual-context-abi.core`.
-
-Prior-claim terminal disposition: the exact frozen TMax plus compact Semantic-IR
-v6 campaign sealed one candidate, then a fresh 45,113-token full-source prompt
-generated zero tokens before the prospectively declared 600-second host wall.
-The exact implementation is `INCONCLUSIVE_EXPERIMENT` and frozen for this
-TMax/host block. That result says nothing decisive about cognitive compilation
-or Semantic IR generally. The residual directly activates governed model-visible
-context materialization, so VCM is next by causal relevance rather than chapter
-order or implementation convenience.
-
-### 2. Qualify the repaired mechanics owner independently
-
-The observed identity/coverage/target/unit transport wall now has one canonical
-role-aware production owner. It passes ten deterministic production-path
-conformance fixtures, exact identity round trips, seven corruption classes, and
-one frozen-TMax model-produced non-claim canary through the real route. The
-canary made two naturally completed local calls and zero external, hidden,
-teacher, training, D1, or D2 calls.
-
-That closes the bounded repair stage only. It does not establish distributional
-competence or a treatment effect. The independent adequacy owner must now:
-
-1. verify mechanism fidelity and known-positive reachability independently;
-2. acquire a licensed, source-disjoint, model-produced non-claim panel without
-   user task supply or labels;
-3. cover multiple edit shapes, targets, dependency structures, and difficulty
-   strata with weak-tail reporting;
-4. prove stable identities, corruption rejection, intervention sensitivity,
-   dependency-local repair, and unrelated-unit stability; and
-5. derive the competence floor and panel size from the planned observable
-   effect rather than copying a ten-task tradition.
-
-The prospective design is now frozen before source materialization or model
-calls: 18 distinct repositories, six edit strata with three tasks each, at
-least 13/18 overall and 2/3 in every stratum, all identity/corruption and
-known-positive controls, and zero unsafe or physical-context-boundary events.
-For the one-sided exact binomial design, the false-positive probability under
-an inadequate 0.50 mechanics rate is 0.048126220703125 and power at an adequate
-0.80 rate is 0.867083665757176. Source acquisition is restricted to licensed
-public changes merged strictly after the frozen model was observed; no model or
-reference call is authorized until the complete panel is sealed.
-
-Metadata selection remains source-bound for all 18 repository identities, PR
-titles, selected changed paths, and license files. Source-only materialization
-exposed that GitHub's `merge_commit_sha` is merge-method dependent: for one
-rebased PR it names a docs-only final commit whose first-parent delta omits the
-PR-head source repair. Both RED materialization receipts are preserved. Before
-any evaluator or model call, the task revision policy is therefore frozen to
-the public PR `base.sha` and `head.sha`; merge commit and first parent remain
-lineage receipts only. Renewed metadata acquisition and source materialization
-must pass under that policy before independent evaluator qualification opens.
-That source boundary is now GREEN: 18/18 task pairs produced 36 deterministic
-minimal archives, and an independent network-free audit verified all archive
-and member receipts, normalization, path safety, exact membership, and selected
-source differences. Parent-negative/target-positive evaluator qualification is
-the active boundary; no model or reference call is yet authorized.
-
-Evaluator-custody construct review then found that task 11's selected source
-diff is only one blank line. The archive layer remains valid, but the task panel
-is RED because a byte difference is not a causal guard/setup mechanism. A
-source-only search selected MIT-licensed `stn1slv/md-fetch#27` as the replacement:
-its production delta removes an eager optional import and inserts a bounded
-ImportError setup guard before client construction. The other 17 tasks, stratum
-balance, and statistical design are unchanged. Replay all 18 metadata and source
-pairs before evaluator admission or any model call. The full amended metadata
-replay is now GREEN for 18/18 rows in 90 public calls; its initial zero-row
-sandbox transport pause is retained. Source-byte replay and independent archive
-and construct audits are the active boundary. The amended source contract is now
-hash-bound, preserves the prior v3 archive set, targets a separate v4 directory,
-and passes zero-call preflight before retrieval. The v4 replay is GREEN for
-18/18 pairs and 36 archives; an explicit-hash network-free audit verified 36
-archive receipts, 76 members, exact safe membership, and 18 selected-source
-differences. All 17 unreplaced archive pairs are byte-identical to v3. Renewed
-construct review names one causal slice and evaluator obligation per task, so
-parent-negative/target-positive evaluator qualification is active. The pool is
-not sealed and model or reference execution remains closed. Independent
-dependency-stubbed evaluator qualification is now GREEN for all 18 causal slices:
-36 parent/target observations plus 72 benign-equivalence, mechanism-removal,
-missing-path, and unauthorized-path controls pass. Candidate-visible task packet
-materialization and a recursive anti-cheating audit are the remaining pre-model
-boundary.
-
-Those boundaries subsequently closed and the balanced 18-task pool was sealed.
-The first execution attempt preserved Task 1 but consumed Task 2 through an
-abnormally long unbounded generation, so Task 2 was replaced—never rerun—with a
-fresh post-snapshot task from a different licensed repository. The call-free v2
-resume audit then passed. During that sealed resume, replacement Task 2 and Task
-3 completed normally; Task 4 call 1 completed normally; and Task 4 call 2 reached
-the prospectively declared 600-second host watchdog after 2,288 generated
-tokens. The downstream route correctly held the partial response, no hidden
-evaluator ran, and no model, mechanism, or claim failure may be inferred.
-
-Candidates 1–3 and every v2 receipt remain immutable. The prospectively bound
-v3 replacement then reached the same 600-second infrastructure wall on Task 4r1
-call 1 after 1,949 generated tokens, without touching the context boundary or
-an answer-length cap. Inspection localized the representation defect: a
-one-line repair was addressable only as a 433-line top-level `FunctionDef`.
-That watchdog observation is retained as invalid infrastructure evidence, not a
-model, mechanism, or claim failure.
-
-The v4 successor exposes every complete candidate-visible Python statement and
-forbids silent address-inventory truncation. It reduces that demonstrated
-433-line mutation span to one line while preserving the exact production
-renderer, transport, parser, lowerer, applier, verifier, and repair route. Four
-licensed repair sources from scikit-learn, Django, NetworkX, and Black were
-merged after the frozen TMax snapshot and were frozen before evaluator
-qualification. Their independent evaluators pass parent-negative,
-target/benign-positive, mechanism-removal, missing-path, and unauthorized-path
-controls. Those four replacements plus fourteen previously unexposed sources
-form a fresh 18-repository, six-stratum denominator.
-
-The fresh pool is sealed and the v4 campaign is GREEN under a call-free audit.
-Exact frozen-tokenizer measurement shows every prompt fits the 262,144-token
-physical context window; the largest prompt is 124,138 tokens and the smallest
-residual is 138,006 tokens. The campaign authorizes exactly 36 local calls,
-normal completion by complete artifact or model EOS, no project-selected
-quality token cap, and no hidden evaluation until all 18 candidates seal. Luna,
-teacher, training, claim-development, D1, and D2 remain closed.
-
-The first v4 execution then consumed Task 1 call 1 without sealing a candidate.
-Its 124,138-token prompt remained physically addressable, but prompt ingestion
-occupied the full 600-second host wall and the backend generated zero tokens.
-The context boundary and project-selected quality cap were not touched. The
-campaign stopped with zero admitted candidates and zero hidden evaluation. This
-is retained infrastructure evidence: exact context fit is necessary but not
-sufficient for a usable instrument on this host. Task 1 may not be rerun.
-Acquire one smaller licensed post-snapshot source in the same stratum, qualify
-its evaluator before packet creation, rebind unexposed Tasks 2-18 unchanged,
-and seal a fresh v5 campaign before any further model call.
-
-That v5 replacement transaction is now sealed. Apache-2.0
-`dknowles2/pytboss#546` supplies the new Task 1 exception-translation repair;
-its exact source and license bytes were frozen before the independent async
-behavior evaluator ran. Parent is negative, target and benign controls are
-positive, and mechanism-removal, missing-path, and unauthorized-path controls
-are negative. The exact Task 1 prompt falls from 124,138 to 9,165 tokens. Tasks
-2-18 retain byte-identical serialized prompts under new v5 custody paths, the
-18 repositories remain unique, and every stratum still contains three tasks.
-The v5 campaign audit is GREEN and call-free, prospectively authorizing exactly
-36 frozen-local calls. Hidden evaluation remains closed until all candidates
-seal.
-
-The v5 execution then sealed Tasks 1-3 through six admitted frozen-local calls.
-Task 4 call 1 received a 74,626-token prompt and reached the 600-second host wall
-with zero generated tokens. It did not touch the physical context boundary or a
-project-selected answer-length limit. The campaign stopped before candidate
-admission for Task 4 and before every hidden evaluator. This reproduces the v4
-prefill-scale wall on a different source and preserves three unscored candidates
-plus one invalid infrastructure receipt; it is not evidence against TMax,
-Semantic IR, or the book claim.
-
-The next repair is representation-wide rather than another one-off task swap.
-The complete statement inventory currently repeats a full path, 64-hex digest,
-and label for every node even though the full parent source is also visible.
-Bind a compact statement-address ABI that keeps every address and resolves
-integrity independently, prove collision resistance and exact parse/lower/apply
-behavior, measure exact frozen-tokenizer prompt size without truncation, and
-then seal one uniform fresh denominator. Every v5-exposed source is consumed;
-unexposed sources may be rebound only under the same compact protocol. No model
-call may precede the call-free audit.
-
-That compact ABI is now mechanics-GREEN. Every statement receives a unique,
-collision-checked 128-bit handle derived from path, type, exact coordinates, and
-the full node digest. Candidate context groups handles by path and omits repeated
-labels and full digests; the parser resolves the full digest independently before
-the unchanged lowerer runs. All 18 prior sources retain identical statement
-cardinality, complete parent context, and zero inventory truncation. Exact frozen-
-tokenizer prompts remain physically addressable; the largest is 44,325 tokens,
-and consumed Task 4 falls from 74,626 to 35,917 tokens. The audit used zero model,
-hidden-evaluator, external, teacher, training, D1, or D2 calls. This is only
-representation-mechanics evidence. Acquire and evaluator-qualify four new
-post-snapshot sources for consumed indices 1-4, uniformly rebind unexposed 5-18,
-and seal the fresh campaign before testing host operability.
-
-The source and pool portion of that boundary is now GREEN. Exact PR base/head
-pairs from Apache-2.0 LightLLM, GPL-3.0 translation-finder, BSD-3-Clause feu,
-and BSD-3-Clause statsmodels replace consumed indices 1-4 and are repository-
-disjoint from the full prior denominator. Independent evaluators distinguish
-parent, target, benign, required-mechanism mutation, missing-path, and
-unauthorized-path controls before packet creation. Unexposed indices 5-18 were
-regenerated—not byte-copied—under the same compact ABI. The resulting pool has
-18 unique repositories, three tasks in each of six strata, zero candidate/model
-calls, and a 45,113-token maximum exact prompt. The v6 campaign binding is also
-now GREEN under a call-free audit. It hash-binds the exact compact runtime,
-frozen TMax identity, independent fresh/base evaluators, candidate runner, blind
-scorer, complete-artifact/EOS termination, 600-second infrastructure watchdog,
-and exactly 36 local calls. Its versioned receipt namespace and journal cannot
-collide with or resume from v5. Candidate generation is now the active step;
-hidden scoring remains closed until all 18 candidates and 36 receipts seal.
-
-The v6 execution then sealed Task 1 through two normal local calls. Task 2 call
-1 received the panel's largest 45,113-token prompt and reached the host wall
-with zero generated tokens after 609.5 seconds. The physical context boundary
-was not touched, no project-selected answer-length cap existed, the route held
-the empty response, and no hidden evaluator ran. The terminal independent
-disposition is `INCONCLUSIVE_EXPERIMENT`: preserve Task 1, consume Task 2 without
-rerun, freeze this exact Semantic-IR implementation for the current model/host
-block, and do not spend another fresh denominator on representation repair.
-
-### 3. Bind the VCM claim instrument
-
-Use the existing VCM owner rather than creating a new context lane. First prove
-that correct, omitted, stale, shuffled, wrong-scope, tainted, revoked, and
-declared-insufficient packets traverse distinct production paths and that the
-actual selected packet reaches the frozen model. Then prospectively bind a
-source-disjoint natural-work experiment comparing correct VCM context with no
-added context, information-matched plain context, and maximal ungoverned context.
-Measure useful completion, requirement preservation, unsafe release, false
-block, latency, exact prompt/generated tokens, retrieval/materialization work,
-and total cost. Context size and retrieval work are causal resources and may be
-prospectively matched; generated answer length may not be capped for quality.
-No model or Luna call opens until the complete instrument, tasks, evaluators,
-controls, contamination checks, and inference bounds are sealed call-free.
-
-That call-free instrument audit is now GREEN. It replays the existing governor,
-resolver, representation certificates, snapshot branches, 45 consumer routes,
-and fail-closed missing, stale, tainted, revoked, wrong-scope, compressed, and
-route-materialization controls. It also proves that correct and shuffled VCM
-packets create distinct bound model prompts while the exact information-matched
-plain context bypasses VCM without changing candidate-visible content.
-
-The powered design uses a nine-task source-disjoint control-qualification panel
-to freeze the strongest eligible local non-VCM control without Luna input. The
-claim panel then uses 53 new source-disjoint tasks and one exact one-sided paired
-McNemar primary comparison. A 35-point absolute effect is the minimum worth the
-selection/governance/lifecycle complexity; 53 is the first task count with at
-least 0.80 numerically minimized power over the closed feasible discordance
-interval from 0.35 through 1.0 (worst-case power 0.8173). Local VCM and the
-frozen local control form the claim denominator; Luna runs the same two packets
-as a separately denominated measurement reference. Source acquisition and
-evaluator qualification are now active, but every model and Luna call remains
-closed.
-
-The first acquisition boundary is sealed and GREEN before candidate inspection.
-It authorizes a bounded public-metadata query only, excludes 87 repositories
-already named in tracked experiment configs, requires fresh PR and head-commit
-chronology plus a licensed in-scope source change and machine-verifier change,
-and uses independent hashes for selection and control/claim assignment. Source
-contents, task packets, hidden evaluation, TMax, and Luna remain closed.
-
-Metadata attempt 1 terminated RED after 1,212 requests because only 4 of 20
-required Python repositories passed; it retained zero task identities and made
-zero source-content, evaluator, TMax, or Luna calls. Its rejection distribution
-identified the 50-star floor as an arbitrary popularity proxy and the metadata
-license allowlist as needlessly narrow relative to the charter. Preserve this
-attempt and prospectively repair those policy defects without weakening
-freshness, source-plus-test structure, source disjointness, or inference closure.
-
-The v2 repair is prospectively sealed and GREEN before its first query. It uses
-a one-star existence check rather than a popularity proxy and recognizes common
-OSI licenses. The query window, hash ranking, quotas, freshness rules,
-source-plus-test requirement, source disjointness, and every downstream closure
-are unchanged. Its run improved Python eligibility from 4 to 11 of 20 but still
-failed closed after 1,208 requests with zero retained identities and zero
-downstream calls. V3 may expand only the deterministic candidate head from 300
-to the GitHub 1,000-result boundary per language and batch the same metadata
-fields; eligibility may not be relaxed.
-
-V3 is now prospectively sealed and GREEN at zero queries. It expands each fixed
-language head to the GitHub 1,000-result boundary and evaluates bounded batches
-concurrently while consuming results in the original hash rank. This is a
-transport and pool-size repair only: every eligibility, chronology,
-randomization, panel, and authority rule is unchanged. One v3 run is active.
-
-The v3 run was interrupted before any identity sealed because a fork-origin PR
-head commit was not addressable through the base repository and the concurrent
-owner leaked the 404 as an uncaught exception. The interruption receipt records
-zero source, evaluator, or model exposure. V4 may only use the PR commit-list
-endpoint for chronology and fail paused on transport errors; the pool,
-eligibility, randomization, panels, and authority must remain unchanged.
-
-V4 is prospectively sealed and GREEN at zero queries. It resolves chronology
-through the base PR's commit list, including fork-origin PRs, and converts any
-transport exception into a PAUSED receipt. Pool, eligibility, rank order,
-panels, and authority are unchanged. One v4 run is active.
-
-V4 then paused correctly on a transient public-metadata failure, and the same
-endpoint succeeded on immediate recheck. It retained zero identities and opened
-no source, evaluator, or model path. Its inherited zero request counter is
-superseded by exact-unknown accounting with a 40-request lower bound. The next
-repair may add only bounded retries and checkpointed accounting; selection
-science remains frozen.
-
-V5 is prospectively sealed and GREEN at zero queries. It permits at most four
-physical attempts for transient metadata failures, treats stable candidate
-404/410 gaps as rejections, and checkpoints logical and physical counts after
-every attempt without storing repository identities. The pool, eligibility,
-chronology, rank order, panels, and every downstream closure remain frozen. One
-v5 metadata run is active.
-
-V5 then paused after exhausting bounded retries under GitHub secondary
-throttling. Its checkpoint records 239 logical requests, 271 physical attempts,
-231 successes, 32 retries, and 39 HTTP 403 attempts; core quota still had 4,663
-of 5,000 requests. It retained zero identities and opened no downstream path.
-V6 may replace only the per-candidate REST fan-out with GraphQL node batches for
-the same metadata fields; the REST search population, rank order, filters,
-panels, and authority remain frozen.
-
-V6 is prospectively sealed at zero fresh-candidate queries. GitHub's live
-schema exposes every required field, the REST search `node_id` resolves as a
-GraphQL pull request, and the exact `nodes(ids:)` query returned the expected
-PR, repository, file-path, and commit metadata for an already
-consumed denylisted pull request without requesting body, patch, or review
-content. It batches at most 40 nodes through one GraphQL request at a time,
-keeps the 40-call REST search population unchanged, spaces those calls by at
-least 2.1 seconds against the observed 30-per-minute search quota, and rejects a last-commit
-identity that does not match the PR head. The full metadata run is bound not to
-start before `2026-08-03T10:43:25Z`; source retrieval, evaluators, local and
-Luna inference, training, D1/D2, serving, and book promotion remain closed. The
-search pacing is a host-transport condition, never a task or mechanism outcome.
-
-The v6 run then failed closed after 58 logical requests and 62 physical
-attempts: 57 requests succeeded, one HTTP 502 recovered, and four rapid
-unknown-network attempts exhausted the inherited 1.75-second backoff horizon.
-GitHub immediately reported search 30/30 and GraphQL 4,956/5,000, so quota
-exhaustion is excluded. Zero identities, source bytes, evaluator calls, model
-calls, or downstream authority sealed. The terminal audit also found that the
-inherited owner hashed its checkpoint before finalization, leaving a stale
-embedded checkpoint hash. The next repair may change only the bounded transport
-backoff and finalize the checkpoint before report hashing; selection science
-and every downstream closure remain frozen.
-
-V7 is now prospectively sealed and GREEN at zero queries. It invokes the exact
-v6 REST-search, GraphQL query, pacing, qualification, ranking, and panel owner;
-only the transient/unknown retry horizon changes to eight attempts across at
-most 108 seconds. It finalizes the checkpoint before hashing it into the report
-and fails if the embedded and final file hashes differ. All source-content,
-evaluator, local/Luna, training, D1/D2, serving, and book authority remains
-closed. One unchanged metadata run is active.
-
-V7 then completed GREEN. It froze 62 unique repositories with zero prior-source
-overlap and exact panel quotas: 9 control-qualification tasks (Python 3,
-TypeScript 2, JavaScript 2, Rust 2) and 53 claim tasks (17, 14, 11, 11).
-The run used 92 logical requests and 100 attempts; all 92 completed, seven
-unknown-network failures and one HTTP 502 recovered, and no terminal transport
-failure occurred. The final checkpoint hash is independently verified against
-the report. No raw title, body, patch, review, answer, test, or node-ID field
-entered the selected rows. Source retrieval, packet materialization,
-evaluators, local/Luna inference, training, D1/D2, serving, and book promotion
-remain closed. The next transaction must separately bind immutable source
-retrieval and independent evaluator qualification to this exact report.
-
-The source-materialization transaction is now prospectively sealed and GREEN
-at zero source requests and zero executions. It may retrieve only each frozen
-PR title, selected changed source/verifier paths at exact base/head revisions,
-and repository license bytes. It writes four deterministic archives per task
-(parent/target source and parent/target verifier), verifies the title against
-the v7 digest, retains no response bodies in the checkpoint, and cannot execute
-untrusted code, install dependencies, build candidate packets, evaluate, or
-call either model. Physical file/aggregate byte boundaries are host-safety
-invalidations, not task or mechanism failures. One source-only run is active.
-
-That run failed closed on exactly one content-level false positive. Sixty-one
-tasks produced 244 deterministic archives, but Python claim Task 28
-(`salihyesil59/CosmoFit#2`) had identical base/head bytes for its only selected
-verifier notebook. The materializer therefore refused all partial admission.
-It made 62 title and 626 source-content requests with 640 successes, 48 stable
-added/deleted-path 404s, zero retries, zero transport failures, and zero
-executions or model calls. The checkpoint's final hash matches the report. Keep
-the 61 source-bound rows as non-admitted evidence; replace only the failed
-Python-claim slot using the same frozen rank/eligibility rules plus the now-
-required changed-verifier-byte gate. Do not weaken the verifier requirement or
-rerun the accepted 61 as if the failure did not occur.
-
-The Task 28 replacement completed GREEN. It selected
-`moritan777/chat-trpg-gm-mvp#30`, outside both the frozen 62 and prior 87,
-after 20 metadata requests, one title request, and six source requests. All
-four exact-revision archives and the final checkpoint passed an independent
-receipt audit. Selected source and verifier bytes both change; no code,
-evaluator, candidate, local model, Luna, training, D1, or D2 path ran.
-
-The first combined-panel audit then found a more important charter violation
-before admission. Archive integrity is GREEN across exactly 62 unique
-repositories, 248 archives, 695 member receipts, all 62 changed-source pairs,
-all 62 changed-verifier pairs, and the exact 9/53 panel-language quotas. But six
-PR titles are not English: claim slots 1 (JavaScript), 12 and 19 (Python), 48
-and 51 (TypeScript), and control-qualification slot 56 (Python). Rule 7 makes
-those requests ineligible for this seed. The panel therefore remains RED and
-non-admitted. Preserve every valid archive; replace only those six slots with
-the first frozen-rule English, same-panel, same-programming-language candidates
-whose source and verifier bytes both change. Do not execute repositories or
-open packets/models while repairing language scope.
-
-The six-slot replacement owner is now prospectively sealed and GREEN at zero
-network, source, classifier, execution, and model activity. It reuses the v7
-search windows, pacing, rank seed, metadata eligibility, and retry owner;
-excludes the prior 87, frozen 62, Task 28 replacement, and every replacement
-selected earlier in the same transaction; and preserves each slot's claim or
-control role and programming language. PR titles must resolve as English under
-the bound local language-scope classifier and contain no non-Latin natural-
-language script. Content still must pass changed-source and changed-verifier
-byte gates. All 24 archives stage outside the repository and none publish
-unless all six slots succeed. This classifier is only a task-scope filter; it
-does not generate, evaluate, rank by quality, or enter any candidate/model
-denominator.
-
-The first live replacement run paused before any title, source, classifier,
-archive, evaluator, or model activity. Thirteen metadata requests succeeded;
-the fourteenth exhausted eight attempts as an unknown GraphQL transport failure
-(14 logical requests, 21 attempts, seven retries). GitHub core, search, and
-GraphQL quotas were healthy immediately afterward. The final checkpoint hash
-matches the report and the replacement output directory does not exist, so the
-all-six-or-none boundary held. Preserve this receipt. Repair only the response-
-size-sensitive GraphQL transport by reducing node batches from 40 to 20 and
-correct the terminal report's metadata counter from its checkpoint; do not
-change search population, rank, eligibility, slots, language policy, content
-gates, or downstream authority.
-
-The v2 transport successor is now prospectively GREEN at zero calls. A replay
-test proves its effective transaction differs only in GraphQL node batch size
-(20 instead of 40); the scientific replacement view is byte-equivalent after
-accounting for the temporary transport-config path. It separately counts every
-attempted metadata, title, and source logical request and requires their sum to
-equal the final checkpoint. Retry horizon, search/rank/eligibility, language
-scope, six slots, all-or-none staging, content gates, and authority are unchanged.
-
-V2 completed GREEN and independently passed receipt audit. It selected six
-unique repositories outside the prior 87, frozen 62, and Task 28 replacement;
-preserved the exact slot/panel/programming-language assignments; rejected two
-additional non-English titles; and published 24 normalized archives only after
-all six passed. The run made 176 logical/physical attempts: 114 metadata, 14
-title, and 48 source; 173 succeeded and three were stable path 404s, with zero
-retries or terminal failures. All six selected source pairs and verifier pairs
-change, 57 member receipts cover 987,062 bytes, and the final checkpoint hash
-matches. Repository execution, candidate/model calls, training, D1, and D2 all
-remain zero. The next owner must independently reassemble the 62-task panel,
-substituting only slots 1, 12, 19, 28, 48, 51, and 56, before evaluator work.
-
-That independent v2 panel audit is GREEN. The canonical source panel now has
-exactly 62 English requests and 62 unique repositories, preserves every 9/53
-and programming-language quota, binds 248 selected archives and 681 normalized
-member receipts, and proves selected source and verifier bytes change in every
-slot. The 24 superseded non-English archives remain committed evidence but are
-not part of the admitted panel. This opens evaluator design only. Parent failure,
-target success, dependency completeness, harness independence, and evaluator
-construct validity remain unproven; repository execution and both models stay
-closed until a language-appropriate network-denied evaluator instrument passes
-its own adequacy and host-safety qualification.
-
-The existing D1 sandbox cannot be treated as that instrument. Its current
-trusted Python canary failed closed before the canary process produced output
-because the parent RSS monitor lacked permission to invoke `/bin/ps`. The
-receipt records a 4 ms `rss_telemetry_unavailable` physical boundary, zero
-repository executions, and zero model calls. Preserve it and retry the trusted
-canary only with host telemetry permission. Even a GREEN retry would qualify
-the pinned Python path only, not Node/TypeScript or Rust.
-
-The permission-corrected trusted retry is GREEN: every declared Python sandbox
-canary passed, including network, host read, symlink escape, outside write,
-shell execution, child escape, minimized environment, CPU, file-size, open-file,
-process, RSS, output, and wall controls. This supersedes only the current Python
-host qualification; the RED attempt remains historical evidence.
-
-The static VCM evaluator-feasibility audit is RED while preserving the GREEN
-source panel. All 62 tasks contain at least one primary-language executable
-verifier path (88 total), but the selected changed-file archives contain zero
-package/dependency manifests, zero locks, zero transitive local-source closure
-receipts, zero independently derived runner commands, and zero parent-fail/
-target-pass receipts. Eight tasks also carry 21 auxiliary executable or fixture/
-doc/image artifacts. Consequently zero tasks are evaluator-ready. This is an
-instrument gap, not a failure of any task, model, VCM, or ASI Stack mechanism.
-Next materialize exact base/head repository or transitive closures, bind manifests,
-locks, and runners, prefetch dependencies under policy, qualify Node/TypeScript
-and Rust sandboxes alongside Python, and only then execute parent/target canaries.
-
-The first prospective multi-runtime containment attempt is preserved RED without
-repository execution. Python and Node were terminated before canary output when
-the outer host denied RSS telemetry through `/bin/ps`; the trusted Rust canary
-did not compile because the configured `rustc` was a rustup shim under a
-deliberately minimized `HOME`. These are host-instrument and canary-owner faults,
-not task or mechanism evidence. Bind the concrete toolchain binary and repeat
-with telemetry permission; do not weaken the minimized runtime environment.
-
-That corrected retry is GREEN after binding the exact concrete Rust toolchain
-binary and granting only host RSS telemetry visibility. Python, Node, and a
-precompiled trusted Rust binary passed the network, host-read, symlink, outside-
-write, shell-exec, environment, RSS, CPU, output, and wall controls. The
-feasibility audit now drops the language-runtime fault. It remains RED on the
-five real missing owners: manifests, locks, transitive source closure,
-independent runner receipts, and parent-fail/target-pass evidence. npm installs,
-TypeScript transpilation, Cargo resolution, untrusted Rust compilation, and
-repository-runner adequacy remain explicitly unqualified.
-
-The exact repository-closure materializer is now GREEN at preflight. It derives
-an exact 62-task parent/head registry from the admitted panel, plans 124 immutable
-codeload archives, reuses the deterministic regular-file-only sanitizer, and
-authorizes no repository, dependency, evaluator, or model execution. Because the
-host currently has limited free space, it preserves a 10 GiB physical reserve
-and rejects any single upstream archive above 2 GiB. A boundary hit is an invalid
-instrument materialization on this host, never a task or mechanism negative.
-To avoid doubling storage, upstream bytes are deleted only after the normalized
-derivative passes the exact-member and safety audit; the upstream SHA-256 and
-sanitization receipt remain durable, and completed derivatives are retryable.
-The first live attempt paused before any download because the Python system CA
-chain could not verify codeload. That receipt is preserved. The successor binds
-the exact installed certifi CA bundle by SHA-256; it changes only TLS trust
-transport and does not widen source, execution, or model authority.
-
-Closure acquisition is now GREEN: 124/124 exact parent/head normalized archives
-for 62/62 tasks, about 1.5 GiB retained, zero upstream duplicates, zero independent
-hash or sanitization-receipt faults, and roughly 35 GiB still free. The only
-intermediate RED was the generic D1 license-name assumption; task 32's exact
-panel-bound root `LICENSE-APACHE` receipts repaired that helper assumption without
-changing source membership. No repository, dependency, evaluator, or model ran.
-
-The first full-closure runner inventory found 62/62 source closures, 58 root
-manifests, 44 root locks, and 57 independently sourced runner receipts. During
-residual inspection, however, the selected-byte language audit invalidated the
-panel: slots 14, 19, 21, 28, 32, 54, and 60 contain Cyrillic, Arabic, CJK,
-Japanese, or Korean natural-language bytes in selected source or verifier files.
-Binary fixtures are skipped rather than mis-decoded. Some hits are legitimate
-Unicode robustness cases, but Rule 7 requires exclusion or quarantine for this
-English seed. Preserve all closures and inventory evidence, replace exactly the
-seven slots with same-panel/same-programming-language English-content tasks, and
-rerun admission before any evaluator execution.
-
-The seven-slot replacement owner is now GREEN at preflight. It preserves each
-slot's claim/control role and programming language, denies every repository in
-the current 62-task panel, retains the original frozen search/rank/chronology
-rules, and extends acceptance from English title alone to exact selected source
-and verifier byte scans. All seven must succeed or none are admitted. It opens
-only public metadata/source retrieval and local language classification; model,
-repository, dependency, evaluator, D1, D2, and book effects remain closed.
-
-The live all-or-none replacement transaction is GREEN. It bound seven unique
-same-panel/same-programming-language repositories, materialized 28 deterministic
-changed-file archives (927,095 selected bytes), rejected one additional
-non-English candidate, and passed an independent archive/hash/content rescan.
-There were 75 metadata, 15 exact-title, and 58 source-content requests, with zero
-repository, evaluator, local-model, reference-control, D1, or D2 calls. The
-combined panel is still not admitted until a v3 assembly and independent content
-audit substitute exactly these seven rows.
-
-The independent v3 assembly is now GREEN: exactly 62 unique repositories, the
-same 53 claim/9 control and language quotas, 248 deterministic changed-file
-archives, 678 member receipts, 62/62 source differences, 62/62 verifier
-differences, and zero selected-content language violations. Only indices 14,
-19, 21, 28, 32, 54, and 60 changed from v2. This re-admits source membership;
-the seven new full repository closures and downstream inventory still must be
-materialized before evaluator work resumes.
-
-The incremental v3 closure successor is GREEN at preflight. It binds the v3
-panel hash, reuses 110 unchanged exact derivatives, plans only 14 new parent/head
-fetches, preserves all superseded v1 closures, retains the 10 GiB physical
-reserve, and opens no execution or model authority.
-
-The v3 closure transaction is GREEN: 110 unchanged exact derivatives reused,
-14 replacement parent/head archives fetched, 124/124 current artifacts admitted,
-and zero independent hash or physical-boundary faults. No repository code ran.
-
-The repaired-panel static inventory found 59 root manifests, 48 root locks, and
-58 independently declared runners. A narrow selected-verifier successor closed
-the four runner residuals without inventing repository-specific commands: one
-self-contained Node built-in test, two standard-library `unittest` files, and
-one verifier-embedded `pytest` command. All 62 tasks now have source-bound runner
-candidates; no repository ran.
-
-The dependency-class successor replaces the misleading blanket lock gap with
-three exact classes and requires every lock to match the evaluator ecosystem.
-Forty-eight tasks have relevant lock receipts. Eight scoped evaluators (indices
-1, 10, 20, 22, 23, 27, 57, and 58) have a statically closed
-standard-library or Node-built-in import path, with `pytest` tracked separately
-as evaluator harness where needed, so a project lock is not required for that
-exact evaluator path. Six tasks (12, 13, 16, 25, 35, and 56) expose third-party
-dependencies and require immutable resolution before execution. Lock presence
-is not installed-closure proof, dynamic behavior is not qualified, and all 62
-tasks remain evaluator-not-ready. Next materialize and independently verify the
-offline dependency/harness closure, then qualify TypeScript transpilation and
-untrusted Rust compilation before any parent-fail/target-pass canary.
-
-The exact local toolchain audit prevents redundant bootstrap work. It binds
-Python 3.12, pytest, pip, Node 22, npm, pnpm, Bun, Deno with TypeScript 5.8.3,
-the existing repository-local uv 0.11.28 binary, and concrete Cargo/Rust 1.90
-by content hash and observed version. An exact Yarn Classic 1.22.22 successor
-was then acquired from one registry request with both registry digests, safe
-extraction, and package identity verified. All 48 evaluator-ecosystem lock tasks now have an
-exact manager identity. Tool presence is not install/build qualification, and
-every evaluator remains closed.
-
-Trusted offline build canaries are now GREEN for pip, npm, pnpm, Bun, Yarn,
-Deno/TypeScript, and concrete rustc. All fixture installs used local artifacts,
-network denial, write confinement, resource ceilings, and lifecycle-script
-suppression; 19 command receipts passed. The preserved first failures were
-owner defects: outer sandbox nesting, an obsolete Deno flag, and an `RLIMIT_NPROC`
-below the host's existing process count. This does not qualify real locks,
-untrusted build scripts, repository compilation, or runner adequacy.
-Content-addressed real dependency prefetch remains next.
-
-The v2 correction changes only task 57: its Python evaluator can no longer
-borrow an unrelated root JavaScript lock, and its apparent third-party imports
-are independently resolved to repository-local modules. The current split is
-48 exact ecosystem locks, eight no-project-lock scoped paths, and six immutable-
-resolution tasks. No dependency or repository execution produced this result.
-
-The static dependency-prefetch plan is now GREEN. It selects one governing
-evaluator-ecosystem lock and exact manager command for each of the 48 locked
-tasks, records a measured lock-graph estimate for all 48 (including Bun's
-JSONC-like text locks), and orders the work strictly sequentially with a 10 GiB
-host reserve. It caught and repaired a planning defect that had mistaken four
-unparsed Bun locks for zero-package graphs. The plan itself performed zero
-prefetch, install, build, repository, evaluator, or model executions. Next seal
-and run only the smallest measured graph, task 3, as a dependency-acquisition
-canary; do not execute its repository runner or expand to the remaining 47
-until the retained closure, network boundary, script suppression, and storage
-accounting pass independent audit.
-
-The task-3 canary preflight then found a real compatibility gap in the earlier
-"complete" tool identity: its manifest requires Node `>=22.20.0 <25.0.0` and
-npm `>=10.9.3 <12.0.0`, while the bound local lane is Node 22.15.0 with npm
-10.9.2. Do not treat a warning-tolerant install as qualification. One official
-Node 22.20.0 Darwin arm64 archive is now prospectively bound to the exact
-Node.js `SHASUMS256.txt` digest and may be safely materialized and version-
-probed. That bootstrap opens no dependency, repository, evaluator, or model
-authority. Only after it is GREEN may the task-3 dependency canary be sealed.
-
-That exact runtime bootstrap is now GREEN. One 49,838,299-byte official archive
-matched the prospectively bound SHA-256; safe extraction retained 5,031 regular
-files plus three contained symlinks, and independent probes returned Node
-22.20.0 and npm 10.9.3. No dependency was installed and no repository or model
-ran. Task 3's dependency acquisition plus network-denied offline replay may now
-be sealed against this exact runtime.
-
-The task-3 dependency canary is now prospectively sealed. Parent and target bind
-the same exact manifest and lock, whose only two dependency artifacts have
-SHA-512 integrity receipts. The run may perform one lifecycle-disabled network
-`npm ci`, delete only its temporary `node_modules`, then require a second
-network-denied `npm ci --offline` from the isolated cache. It retains only the
-cache after independent content-integrity and storage checks. `npm test`, every
-repository entrypoint, evaluators, candidates, local models, and Luna remain
-zero-authority.
-
-The first execution is preserved RED as `INCONCLUSIVE_INSTRUMENT`. Its online
-phase acquired both exact lockfile SHA-512 blobs and left repository bytes
-unchanged, but npm received `SIGXFSZ` because the canary owner incorrectly used
-the 8 MiB captured-log ceiling as `RLIMIT_FSIZE` for dependency extraction.
-Offline replay did not start, no cache was retained, and no runner or model ran.
-The successor may change only this resource-owner defect: keep captured logs at
-8 MiB, monitor that boundary directly, and give dependency files a distinct
-physical ceiling no larger than the already frozen 4 GiB per-task retention
-limit.
-
-The v2 owner-only repair is now prospectively sealed. Task identity, parent and
-target archives, manifest, lock, two integrity artifacts, Node/npm runtime,
-commands, lifecycle suppression, network/offline phases, retention target, and
-all downstream denials are unchanged. Captured stdout and stderr remain limited
-to 8 MiB through direct monitoring; dependency files now inherit the already
-frozen 4 GiB per-task physical ceiling. One v2 execution is authorized.
-
-V2 is GREEN. The lifecycle-disabled online install and separately sandboxed
-network-denied offline replay both returned zero with exact dependency versions.
-The repository's 560 non-`node_modules` files retained the same identity. The
-retained cache is 5,912,042 bytes across six files and its two content blobs
-match both lockfile SHA-512 artifacts; peak process-group RSS was 124.234 MiB
-online and 118.391 MiB offline. No runner, evaluator, candidate, local model, or
-Luna call occurred. Before expanding to task 7 or any wider batch, a separate
-static owner must rederive the cache, command, network-denial, source, and
-storage conclusions without trusting the v2 owner's GREEN flag.
-
-That independent static audit is GREEN. It rederived both cache blob hashes from
-the lock, the exact six-file/5,912,042-byte retained store, the 560-file source
-identity, online/offline commands, lifecycle suppression, dependency versions,
-trusted network-denial scope, and the run/current storage reserve. It performed
-no network, dependency, repository, evaluator, or model execution. This
-qualifies the first npm dependency instrument only. Before task 7, statically
-compare all 48 governing manifests' manager and runtime requirements against
-the exact bound tools; "binary present" is no longer sufficient compatibility
-evidence.
-
-The 48-task declared-version compatibility audit is GREEN: 18 tasks are
-compatible with at least one exact bound profile, 16 declare no manager/runtime
-version and remain a weaker separate class, 14 are explicitly incompatible,
-and zero requirement expressions are unresolved. The incompatible indices are
-7, 36, 46, 6, 28, 29, 9, 47, 5, 49, 44, 52, 50, and 51. Schedule ordinal 2,
-task 7, pins pnpm 10.32.1 while the prior bound CLI is 10.13.1. Do not skip the
-frozen order or tolerate version drift. The exact pnpm archive URL, registry
-SHA-1/SHA-512, Node 22.20.0 probe, storage reserve, and zero downstream authority
-were prospectively sealed. The one authorized request acquired the exact archive,
-both digests matched, safe extraction retained 1,077 files/18,914,320 bytes, and
-Node 22.20.0 reported pnpm 10.32.1. Dependency and repository execution remained
-at zero. The source-bound successor audit is GREEN and changes only task 7 from
-incompatible to compatible; the other 47 classifications are preserved. Counts
-are now 19 compatible, 16 no-declaration, 13 incompatible, and zero unresolved.
-Task 7's dependency-only canary was prospectively sealed at zero execution. Its
-parent and target manifest/lock identities match, and the lock contains exact
-`@moshcoder/moshpit-dns@0.2.2`. The lifecycle-disabled online pnpm install and
-network-denied offline replay are GREEN; both produced exact dependency parity,
-the 244 source files stayed immutable, and the bounded store retained 9 files /
-56,759 bytes. The independent static audit is GREEN: all 8 pnpm-index files,
-store/source identity, dependency parity, commands, deny-network evidence, and
-storage reserve rederive without execution. Frozen schedule ordinal 3, task 36,
-requires Rust 1.97 while the bound profile is 1.90. Exact Rust 1.97.1 is now
-prospectively sealed because it satisfies the minimum and fixes the 1.97.0
-miscompilation. The official manifest plus minimal Apple ARM64 `rustc`, `cargo`,
-and `rust-std` hashes were bound before acquisition. The isolated minimal
-toolchain is GREEN: rustc and Cargo report 1.97.1 on Apple ARM64, retaining 153
-files/567,822,045 bytes. No Cargo dependency fetch or repository runner ran.
-The source-bound successor audit is GREEN: tasks 36 and 29 change to compatible,
-the other 46 states are preserved, and counts become 21 compatible, 16
-no-declaration, 11 incompatible, and zero unresolved. Seal task 36's exact
-Cargo-lock dependency-only canary is prospectively sealed at zero execution.
-Parent and target dependency identities match and all 32 registry checksums are
-bound. Execute only one `cargo fetch --locked` plus one deny-network offline
-replay. Both are GREEN: all 32 crate archives match the lock, 851 source files
-stay immutable, and the bounded Cargo home retains 1,302 files/57,161,658 bytes.
-Compilation, build scripts, tests, runners, evaluators, and models stayed closed.
-The independent audit is GREEN: all 32 lock checksums, retained crates/cache,
-source identity, command/network phases, and storage limits rederive without
-execution. The all-task pair audit corrects the target-only denominator: 38
-tasks have identical dependency identities and 10 diverge (11, 14, 17, 19, 33,
-46, 53, 54, 61, 62), so 48 tasks require 58 distinct closures. Frozen task 14
-is compatible and its separate parent and target uv closures are now
-prospectively sealed at zero execution. Both wheel-only syncs and both
-deny-network replays are GREEN: each side retained 371 files/9,035,818 bytes,
-exposed the same 12 lock-compatible runtime distributions, and preserved its
-180-file source tree. The independent audit rehashed all 742 retained files,
-reparsed both 41-package locks and 24 cached metadata records, and rederived the
-commands, network phases, and storage boundaries without execution. Required
-closures 4 and 5 are qualified. Frozen schedule ordinal 5 is task 30's single
-identical parent/target Cargo closure. Its 50-checksum fetch and deny-network
-replay are GREEN: all crates match, 2,639 cache files/57,402,345 bytes are
-retained, and the 1,545-file source tree is immutable. The independent audit
-rederives every closure invariant without execution. Required closure 6 is
-qualified. Frozen schedule ordinal 6 is task 26's single identical parent/target
-uv closure. Its 58-package identity, exact UV/Python tools, build-free commands,
-project/dev-group exclusions, bounded store, deny-network replay, and zero
-downstream authority are prospectively sealed at zero execution.
-
-Exit A: the exact production implementation passes the prospectively frozen
-mechanics and intervention contract and may open one new claim-development
-denominator.
-
-Exit B: the exact implementation falls below the preregistered adequacy floor;
-record `INCONCLUSIVE_IMPLEMENTATION`, retain the evidence, leave the book claim
-unresolved, and repair or exclude the implementation owner. Do not translate
-that scoped result into a broad negative for cognitive compilation or the book
-claim, and do not manufacture a nearby green reseal.
-
-### 4. Freeze one claim-development experiment
-
-Only after Exit A, autonomously acquire a new licensed, source-disjoint task
-cohort. Pool size and task diversity come from the predeclared effect and power
-analysis. Every parent must fail and exact target must pass an independent
-network-free evaluator before candidate generation.
-
-The primary model/subsystem factorial is:
-
-| Model block | Mechanism absent | Mechanism present |
-| --- | --- | --- |
-| Frozen TMax local | Primary local baseline | Primary local causal treatment |
-| Frozen Luna reference | Hosted reference baseline | Hosted reference robustness treatment |
-
-Mechanism-specific controls—such as an information-matched natural-language
-plan or deterministic compiler—remain required when they are stronger than the
-plain direct baseline. They do not change the primary within-model contrast.
-
-The independent evaluator, task packet, callable surface, allowed context,
-effect sandbox, verifier opportunity, and prospectively declared call/resource
-budget are matched within each model. The local within-model effect is primary;
-the Luna within-model effect is a separate reference. Cross-model ranking and
-the difference of those effects are descriptive because wrappers, tokenizers,
-reasoning tokens, latency, cost, and training differ.
-
-### P3 hosted reference control
-
-The current requested reference is `gpt-5.6-luna` at fixed `xhigh` reasoning.
-It is a cost-efficient hosted reference, not a frontier ceiling and not a
-serving candidate. Its exact callable surface, provider identity, model alias or
-snapshot, effort, wrapper, tool policy, completion policy, price basis, and cost
-authority must be source-bound before any arm in that future claim pool opens.
-
-If the transport is unavailable at seal time, the local experiment may proceed
-with an explicit missing-reference state. The Luna cells may not be backfilled
-after local outcomes are inspected. Luna outputs are never served, admitted as
-training rows, used to select or tune tasks, used to tune the subsystem or pick
-the next claim, granted source effects, or mixed into the local denominator.
-
-Normal Luna completion is the complete artifact or model EOS. A provider output
-or context ceiling is a physical transport boundary; touching it invalidates
-the observation for capability inference. Fixed `xhigh` is a quality-oriented
-reference choice, not a claim that `xhigh` is the most efficient effort.
-
-### 4. Run and disposition once
-
-Open all arms only after source, task, mechanism, model, prompt, evaluator,
-budget, cost, and analysis identities are sealed. Counterbalance order. Preserve
-every failure. Score useful-safe completion first, then weak tails and total
-system cost. Parsing, plan validity, verifier acceptance, and route receipts are
-diagnostics unless the claim names them as the primary outcome.
-
-Terminal outcomes:
-
-- `DEVELOPMENT_SURVIVOR`: adequate mechanism improves the predeclared primary
-  estimand and passes safety, rollback, weak-tail, and cost vetoes;
-- `ADEQUATE_NO_SURVIVOR`: faithful experiment completed but the exact candidate
-  did not earn advancement;
-- `INCONCLUSIVE_IMPLEMENTATION`;
-- `INCONCLUSIVE_EXPERIMENT`;
-- `INVALID_INFORMATION_FLOW`;
-- `INVALID_EVALUATOR`; or
-- `INVALID_OBSERVATION_CONTEXT_OR_HOST_BOUNDARY`.
-
-Do not rerun, rescore, rename, or reseal a consumed denominator to obtain a more
-convenient state.
-
-### 5. Qualify only a survivor on fresh D1
-
-A development survivor receives exactly one fresh, source-disjoint D1
-qualification after its model, mechanism, competence floor, minimum worthwhile
-effect, uncertainty, weak-tail, cost, evaluator, and terminal rules are frozen.
-D1 never contains development tasks and never borrows Luna or neural credit.
-
-### 6. Return evidence to the book
-
-Every terminal implementation result may return a public-safe claim packet,
-including null and inconclusive results. The packet binds exact evidence,
-denominators, costs, residuals, limitations, and maximum inference. It proposes
-no automatic support transition and grants no publication or release authority.
-
-The living book may accept, reject, narrow, or block a separate claim-level
-transition. Book prose drift never silently changes an already opened
-experiment.
-
-## Autonomous Task Contract
-
-Theseus acquires experimental work without user supply:
-
-- allowlisted, license-compatible online repositories;
-- locally cached parent and target artifacts with provenance and digests;
-- natural requests reconstructed without answer leakage;
-- deterministic eligibility, contamination, and memorization-risk screens;
-- candidate-visible parent state and hidden target/evaluator state;
-- independent parent-fail/target-pass qualification;
-- disposable local effects and exact rollback; and
-- strict separation among mechanics, development, D1, D2, training, and public
-  calibration.
-
-Public benchmark prompts, tests, solutions, traces, and answer templates remain
-calibration-only. A consumed task never becomes training data or a fresh
-claim-bearing surface. No experiment opens pull requests, contacts maintainers,
-or mutates upstream repositories.
+| Integrity prerequisites | `integrated-reference-architecture.core`; `evidence-states-and-claim-discipline.core` | Common evidence requirements, never a usefulness win |
+| Architecture-shaping candidates | `cognitive-compilation-and-semantic-ir.core`; `planning-as-a-control-layer.core`; `virtual-context-abi.core`; `verification-bandwidth-and-context-adequacy.core`; `routing-heads-and-specialist-cores.core` | Must receive terminal interface dispositions before neural architecture freeze |
+| Runtime amplifiers | `procedural-memory-and-cognitive-loop-closure.core`; `system-boundaries-and-authority.core`; `capability-replacement-and-rollback.core` | Enter only when an observed residual activates them |
+| Independent neural claim | `replaceable-cognitive-substrates-beyond-transformer-monoculture.core` | Held D2 modular-versus-dense experiment |
+| Synthesis | `the-efficient-asi-hypothesis.core`; `asi-is-a-stack-not-a-model.core` | Require multiple qualified mechanisms and later composition evidence |
+
+Exactly one candidate is active. Each terminal result selects the next claim by
+observed residual and architecture decision value, never by chapter order or
+implementation convenience.
+
+## Phase Ladder
+
+### K0 — Claim contract
+
+Bind the claim, causal mechanism, information flow, outcomes, controls,
+adequacy requirements, power, cost, terminal states, and maximum inference.
+
+Exit: one immutable, machine-readable contract with no model calls.
+
+### K1 — Production mechanics
+
+Exercise the real route on non-claim fixtures. Prove identity round trips,
+corruption rejection, intervention reachability, containment, replay, and
+failure receipts.
+
+Exit: the exact production path is mechanically operable; no usefulness
+inference is authorized.
+
+### K2 — Evaluator and experimental-instrument qualification — **CURRENT**
+
+Finish the frozen 62-task VCM instrument without turning every task into a new
+code family.
+
+Task 26 is the final bespoke per-task dependency canary. After its execution
+and role-separated audit, all remaining dependency closures use one generic,
+manifest-driven batch owner. Only four risk-class canaries remain eligible for
+special handling: Bun, Yarn, TypeScript transpilation, and untrusted Rust
+compilation. They extend the generic owner; they do not create per-task
+script/config/test/report families.
+
+K2 must establish for all 62 tasks:
+
+- exact source, parent, target, license, and contamination identity;
+- reproducible parent and target dependency closures;
+- parent-fail/target-pass hidden-evaluator receipts;
+- candidate packet blindness and independent forbidden-field audit;
+- compatible sandbox, verifier, and effect boundaries;
+- intervention sensitivity and false-context rejection; and
+- one contiguous frozen evaluator/instrument campaign identity.
+
+After K2 freezes, evaluator semantics may change only for a predeclared
+invalidation class and under a new campaign identity. Cosmetic report changes
+do not reopen the experiment.
+
+### K3 — Matched causal VCM campaign
+
+K3 has two sealed stages.
+
+First, use only the nine-task control panel to qualify the strongest simple
+eligible control. Luna output is forbidden during this choice. Required local
+controls are:
+
+- no added context;
+- information-matched direct injection;
+- ordinary retrieval over the same store and candidate-visible budget;
+- compressed summary cache under the same budget;
+- limited sliding-window context;
+- a source-bound single-memory oracle upper bound; and
+- maximal candidate-authorized context as an upper bound.
+
+Required mechanism and negative controls are irrelevant/random, stale,
+conflicting, poisoned/tainted, shuffled, retrieval-disabled, and
+retrieval-degraded memory.
+
+Second, freeze the selected strongest control and run the fresh 53-task claim
+panel. The primary comparison is local VCM-correct minus that local control.
+Luna direct and Luna-integrated arms, if opened, are reported separately and
+never change the local treatment estimate.
+
+The prospective VCM decision rule is:
+
+- minimum useful absolute effect: 0.35;
+- one-sided alpha: 0.05;
+- minimum power: 0.80;
+- false-context acceptance: zero;
+- positive direction in at least three of four programming-language families,
+  with no material family harm;
+- unsafe release or material weak-tail harm vetoes promotion; and
+- VCM must remain nondominated after actual tokens, retrieval work, latency,
+  memory, storage, verifier/repair work, and total cost.
+
+Task-deadline and cost-break-even boundaries are derived from the control panel
+and frozen before claim-panel outcomes are visible. The terminal disposition is
+exactly one of:
+
+1. `PROMOTE_FULL_INTERFACE`;
+2. `PROMOTE_NARROW_GOVERNED_TRANSPORT_ONLY`;
+3. `REVISE_NEW_CAMPAIGN_IDENTITY`; or
+4. `RETIRE`.
+
+An adequate null can retire only this exact implementation and operating
+regime. Missing fidelity, mechanics, power, source independence, or evaluator
+validity makes the result inconclusive.
+
+### K4 — Fresh D1 survivor qualification
+
+Only a K3 survivor may consume D1, once, on fresh source-disjoint tasks. D1 is
+qualification, not another tuning loop. Failure returns the exact interface to
+its predeclared disposition; it does not trigger repeated fresh-pool search.
+
+### K5 — Claim-level book handoff
+
+Produce one compact subsystem disposition memo containing:
+
+- exact claim, implementation, model, tasks, evaluator, controls, and costs;
+- causal result, uncertainty, language-family tails, safety, and residuals;
+- mechanics and adequacy status;
+- maximum positive and negative inference;
+- integration, maintenance, latency, memory, storage, and failure-mode cost;
+- terminal interface decision and next residual; and
+- stable links to replayable evidence.
+
+The handoff leaves the book support state unchanged. Book-side claim review is
+the only authority that may promote support.
+
+## Evidence Proportionality And Transaction Discipline
+
+Evidence cost is a first-class experimental outcome, not progress by itself.
+Every bounded closure records:
+
+- source files changed;
+- generated artifact count and bytes per sample;
+- evaluator wall time;
+- local and reference cost;
+- manual or agent interventions;
+- commits per closure; and
+- role-separated evidence fraction.
+
+The default transaction limit is one prospective-seal commit and one final
+audited-closure commit per bounded closure. Do not create per-seed,
+per-condition, or per-task commits. Do not create a new dashboard or report
+family when the canonical matrix, generic owner, and compact disposition can
+carry the evidence.
+
+A report is evidence, not progress. Progress means a book claim receives
+stronger causal evidence, an inadequate owner is repaired, a subsystem survives
+a fair comparison, or the harness becomes materially more honest or cheaper.
 
 ## Neural Hold And Re-entry
 
-The shared trunk is preserved at step 11,992. The source-controlled availability
-policy and the runtime yield signal must both deny new segments. The hold is
-strategic, not a statement that the checkpoint or architecture failed.
+The neural seed remains at step 11,992, `NOT_EVALUATED`, with D2 sealed. It may
+resume only after all of the following are machine-readable and green:
 
-Training may re-enter only through a reviewed machine-readable **Subsystem
-Architecture Freeze** proving all of the following:
+1. architecture-shaping subsystem interfaces have terminal dispositions;
+2. selected interfaces and common safety containment are frozen;
+3. autonomous source, custody, contamination, and teacher-share gates pass;
+4. modular, dense-active, and dense-total controls receive matched raw data,
+   optimizer exposure, tuning opportunity, and total-system accounting;
+5. required pretraining and checkpoint migration/rebind work is complete; and
+6. D2 remains unconsumed until the matched candidates are ready.
 
-1. every architecture-shaping claim above has either a qualified interface and
-   scoped evidence or an explicit first-model exclusion with a terminal scoped
-   disposition;
-2. no unresolved subsystem decision would require changing the proposed model
-   topology, training target, data representation, routing contract, verifier
-   interface, or checkpoint semantics after training begins;
-3. at least one production-equivalent end-to-end composition canary proves the
-   selected interfaces join without label-only or prompt-decoration shortcuts;
-4. the exact modular, dense-active, and dense-total question is still
-   decision-relevant after the subsystem results;
-5. the current checkpoint, optimizer, RNG, cursor, corpus, controls, and D2
-   identity are rebound from clean source; and
-6. autonomous resource, transaction, rollback, and one-shot D2 policies remain
-   green without a user-presence or routine approval gate.
+The modular-versus-dense result is independent D2 evidence. Subsystem proof
+cannot substitute for neural training, and neural training cannot retroactively
+prove a subsystem.
 
-Until then:
+## Maintenance Boundary
 
-- no optimizer steps;
-- no architecture, optimizer, tokenizer, objective, data, KERC, ANE, or generic
-  acceleration work;
-- no D2 consumption;
-- no capability inference from loss or training progress; and
-- checkpoint custody and replay maintenance only.
+Maintenance may consolidate scripts and documents, repair registry or custody
+gaps, reduce generated storage safely, or restore reproducibility required by
+the active proof. It may not create new product surfaces, benchmark families,
+private task ecologies, dashboards, or research lanes.
 
-## Maintenance That Serves the Proof Program
-
-Use existing owners; create no new cleanup or report family.
-
-1. Keep every claim transaction source-clean and commit-coherent. A mixed
-   product/neural/Rust/release/cleanup transaction cannot open an experiment.
-2. Run the existing reference-aware retention controller against the whole
-   generated surface. Preserve terminal reports, negative evidence, active
-   pointers, irreproducible acquisitions, checkpoint lineage, and independent
-   recovery. Archive only manifest-bound, replay-safe candidates.
-3. Treat 828 scripts, 416 top-level configs, 261 top-level tests, and thousands
-   of report variants as an ownership smell. When an active family is touched,
-   consolidate superseded wrappers and redirect callers through the registered
-   owner; do not launch a repository-wide rewrite.
-4. Add no dashboard, product surface, benchmark family, private suite, document
-   family, or subsystem lane unless it is required by the active claim.
-5. Measure storage, wall time, and report growth. A report is evidence, not
-   progress.
+Do not delete historical evidence merely because it is negative, superseded,
+or bulky. Keep authoritative summaries and replay-critical artifacts; handle
+retention through governed custody rather than ad hoc cleanup.
 
 ## Immediate Execution Order
 
-1. **Complete:** install the source-controlled neural hold and synchronize the
-   roadmap, project state, matrix, README, and active flagship identity.
-2. **Complete:** bind and offline-qualify the Luna measurement adapter, exact
-   model/effort receipt, no-serving/no-training boundary, completion telemetry,
-   evaluator interface, and campaign-derived cost authority with zero calls.
-3. **Complete:** repair the exact Semantic-IR identity/coverage/target/unit
-   mechanics on bounded non-claim evidence through the production path.
-4. **Complete:** run the prospectively audited v6 compact adequacy denominator;
-   preserve its one candidate and zero-token Task 2 watchdog; issue
-   `INCONCLUSIVE_EXPERIMENT`; freeze this exact implementation without a broad
-   negative or another Semantic-IR reseal in the current block.
-5. **Complete:** bind and call-free audit the existing VCM owner, production-
-   path controls, nine-task control-qualification panel, 53-task powered claim
-   panel, separate Luna denominator, and zero-inference authority.
-6. **Active:** autonomously acquire and independently evaluator-qualify 62
-   licensed repositories split into source-disjoint 9-task control and 53-task
-   claim panels. Attempt 1 failed closed with an insufficient Python pool;
-   v2 improved eligibility but still failed closed. Preserve both; seal and run
-   the pool-expansion v3 exposed a fork-head transport bug. Preserve it, repair
-   only that owner; v4 then paused on transient transport with zero identities.
-   V5 paused on secondary throttling with exact checkpoint accounting. V6
-   passed live schema, node-bridge, quota pacing, and full selector rehearsal,
-   then failed closed on a rapid unknown-network exhaustion after 57 successful
-   requests. Preserve it. V7's bounded recovery succeeded and froze all 62
-   unique repositories with exact 9/53 source-disjoint panels and a verified
-   final checkpoint hash. Bind immutable source retrieval and independent
-   evaluator qualification to that exact report. The execution-free materializer
-   preserved 61 source pairs but rejected Python claim Task 28 because its only
-   verifier path was byte-identical across revisions. Its sealed single-slot
-   replacement completed GREEN with changed source and verifier bytes and no
-   execution/model activity. The combined audit verified all 248 archives but
-   rejected six non-English natural-language requests under Rule 7. Preserve
-   all eligible rows and replace only slots 1, 12, 19, 48, 51, and 56 with
-   frozen-rule same-panel, same-programming-language English tasks. Then rerun
-   the combined audit, qualify evaluators, and bind
-   packets,
-   host-operability canaries,
-   runners, blind scorers, calls, spend, and stop conditions before inference.
-7. If it passes, freeze and run one new source-disjoint local-plus-Luna claim
-   campaign, with Luna omitted rather than backfilled if its transport was not
-   sealed before the first arm opened.
-8. Advance a development survivor once to fresh D1; otherwise retain the exact
-   terminal state and move the portfolio forward.
-9. Return the claim packet to governed book review with support unchanged.
-10. Repeat the single-claim cycle until the Subsystem Architecture Freeze can be
-   decided. Only then reassess neural training and D2.
+1. Execute and role-separately audit the prospectively sealed Task 26 UV
+   dependency canary.
+2. End bespoke per-task closure expansion and implement one generic,
+   manifest-driven dependency/evaluator batch owner.
+3. Qualify only the Bun, Yarn, TypeScript-transpilation, and untrusted-Rust risk
+   classes needed by that owner.
+4. Materialize the remaining frozen dependency closures and all 62
+   parent-fail/target-pass evaluator receipts through the generic owner.
+5. Freeze one contiguous K2 campaign plus its evidence-cost packet. Stop
+   evaluator changes unless a predeclared invalidation fires.
+6. Version and seal the K3 baseline, decision, cost, weak-tail, and terminal
+   disposition contract before any claim-bearing call.
+7. Run the nine-task local control qualification panel and select the strongest
+   simple eligible control without Luna outputs.
+8. Run the 53-task local direct/control/VCM campaign; optionally run the sealed
+   Luna reference arms under a separate denominator.
+9. Issue one full, narrow, revise, or retire disposition. A survivor consumes
+   fresh D1 once.
+10. Return one compact claim packet to the book with support unchanged, then
+    select the next subsystem only from the observed residual.
+
+No item in this sequence requires Corben to supply tasks, labels, routine
+approval, or timing. Actions outside machine-readable bounded authority fail
+closed and record the wall.
 
 ## Explicitly Sidelined
 
-- model training and D2;
-- new model architectures, optimizers, tokenizers, objectives, curricula, or
-  corpus expansion;
-- KERC/RDC, OneCell, SymLiquid, CGS, VSA, Coil, RankFold, NeuralFold, ANE, and
-  generic accelerator campaigns;
-- preference optimization, RL, self-training, continual learning, or
-  unlearning;
-- public benchmark consumption beyond governed calibration;
-- personal-assistant data collection;
-- Hive networking, public gateways, arbitrary remote execution, compute
-  markets, mobile, spatial, voice, multimodal, embodied, or multi-user work;
-- LAN/public serving and release engineering; and
-- broad ASI Stack rewriting or publication packaging unrelated to a returned
-  claim packet.
+- personal-assistant product work;
+- user-supplied task collection;
+- omnibus full-stack A/B claims;
+- exact consumed-surface replay or public benchmark training;
+- arbitrary generated-token quality caps;
+- new private task-suite families and evidence dashboards;
+- neural optimizer steps or D2 consumption before re-entry;
+- externally served reference outputs;
+- automated book-support promotion; and
+- broad architecture rejection from inadequate proxies.
 
-A sidelined item re-enters only when a terminal active result identifies it as
-the smallest causal response to a measured defect. Curiosity, available compute,
-theoretical elegance, or a green mechanics report is not an entry condition.
+## Definition Of Done For This Roadmap Era
 
-## Definition of Progress
+This era is complete when:
 
-Progress means one of:
-
-- a high-leverage claim receives a more faithful implementation or stronger
-  matched causal evidence;
-- an inadequate approximation is repaired before fresh evidence is consumed;
-- a claim receives an honest scoped terminal disposition;
-- a survivor qualifies once on fresh D1;
-- a claim-level evidence packet reaches the book without support laundering; or
-- source/custody/retention work removes a concrete threat to those outcomes.
-
-More files, reports, routes, mechanisms, optimizer steps, or green mechanics
-checks are not progress by themselves.
-
-## Definition of Done for This Roadmap Era
-
-This subsystem-first era is complete when:
-
-1. the architecture-shaping claim set has terminal interface dispositions;
-2. every positive claim has source-disjoint qualification and every negative is
-   adequacy-bounded;
-3. the chosen subsystem interfaces compose in the live local runtime;
-4. local TMax and the separately denominated Luna reference have complete
-   within-model evidence wherever the reference transport was prospectively
-   available;
-5. claim packets have returned to the book with no automatic promotion; and
-6. the Subsystem Architecture Freeze makes an explicit evidence-based decision
-   about whether and how to resume the modular-versus-dense neural experiment.
+1. every architecture-shaping claim has a terminal, causally attributable
+   interface disposition;
+2. survivors have one fresh D1 qualification and compact costed memo;
+3. the subsystem architecture freeze is machine-readable;
+4. the neural seed re-entry gates are either green or have plain unresolved
+   walls; and
+5. claim-level evidence has returned to the book without automatic promotion.
 
 ## Canonical Verification
 
 ```bash
+python3 -m json.tool configs/roadmap_implementation_matrix.json
 python3 scripts/theseus_doc_link_audit.py
 python3 scripts/theseus_project_registry.py --gate
 python3 scripts/roadmap_implementation_gate.py --gate
 python3 scripts/theseus_asi_stack_claim_handoff.py
-python3 -m pytest -q tests/test_roadmap_book_sync.py \
+python3 -m pytest -q tests/test_active_status_sync.py \
+  tests/test_roadmap_book_sync.py \
   tests/test_roadmap_pretraining_gate.py \
-  tests/test_theseus_external_reference_control.py \
-  tests/test_neural_seed_training_campaign.py \
-  tests/test_neural_seed_autonomous_launch_controller.py \
-  tests/test_theseus_asi_stack_claim_handoff.py
+  tests/test_theseus_vcm_claim_instrument.py \
+  tests/test_theseus_vcm_task26_dependency_canary.py
 ```

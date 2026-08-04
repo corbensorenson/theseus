@@ -112,6 +112,33 @@ If any condition is missing, record `INCONCLUSIVE_IMPLEMENTATION` or
 exclusion for cost or sequencing is an engineering disposition, not scientific
 falsification. Never translate "this proxy failed" into "this idea failed."
 
+## Evidence Proportionality
+
+The evidence system must be cheaper and simpler than the mechanism decision it
+supports. Every bounded closure records source files changed, generated artifact
+count and bytes, evaluator wall time, local/reference cost, manual or agent
+interventions, commits, and role-separated evidence fraction. Evidence volume
+does not count as subsystem progress.
+
+Default to at most one prospective-seal commit and one final audited-closure
+commit per bounded closure. Do not create per-seed, per-condition, or per-task
+commits, scripts, configs, tests, and report families when one generic
+manifest-driven owner can preserve the same scientific boundary. Once one
+representative closure and each materially distinct ecosystem risk class are
+qualified, batch the remaining frozen work through that owner.
+
+Use precise independence language. A separate owner or path inside this
+repository provides `role-separated rederivation`. A closed bundle replayed
+without producer state provides `producer-independent replay`. Only a different
+operator in a separately provisioned environment provides `external
+reproduction`; do not call the first two fully independent.
+
+Task populations, evaluator semantics, primary outcomes, and controls freeze
+before claim-bearing calls. After an evaluator/instrument freeze, change it only
+when a predeclared invalidation class fires, and issue a new campaign identity.
+Do not grow the task set, benchmark family, or evaluator merely because the
+current evidence is inconvenient or uncertain.
+
 ## Current Priorities
 
 1. ASI Stack proof track: select the highest-leverage book mechanisms, bind
