@@ -1,0 +1,55 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_task26_dependency_canary.json",
+    "sha256": "341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1"
+  },
+  "created_utc": "2026-08-03T19:47:26.693475Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN canary proves only that task 26's identical parent/target uv lock can materialize one wheel-only dependency environment, replay with network denied, preserve source identity, and retain the bounded cache with lock-compatible distributions and no project install. It does not execute build backends, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
+  "network_denied_offline_replays": 0,
+  "network_enabled_dependency_syncs": 0,
+  "observed_parent_target_dependency_identities": {
+    "parent": {
+      "artifact_identity_sha256": "e88c16392301e7ea1dad05d9bb342b85ff76f3817954434b24fde94ac97ac784",
+      "dependency_identity": {
+        "lock": {
+          "bytes": 166071,
+          "path": "uv.lock",
+          "sha256": "949801c6cd3c07565926a70c44e26d97cfa542890eebb1574a13a720560a1ad7"
+        },
+        "manifest": {
+          "bytes": 3825,
+          "path": "pyproject.toml",
+          "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+        }
+      },
+      "package_count": 58
+    },
+    "target": {
+      "artifact_identity_sha256": "e88c16392301e7ea1dad05d9bb342b85ff76f3817954434b24fde94ac97ac784",
+      "dependency_identity": {
+        "lock": {
+          "bytes": 166071,
+          "path": "uv.lock",
+          "sha256": "949801c6cd3c07565926a70c44e26d97cfa542890eebb1574a13a720560a1ad7"
+        },
+        "manifest": {
+          "bytes": 3825,
+          "path": "pyproject.toml",
+          "sha256": "81b8cf3d7ed6775bbe7f4960f2d2247a087b09a4cac29ffea8a1dcb0ac3ac567"
+        }
+      },
+      "package_count": 58
+    }
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task26_dependency_canary_v1",
+  "project_installations": 0,
+  "repository_runner_executions": 0,
+  "source_build_executions": 0,
+  "state": "READY_FOR_TASK_26_EXACT_UV_DEPENDENCY_CANARY",
+  "trigger_state": "PAUSED"
+}

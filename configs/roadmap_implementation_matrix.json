@@ -12,12 +12,12 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_30_CARGO_CLOSURE_INDEPENDENTLY_GREEN_TASK_26_UV_SEAL_NEXT",
+      "state": "VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their independent audits are GREEN: task 30's 50-checksum Cargo cache replayed offline and independently rederived. Frozen schedule ordinal 6 is task 26's single identical parent/target uv closure. Repository runners, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their independent audits are GREEN. Frozen schedule ordinal 6, task 26, has one identical 58-package uv lock; its wheel-only sync and offline-replay boundary is prospectively sealed at zero execution. Repository runners, parent-fail/target-pass canaries, packets, scorers, local calls, and Luna calls remain closed.",
       "adequacy_campaign_binding": {
       "config": "configs/theseus_semantic_ir_production_adequacy_campaign_v6.json",
       "audit": "reports/theseus_semantic_ir_production_adequacy_campaign_audit_v6.json",
@@ -1072,6 +1072,12 @@
         "owner_sha256":"ab2251ab893921a1c354d7912e99af5dc195ae06d679d45f97cafd20f6691a53","config_sha256":"ecb1e7a093534cf15a74c787572878234038ad5b0ba8aadc9be6101b263a8272","test_sha256":"fbbc6a2d5f5a31a898bccfbf7e3cc1892ad26c7188b81f8117badda19a8fa116","report_sha256":"48e5e40c514704b2e09fd9d2ebcbdfab4e6322916893049dc5637b3482af0bfd",
         "state":"GREEN_TASK_30_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED","task_index":30,"qualified_distinct_closure_count":1,"lock_checksum_package_count":50,"matched_checksum_count":50,"retained_store_bytes":57402345,"retained_store_file_count":2639,"source_file_count":1545,"source_bytes":9945623,"network_or_dependency_execution_performed":false,"dependency_installations":0,"repository_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"independent static qualification of task-30 Cargo dependency mechanics only; no build repository runner evaluator task VCM model or mechanism result","next_boundary":"prospectively seal frozen schedule ordinal 6 task 26's single identical parent/target uv closure"
+      },
+      "vcm_task26_dependency_canary": {
+        "config":"configs/theseus_vcm_task26_dependency_canary.json","owner":"scripts/theseus_vcm_task26_dependency_canary.py","test":"tests/test_theseus_vcm_task26_dependency_canary.py","report":"reports/theseus_vcm_task26_dependency_canary.json",
+        "owner_sha256":"646cdaaf60ef6f97dd6281476be0180543ac5b03d509ba89c18c72ad71b9594b","config_sha256":"341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1","test_sha256":"109f296797de9e7f4b68db0797d16ee793c6c41472cf9e924a633e4cb624293a","report_sha256":"d10f9781c010b97e91cf33e71a53000505306651335b3b06fa7967b50b9e5214",
+        "state":"PROSPECTIVELY_SEALED_TASK_26_EXACT_UV_DEPENDENCY_CLOSURE","task_index":26,"schedule_ordinal":6,"required_distinct_closure_count":1,"lock_package_count":58,"lock_artifact_identity_sha256":"e88c16392301e7ea1dad05d9bb342b85ff76f3817954434b24fde94ac97ac784","network_enabled_dependency_syncs":0,"network_denied_offline_replays":0,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"prospective task-26 uv dependency boundary only; the identical lock, 58-package denominator, exact uv/Python tools, build-free commands, store, limits, and zero downstream authority are bound, but no dependency repository evaluator task VCM or model result is established","next_boundary":"execute exactly one wheel-only uv sync and one deny-network offline replay for task 26 without project, build-backend, or repository-runner execution"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

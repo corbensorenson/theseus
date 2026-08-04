@@ -897,7 +897,9 @@ replay are GREEN: all crates match, 2,639 cache files/57,402,345 bytes are
 retained, and the 1,545-file source tree is immutable. The independent audit
 rederives every closure invariant without execution. Required closure 6 is
 qualified. Frozen schedule ordinal 6 is task 26's single identical parent/target
-uv closure; seal it before either dependency or repository execution.
+uv closure. Its 58-package identity, exact UV/Python tools, build-free commands,
+project/dev-group exclusions, bounded store, deny-network replay, and zero
+downstream authority are prospectively sealed at zero execution.
 
 Exit A: the exact production implementation passes the prospectively frozen
 mechanics and intervention contract and may open one new claim-development
