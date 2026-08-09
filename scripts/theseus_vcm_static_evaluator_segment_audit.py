@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from pathlib import Path
@@ -52,6 +53,10 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
                 faults.append(f"archive_receipt_invalid:{index}:{side}")
             if receipt.get("project_selected_output_cap") is not None or receipt.get("stdout_complete") is not True or receipt.get("stderr_complete") is not True:
                 faults.append(f"output_receipt_invalid:{index}:{side}")
+            for stream in ("stdout", "stderr"):
+                payload = str(receipt.get(stream) or "").encode("utf-8")
+                if len(payload) != receipt.get(f"{stream}_bytes") or hashlib.sha256(payload).hexdigest() != receipt.get(f"{stream}_sha256"):
+                    faults.append(f"retained_diagnostic_invalid:{index}:{side}:{stream}")
         parent_failed = sides["parent"].get("returncode") not in (None, 0) and not sides["parent"].get("boundary_hit")
         target_passed = sides["target"].get("returncode") == 0 and not sides["target"].get("boundary_hit")
         disposition = "QUALIFIED_PARENT_FAIL_TARGET_PASS" if parent_failed and target_passed else "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT"

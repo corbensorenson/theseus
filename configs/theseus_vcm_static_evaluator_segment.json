@@ -1,11 +1,11 @@
 {
   "policy": "project_theseus_vcm_static_evaluator_segment_v1",
-  "state": "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_BEFORE_EXECUTION",
+  "state": "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_DIAGNOSTIC_REPLAY_V2",
   "owner": "scripts/theseus_vcm_static_evaluator_segment.py",
-  "owner_sha256": "f87218da8a547504c895674975f6d03b0c33103fbb1cc8b706d6ae0171d4cb3a",
+  "owner_sha256": "a5156608ab5c9027901d3551b83de5e1206a28692e0c0d13245b97d9bd8b1e19",
   "audit_policy": "project_theseus_vcm_static_evaluator_segment_audit_v1",
   "audit_owner": "scripts/theseus_vcm_static_evaluator_segment_audit.py",
-  "audit_owner_sha256": "db4c5afe8bc473f06eed48b0616250667b8162d8a451b614215af56c682d4136",
+  "audit_owner_sha256": "6fffcaa65f957c2d37db4dd752625dd066448ae6f06974f4183a34b5ee8c012e",
   "expected_task_count": 8,
   "sources": [
     {"id":"repository_closures","path":"reports/theseus_vcm_repository_closure_materialization_v2.json","sha256":"0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df"},

@@ -40,7 +40,10 @@ def main() -> int:
 def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, Any], list[str]]:
     cfg = p2a.read_json(path)
     faults: list[str] = []
-    if cfg.get("policy") != POLICY or cfg.get("state") != "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_BEFORE_EXECUTION":
+    if cfg.get("policy") != POLICY or cfg.get("state") not in {
+        "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_BEFORE_EXECUTION",
+        "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_DIAGNOSTIC_REPLAY_V2",
+    }:
         faults.append("policy_or_state_invalid")
     owner = p2a.resolve(str(cfg.get("owner") or ""))
     if owner != Path(__file__).resolve() or not owner.is_file() or p2a.sha256_file(owner) != cfg.get("owner_sha256"):
@@ -161,7 +164,7 @@ def run(command: list[str], cwd: Path, work_root: Path, limits: dict[str, Any]) 
                 os.killpg(process.pid, signal.SIGKILL); returncode = process.wait()
             boundary = "wall_boundary_hit"
     stdout_bytes, stderr_bytes = stdout_path.read_bytes(), stderr_path.read_bytes()
-    return {"returncode": returncode, "duration_ms": round((time.monotonic() - started) * 1000, 3), "boundary_hit": bool(boundary), "boundary_reason": boundary, "stdout_bytes": len(stdout_bytes), "stdout_sha256": hashlib.sha256(stdout_bytes).hexdigest(), "stderr_bytes": len(stderr_bytes), "stderr_sha256": hashlib.sha256(stderr_bytes).hexdigest(), "stdout_complete": True, "stderr_complete": True, "profile_sha256": hashlib.sha256(profile.encode()).hexdigest(), "project_selected_output_cap": None}
+    return {"returncode": returncode, "duration_ms": round((time.monotonic() - started) * 1000, 3), "boundary_hit": bool(boundary), "boundary_reason": boundary, "stdout": stdout_bytes.decode("utf-8", errors="replace"), "stderr": stderr_bytes.decode("utf-8", errors="replace"), "stdout_bytes": len(stdout_bytes), "stdout_sha256": hashlib.sha256(stdout_bytes).hexdigest(), "stderr_bytes": len(stderr_bytes), "stderr_sha256": hashlib.sha256(stderr_bytes).hexdigest(), "stdout_complete": True, "stderr_complete": True, "profile_sha256": hashlib.sha256(profile.encode()).hexdigest(), "project_selected_output_cap": None}
 
 
 def finish(cfg: dict[str, Any], path: Path, rows: list[dict[str, Any]], faults: list[str]) -> dict[str, Any]:
