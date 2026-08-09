@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_03_RISK_EXECUTOR_V2_PROSPECTIVELY_SEALED` | The v1 executor launch failed before any external command because its generic config omitted the sandbox binding. V2 binds that exact tool and is prospectively sealed at zero commands, network calls, and store writes |
+| Active VCM claim | `VCM_V3_K2_03_V2_BUN_QUALIFIED_YARN_NODE_GAP` | V2 qualified Bun acquisition and network-denied replay with one retained shared store, then failed closed before Yarn installation because Node 22.15.0 did not satisfy transitive jsdom 30.0.1's engine range. TypeScript and Rust did not execute |
 | VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
 | VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -67,21 +67,25 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`generic_vcm_resource_and_risk_canaries_v1`, last closed task 26, and the wall
-`four_ecosystem_risk_canaries_not_executed_or_role_separated_audited`.
+`k2_03_generic_ecosystem_risk_canaries_v2`, last closed task 26, and the wall
+`yarn_transitive_node_engine_requirement_not_source_bound`.
 The next legal action is
-`execute_and_role_separately_audit_generic_bun_yarn_typescript_untrusted_rust_canaries`.
+`source_bind_compatible_project_local_node_and_resume_without_reacquiring_qualified_bun_store`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
-The generic owner now also binds the K2.03 representative selection and
-resource preflight at zero execution:
+The generic owner binds the K2.03 representative selection and resource
+preflight:
 parent-only Task 61 for Bun and TypeScript, Task 4 for Yarn, and exact-Rust
 Task 36 for untrusted compilation, in that serialized order. The 10 GiB reserve
 and per-row temporary/time/RSS ceilings are safety interlocks; activating one is
 an inconclusive instrument/experiment observation, never a capability failure.
-The exact mutating implementation is now source-bound and prospectively sealed
-at zero execution; the sealed run and role-separated audit remain open.
+V2 qualified Bun online/offline within the reserve and retained one shared
+store. Yarn exposed an unmodeled transitive Node-engine constraint before any
+package installation; TypeScript and Rust remained unexecuted. The next
+campaign must source-bind a compatible project-local Node, verify and reuse the
+existing Bun store, resume the remaining risk classes, and then undergo
+role-separated audit.
 
 ## Active Claim And Residual
 

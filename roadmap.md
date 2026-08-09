@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V2_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V2_BUN_QUALIFIED_YARN_NODE_GAP` |
 | Selected task | 26 |
-| Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
-| Current wall | `four_ecosystem_risk_canaries_not_executed_or_role_separated_audited` |
+| Active attempt | `k2_03_generic_ecosystem_risk_canaries_v2` |
+| Current wall | `yarn_transitive_node_engine_requirement_not_source_bound` |
 | Last closed task | 26 |
-| Next legal action | `execute_and_role_separately_audit_generic_bun_yarn_typescript_untrusted_rust_canaries` |
+| Next legal action | `source_bind_compatible_project_local_node_and_resume_without_reacquiring_qualified_bun_store` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -348,12 +348,16 @@ representatives and order: Task 61 Bun install, Task 4 Yarn install,
 Task 61 TypeScript `tsc --noEmit`, and Task 36 Rust 1.97.1 `cargo test --no-run`.
 The rows execute serially under a 10 GiB reserve; their conservative temporary,
 time, and RSS ceilings are host-safety boundaries rather than capability limits.
-The mutating generic-owner implementation is now source-bound and its exact
-execution is prospectively sealed; execution and role-separated audit are next.
 The v1 launch exposed a missing generic sandbox binding before any external
-command. It is retained as `INCONCLUSIVE_IMPLEMENTATION`. V2 binds the exact
-sandbox executable and resets execution counters to zero under a new campaign
-identity; this repair does not alter rows, commands, limits, or inference.
+command and remains `INCONCLUSIVE_IMPLEMENTATION`. V2 bound that tool and ran:
+Task 61 Bun acquisition and network-denied replay passed, one content-bound
+shared Bun store was retained, and the 10 GiB reserve held. Task 4 Yarn then
+failed before installation because transitive `jsdom@30.0.1` requires Node
+`^22.22.2 || ^24.15.0 || >=26.0.0`, while the sealed runtime was 22.15.0.
+TypeScript and Rust did not execute. This is a scoped toolchain-coverage gap,
+not task or VCM evidence. A new campaign may source-bind a compatible
+project-local Node and resume idempotently, but must verify and reuse the
+qualified Bun store rather than reacquire it.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
