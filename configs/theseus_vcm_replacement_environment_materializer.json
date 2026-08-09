@@ -1,0 +1,29 @@
+{
+  "policy":"project_theseus_vcm_replacement_environment_materializer_v1",
+  "state":"PROSPECTIVE_THREE_REPLACEMENT_SHARED_STORE_DISPOSABLE_ENVIRONMENT_QUALIFICATION",
+  "bindings":[
+    {"id":"owner","path":"scripts/theseus_vcm_replacement_environment_materializer.py","sha256":"a676df751cad3909132283d9aeb743adae4d749973ad386127f621c1a222178b"},
+    {"id":"audit_owner","path":"scripts/theseus_vcm_replacement_environment_materializer_audit.py","sha256":"753d04f3e81b431f992b92ead0c3e1902c2e835a2c16c3eb2dc2ff9f28ca775b"},
+    {"id":"test","path":"tests/test_theseus_vcm_replacement_environment_materializer.py","sha256":"7df3de19d14834f6df7be7ef1186bb7273730e075d31557a7fd09511133a873b"},
+    {"id":"generic_materializer","path":"scripts/theseus_vcm_six_row_environment_materializer.py","sha256":"8d3ba44f89f3c7b5b3f415ea4def74efc45217fe38d22e35c8d0f315108acd6e"},
+    {"id":"resolution","kind":"json","path":"reports/theseus_vcm_replacement_resolution_v3.json","sha256":"250979af1605b346b989a94eaaa0f55d9ecb1f1fc74c15bec31d473d51841dd6"},
+    {"id":"resolution_audit","kind":"json","path":"reports/theseus_vcm_replacement_resolution_audit_v3.json","sha256":"97c4eacc3e406d983cc4a66b69c6e46e2569bfd275cf204b6d1b27e5ff0726b3"},
+    {"id":"closures","kind":"json","path":"reports/theseus_vcm_repository_closure_materialization_v4.json","sha256":"0140041884b3ac976d67bdf05200e549a7cc1e2576661ed24caf0493e676e4ee"},
+    {"id":"python313_acquisition","kind":"json","path":"reports/theseus_vcm_python313_toolchain_acquisition.json","sha256":"ebfa966c792225ef61d979f45ed3f97073d7bb2da424005e09e5ae4eb0a5203c"},
+    {"id":"rust_toolchain","kind":"json","path":"reports/theseus_vcm_rust_toolchain_bootstrap.json","sha256":"9657162e8848eee7bc92e44cf01dba73654e93e9dc887d5390d4fa5b90cfc265"}
+  ],
+  "tools":{"sandbox_exec":{"path":"/usr/bin/sandbox-exec","sha256":"196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},"uv":{"path":"runtime/task_complete_toolchains/uv-bootstrap/bin/uv","sha256":"0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf"},"python_3_13":{"path":"runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13","sha256":"091704d2238fa5d3d95299894a24d02fa0cf0f874d7b1cd019f9a19b767628ab"},"cargo":{"path":"runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo","sha256":"7672ead309d505577c018fff2cafb3433601f073e38cbe87359ac1f7b944bbf5"}},
+  "rows":[
+    {"index":12,"repository":"plwp/chief-wiggum","manager":"uv","python_tool":"python_3_13","lock":"reports/theseus_vcm_replacement_resolution_locks/task-12-requirements.lock","sha256":"733fa33ed6537d573a63ce97a47750bc7f7f0918f203623c4be0e3a674db4427","package_count":16},
+    {"index":13,"repository":"paulomtts/pyjinhx","manager":"uv","python_tool":"python_3_13","lock":"reports/theseus_vcm_replacement_resolution_locks/task-13-requirements.lock","sha256":"4ab7e20f4a3bae9391386521d9dc82004aa42d01da609f3dbabfcba8c4015e56","package_count":60},
+    {"index":35,"repository":"knoguchi/marsdb","manager":"cargo","lock":"reports/theseus_vcm_replacement_resolution_locks/task-35-Cargo.lock","sha256":"546d1def8a5b79fdcebaf07e1469d6642f37051c56c0e6180ad96f3ea2e72cc4","package_count":142}
+  ],
+  "store":"runtime/vcm_evaluator/dependency_store/replacement-environments-v1",
+  "report":"reports/theseus_vcm_replacement_environment_materializer.json",
+  "audit_report":"reports/theseus_vcm_replacement_environment_materializer_audit.json",
+  "limits":{"minimum_free_bytes_after_execution":10737418240,"maximum_shared_store_bytes":1073741824,"maximum_disposable_and_temporary_bytes":536870912,"wall_seconds_per_command":1200},
+  "authority":{"serialized_network_dependency_materialization_authorized":true,"network_denied_offline_replay_authorized":true,"wheel_only_python_installation_authorized":true,"cargo_fetch_without_build_authorized":true,"shared_store_retention_authorized":true,"disposable_environment_authorized":true,"source_build_authorized":false,"project_installation_authorized":false,"repository_runner_authorized":false,"parent_target_or_evaluator_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "audit_authority":{"network_calls_authorized":false,"store_mutation_authorized":false,"package_installation_authorized":false,"source_build_authorized":false,"project_installation_authorized":false,"repository_runner_authorized":false,"parent_target_or_evaluator_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference":"A GREEN producer report proves only that the exact three replacement locks can materialize into disposable environments from one bounded shared store and replay with network denied, using wheel-only Python installs or Cargo fetch without build. It does not execute repository code or evaluators and cannot support any VCM or ASI Stack mechanism claim.",
+  "audit_maximum_inference":"A GREEN role audit independently rederives exact lock identities, online/offline environment parity, complete diagnostics, shared-store identity, and the zero-build/zero-evaluator boundary. It does not qualify common evaluators, candidates, controls, VCM effects, or book support."
+}
