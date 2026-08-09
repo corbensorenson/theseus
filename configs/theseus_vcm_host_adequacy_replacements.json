@@ -1,0 +1,31 @@
+{
+  "policy":"project_theseus_vcm_host_adequacy_replacements_v1",
+  "state":"PROSPECTIVE_GENERIC_REPLACEMENT_AFTER_EXPLICIT_UNSUPPORTED_HOST_MANIFEST",
+  "purpose":"Replace any currently invalidated row only after its exact full closure proves explicit unsupported-host dependencies or imports, and reject future candidates with the same static host incompatibility before admission.",
+  "base_replacement_config":"configs/theseus_vcm_language_replacements_v2.json",
+  "source_panel":"reports/theseus_vcm_source_panel_audit_v4.json",
+  "repository_closure_report":"reports/theseus_vcm_repository_closure_materialization_v3.json",
+  "source_bindings":[
+    {"id":"host_adequacy_owner","path":"scripts/theseus_vcm_host_adequacy_replacements.py","sha256":"b8dbe6f48eace038a0181e1715f459625234bda01f7851ff04877c87c7e96e2e"},
+    {"id":"host_adequacy_test","path":"tests/test_theseus_vcm_host_adequacy_replacements.py","sha256":"6717b66c3e5e72d3c995b184a316627b1e1a0563498093c1f9a190faeed9e2bb"},
+    {"id":"predecessor_replacement_owner","path":"scripts/theseus_vcm_three_row_adequacy_replacements.py","sha256":"a0227eb44e25d1c5ef0a70471dbcb521f364915fa7a1aa264901ba9f67dfb659"},
+    {"id":"base_replacement_owner","path":"scripts/theseus_vcm_language_replacements.py","sha256":"df007f82774f4d1ccf2c29a81ab4a51a1c8510991379e366a22ead626972792f"},
+    {"id":"content_scope_owner","path":"scripts/theseus_vcm_content_language_replacements.py","sha256":"87096b9780a6fb48e0358dd51f35b1a81406cdb07af63105bd5ad3c19dbfa532"},
+    {"id":"source_materializer","path":"scripts/theseus_vcm_source_materialization.py","sha256":"d632093e45e856ce0526dfbe7e544d6b24ab6b688543bc8b24db8921af0334bf"},
+    {"id":"base_replacement_config","path":"configs/theseus_vcm_language_replacements_v2.json","sha256":"cfbc930cbdbba06932520ea4c39c70def845fe38ec83e2bc1d01ef03bf8fc370"},
+    {"id":"source_panel","path":"reports/theseus_vcm_source_panel_audit_v4.json","sha256":"6d6a2270298b5022455b37376c2763855280e7e94c73bba1662857faab5d8886"},
+    {"id":"repository_closures","path":"reports/theseus_vcm_repository_closure_materialization_v3.json","sha256":"54dd3234c47d2b44616696d68a2f5e752bb22e437052ffc3be35c53881d72448"}
+  ],
+  "replacement_slots":[{"index":13,"panel":"claim","query_language":"Python","rejected_repository":"frame-consulting/QuantLibXlOil","rejected_title_sha256":"24832301a502f2b96786d85ce383cb107e2e82044b6f7a3c296a32c8316791ea","invalidation_class":"explicit_unsupported_host_manifest_and_import"}],
+  "host_platform":"darwin",
+  "host_manifest_paths":["pyproject.toml","requirements.txt","requirements-dev.txt","setup.cfg","setup.py","tox.ini","Pipfile"],
+  "unsupported_host_patterns":["(?i)Operating System :: Microsoft :: Windows","(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b","(?i)sys\\.platform\\s*==\\s*['\"]win32"],
+  "forbidden_unicode_scripts":[{"name":"Cyrillic","start":"0400","end":"052F"},{"name":"Hebrew","start":"0590","end":"05FF"},{"name":"Arabic","start":"0600","end":"06FF"},{"name":"Devanagari","start":"0900","end":"097F"},{"name":"Thai","start":"0E00","end":"0E7F"},{"name":"Hiragana","start":"3040","end":"309F"},{"name":"Katakana","start":"30A0","end":"30FF"},{"name":"CJK","start":"3400","end":"9FFF"},{"name":"Hangul","start":"AC00","end":"D7AF"}],
+  "binary_extensions":[".png",".jpg",".jpeg",".gif",".webp",".ico",".pdf",".zip",".gz",".wasm",".bin",".xlsx"],
+  "transport_retry_policy":{"maximum_attempts_per_logical_request":8,"retry_delays_seconds":[1.0,2.0,4.0,8.0,16.0,32.0,45.0],"maximum_total_backoff_seconds_per_logical_request":108.0,"transient_http_statuses":[408,429,500,502,503,504],"permanent_candidate_http_statuses":[404,410],"retry_unknown_network_failures":true,"rate_limited_403_retryable_when_explicit":true,"host_transport_activation_is_not_task_or_mechanism_failure":true},
+  "output_directory":"tests/fixtures/theseus_vcm_host_adequacy_replacements_v1",
+  "report":"reports/theseus_vcm_host_adequacy_replacements.json",
+  "checkpoint":"reports/theseus_vcm_host_adequacy_replacements_checkpoint.json",
+  "authority":{"public_metadata_queries_authorized":true,"public_source_file_retrieval_authorized":true,"public_pr_title_metadata_retrieval_authorized":true,"local_language_scope_classification_authorized":true,"selected_content_static_language_scan_authorized":true,"static_host_manifest_scan_authorized":true,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference":"A GREEN report proves only that the exact currently invalidated Task 13 closure explicitly requires an unsupported Windows/xloil stack and that one source-disjoint same-panel same-language replacement was selected under the original frozen rank after English-title, English-selected-content, source/verifier-change, license, and static Darwin-host compatibility checks. It executes no repository, dependency, evaluator, candidate, model, Luna, D1, or D2 surface and does not qualify the replacement evaluator or a VCM claim."
+}
