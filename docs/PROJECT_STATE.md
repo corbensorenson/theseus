@@ -56,9 +56,9 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_04_PARENT_ONLY_MATERIALIZER_ACTIVE` | K2.03's committed Bun, Yarn, narrow TypeScript, and Rust chain is role-separately GREEN with the full-project TypeScript caveat preserved. K2.04 now owns the absent parent-only production materializer and target-derived effect-path repair |
-| VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
-| VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
+| Active VCM claim | `VCM_V3_K2_05_BATCH_CLOSURES_ACTIVE` | K2.04's parent-only archive-backed store/materializer is role-separately GREEN on four representative rows; K2.05 now owns the remaining frozen closures, static classes, stores, packets, and parent-fail/target-pass evaluators |
+| VCM information flow | `BROAD_PARENT_ROOT_AND_SELECTOR_AUDIT_GREEN` | The prospective claim contract no longer exposes target-derived `allowed_effect_paths`; every arm uses broad root `repository`, and the K2.04 audit rederived all candidate-visible bytes and request/parent-only selector inputs |
+| VCM natural-task route | `REPRESENTATIVE_PARENT_ONLY_MATERIALIZER_GREEN` | Four exact parent archives produced complete uncapped text frontiers, matched governed/plain/maximal/retrieval information identities, production VCM ABI receipts, and zero downstream calls; all-62 coverage remains K2.05 work |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `ZERO_CALLS_CODEX_SUBSCRIPTION_ROUTE_REQUIRED_OR_OMIT` | The retained `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort is offline qualification evidence only and remains disabled. VCM may use Luna only through a demonstrably Codex-subscription-backed path with zero billable API inference; otherwise the arm is prospectively omitted |
@@ -67,10 +67,9 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`k2_04_parent_only_store_materializer_v1`, last closed task 26, and the wall
-`production_parent_only_vcm_store_absent_and_v1_effect_paths_target_derived`.
+`k2_05_generic_batch_closures_v1`, last closed task 26, and no current wall.
 The next legal action is
-`implement_and_role_separately_audit_parent_only_vcm_store_materializer_and_broad_effect_root`.
+`preflight_and_batch_remaining_closures_static_classes_parent_only_stores_packets_and_parent_fail_target_pass_evaluators_through_generic_owner`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -114,10 +113,15 @@ V7 passed with unchanged source and retained store. All four risk classes now
 have scoped mechanics evidence, but K2.03 remains open until one role-separated
 owner rederives the committed V2/V5/V6/V7 chain.
 
-That role-separated audit is GREEN and K2.03 is complete. K2.04 is now active
-to build the actual parent-only production store/materializer, remove
-target-derived effect paths, and independently audit every candidate-visible
-byte and selector input before packet creation.
+That role-separated audit is GREEN and K2.03 is complete. K2.04 is now GREEN as
+well: four representative parent archives produced 2,816 regular-file inventory
+receipts and 2,478 complete UTF-8 retrieval-frontier entries through an
+archive-backed store. The production VCM ABI was ready for every row; governed,
+plain, maximal, and ordinary-retrieval projections bind the same parent
+information; every arm receives broad write root `repository`; and a separate
+owner rederived all selector inputs and 16 candidate-visible byte receipts.
+No model, Luna, evaluator, runner, training, serving, D1, D2, or book action
+occurred. K2.05 is active for all remaining frozen rows.
 
 ## Active Claim And Residual
 
@@ -144,10 +148,11 @@ The observed residual selects VCM next. Its synthetic/call-free mechanics show
 that correct, omitted, stale, shuffled, wrong-scope, tainted, revoked,
 no-context, information-matched plain-context, and maximal-context states can be
 represented distinctly. That is mechanics evidence, not a natural-work
-instrument pass. The v1 candidate protocol still lists target-derived
-`allowed_effect_paths`, and no owner yet materializes the external task archives
-into a parent-only production VCM store. Both must be repaired and independently
-audited before a candidate packet exists.
+instrument pass. K2.04 repaired the v1 candidate protocol before any natural-task
+candidate was created: target-derived `allowed_effect_paths` are gone, the broad
+`repository` root is common, and the new archive-backed owner plus separate audit
+qualify representative parent-only store and request-packet mechanics. This does
+not yet qualify all 62 rows or model-visible context adequacy.
 
 A nine-task local-only panel will test model/task/evaluator/host adequacy and
 freeze the strongest eligible control; it is not claim evidence. A fresh
@@ -772,9 +777,9 @@ authorize regenerating historical reports or reopening neural work.
 3. Preserve the role-separated K2.03 qualification of Bun, Yarn, narrow
    real-parent TypeScript mechanics, and untrusted Rust, including the
    full-project TypeScript caveat.
-4. **CURRENT:** Build the production parent-only VCM store/materializer on qualified rows and
+4. **COMPLETE:** Build the production parent-only VCM store/materializer on qualified rows and
    remove target-derived effect paths before any candidate packet exists.
-5. Produce the remaining closures, parent-only packet receipts, all 62
+5. **CURRENT:** Produce the remaining closures, parent-only packet receipts, all 62
    parent-fail/target-pass receipts, blindness audit, and one contiguous K2
    freeze through the generic owner.
 6. Implement and call-free freeze the local baseline routes, host canaries,

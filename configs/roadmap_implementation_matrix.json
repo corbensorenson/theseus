@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_04_PARENT_ONLY_MATERIALIZER_ACTIVE",
+      "state": "VCM_V3_K2_05_BATCH_CLOSURES_ACTIVE",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_04_parent_only_store_materializer_v1",
-      "current_blocker": "production_parent_only_vcm_store_absent_and_v1_effect_paths_target_derived",
+      "active_attempt_id": "k2_05_generic_batch_closures_v1",
+      "current_blocker": null,
       "last_closed_task_index": 26,
-      "next_legal_action": "implement_and_role_separately_audit_parent_only_vcm_store_materializer_and_broad_effect_root",
+      "next_legal_action": "preflight_and_batch_remaining_closures_static_classes_parent_only_stores_packets_and_parent_fail_target_pass_evaluators_through_generic_owner",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 is complete: a role-separated owner rederived the committed V2/V5/V6/V7 chain and scoped-qualified Bun acquisition/replay, Yarn acquisition/replay, strict no-emit compilation of real parent TypeScript file framework/src/styles.ts, and exact Task 36 offline Rust compilation. Task 61 full-project typecheck remains INCONCLUSIVE_EXPERIMENT because its parent omits imported generated source. None of this is repository-evaluator, task, VCM, or model evidence. K2.04 is now active to build the actual parent-only VCM store/materializer and remove target-derived effect paths before any packet. Local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified the four ecosystem risk classes with the full-project Task 61 TypeScript caveat preserved. K2.04 now has a role-separately GREEN parent-only archive-backed store/materializer on four representative rows: 2,816 regular files and 2,478 text pages, complete uncapped retrieval frontiers, matched non-VCM information identities, production VCM ABI receipts, one broad repository write root, and independently rederived candidate-visible bytes. This is call-free mechanics only, not retrieval adequacy, evaluator validity, task competence, model use, utility, or causal VCM evidence. K2.05 is active for the remaining frozen closures, static classes, stores, packets, and parent-fail/target-pass evaluators. Local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -245,6 +245,23 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_04_parent_only_materializer": {
+            "producer_report": "reports/theseus_vcm_parent_only_materializer.json",
+            "producer_report_sha256": "7a902c4e9445eea6c5c56832ee6da76928fa51413804470f1f53bd655e09cf40",
+            "audit_report": "reports/theseus_vcm_parent_only_materializer_audit.json",
+            "audit_report_sha256": "50a442e7f69329e85989ce1a566a7400ae26f10cfbc1ff9eca54fe37153bd1d3",
+            "state": "K2_04_PARENT_ONLY_MATERIALIZER_ROLE_SEPARATELY_REDERIVED",
+            "representative_row_count": 4,
+            "regular_file_count": 2816,
+            "text_page_count": 2478,
+            "complete_parent_text_frontier_no_convenience_cap": true,
+            "matched_non_vcm_context_information_identity": true,
+            "broad_parent_effect_root": "repository",
+            "target_derived_effect_paths_absent": true,
+            "production_vcm_consumer_abi_ready": true,
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -300,11 +317,11 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V7 qualified strict no-emit compilation of real parent file framework/src/styles.ts after zero-network Bun replay. Bun, Yarn, narrow TypeScript, and Rust now have scoped GREEN mechanics; Task 61 full-project typecheck remains inconclusive. K2.03 requires role-separated audit of the committed evidence chain."
+            "latest_observation": "V7 qualified strict no-emit compilation of real parent file framework/src/styles.ts after zero-network Bun replay. The role-separated audit rederived Bun, Yarn, narrow TypeScript, and Rust scoped mechanics while preserving Task 61 full-project TypeScript as inconclusive."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",
-            "status": "ACTIVE",
+            "status": "COMPLETE",
             "depends_on": [
               "K2_03_RESOURCE_AND_RISK_CANARIES"
             ],
@@ -313,7 +330,7 @@
           },
           {
             "id": "K2_05_BATCH_CLOSURES_AND_EVALUATORS",
-            "status": "PENDING",
+            "status": "ACTIVE",
             "depends_on": [
               "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER"
             ],
@@ -664,9 +681,12 @@
     },
       "vcm_claim_instrument": {
         "config": "configs/theseus_vcm_claim_instrument.json",
+        "config_sha256": "6fba32243c7be581df1a84f0fb1831db27f5bbe5bd4194e9011d7d9788e10f99",
         "audit": "reports/theseus_vcm_claim_instrument_audit.json",
+        "audit_sha256": "d772b4ed90b18159e4be410dfaf9e0e31cd7cadfb6b4252d43e8437809269c8a",
         "owner": "scripts/theseus_vcm_claim_instrument.py",
-        "state": "GREEN_CALL_FREE_SOURCE_ACQUISITION_AUTHORIZED",
+        "owner_sha256": "e9026f45ee2dbeda86f281b82b348619f43a837d24d96fc3322b628e05f7686b",
+        "state": "GREEN_CALL_FREE_PARENT_ONLY_MATERIALIZER_BOUND",
         "control_qualification_task_count": 9,
         "claim_task_count": 53,
         "minimum_useful_absolute_effect": 0.35,
@@ -676,6 +696,8 @@
         "control_and_claim_panels_source_disjoint": true,
         "local_model_calls_authorized": 0,
         "external_reference_calls_authorized": 0,
+        "luna_transport": "demonstrably_codex_subscription_backed_only_or_omit",
+        "billable_api_spend_authorized": false,
         "task_source_acquisition_requires_user_input": false,
         "project_selected_quality_token_cap": null
       },

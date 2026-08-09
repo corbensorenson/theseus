@@ -3,9 +3,9 @@
   "audit_policy": "project_theseus_vcm_parent_only_materializer_audit_v1",
   "state": "PROSPECTIVE_K2_04_PARENT_ONLY_MATERIALIZER_ZERO_CALLS",
   "owner": "scripts/theseus_vcm_parent_only_materializer.py",
-  "owner_sha256": "d4b9a6870aef09bdeb84226fabc0a281e69c8b355f682c514bd9a48c3ef29fba",
+  "owner_sha256": "7e48b0eabf447e282d554767013f3876196a74784a83ba4f6a6cdc741d4255ac",
   "audit_owner": "scripts/theseus_vcm_parent_only_materializer_audit.py",
-  "audit_owner_sha256": "0cd9dd31a84bb40136fcf7654e3e7e384fbbe4cfbc9f87e4f6ceb65247513274",
+  "audit_owner_sha256": "5ad121982f9fefe49cd1dacd899110a513fbc98ae74efdd3cfc7fc34de9df5d8",
   "broad_parent_effect_root": "repository",
   "expected_row_count": 4,
   "rows": [

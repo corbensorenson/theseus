@@ -124,6 +124,26 @@ def audit(path: Path = DEFAULT_CONFIG, *, producer: dict[str, Any] | None = None
             visible_count += 1
         if produced.get("candidate_visible_projection_sha256") != digest(canonical(surface)):
             faults.append(f"candidate_visible_projection_invalid:{request_id}")
+        matched = p2a.mapping(produced.get("matched_context_materialization_receipts"))
+        vcm_set = p2a.mapping(matched.get("governed_vcm"))
+        for route_id in (
+            "information_matched_plain_context",
+            "maximal_full_parent_context",
+            "ordinary_direct_retrieval",
+        ):
+            route_set = p2a.mapping(matched.get(route_id))
+            if (
+                route_set.get("information_set_sha256") != vcm_set.get("information_set_sha256")
+                or route_set.get("parent_text_page_count") != vcm_set.get("parent_text_page_count")
+                or route_set.get("parent_text_bytes") != vcm_set.get("parent_text_bytes")
+                or route_set.get("project_selected_page_or_byte_cap") is not None
+            ):
+                faults.append(f"matched_context_information_mismatch:{request_id}:{route_id}")
+        no_context = p2a.mapping(matched.get("no_added_context"))
+        if no_context.get("parent_text_page_count") != 0 or no_context.get("parent_text_bytes") != 0:
+            faults.append(f"no_added_context_not_empty:{request_id}")
+        if produced.get("matched_context_information_identity_preserved") is not True:
+            faults.append(f"matched_context_identity_receipt_missing:{request_id}")
         abi = p2a.mapping(produced.get("vcm_consumer_abi"))
         if abi.get("ready") is not True or abi.get("validation", {}).get("passed") is not True:
             faults.append(f"production_vcm_abi_not_ready:{request_id}")
@@ -160,6 +180,7 @@ def audit(path: Path = DEFAULT_CONFIG, *, producer: dict[str, Any] | None = None
             "candidate_visible_bytes_individually_rederived": not faults,
             "single_broad_parent_effect_root": not faults,
             "target_derived_effect_paths_absent": not faults,
+            "matched_non_vcm_context_information_identity": not faults,
             "production_vcm_consumer_abi_ready": not faults,
         },
         "network_or_external_execution_performed": False,

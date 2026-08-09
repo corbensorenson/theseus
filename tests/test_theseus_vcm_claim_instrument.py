@@ -64,6 +64,19 @@ def test_vcm_claim_design_has_no_quality_cap_or_cross_stage_authority() -> None:
     assert config["prospective_design"]["task_count_binding_rule"] == (
         "derive_from_predeclared_useful_effect_power_analysis_before_source_acquisition"
     )
+    assert set(config["prospective_design"]["candidate_visible_fields"]) == {
+        "natural_language_request",
+        "callable_signature_when_present",
+        "broad_parent_effect_root",
+        "arm_specific_model_visible_context",
+    }
+    assert "allowed_effect_paths" not in config["prospective_design"]["candidate_visible_fields"]
+    assert config["prospective_design"]["effect_boundary"] == {
+        "broad_parent_effect_root": "repository",
+        "same_root_for_every_arm": True,
+        "target_derived_effect_paths_forbidden": True,
+        "candidate_patch_scope_recomputed_independently": True,
+    }
     assert config["context_resource_policy"]["information_matched_plain_context_budget"].startswith("exact same information")
     power = config["prospective_design"]["power_design"]
     assert power["minimum_useful_absolute_effect"] == 0.35

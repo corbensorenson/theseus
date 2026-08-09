@@ -1,0 +1,688 @@
+{
+  "audit_kind": "producer receipt; separate role audit required",
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_parent_only_materializer.json",
+    "sha256": "d004ad4f5b6d08e339dd8df9800e79aa82cb4877c40480db0c5323632a8c0479"
+  },
+  "created_utc": "2026-08-09T01:38:01.063509Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "information_flow": {
+    "allowed_effect_paths_present": false,
+    "answer_identifying_metadata_read": false,
+    "candidate_visible_fields": [
+      "natural_language_request",
+      "callable_signature_when_present",
+      "broad_parent_effect_root",
+      "arm_specific_model_visible_context"
+    ],
+    "complete_parent_text_frontier_retained_without_selection_cap": true,
+    "selector_inputs": [
+      "natural_language_request_utf8",
+      "parent_regular_file_relative_path_utf8",
+      "parent_regular_file_content_bytes",
+      "fixed_selector_policy"
+    ],
+    "target_archive_read": false,
+    "target_diff_read": false,
+    "target_selected_path_read": false
+  },
+  "maximum_inference": "A GREEN producer receipt establishes only that four already-qualified representative parent archives can be indexed as complete archive-backed VCM stores and wrapped in production VCM consumer-ABI packets using the natural request, parent paths/content, and fixed policy only. It creates no model candidate, executes no evaluator, and does not establish retrieval adequacy, useful model behavior, causal VCM benefit, campaign readiness, or book support.",
+  "network_fetches": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_parent_only_materializer_v1",
+  "regular_file_count": 2816,
+  "repository_runner_executions": 0,
+  "row_count": 4,
+  "rows": [
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "5b0795f4265c8b4d96a5b282",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/6d432e6bd859fb9ab469e1f466ce3caf33d3fbd2b122db3bdda685610923eccc/791036361e88f2ff24935227cf9b1fab6ea597a9d900bc4c6c4f313ff552c240"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "fix(hosts): close kimi adapter review follow-ups"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "dca1e1d96b4aad59329c7d18ed325771a7d5e1c1f23219a74572a8a32f4e3b7b",
+          "utf8_bytes": 50
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "3157723f94ed65f7252808f390308fb40e6f4d2c5df94c9b4cd5977310375a67",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "909e7058f82dd5e9605dc3e62785f2796fea1b8f926059b7fd9e192b384d7601",
+      "faults": [],
+      "inventory_sha256": "791036361e88f2ff24935227cf9b1fab6ea597a9d900bc4c6c4f313ff552c240",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_bytes": 7181310,
+          "parent_text_frontier_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_page_count": 556,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_bytes": 7181310,
+          "parent_text_frontier_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_page_count": 556,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 7181310,
+          "parent_text_frontier_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_page_count": 556,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_bytes": 7181310,
+          "parent_text_frontier_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+          "parent_text_page_count": 556,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "3368e4e6ec82bdfc671040a82544644caeb40acc197cd99f01175ad54d75cf7d",
+      "parent_revision_sha256": "94e05a5110d310c73fa777b1f0de6efa94573a98551db5143d155b300a6186ca",
+      "regular_file_bytes": 7857854,
+      "regular_file_count": 560,
+      "request_id": "6d432e6bd859fb9ab469e1f466ce3caf33d3fbd2b122db3bdda685610923eccc",
+      "selector_frontier_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 7181310,
+      "text_page_count": 556,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/5b0795f4265c8b4d96a5b282",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:6d432e6bd859fb9ab469e1f466ce3caf33d3fbd2b122db3bdda685610923eccc",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "54065e3b41934dcbc1cbbba4",
+        "lease_expires_utc": "2026-08-09T01:53:00.301295Z",
+        "lease_id": "a7def2355cade4befd1692e3",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "5b0795f4265c8b4d96a5b282",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "0de40139a759213583b46b2f",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "8f92b8c1f49086bdf92b3d4c",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "eebb4b1e3dd68faaa06d59c7",
+        "source_ref_count": 2,
+        "source_ref_digest": "dd0448120ea43305053c5f33",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "01000ca78b3c2d30169c7e07",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/bfb9beb33a83fbe9e39b3341895a029bde3359a56f06cd20a9aecfd3f1948f7d/d83fd226dbc420f0ffc2359d051251d593bfdccfa7c9868d736b9e83c878df97"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "feat: Writer-style Share dialog \u2014 general-access-first, 3 view tiers, per-member roles (#106)"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "314b6c9b00eb00234d6b12b2d871d5f5a7c52ceb316fbd6c2464743b6440e4b6",
+          "utf8_bytes": 97
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "1f3d74525f3c3a65e319c1c7d0f2a0cb490408c73dda875a2c27f1ac14e24d3a",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "aa895489ccc392eb0638fb773fe7e10791d34013f944d25d97a2270c0a50feca",
+      "faults": [],
+      "inventory_sha256": "d83fd226dbc420f0ffc2359d051251d593bfdccfa7c9868d736b9e83c878df97",
+      "license_spdx": "AGPL-3.0",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_bytes": 1849317,
+          "parent_text_frontier_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_page_count": 300,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_bytes": 1849317,
+          "parent_text_frontier_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_page_count": 300,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 1849317,
+          "parent_text_frontier_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_page_count": 300,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_bytes": 1849317,
+          "parent_text_frontier_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+          "parent_text_page_count": 300,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79",
+      "parent_revision_sha256": "083ce7c98d2c5205dcc94652ede504bc19337422e36b271312e930b5d0d0db88",
+      "regular_file_bytes": 1885590,
+      "regular_file_count": 303,
+      "request_id": "bfb9beb33a83fbe9e39b3341895a029bde3359a56f06cd20a9aecfd3f1948f7d",
+      "selector_frontier_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 1849317,
+      "text_page_count": 300,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/01000ca78b3c2d30169c7e07",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:bfb9beb33a83fbe9e39b3341895a029bde3359a56f06cd20a9aecfd3f1948f7d",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "a7e593a7cedeafe5ad3d3443",
+        "lease_expires_utc": "2026-08-09T01:53:00.400321Z",
+        "lease_id": "604087fb11ff0806c079addb",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "01000ca78b3c2d30169c7e07",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "4d79604bb606d0089d39b537",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "3661623a27780bec91be6d39",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "8527a21654d67e36977bbff6",
+        "source_ref_count": 2,
+        "source_ref_digest": "817743d8729d3a134dcf0e73",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "300cc888bc370f8e01e78b9a",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/92cfd0d01dc0658ba3721930e20907eb72ec16b96bd5fc6a24e0860a50e9cdad/f72a5ea5cd013bc9d410b69556303aa6416d9d10d442abc8d3845eb4ddc81323"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "Stop allocating to compare a literal path segment"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "fa400310fc089ae1284a8584a6a314bb68432c77c6459b4364e24e46971b2cf6",
+          "utf8_bytes": 51
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "74a351a280d66e5ad9e87906fdce716f778511b317812185ac4ec7d977ee3832",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "cec504ffb4e64f702480f996bc3008ee8b71d730b8a2799e5fd6b0665f7c74c5",
+      "faults": [],
+      "inventory_sha256": "f72a5ea5cd013bc9d410b69556303aa6416d9d10d442abc8d3845eb4ddc81323",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_bytes": 1335258,
+          "parent_text_frontier_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_page_count": 850,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_bytes": 1335258,
+          "parent_text_frontier_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_page_count": 850,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 1335258,
+          "parent_text_frontier_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_page_count": 850,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_bytes": 1335258,
+          "parent_text_frontier_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+          "parent_text_page_count": 850,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "7bfba9fcf161ebeb08cbaca77a8746d628675b728857d0fc345699a81a694b1d",
+      "parent_revision_sha256": "93861ad2cdf77f71207a5aa084b46ccd0f140aa07cdd5133f1d1ebad008409d1",
+      "regular_file_bytes": 2109386,
+      "regular_file_count": 851,
+      "request_id": "92cfd0d01dc0658ba3721930e20907eb72ec16b96bd5fc6a24e0860a50e9cdad",
+      "selector_frontier_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 1335258,
+      "text_page_count": 850,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/300cc888bc370f8e01e78b9a",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:92cfd0d01dc0658ba3721930e20907eb72ec16b96bd5fc6a24e0860a50e9cdad",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "993f3e6220d688368edbe2a8",
+        "lease_expires_utc": "2026-08-09T01:53:00.498572Z",
+        "lease_id": "0af40d8a7277779bd35a82ca",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "300cc888bc370f8e01e78b9a",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "af1f6717cf4d6fc6059744eb",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "11a7fc4fa2d0fadc1fa11440",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "e1574c384a3c7c06f85c144e",
+        "source_ref_count": 2,
+        "source_ref_digest": "bd976e9d502e982fd8d2ebac",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "52d175c5ea470ef979b66315",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/41b9c0eb8d335bb65e3e9a6825a23a5d30778b255601b601af059694f1f70dd0/5e2d9f7d645e1da67db2ae676393d966a2d4390b1e9981e6d1af7393f244eebb"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "fix(components): portal hosts are hit-transparent \u2014 the constant-33 hardware bug"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "ea3b0d3172355fb71ba28aed10f0b15d4d9b04130e8ab49caa5dbdf68a94915b",
+          "utf8_bytes": 84
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "8684ecb08006e5c450f9b828bbba39307ee86fa2edcf6339cfb424fbf61ecf35",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "d821e59660047088f1369212aa3a93fb065c82e79236fbcea794c4f1f5b27d36",
+      "faults": [],
+      "inventory_sha256": "5e2d9f7d645e1da67db2ae676393d966a2d4390b1e9981e6d1af7393f244eebb",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_bytes": 6651017,
+          "parent_text_frontier_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_page_count": 772,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_bytes": 6651017,
+          "parent_text_frontier_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_page_count": 772,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 6651017,
+          "parent_text_frontier_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_page_count": 772,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_bytes": 6651017,
+          "parent_text_frontier_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+          "parent_text_page_count": 772,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e",
+      "parent_revision_sha256": "2e9dc9d6e9fcbc09313f56b80445290200388b59d258e195914575410c8b1077",
+      "regular_file_bytes": 48663631,
+      "regular_file_count": 1102,
+      "request_id": "41b9c0eb8d335bb65e3e9a6825a23a5d30778b255601b601af059694f1f70dd0",
+      "selector_frontier_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 6651017,
+      "text_page_count": 772,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/52d175c5ea470ef979b66315",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:41b9c0eb8d335bb65e3e9a6825a23a5d30778b255601b601af059694f1f70dd0",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "97f50e2bc8f6295d3227384b",
+        "lease_expires_utc": "2026-08-09T01:53:01.060008Z",
+        "lease_id": "f77c1b6f0b9b7a6e318cccae",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "52d175c5ea470ef979b66315",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "3700008e789e06ee465bdd23",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "f8603014604b688e466bf7be",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "5160c524691d59321a8c049a",
+        "source_ref_count": 2,
+        "source_ref_digest": "6835b5fcab23f01384ceeef9",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    }
+  ],
+  "state": "K2_04_PARENT_ONLY_STORE_AND_REQUEST_MATERIALIZER_GREEN",
+  "store_artifact": {
+    "bytes": 2069888,
+    "path": "runtime/vcm_evaluator/parent_only_store_v1.json",
+    "sha256": "dd3350ac780ba6a728ac8bed4db563ee245ffd22f195226ab1eef9ae7b127201"
+  },
+  "text_page_count": 2478,
+  "trigger_state": "GREEN"
+}

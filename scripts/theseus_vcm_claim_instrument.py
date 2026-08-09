@@ -94,6 +94,45 @@ def audit(config_path: Path) -> dict[str, Any]:
     if any(row.get("passed") is not True for row in route_controls):
         faults.append("vcm_route_control_invalid")
     design = p2a.mapping(config.get("prospective_design"))
+    materializer_audit = p2a.read_json(
+        ROOT / "reports" / "theseus_vcm_parent_only_materializer_audit.json"
+    )
+    if (
+        materializer_audit.get("trigger_state") != "GREEN"
+        or materializer_audit.get("state")
+        != "K2_04_PARENT_ONLY_MATERIALIZER_ROLE_SEPARATELY_REDERIVED"
+        or materializer_audit.get("candidate_or_control_calls") != 0
+        or materializer_audit.get("external_reference_calls") != 0
+        or not all(
+            p2a.mapping(materializer_audit.get("conclusions")).get(key) is True
+            for key in (
+                "exact_parent_archives_only",
+                "complete_parent_text_frontier_no_convenience_cap",
+                "selector_inputs_request_and_parent_only",
+                "candidate_visible_bytes_individually_rederived",
+                "single_broad_parent_effect_root",
+                "target_derived_effect_paths_absent",
+                "matched_non_vcm_context_information_identity",
+                "production_vcm_consumer_abi_ready",
+            )
+        )
+    ):
+        faults.append("parent_only_materializer_audit_invalid")
+    if set(p2a.strings(design.get("candidate_visible_fields"))) != {
+        "natural_language_request",
+        "callable_signature_when_present",
+        "broad_parent_effect_root",
+        "arm_specific_model_visible_context",
+    }:
+        faults.append("candidate_visible_field_contract_invalid")
+    effect_boundary = p2a.mapping(design.get("effect_boundary"))
+    if (
+        effect_boundary.get("broad_parent_effect_root") != "repository"
+        or effect_boundary.get("same_root_for_every_arm") is not True
+        or effect_boundary.get("target_derived_effect_paths_forbidden") is not True
+        or effect_boundary.get("candidate_patch_scope_recomputed_independently") is not True
+    ):
+        faults.append("broad_parent_effect_boundary_invalid")
     control_arms = p2a.dicts(design.get("control_qualification_arms"))
     claim_arms = p2a.dicts(design.get("claim_arms"))
     required_control_arms = {
@@ -146,6 +185,18 @@ def audit(config_path: Path) -> dict[str, Any]:
         or completion.get("context_materialization_budget_is_causal_resource") is not True
     ):
         faults.append("completion_policy_invalid")
+    reference = p2a.mapping(config.get("openai_measurement_reference"))
+    if (
+        reference.get("provider") != "OpenAI"
+        or reference.get("model") != "gpt-5.6-luna"
+        or reference.get("reasoning_effort") != "xhigh"
+        or reference.get("transport") != "demonstrably_codex_subscription_backed_only"
+        or reference.get("billable_api_spend_authorized") is not False
+        or reference.get("api_credentials_or_api_billing_route_allowed") is not False
+        or reference.get("subscription_provenance_receipt_required_before_authorization") is not True
+        or reference.get("omit_if_subscription_provenance_cannot_be_proved") is not True
+    ):
+        faults.append("openai_reference_subscription_boundary_invalid")
     authority = p2a.mapping(config.get("authority"))
     if (
         authority.get("local_model_calls_authorized") != 0
@@ -172,6 +223,11 @@ def audit(config_path: Path) -> dict[str, Any]:
         "consumer_replay": {
             "trigger_state": consumer.get("trigger_state"),
             "summary": consumer.get("summary"),
+        },
+        "parent_only_materializer_audit": {
+            "trigger_state": materializer_audit.get("trigger_state"),
+            "state": materializer_audit.get("state"),
+            "conclusions": materializer_audit.get("conclusions"),
         },
         "packet_controls": packet_controls,
         "route_controls": route_controls,

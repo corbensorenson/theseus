@@ -3,7 +3,7 @@
   "candidate_generation_opened": false,
   "config": {
     "path": "configs/theseus_vcm_claim_instrument.json",
-    "sha256": "b991705c9d41c9660810dc7a877d0e33e55810eb3dec1e0a1f1d711569a52947"
+    "sha256": "6fba32243c7be581df1a84f0fb1831db27f5bbe5bd4194e9011d7d9788e10f99"
   },
   "consumer_replay": {
     "summary": {
@@ -32,7 +32,7 @@
     "teacher_calls": 0,
     "training_rows_written": 0
   },
-  "created_utc": "2026-08-03T08:54:12.658581Z",
+  "created_utc": "2026-08-09T01:39:02.878188Z",
   "faults": [],
   "governor_replay": {
     "summary": {
@@ -141,6 +141,20 @@
       "ready": false
     }
   ],
+  "parent_only_materializer_audit": {
+    "conclusions": {
+      "candidate_visible_bytes_individually_rederived": true,
+      "complete_parent_text_frontier_no_convenience_cap": true,
+      "exact_parent_archives_only": true,
+      "matched_non_vcm_context_information_identity": true,
+      "production_vcm_consumer_abi_ready": true,
+      "selector_inputs_request_and_parent_only": true,
+      "single_broad_parent_effect_root": true,
+      "target_derived_effect_paths_absent": true
+    },
+    "state": "K2_04_PARENT_ONLY_MATERIALIZER_ROLE_SEPARATELY_REDERIVED",
+    "trigger_state": "GREEN"
+  },
   "policy": "project_theseus_vcm_claim_instrument_audit_v1",
   "predecessor_terminal_disposition": {
     "path": "reports/theseus_semantic_ir_production_adequacy_v6_terminal_disposition.json",
@@ -181,7 +195,7 @@
       "passed": true
     }
   ],
-  "runtime_ms": 2342.728,
+  "runtime_ms": 2555.15,
   "task_source_acquisition_opened": false,
   "trigger_state": "GREEN"
 }

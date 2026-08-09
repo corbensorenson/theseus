@@ -7,12 +7,37 @@
     {
       "id": "instrument_owner",
       "path": "scripts/theseus_vcm_claim_instrument.py",
-      "sha256": "ed6c9f450250dad4f5f6e88bdf4f9181b2c1a6526170b596c3dd194908ff76ef"
+      "sha256": "e9026f45ee2dbeda86f281b82b348619f43a837d24d96fc3322b628e05f7686b"
     },
     {
       "id": "vcm_consumer_abi",
       "path": "scripts/vcm_consumer_abi.py",
       "sha256": "2011ea6df842df1e84241d5f2f909cf21e92a2da45a409ec4104bb808e5a05a4"
+    },
+    {
+      "id": "parent_only_materializer_owner",
+      "path": "scripts/theseus_vcm_parent_only_materializer.py",
+      "sha256": "7e48b0eabf447e282d554767013f3876196a74784a83ba4f6a6cdc741d4255ac"
+    },
+    {
+      "id": "parent_only_materializer_audit_owner",
+      "path": "scripts/theseus_vcm_parent_only_materializer_audit.py",
+      "sha256": "5ad121982f9fefe49cd1dacd899110a513fbc98ae74efdd3cfc7fc34de9df5d8"
+    },
+    {
+      "id": "parent_only_materializer_config",
+      "path": "configs/theseus_vcm_parent_only_materializer.json",
+      "sha256": "d004ad4f5b6d08e339dd8df9800e79aa82cb4877c40480db0c5323632a8c0479"
+    },
+    {
+      "id": "parent_only_materializer_report",
+      "path": "reports/theseus_vcm_parent_only_materializer.json",
+      "sha256": "7a902c4e9445eea6c5c56832ee6da76928fa51413804470f1f53bd655e09cf40"
+    },
+    {
+      "id": "parent_only_materializer_role_audit",
+      "path": "reports/theseus_vcm_parent_only_materializer_audit.json",
+      "sha256": "50a442e7f69329e85989ce1a566a7400ae26f10cfbc1ff9eca54fe37153bd1d3"
     },
     {
       "id": "vcm_governor_owner",
@@ -99,6 +124,11 @@
     "model": "gpt-5.6-luna",
     "reasoning_effort": "xhigh",
     "measurement_only": true,
+    "transport": "demonstrably_codex_subscription_backed_only",
+    "billable_api_spend_authorized": false,
+    "api_credentials_or_api_billing_route_allowed": false,
+    "subscription_provenance_receipt_required_before_authorization": true,
+    "omit_if_subscription_provenance_cannot_be_proved": true,
     "same_candidate_visible_task_packet_required": true,
     "same_independent_hidden_evaluator_required": true,
     "outputs_may_select_tasks_or_tune_local_arms": false,
@@ -134,9 +164,15 @@
     "candidate_visible_fields": [
       "natural_language_request",
       "callable_signature_when_present",
-      "allowed_effect_paths",
+      "broad_parent_effect_root",
       "arm_specific_model_visible_context"
     ],
+    "effect_boundary": {
+      "broad_parent_effect_root": "repository",
+      "same_root_for_every_arm": true,
+      "target_derived_effect_paths_forbidden": true,
+      "candidate_patch_scope_recomputed_independently": true
+    },
     "hidden_fields": [
       "source_task_id",
       "repository_identity",

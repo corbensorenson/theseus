@@ -1,0 +1,80 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_candidate_visible_field_count": 16,
+  "audited_row_count": 4,
+  "candidate_or_control_calls": 0,
+  "conclusions": {
+    "candidate_visible_bytes_individually_rederived": true,
+    "complete_parent_text_frontier_no_convenience_cap": true,
+    "exact_parent_archives_only": true,
+    "matched_non_vcm_context_information_identity": true,
+    "production_vcm_consumer_abi_ready": true,
+    "selector_inputs_request_and_parent_only": true,
+    "single_broad_parent_effect_root": true,
+    "target_derived_effect_paths_absent": true
+  },
+  "config": {
+    "path": "configs/theseus_vcm_parent_only_materializer.json",
+    "sha256": "d004ad4f5b6d08e339dd8df9800e79aa82cb4877c40480db0c5323632a8c0479"
+  },
+  "created_utc": "2026-08-09T01:38:02.259174Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN role-separated audit establishes only the exact K2.04 mechanics boundary on four representative rows: parent-only archive identity, complete uncapped text frontier, request-and-parent-only selector inputs, byte-level candidate-surface receipts, one broad parent write root, absence of target-derived effect paths, and production VCM ABI readiness. It does not establish context adequacy, evaluator validity, model use, utility, economics, transfer, training, serving, or book support.",
+  "network_or_external_execution_performed": false,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_parent_only_materializer_audit_v1",
+  "repository_runner_executions": 0,
+  "rows": [
+    {
+      "broad_parent_effect_root": "repository",
+      "candidate_visible_field_count": 4,
+      "candidate_visible_projection_sha256": "909e7058f82dd5e9605dc3e62785f2796fea1b8f926059b7fd9e192b384d7601",
+      "inventory_sha256": "791036361e88f2ff24935227cf9b1fab6ea597a9d900bc4c6c4f313ff552c240",
+      "parent_archive_sha256": "3368e4e6ec82bdfc671040a82544644caeb40acc197cd99f01175ad54d75cf7d",
+      "regular_file_count": 560,
+      "request_id": "6d432e6bd859fb9ab469e1f466ce3caf33d3fbd2b122db3bdda685610923eccc",
+      "selector_frontier_sha256": "f9a29f3dde42e13858418bbeb5430413b976188a04a429f7d2ac1a62a5981741",
+      "text_page_count": 556,
+      "vcm_consumer_abi_ready": true
+    },
+    {
+      "broad_parent_effect_root": "repository",
+      "candidate_visible_field_count": 4,
+      "candidate_visible_projection_sha256": "aa895489ccc392eb0638fb773fe7e10791d34013f944d25d97a2270c0a50feca",
+      "inventory_sha256": "d83fd226dbc420f0ffc2359d051251d593bfdccfa7c9868d736b9e83c878df97",
+      "parent_archive_sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79",
+      "regular_file_count": 303,
+      "request_id": "bfb9beb33a83fbe9e39b3341895a029bde3359a56f06cd20a9aecfd3f1948f7d",
+      "selector_frontier_sha256": "5d9ab353b974f21bb220218c6280b79bcb46037a122f5e4e17ecb15289a7954f",
+      "text_page_count": 300,
+      "vcm_consumer_abi_ready": true
+    },
+    {
+      "broad_parent_effect_root": "repository",
+      "candidate_visible_field_count": 4,
+      "candidate_visible_projection_sha256": "cec504ffb4e64f702480f996bc3008ee8b71d730b8a2799e5fd6b0665f7c74c5",
+      "inventory_sha256": "f72a5ea5cd013bc9d410b69556303aa6416d9d10d442abc8d3845eb4ddc81323",
+      "parent_archive_sha256": "7bfba9fcf161ebeb08cbaca77a8746d628675b728857d0fc345699a81a694b1d",
+      "regular_file_count": 851,
+      "request_id": "92cfd0d01dc0658ba3721930e20907eb72ec16b96bd5fc6a24e0860a50e9cdad",
+      "selector_frontier_sha256": "0b51cd829c75ad531330547cdf4cc722175dbd476060cb2699e141144b115a5e",
+      "text_page_count": 850,
+      "vcm_consumer_abi_ready": true
+    },
+    {
+      "broad_parent_effect_root": "repository",
+      "candidate_visible_field_count": 4,
+      "candidate_visible_projection_sha256": "d821e59660047088f1369212aa3a93fb065c82e79236fbcea794c4f1f5b27d36",
+      "inventory_sha256": "5e2d9f7d645e1da67db2ae676393d966a2d4390b1e9981e6d1af7393f244eebb",
+      "parent_archive_sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e",
+      "regular_file_count": 1102,
+      "request_id": "41b9c0eb8d335bb65e3e9a6825a23a5d30778b255601b601af059694f1f70dd0",
+      "selector_frontier_sha256": "ce93fa1e485d6865ede772435b38a1639bcbf396ec5be70dce4de3be5e6cbe21",
+      "text_page_count": 772,
+      "vcm_consumer_abi_ready": true
+    }
+  ],
+  "state": "K2_04_PARENT_ONLY_MATERIALIZER_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}

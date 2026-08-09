@@ -22,6 +22,13 @@ def test_parent_only_store_and_production_abi_materialize() -> None:
         assert row["allowed_effect_paths_present"] is False
         assert row["candidate_surface"]["broad_parent_effect_root"] == "repository"
         assert row["vcm_consumer_abi"]["ready"] is True
+        matched = row["matched_context_materialization_receipts"]
+        assert matched["governed_vcm"]["information_set_sha256"] == matched[
+            "information_matched_plain_context"
+        ]["information_set_sha256"]
+        assert matched["governed_vcm"]["information_set_sha256"] == matched[
+            "ordinary_direct_retrieval"
+        ]["information_set_sha256"]
     for row in store["rows"]:
         assert row["selector"]["selected_page_or_byte_cap"] is None
         assert len(row["selector"]["frontier"]) == sum(

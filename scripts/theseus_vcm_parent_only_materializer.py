@@ -262,6 +262,40 @@ def build_row(binding: dict[str, Any], config_path: Path, cfg: dict[str, Any]) -
             "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
         },
     }
+    shared_information = {
+        "parent_text_frontier_sha256": frontier_sha,
+        "parent_text_page_count": len(frontier),
+        "parent_text_bytes": sum(int(row["bytes"]) for row in frontier),
+        "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+        "project_selected_page_or_byte_cap": None,
+    }
+    matched_contexts = {
+        "no_added_context": {
+            "information_set_sha256": canonical_sha256([]),
+            "parent_text_page_count": 0,
+            "parent_text_bytes": 0,
+        },
+        "governed_vcm": {
+            **shared_information,
+            "information_set_sha256": frontier_sha,
+            "governance_envelope": "production_vcm_consumer_abi",
+        },
+        "information_matched_plain_context": {
+            **shared_information,
+            "information_set_sha256": frontier_sha,
+            "governance_envelope": None,
+        },
+        "maximal_full_parent_context": {
+            **shared_information,
+            "information_set_sha256": frontier_sha,
+            "ordering": "stable_request_derived_complete_frontier",
+        },
+        "ordinary_direct_retrieval": {
+            **shared_information,
+            "information_set_sha256": frontier_sha,
+            "retrieval_frontier": "same_complete_parent_text_frontier",
+        },
+    }
     visible_receipts = byte_receipts(candidate_surface)
     report_row = {
         "request_id": request_id,
@@ -279,6 +313,8 @@ def build_row(binding: dict[str, Any], config_path: Path, cfg: dict[str, Any]) -
         "candidate_surface": candidate_surface,
         "candidate_visible_byte_receipts": visible_receipts,
         "candidate_visible_projection_sha256": canonical_sha256(candidate_surface),
+        "matched_context_materialization_receipts": matched_contexts,
+        "matched_context_information_identity_preserved": True,
         "broad_effect_root_is_common_and_not_target_derived": True,
         "allowed_effect_paths_present": False,
         "vcm_consumer_abi": vcm_consumer_abi.compact_consumer_packet(packet),

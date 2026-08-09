@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_04_PARENT_ONLY_MATERIALIZER_ACTIVE` |
+| State | `VCM_V3_K2_05_BATCH_CLOSURES_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_04_parent_only_store_materializer_v1` |
-| Current wall | `production_parent_only_vcm_store_absent_and_v1_effect_paths_target_derived` |
+| Active attempt | `k2_05_generic_batch_closures_v1` |
+| Current wall | none; bounded resource preflight precedes batch execution |
 | Last closed task | 26 |
-| Next legal action | `implement_and_role_separately_audit_parent_only_vcm_store_materializer_and_broad_effect_root` |
+| Next legal action | `preflight_and_batch_remaining_closures_static_classes_parent_only_stores_packets_and_parent_fail_target_pass_evaluators_through_generic_owner` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -137,8 +137,9 @@ Generation, retrieval, ranking, compression, and packet selection may not use
 the target snapshot, target patch, changed-file list, selected source paths,
 selected verifier paths, hidden tests, repository or pull-request identity,
 source-task ID, expected answer, or reference output. In particular,
-target-derived `allowed_effect_paths` must be removed before any natural-task
-packet is materialized.
+K2.04 removed target-derived `allowed_effect_paths` before any natural-task
+candidate was materialized; the frozen successor contract requires the common
+broad root `repository` instead.
 
 Every arm receives the same request, parent store, output patch ABI, tools,
 effect root, and verifier opportunity. Semantic IR and every other optional
@@ -340,7 +341,7 @@ K2.02 is now complete for this bounded boundary: the owner statically replays
 the six already qualified closures as six content-bound rows across npm, pnpm,
 Cargo, and uv, and freezes the manager-shared/disposable forward topology.
 K2.03 then qualified the four named ecosystem risk classes through the generic
-owner and role-separated audit. K2.04 is current.
+owner and role-separated audit. K2.04 is complete and K2.05 is current.
 
 The first K2.03 transaction binds, at zero execution, the exact parent-only
 representatives and order: Task 61 Bun install, Task 4 Yarn install,
@@ -409,10 +410,22 @@ committed V2/V5/V6/V7 chain before it can close.
 
 That audit is now GREEN. It rederived four committed attempts, all four scoped
 risk classes, reserve and source/store invariants, zero downstream calls, and
-the full-project TypeScript caveat. K2.03 is complete. K2.04 is active: build
-the real parent-only VCM store and production materializer, replace
-target-derived effect paths with one broad parent-snapshot write root, and
-audit every candidate-visible byte and selector input before packet creation.
+the full-project TypeScript caveat. K2.03 is complete.
+
+K2.04 is also complete. One archive-backed generic owner indexed four already
+qualified parent snapshots without reading target archives, target diffs,
+changed paths, verifier paths, source identities, hidden tests, or reference
+outputs. It retained all 2,478 UTF-8 pages across 2,816 regular files as an
+uncapped retrieval frontier, routed every request through the production VCM
+consumer ABI, emitted information-identical governed, plain, maximal, and
+ordinary-retrieval projections, and gave every arm the common broad disposable
+write root `repository`. A separate owner rederived every archive inventory,
+selector frontier, matched information identity, and all 16 candidate-visible
+field byte receipts. Both reports are GREEN with zero candidate, model,
+reference, evaluator, or runner calls. This is mechanics evidence only; context
+adequacy and model usefulness remain untested. K2.05 is now active for the
+remaining frozen closures, static execution classes, stores, packets, and
+parent-fail/target-pass evaluator receipts through the one generic owner.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -723,10 +736,10 @@ retention through governed custody rather than ad hoc cleanup.
 3. Preserve the role-separated K2.03 qualification of Bun, Yarn, narrow real-parent
    TypeScript mechanics, and untrusted Rust, including the full-project
    TypeScript caveat.
-4. **CURRENT:** Build and independently audit the real parent-only VCM store and
+4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. Materialize the remaining frozen dependency closures, static/immutable
+5. **CURRENT:** Materialize the remaining frozen dependency closures, static/immutable
    execution classes, parent-only stores, and all 62 parent-fail/target-pass
    evaluator receipts through the generic owner.
 6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/
