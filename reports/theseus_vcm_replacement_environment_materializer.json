@@ -1,0 +1,1045 @@
+{
+  "candidate_or_control_calls": 0,
+  "cargo_dependency_fetches": 2,
+  "config": {
+    "path": "configs/theseus_vcm_replacement_environment_materializer.json",
+    "sha256": "89b611483838b028eebc432bedfc7b4a67ab88f5a4c6418769312f9c083e6f10"
+  },
+  "created_utc": "2026-08-09T06:16:27.615222Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 13119541248,
+  "free_bytes_before": 13989314560,
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer report proves only that the exact three replacement locks can materialize into disposable environments from one bounded shared store and replay with network denied, using wheel-only Python installs or Cargo fetch without build. It does not execute repository code or evaluators and cannot support any VCM or ASI Stack mechanism claim.",
+  "network_denied_replays": 3,
+  "network_enabled_materializations": 3,
+  "package_installations": 4,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_replacement_environment_materializer_v1",
+  "project_installations": 0,
+  "project_selected_output_cap": null,
+  "qualified_task_count": 3,
+  "repository_runner_executions": 0,
+  "retained_shared_store": {
+    "bytes": 495134168,
+    "file_count": 26876,
+    "identity_sha256": "beabae138e2eef16089f6ea5073980b0f01626554664ee674fe37d0be115b469",
+    "path": "runtime/vcm_evaluator/dependency_store/replacement-environments-v1"
+  },
+  "rows": [
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 12,
+      "lock": {
+        "package_count": 16,
+        "path": "reports/theseus_vcm_replacement_resolution_locks/task-12-requirements.lock",
+        "sha256": "733fa33ed6537d573a63ce97a47750bc7f7f0918f203623c4be0e3a674db4427"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jaraco-classes",
+              "version": "3.4.0"
+            },
+            {
+              "name": "jaraco-context",
+              "version": "6.1.2"
+            },
+            {
+              "name": "jaraco-functools",
+              "version": "4.6.0"
+            },
+            {
+              "name": "jsonschema",
+              "version": "4.26.0"
+            },
+            {
+              "name": "jsonschema-specifications",
+              "version": "2025.9.1"
+            },
+            {
+              "name": "keyring",
+              "version": "25.7.0"
+            },
+            {
+              "name": "more-itertools",
+              "version": "11.1.0"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "referencing",
+              "version": "0.37.0"
+            },
+            {
+              "name": "rpds-py",
+              "version": "2026.6.3"
+            },
+            {
+              "name": "ruff",
+              "version": "0.16.2"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_replacement_resolution_locks/task-12-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-12/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--offline"
+          ],
+          "duration_ms": 287.615,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.13.14 environment at: venv\nResolved 16 packages in 3ms\nInstalled 16 packages in 251ms\n + attrs==26.1.0\n + iniconfig==2.3.0\n + jaraco-classes==3.4.0\n + jaraco-context==6.1.2\n + jaraco-functools==4.6.0\n + jsonschema==4.26.0\n + jsonschema-specifications==2025.9.1\n + keyring==25.7.0\n + more-itertools==11.1.0\n + packaging==26.3\n + pluggy==1.6.0\n + pygments==2.20.0\n + pytest==9.1.1\n + referencing==0.37.0\n + rpds-py==2026.6.3\n + ruff==0.16.2\n",
+          "stderr_bytes": 454,
+          "stderr_complete": true,
+          "stderr_sha256": "8466a4d98ca7e5dd0bfe0247807d470b313870e9628fb0c7e5020cbce8cde524",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 31.378,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.13.14 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 214,
+          "stderr_complete": true,
+          "stderr_sha256": "009994b86603ce8c3efe080a8cc72234b835123a910ffe5d7eaa32988d0404b9",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jaraco-classes",
+              "version": "3.4.0"
+            },
+            {
+              "name": "jaraco-context",
+              "version": "6.1.2"
+            },
+            {
+              "name": "jaraco-functools",
+              "version": "4.6.0"
+            },
+            {
+              "name": "jsonschema",
+              "version": "4.26.0"
+            },
+            {
+              "name": "jsonschema-specifications",
+              "version": "2025.9.1"
+            },
+            {
+              "name": "keyring",
+              "version": "25.7.0"
+            },
+            {
+              "name": "more-itertools",
+              "version": "11.1.0"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "referencing",
+              "version": "0.37.0"
+            },
+            {
+              "name": "rpds-py",
+              "version": "2026.6.3"
+            },
+            {
+              "name": "ruff",
+              "version": "0.16.2"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_replacement_resolution_locks/task-12-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-12/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 1241.792,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.13.14 environment at: venv\nResolved 16 packages in 299ms\nDownloading pygments (1.2MiB)\nDownloading ruff (10.1MiB)\n Downloaded ruff\n Downloaded pygments\nPrepared 16 packages in 526ms\nInstalled 16 packages in 271ms\n + attrs==26.1.0\n + iniconfig==2.3.0\n + jaraco-classes==3.4.0\n + jaraco-context==6.1.2\n + jaraco-functools==4.6.0\n + jsonschema==4.26.0\n + jsonschema-specifications==2025.9.1\n + keyring==25.7.0\n + more-itertools==11.1.0\n + packaging==26.3\n + pluggy==1.6.0\n + pygments==2.20.0\n + pytest==9.1.1\n + referencing==0.37.0\n + rpds-py==2026.6.3\n + ruff==0.16.2\n",
+          "stderr_bytes": 581,
+          "stderr_complete": true,
+          "stderr_sha256": "508a85900f73535c5bbc68b50ec151af86c0dd521eb85c85e240d9e352991efb",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 126.261,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.13.14 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 214,
+          "stderr_complete": true,
+          "stderr_sha256": "009994b86603ce8c3efe080a8cc72234b835123a910ffe5d7eaa32988d0404b9",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "plwp/chief-wiggum"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 13,
+      "lock": {
+        "package_count": 60,
+        "path": "reports/theseus_vcm_replacement_resolution_locks/task-13-requirements.lock",
+        "sha256": "4ab7e20f4a3bae9391386521d9dc82004aa42d01da609f3dbabfcba8c4015e56"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "annotated-doc",
+              "version": "0.0.5"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "babel",
+              "version": "2.18.0"
+            },
+            {
+              "name": "backrefs",
+              "version": "8.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "click",
+              "version": "8.4.2"
+            },
+            {
+              "name": "colorama",
+              "version": "0.4.6"
+            },
+            {
+              "name": "fakeredis",
+              "version": "2.37.0"
+            },
+            {
+              "name": "fastapi",
+              "version": "0.141.1"
+            },
+            {
+              "name": "ghp-import",
+              "version": "2.1.0"
+            },
+            {
+              "name": "greenlet",
+              "version": "3.5.4"
+            },
+            {
+              "name": "griffelib",
+              "version": "2.1.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "markdown",
+              "version": "3.10.3"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "mergedeep",
+              "version": "1.3.4"
+            },
+            {
+              "name": "mkdocs",
+              "version": "1.6.1"
+            },
+            {
+              "name": "mkdocs-autorefs",
+              "version": "1.4.4"
+            },
+            {
+              "name": "mkdocs-get-deps",
+              "version": "0.2.2"
+            },
+            {
+              "name": "mkdocs-material",
+              "version": "9.7.7"
+            },
+            {
+              "name": "mkdocs-material-extensions",
+              "version": "1.3.1"
+            },
+            {
+              "name": "mkdocstrings",
+              "version": "1.0.6"
+            },
+            {
+              "name": "mkdocstrings-python",
+              "version": "2.0.5"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "paginate",
+              "version": "0.5.7"
+            },
+            {
+              "name": "pathspec",
+              "version": "1.1.1"
+            },
+            {
+              "name": "platformdirs",
+              "version": "4.11.1"
+            },
+            {
+              "name": "playwright",
+              "version": "1.62.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pyee",
+              "version": "13.0.1"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pymdown-extensions",
+              "version": "11.0.1"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-base-url",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pytest-playwright",
+              "version": "0.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "python-multipart",
+              "version": "0.0.32"
+            },
+            {
+              "name": "python-slugify",
+              "version": "8.0.4"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "pyyaml-env-tag",
+              "version": "1.1"
+            },
+            {
+              "name": "redis",
+              "version": "8.1.0"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "sortedcontainers",
+              "version": "2.4.0"
+            },
+            {
+              "name": "starlette",
+              "version": "1.6.0"
+            },
+            {
+              "name": "text-unidecode",
+              "version": "1.3"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "uvicorn",
+              "version": "0.52.1"
+            },
+            {
+              "name": "watchdog",
+              "version": "6.0.0"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_replacement_resolution_locks/task-13-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-13/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--offline"
+          ],
+          "duration_ms": 7547.015,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.13.14 environment at: venv\nResolved 60 packages in 11ms\nInstalled 60 packages in 7.50s\n + annotated-doc==0.0.5\n + annotated-types==0.8.0\n + anyio==4.14.2\n + babel==2.18.0\n + backrefs==8.0\n + certifi==2026.7.22\n + charset-normalizer==3.4.9\n + click==8.4.2\n + colorama==0.4.6\n + fakeredis==2.37.0\n + fastapi==0.141.1\n + ghp-import==2.1.0\n + greenlet==3.5.4\n + griffelib==2.1.0\n + h11==0.16.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + idna==3.18\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + markdown==3.10.3\n + markupsafe==3.0.3\n + mergedeep==1.3.4\n + mkdocs==1.6.1\n + mkdocs-autorefs==1.4.4\n + mkdocs-get-deps==0.2.2\n + mkdocs-material==9.7.7\n + mkdocs-material-extensions==1.3.1\n + mkdocstrings==1.0.6\n + mkdocstrings-python==2.0.5\n + packaging==26.3\n + paginate==0.5.7\n + pathspec==1.1.1\n + platformdirs==4.11.1\n + playwright==1.62.0\n + pluggy==1.6.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pyee==13.0.1\n + pygments==2.20.0\n + pymdown-extensions==11.0.1\n + pytest==9.1.1\n + pytest-base-url==2.1.0\n + pytest-playwright==0.8.0\n + python-dateutil==2.9.0.post0\n + python-multipart==0.0.32\n + python-slugify==8.0.4\n + pyyaml==6.0.3\n + pyyaml-env-tag==1.1\n + redis==8.1.0\n + requests==2.34.2\n + six==1.17.0\n + sortedcontainers==2.4.0\n + starlette==1.6.0\n + text-unidecode==1.3\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + urllib3==2.7.0\n + uvicorn==0.52.1\n + watchdog==6.0.0\n",
+          "stderr_bytes": 1399,
+          "stderr_complete": true,
+          "stderr_sha256": "5939164d83d426eaf743efff8935204ac79affd0d11ba435f30aef7227734c6a",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 24.225,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.13.14 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 214,
+          "stderr_complete": true,
+          "stderr_sha256": "009994b86603ce8c3efe080a8cc72234b835123a910ffe5d7eaa32988d0404b9",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "annotated-doc",
+              "version": "0.0.5"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "babel",
+              "version": "2.18.0"
+            },
+            {
+              "name": "backrefs",
+              "version": "8.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "click",
+              "version": "8.4.2"
+            },
+            {
+              "name": "colorama",
+              "version": "0.4.6"
+            },
+            {
+              "name": "fakeredis",
+              "version": "2.37.0"
+            },
+            {
+              "name": "fastapi",
+              "version": "0.141.1"
+            },
+            {
+              "name": "ghp-import",
+              "version": "2.1.0"
+            },
+            {
+              "name": "greenlet",
+              "version": "3.5.4"
+            },
+            {
+              "name": "griffelib",
+              "version": "2.1.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "markdown",
+              "version": "3.10.3"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "mergedeep",
+              "version": "1.3.4"
+            },
+            {
+              "name": "mkdocs",
+              "version": "1.6.1"
+            },
+            {
+              "name": "mkdocs-autorefs",
+              "version": "1.4.4"
+            },
+            {
+              "name": "mkdocs-get-deps",
+              "version": "0.2.2"
+            },
+            {
+              "name": "mkdocs-material",
+              "version": "9.7.7"
+            },
+            {
+              "name": "mkdocs-material-extensions",
+              "version": "1.3.1"
+            },
+            {
+              "name": "mkdocstrings",
+              "version": "1.0.6"
+            },
+            {
+              "name": "mkdocstrings-python",
+              "version": "2.0.5"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "paginate",
+              "version": "0.5.7"
+            },
+            {
+              "name": "pathspec",
+              "version": "1.1.1"
+            },
+            {
+              "name": "platformdirs",
+              "version": "4.11.1"
+            },
+            {
+              "name": "playwright",
+              "version": "1.62.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pyee",
+              "version": "13.0.1"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pymdown-extensions",
+              "version": "11.0.1"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-base-url",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pytest-playwright",
+              "version": "0.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "python-multipart",
+              "version": "0.0.32"
+            },
+            {
+              "name": "python-slugify",
+              "version": "8.0.4"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "pyyaml-env-tag",
+              "version": "1.1"
+            },
+            {
+              "name": "redis",
+              "version": "8.1.0"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "sortedcontainers",
+              "version": "2.4.0"
+            },
+            {
+              "name": "starlette",
+              "version": "1.6.0"
+            },
+            {
+              "name": "text-unidecode",
+              "version": "1.3"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "uvicorn",
+              "version": "0.52.1"
+            },
+            {
+              "name": "watchdog",
+              "version": "6.0.0"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_replacement_resolution_locks/task-13-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-13/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 12429.094,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.13.14 environment at: venv\nResolved 60 packages in 414ms\nDownloading babel (9.7MiB)\nDownloading mkdocs (3.7MiB)\nDownloading pydantic-core (1.9MiB)\nDownloading mkdocs-material (8.9MiB)\nDownloading playwright (40.5MiB)\n Downloaded pydantic-core\n Downloaded mkdocs\n Downloaded babel\n Downloaded playwright\n Downloaded mkdocs-material\nPrepared 55 packages in 4.16s\nInstalled 60 packages in 7.72s\n + annotated-doc==0.0.5\n + annotated-types==0.8.0\n + anyio==4.14.2\n + babel==2.18.0\n + backrefs==8.0\n + certifi==2026.7.22\n + charset-normalizer==3.4.9\n + click==8.4.2\n + colorama==0.4.6\n + fakeredis==2.37.0\n + fastapi==0.141.1\n + ghp-import==2.1.0\n + greenlet==3.5.4\n + griffelib==2.1.0\n + h11==0.16.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + idna==3.18\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + markdown==3.10.3\n + markupsafe==3.0.3\n + mergedeep==1.3.4\n + mkdocs==1.6.1\n + mkdocs-autorefs==1.4.4\n + mkdocs-get-deps==0.2.2\n + mkdocs-material==9.7.7\n + mkdocs-material-extensions==1.3.1\n + mkdocstrings==1.0.6\n + mkdocstrings-python==2.0.5\n + packaging==26.3\n + paginate==0.5.7\n + pathspec==1.1.1\n + platformdirs==4.11.1\n + playwright==1.62.0\n + pluggy==1.6.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pyee==13.0.1\n + pygments==2.20.0\n + pymdown-extensions==11.0.1\n + pytest==9.1.1\n + pytest-base-url==2.1.0\n + pytest-playwright==0.8.0\n + python-dateutil==2.9.0.post0\n + python-multipart==0.0.32\n + python-slugify==8.0.4\n + pyyaml==6.0.3\n + pyyaml-env-tag==1.1\n + redis==8.1.0\n + requests==2.34.2\n + six==1.17.0\n + sortedcontainers==2.4.0\n + starlette==1.6.0\n + text-unidecode==1.3\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + urllib3==2.7.0\n + uvicorn==0.52.1\n + watchdog==6.0.0\n",
+          "stderr_bytes": 1704,
+          "stderr_complete": true,
+          "stderr_sha256": "8a238908bfb6f10cb78ad42477ead30aae16fe4651d745b80c40c9e135302700",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 113.754,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.13.14 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 214,
+          "stderr_complete": true,
+          "stderr_sha256": "009994b86603ce8c3efe080a8cc72234b835123a910ffe5d7eaa32988d0404b9",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "paulomtts/pyjinhx"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 35,
+      "lock": {
+        "package_count": 142,
+        "path": "reports/theseus_vcm_replacement_resolution_locks/task-35-Cargo.lock",
+        "sha256": "546d1def8a5b79fdcebaf07e1469d6642f37051c56c0e6180ad96f3ea2e72cc4"
+      },
+      "manager": "cargo",
+      "receipts": {
+        "offline_fetch": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+            "fetch",
+            "--locked",
+            "--manifest-path",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-35/repository/marsdb-720b3e9a43c1680ad783d0a8884167aaefb0a54e/Cargo.toml",
+            "--config",
+            "net.git-fetch-with-cli=false",
+            "--offline"
+          ],
+          "duration_ms": 176.582,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "",
+          "stderr_bytes": 0,
+          "stderr_complete": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_fetch": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-replacement-env-staeojxg\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+            "fetch",
+            "--locked",
+            "--manifest-path",
+            "/private/tmp/theseus-vcm-replacement-env-staeojxg/task-35/repository/marsdb-720b3e9a43c1680ad783d0a8884167aaefb0a54e/Cargo.toml",
+            "--config",
+            "net.git-fetch-with-cli=false"
+          ],
+          "duration_ms": 5434.334,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "    Updating crates.io index\n Downloading crates ...\n  Downloaded endian-type v0.1.2\n  Downloaded utf8parse v0.2.2\n  Downloaded errno v0.3.14\n  Downloaded rustc_version v0.4.1\n  Downloaded fd-lock v4.0.4\n  Downloaded error-code v3.3.2\n  Downloaded embedded-io v0.6.1\n  Downloaded crunchy v0.2.4\n  Downloaded windows-link v0.2.1\n  Downloaded is-terminal v0.4.17\n  Downloaded stable_deref_trait v1.2.1\n  Downloaded hash32 v0.2.1\n  Downloaded winapi-util v0.1.11\n  Downloaded same-file v1.0.6\n  Downloaded atomic-polyfill v1.0.3\n  Downloaded clap_lex v1.1.0\n  Downloaded cfg-if v1.0.4\n  Downloaded futures-core v0.3.33\n  Downloaded embedded-io v0.4.0\n  Downloaded wasm-bindgen-shared v0.2.126\n  Downloaded cfg_aliases v0.1.1\n  Downloaded cobs v0.3.0\n  Downloaded cast v0.3.0\n  Downloaded anstyle-query v1.1.5\n  Downloaded itoa v1.0.18\n  Downloaded wasm-bindgen-macro v0.2.126\n  Downloaded anstream v1.0.0\n  Downloaded scopeguard v1.2.0\n  Downloaded home v0.5.12\n  Downloaded plotters-backend v0.3.7\n  Downloaded nibble_vec v0.1.0\n  Downloaded heck v0.5.0\n  Downloaded strsim v0.11.1\n  Downloaded is_terminal_polyfill v1.70.2\n  Downloaded once_cell_polyfill v1.70.2\n  Downloaded plotters-svg v0.3.7\n  Downloaded windows-targets v0.52.6\n  Downloaded pin-project-lite v0.2.17\n  Downloaded byteorder v1.5.0\n  Downloaded thiserror v1.0.69\n  Downloaded walkdir v2.5.0\n  Downloaded crossbeam-deque v0.8.7\n  Downloaded either v1.17.0\n  Downloaded rustversion v1.0.23\n  Downloaded anstyle-wincon v3.0.11\n  Downloaded ciborium-ll v0.2.2\n  Downloaded quote v1.0.47\n  Downloaded critical-section v1.2.0\n  Downloaded fastrand v2.5.0\n  Downloaded thiserror v2.0.19\n  Downloaded futures-task v0.3.33\n  Downloaded clipboard-win v5.4.1\n  Downloaded thiserror-impl v1.0.69\n  Downloaded tempfile v3.27.0\n  Downloaded postcard v1.1.3\n  Downloaded lock_api v0.4.14\n  Downloaded tinytemplate v1.2.1\n  Downloaded zmij v1.0.23\n  Downloaded smallvec v1.15.2\n  Downloaded once_cell v1.21.4\n  Downloaded thiserror-impl v2.0.19\n  Downloaded crossbeam-epoch v0.9.20\n  Downloaded slab v0.4.12\n  Downloaded semver v1.0.28\n  Downloaded ciborium-io v0.2.2\n  Downloaded hermit-abi v0.5.2\n  Downloaded anstyle v1.0.14\n  Downloaded spin v0.9.9\n  Downloaded crossbeam-utils v0.8.22\n  Downloaded colorchoice v1.0.5\n  Downloaded oorandom v11.1.5\n  Downloaded criterion-plot v0.5.0\n  Downloaded anstyle-parse v1.0.0\n  Downloaded pest_derive v2.8.8\n  Downloaded autocfg v1.5.1\n  Downloaded proc-macro2 v1.0.107\n  Downloaded serde_core v1.0.229\n  Downloaded bitflags v2.13.1\n  Downloaded unicode-ident v1.0.24\n  Downloaded getrandom v0.4.3\n  Downloaded log v0.4.33\n  Downloaded r-efi v6.0.0\n  Downloaded anes v0.1.6\n  Downloaded memchr v2.8.3\n  Downloaded serde_derive v1.0.229\n  Downloaded pest_generator v2.8.8\n  Downloaded clap_derive v4.6.4\n  Downloaded ciborium v0.2.2\n  Downloaded heapless v0.7.17\n  Downloaded rayon-core v1.13.0\n  Downloaded half v2.7.1\n  Downloaded rustyline v14.0.0\n  Downloaded pest_meta v2.8.8\n  Downloaded wasm-bindgen-macro-support v0.2.126\n  Downloaded ucd-trie v0.1.7\n  Downloaded serde v1.0.229\n  Downloaded wasm-bindgen v0.2.126\n  Downloaded bumpalo v3.20.3\n  Downloaded js-sys v0.3.103\n  Downloaded clap v4.6.5\n  Downloaded num-traits v0.2.19\n  Downloaded unicode-segmentation v1.13.3\n  Downloaded criterion v0.5.1\n  Downloaded zerocopy-derive v0.8.55\n  Downloaded itertools v0.10.5\n  Downloaded regex v1.13.1\n  Downloaded plotters v0.3.7\n  Downloaded aho-corasick v1.1.4\n  Downloaded rayon v1.12.0\n  Downloaded futures-util v0.3.33\n  Downloaded pest v2.8.8\n  Downloaded redb v2.6.3\n  Downloaded serde_json v1.0.151\n  Downloaded clap_builder v4.6.5\n  Downloaded radix_trie v0.2.1\n  Downloaded zerocopy v0.8.55\n  Downloaded unicode-width v0.1.14\n  Downloaded syn v2.0.119\n  Downloaded syn v3.0.3\n  Downloaded nix v0.28.0\n  Downloaded regex-syntax v0.8.11\n  Downloaded rustix v1.1.4\n  Downloaded windows_x86_64_gnullvm v0.52.6\n  Downloaded windows_aarch64_gnullvm v0.52.6\n  Downloaded windows_i686_gnullvm v0.52.6\n  Downloaded regex-automata v0.4.16\n  Downloaded web-sys v0.3.103\n  Downloaded windows_x86_64_msvc v0.52.6\n  Downloaded libc v0.2.189\n  Downloaded windows_x86_64_gnu v0.52.6\n  Downloaded windows_aarch64_msvc v0.52.6\n  Downloaded windows_i686_msvc v0.52.6\n  Downloaded windows_i686_gnu v0.52.6\n  Downloaded windows-sys v0.59.0\n  Downloaded windows-sys v0.52.0\n  Downloaded windows-sys v0.61.2\n  Downloaded linux-raw-sys v0.12.1\n",
+          "stderr_bytes": 4429,
+          "stderr_complete": true,
+          "stderr_sha256": "98d371fffd89c9a98a5ea3d654ea62b4fca360b06e254ce0b1e7d6a83c947d07",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "knoguchi/marsdb"
+    }
+  ],
+  "source_build_executions": 0,
+  "state": "THREE_REPLACEMENT_ENVIRONMENTS_QUALIFIED",
+  "task_count": 3,
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

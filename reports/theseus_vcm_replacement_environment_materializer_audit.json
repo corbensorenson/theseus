@@ -1,0 +1,53 @@
+{
+  "audit_kind": "role-separated_rederivation",
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_replacement_environment_materializer.json",
+    "sha256": "89b611483838b028eebc432bedfc7b4a67ab88f5a4c6418769312f9c083e6f10"
+  },
+  "created_utc": "2026-08-09T06:16:50.976912Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN role audit independently rederives exact lock identities, online/offline environment parity, complete diagnostics, shared-store identity, and the zero-build/zero-evaluator boundary. It does not qualify common evaluators, candidates, controls, VCM effects, or book support.",
+  "network_denied_replays": 3,
+  "network_enabled_materializations": 3,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_replacement_environment_materializer_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_replacement_environment_materializer.json",
+    "sha256": "604faafb618fd6a3040d5ad39532ff3c97952535b347cb8422ca8789a8a429a1"
+  },
+  "project_installations": 0,
+  "qualified_task_count": 3,
+  "repository_runner_executions": 0,
+  "retained_shared_store": {
+    "bytes": 495134168,
+    "file_count": 26876,
+    "identity_sha256": "beabae138e2eef16089f6ea5073980b0f01626554664ee674fe37d0be115b469",
+    "path": "runtime/vcm_evaluator/dependency_store/replacement-environments-v1"
+  },
+  "rows": [
+    {
+      "faults": [],
+      "index": 12,
+      "manager": "uv",
+      "repository": "plwp/chief-wiggum"
+    },
+    {
+      "faults": [],
+      "index": 13,
+      "manager": "uv",
+      "repository": "paulomtts/pyjinhx"
+    },
+    {
+      "faults": [],
+      "index": 35,
+      "manager": "cargo",
+      "repository": "knoguchi/marsdb"
+    }
+  ],
+  "source_build_executions": 0,
+  "state": "THREE_REPLACEMENT_ENVIRONMENTS_ROLE_SEPARATELY_REDERIVED",
+  "task_count": 3,
+  "trigger_state": "GREEN"
+}
