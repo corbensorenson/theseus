@@ -1,15 +1,25 @@
 {
-  "policy": "project_theseus_vcm_k3_route_preflight_config_v2",
-  "audit_policy": "project_theseus_vcm_k3_route_preflight_audit_v2",
-  "state": "PROSPECTIVE_K3_CALL_FREE_SIX_ROW_ROUTE_PREFLIGHT_V2_AFTER_AUDIT_TOKENIZER_MEMORY_WALL",
+  "policy": "project_theseus_vcm_k3_route_preflight_config_v3",
+  "audit_policy": "project_theseus_vcm_k3_route_preflight_audit_v3",
+  "state": "PROSPECTIVE_K3_CALL_FREE_SIX_ROW_ROUTE_PREFLIGHT_V3_WITH_HONEST_OVERSIZED_PROMPT_PROOF",
   "predecessor_invalidated_attempt": {
     "seal_commit": "e9b46943",
     "producer_report": "reports/theseus_vcm_k3_route_preflight_v1_producer_green_audit_wall.json",
     "producer_report_sha256": "68c2eec43f0059ca856982a97e0ff36e1b9335242efd21280568e36a96d3a4da",
     "packets": "runtime/vcm_evaluator/k3_six_row_route_packets_v1_producer_green_audit_wall.json",
     "packets_sha256": "2e841a43866cc029b0a150c1357276d64416ba6e94ff041ff7844eebe64a821d",
-    "invalidation_class": "AUDIT_TOKENIZER_ATTENTION_MASK_MEMORY_INADEQUACY",
+    "invalidation_class": "TOKENIZER_BATCH_ENCODING_LENGTH_AND_AUDIT_MEMORY_INADEQUACY",
     "producer_trigger_state": "GREEN",
+    "audit_report_published": false,
+    "local_model_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "external_reference_calls": 0,
+    "disposition": "INCONCLUSIVE_IMPLEMENTATION"
+  },
+  "second_invalidated_attempt": {
+    "seal_commit": "64642f57",
+    "invalidation_class": "MONOLITHIC_OVERSIZED_TOKENIZER_HOST_MEMORY_BOUNDARY",
+    "producer_report_published": false,
     "audit_report_published": false,
     "local_model_calls": 0,
     "hidden_evaluator_calls": 0,
@@ -17,9 +27,9 @@
     "disposition": "INCONCLUSIVE_EXPERIMENT"
   },
   "owner": "scripts/theseus_vcm_k3_route_preflight.py",
-  "owner_sha256": "4abe63bbcc593899b6bc457d81cdef2ade6be099e286ccf1da87221d4bb82f0c",
+  "owner_sha256": "b0cb4f481efb833db5f3daf59f0738ddb6515188163ef8ed4fcecd62231ac2f6",
   "audit_owner": "scripts/theseus_vcm_k3_route_preflight_audit.py",
-  "audit_owner_sha256": "5076a7635af7c885d3a06c4a0ccc936c91d6d580505ffd5a4c72c55447158843",
+  "audit_owner_sha256": "8793f6ed5b345c80076065f27808cf3835aa85e58fcfdedeec798e5b695fe9fa",
   "test_owner": "tests/test_theseus_vcm_k3_route_preflight.py",
   "test_owner_sha256": "26eb2e71f6a09248e8b11954e422a7304bd1c869a998ae3b46109edf6b3fe7b2",
   "k2_store": "runtime/vcm_evaluator/contiguous_six_row_store_v1.json",
@@ -45,6 +55,13 @@
     {"id": "chat_template", "path": "/Users/corbensorenson/.cache/huggingface/hub/models--mlx-community--Tmax-9B-MLX-8bit/snapshots/33812d6cf04f88856f25eb828de4f3144a194560/chat_template.jinja", "sha256": "d0eee281dec542894f3864ff2320c3f5998cdb8ab88e31366042ee4ebf4ca6b9"}
   ],
   "chat_template_kwargs": {"enable_thinking": false},
+  "oversized_prompt_token_measurement": {
+    "canonical_eligible_prompt_encoding": "exact_monolithic_pinned_tokenizer",
+    "monolithic_host_safety_threshold_utf8_bytes": 2000000,
+    "oversized_only_proof": "chunked_token_sum_minus_128_tokens_per_join",
+    "oversized_measurement_is_exact": false,
+    "oversized_measurement_use": "physical_ineligibility_proof_only_never_model_or_mechanism_evidence"
+  },
   "model_context_window_tokens": 262144,
   "project_selected_quality_token_cap": null,
   "routes": [
@@ -118,9 +135,9 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "packets_out": "runtime/vcm_evaluator/k3_six_row_route_packets_v2.json",
-  "report": "reports/theseus_vcm_k3_route_preflight_v2.json",
-  "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v2.json",
+  "packets_out": "runtime/vcm_evaluator/k3_six_row_route_packets_v3.json",
+  "report": "reports/theseus_vcm_k3_route_preflight_v3.json",
+  "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v3.json",
   "maximum_inference": "A GREEN call-free preflight proves only that six required local K3 routes can be deterministically materialized from exact parent-only stores, counterbalanced, counted by the pinned tokenizer, and bounded by frozen analysis, custody, cost, completion, and host-canary rules. It authorizes no candidate, evaluator, Luna, teacher, training, serving, D1, D2, or book action and is not VCM utility evidence.",
   "audit_maximum_inference": "A GREEN role-separated audit rederives the 36 candidate packet receipts, six route identities, parent-information matching, exact tokenizer residuals, counterbalancing, forbidden-field absence, zero-call custody, and frozen decision boundaries. It is not external reproduction and does not establish model competence, VCM utility, economics, transfer, or ASI Stack support."
 }

@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_parent_only_materializer as parent_only  # noqa: E402
 
-POLICY = "project_theseus_vcm_k3_route_preflight_v2"
-CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v2"
+POLICY = "project_theseus_vcm_k3_route_preflight_v3"
+CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v3"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_k3_route_preflight.json"
 ROUTES = (
     "no_added_context_floor",
@@ -135,8 +135,10 @@ def build(
             pages = route_pages(route, vcm_pages, ordinary_pages, all_pages, request_id)
             rendered_context = render_context(route, pages, text_for, request_id)
             prompt = render_prompt(request, route, rendered_context)
-            tokens = token_counter(SYSTEM_PROMPT, prompt)
-            eligible = tokens < context_window
+            measurement = normalize_token_measurement(token_counter(SYSTEM_PROMPT, prompt))
+            tokens = measurement.get("exact_tokens")
+            lower_bound = int(measurement.get("lower_bound_tokens") or 0)
+            eligible = tokens is not None and int(tokens) < context_window
             reason = "" if eligible else "prompt_reaches_or_exceeds_physical_context_boundary"
             information = page_information_receipt(pages)
             arm = {
@@ -152,7 +154,9 @@ def build(
                 "context_page_receipts": [{key: row.get(key) for key in ("path", "bytes", "sha256")} for row in pages],
                 "prompt_sha256": p2a.sha256_text(prompt),
                 "exact_chat_prompt_tokens": tokens,
-                "physical_context_residual_tokens": context_window - tokens,
+                "prompt_token_lower_bound": lower_bound,
+                "prompt_token_measurement": measurement.get("kind"),
+                "physical_context_residual_tokens": context_window - int(tokens) if tokens is not None else None,
                 "physically_addressable": eligible,
                 "ineligible_reason": reason,
                 "project_selected_quality_token_cap": None,
@@ -160,7 +164,7 @@ def build(
             arms.append(arm)
             packet_rows.append(arm)
             prior = host_candidates.get(route)
-            if eligible and (prior is None or tokens > int(prior["exact_chat_prompt_tokens"])):
+            if eligible and (prior is None or int(tokens) > int(prior["exact_chat_prompt_tokens"])):
                 host_candidates[route] = arm
         flat = next(row for row in arms if row["route"] == "information_matched_flat_direct_context")
         governed = next(row for row in arms if row["route"] == "governed_vcm")
@@ -345,20 +349,42 @@ def load_text_pages(store_row: dict[str, Any]) -> dict[str, str]:
     return result
 
 
-def exact_token_counter(cfg: dict[str, Any]) -> Callable[[str, str], int]:
+def exact_token_counter(cfg: dict[str, Any]) -> Callable[[str, str], Any]:
     from transformers import AutoTokenizer
     snapshot = str(cfg.get("model_snapshot_path") or "")
     tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True)
     kwargs = p2a.mapping(cfg.get("chat_template_kwargs"))
-    def count(system: str, prompt: str) -> int:
+    def count(system: str, prompt: str) -> dict[str, Any]:
         rendered = tokenizer.apply_chat_template(
             [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
             tokenize=False,
             add_generation_prompt=True,
             **kwargs,
         )
-        return len(tokenizer.backend_tokenizer.encode(rendered, add_special_tokens=False).ids)
+        if len(rendered.encode("utf-8")) <= 2_000_000:
+            exact = len(tokenizer.backend_tokenizer.encode(rendered, add_special_tokens=False).ids)
+            return {"kind": "exact_monolithic", "exact_tokens": exact, "lower_bound_tokens": exact}
+        chunks = [rendered[index : index + 65_536] for index in range(0, len(rendered), 65_536)]
+        token_sum = 0
+        for chunk in chunks:
+            token_sum += len(tokenizer.backend_tokenizer.encode(chunk, add_special_tokens=False).ids)
+        # Chunking can only overcount relative to the canonical monolithic BPE.
+        # Subtract a deliberately loose 128-token allowance per join. This is
+        # used only to prove physical ineligibility, never as an exact count.
+        conservative_lower = max(0, token_sum - 128 * max(0, len(chunks) - 1))
+        return {"kind": "conservative_chunked_lower_bound", "exact_tokens": None, "lower_bound_tokens": conservative_lower}
     return count
+
+
+def normalize_token_measurement(value: Any) -> dict[str, Any]:
+    if isinstance(value, int):
+        return {"kind": "injected_exact", "exact_tokens": value, "lower_bound_tokens": value}
+    row = p2a.mapping(value)
+    return {
+        "kind": str(row.get("kind") or ""),
+        "exact_tokens": row.get("exact_tokens"),
+        "lower_bound_tokens": int(row.get("lower_bound_tokens") or 0),
+    }
 
 
 def validate_analysis(cfg: dict[str, Any], analysis: dict[str, Any], faults: list[str]) -> None:

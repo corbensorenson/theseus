@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_k3_route_preflight as producer  # noqa: E402
 
-POLICY = "project_theseus_vcm_k3_route_preflight_audit_v2"
+POLICY = "project_theseus_vcm_k3_route_preflight_audit_v3"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_k3_route_preflight.json"
 FORBIDDEN = {"repository", "source_task_id", "target", "target_patch", "tests", "hidden_tests", "selected_source_paths", "selected_verifier_paths", "expected", "answer", "solution"}
 
@@ -55,7 +55,11 @@ def audit(path: Path = DEFAULT_CONFIG, *, actual_report: dict[str, Any] | None =
         if sorted(int(row.get("within_row_order") or 0) for row in arms) != [1,2,3,4,5,6]: faults.append(f"counterbalance_invalid:{request_id}")
         for row in arms:
             if row.get("project_selected_quality_token_cap") is not None: faults.append("quality_cap_present")
-            if int(row.get("exact_chat_prompt_tokens") or 0) + int(row.get("physical_context_residual_tokens") or 0) != 262144: faults.append("token_residual_identity_invalid")
+            exact = row.get("exact_chat_prompt_tokens")
+            if exact is not None:
+                if int(exact) + int(row.get("physical_context_residual_tokens") or 0) != 262144: faults.append("token_residual_identity_invalid")
+            elif int(row.get("prompt_token_lower_bound") or 0) <= 262144 or row.get("physically_addressable") is not False:
+                faults.append("oversized_prompt_ineligibility_not_proved")
     if any(report.get(key) != 0 for key in ("local_model_calls", "external_reference_calls", "teacher_calls", "hidden_evaluator_calls")): faults.append("downstream_call_counter_invalid")
     ready = not faults
     return {
