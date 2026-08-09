@@ -4,9 +4,9 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_static_evaluator_segment.json",
-    "sha256": "9559a393e2e3f4984be544333c4cd8b808fd31911a1985212ec5b1868cd169a9"
+    "sha256": "41d712b18b25ad442f860bffb5b9a39f4219339bd739ff32ad7e68858ac33f3b"
   },
-  "created_utc": "2026-08-09T02:23:14.975457Z",
+  "created_utc": "2026-08-09T02:28:21.314408Z",
   "external_reference_calls": 0,
   "faults": [],
   "inconclusive_task_count": 5,
@@ -17,7 +17,7 @@
   "policy": "project_theseus_vcm_static_evaluator_segment_audit_v1",
   "producer_report": {
     "path": "reports/theseus_vcm_static_evaluator_segment.json",
-    "sha256": "34efb5b249de0ce444333a93ebc8760f149da9c1fb5230d84c3b747d2137db72"
+    "sha256": "024c52f2f0f0c930f550dbf97276b0eb42c76291926d9a42756539e4b6876acd"
   },
   "qualified_task_count": 3,
   "rows": [
