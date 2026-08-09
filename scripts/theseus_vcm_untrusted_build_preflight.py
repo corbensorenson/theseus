@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 
 POLICY = "project_theseus_vcm_untrusted_build_preflight_v1"
-STATE = "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_CURL_REPAIR_V2"
+STATE = "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_AST_REPAIR_V3"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_untrusted_build_preflight.json"
 DANGEROUS_TOKENS = {"subprocess", "popen", "system", "socket", "urlopen", "requests", "curl", "wget", "ctypes", "eval", "exec"}
 
@@ -58,11 +58,15 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
             sources[name] = p2a.read_json(source)
     producer = sources.get("immutable_resolution_v3", {})
     audit = sources.get("immutable_resolution_audit_v3", {})
+    prior = sources.get("sdist_preflight_v2", {})
     task13 = next((row for row in p2a.dicts(producer.get("rows")) if int(row.get("index") or 0) == 13), {})
     if producer.get("trigger_state") != "GREEN" or producer.get("qualified_task_count") != 5 or task13.get("disposition") != "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION" or "mock-open==1.4.0" not in str(p2a.mapping(task13.get("receipt")).get("stderr") or ""):
         faults.append("task13_sdist_wall_binding_invalid")
     if audit.get("trigger_state") != "GREEN" or audit.get("qualified_task_count") != 5 or audit.get("inconclusive_task_count") != 1:
         faults.append("immutable_resolution_audit_binding_invalid")
+    prior_setup = p2a.mapping(p2a.mapping(p2a.mapping(prior.get("receipt")).get("inspection")).get("setup_py"))
+    if prior.get("trigger_state") != "RED" or p2a.strings(prior.get("faults")) != ["setup_py_static_dangerous_token"] or prior_setup.get("dangerous_tokens") != ["system"] or prior_setup.get("parse_fault") != "":
+        faults.append("predecessor_static_scanner_wall_invalid")
     package = p2a.mapping(cfg.get("package"))
     if package.get("name") != "mock-open" or package.get("version") != "1.4.0" or package.get("sha256") != "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100" or not str(package.get("url") or "").startswith("https://files.pythonhosted.org/"):
         faults.append("package_binding_invalid")
@@ -187,8 +191,8 @@ def analyze_setup(payload: bytes) -> dict[str, Any]:
                 calls.append(call_name(node.func))
     except SyntaxError as exc:
         parse_fault = f"{exc.__class__.__name__}:{exc.lineno}"
-    lowered = text.lower()
-    dangerous = sorted(token for token in DANGEROUS_TOKENS if token in lowered)
+    semantic_names = {name.lower() for name in imports} | {name.lower() for name in calls}
+    dangerous = sorted(token for token in DANGEROUS_TOKENS if any(name == token or name.startswith(token + ".") or name.endswith("." + token) for name in semantic_names))
     return {"bytes": len(payload), "sha256": hashlib.sha256(payload).hexdigest(), "imports": sorted(imports), "calls": sorted(set(filter(None, calls))), "dangerous_tokens": dangerous, "parse_fault": parse_fault}
 
 

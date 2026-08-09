@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_vcm_untrusted_build_preflight_v1",
-  "state": "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_CURL_REPAIR_V2",
+  "state": "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_AST_REPAIR_V3",
   "owner": "scripts/theseus_vcm_untrusted_build_preflight.py",
-  "owner_sha256": "974f3aec25e2df954d9cccd719a91297c8e60638b2e64985f927258004cb7d26",
+  "owner_sha256": "ac9e92885e44a104621447b2d572f43d9f4293a8815996bb3145199e7a975d3f",
   "audit_policy": "project_theseus_vcm_untrusted_build_preflight_audit_v1",
   "audit_owner": "scripts/theseus_vcm_untrusted_build_preflight_audit.py",
   "audit_owner_sha256": "3143723b181da4fb4854e25dccc39f207402a2aa6a06a6bb821248e2c08c3e1d",
@@ -14,6 +14,10 @@
     "immutable_resolution_audit_v3": {
       "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v3.json",
       "sha256": "075d83291dfd6c52c7ef0ded2a6592079005c1d07a06844aa833edf5d0690fdc"
+    },
+    "sdist_preflight_v2": {
+      "path": "reports/theseus_vcm_untrusted_build_preflight_v2.json",
+      "sha256": "68d7fcab7e9e91c70cdf166cf5424074554e88d676e2b8f30b57f89fd75ae66b"
     }
   },
   "task": {
@@ -46,6 +50,11 @@
     "retained_payload_bytes": 0,
     "repair": "Use hash-bound /usr/bin/curl with SecureTransport; TLS verification remains enabled."
   },
+  "risk_scanner_repair": {
+    "predecessor_state": "RED_SETUP_PY_STATIC_DANGEROUS_TOKEN_FALSE_POSITIVE",
+    "false_positive": "The raw substring 'system' occurred in ordinary metadata while the parsed AST contained no system/network/process call.",
+    "repair": "Detect dangerous behavior only from exact AST import and call names; retain the full parsed import/call receipt for audit."
+  },
   "retained_sdist": "runtime/vcm_evaluator/dependency_store/sdist/mock-open-1.4.0.tar.gz",
   "limits": {
     "minimum_free_bytes_after_execution": 10737418240,
@@ -76,8 +85,8 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "report": "reports/theseus_vcm_untrusted_build_preflight_v2.json",
-  "audit_report": "reports/theseus_vcm_untrusted_build_preflight_audit_v2.json",
+  "report": "reports/theseus_vcm_untrusted_build_preflight_v3.json",
+  "audit_report": "reports/theseus_vcm_untrusted_build_preflight_audit_v3.json",
   "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact PyPI mock-open 1.4.0 source distribution named by Task 13's resolver wall matches its published hash, has safe bounded archive structure, carries a license file, and has a statically low-complexity legacy setup.py with no detected network/process/dynamic-execution tokens. It authorizes only a separately sealed network-denied sandbox wheel-build canary. It does not prove build safety, wheel correctness, dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, model behavior, D1, D2, or an ASI Stack claim.",
   "audit_maximum_inference": "This role-separated audit rederives the retained sdist identity, archive member receipts, setup.py AST characteristics, license presence, and low-complexity risk classification without network or build execution. It is not producer-independent replay, external reproduction, or evidence of task or VCM capability."
 }
