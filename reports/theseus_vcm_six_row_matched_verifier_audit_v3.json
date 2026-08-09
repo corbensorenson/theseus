@@ -1,0 +1,75 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_task_count": 6,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_matched_verifier.json",
+    "sha256": "8235ba44c11e7bb1ef85d0b6bdc59ca63cae92312d0410b028945f3aa7c72cf5"
+  },
+  "created_utc": "2026-08-09T04:46:04.605256Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 3,
+  "maximum_inference": "The role-separated audit independently rederives source changes, archive and common-evaluator identities, commands, complete diagnostic hashes, offline policy, exact dispositions, denominators, and retained-store identity from the sealed config and producer receipts. It is role-separated rederivation, not external reproduction, and cannot support a model, VCM, or ASI Stack claim.",
+  "network_or_dependency_execution_performed": false,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_six_row_matched_verifier_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_six_row_matched_verifier_v3.json",
+    "sha256": "7c081a6ec8b41e11b1a22e23f35dea75ae578819f7171637f7957e5c0fa9e7f5"
+  },
+  "qualified_task_count": 3,
+  "retained_store_identity_rederived": true,
+  "reused_predecessor_task_count": 3,
+  "rows": [
+    {
+      "common_evaluator_count": 1,
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "index": 12,
+      "parent_returncode": 2,
+      "target_returncode": 2
+    },
+    {
+      "common_evaluator_count": 1,
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "index": 13,
+      "parent_returncode": 4,
+      "reused_from_predecessor": true,
+      "target_returncode": 4
+    },
+    {
+      "common_evaluator_count": 1,
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
+      "index": 16,
+      "parent_returncode": 1,
+      "reused_from_predecessor": true,
+      "target_returncode": 0
+    },
+    {
+      "common_evaluator_count": 1,
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
+      "index": 25,
+      "parent_returncode": 1,
+      "reused_from_predecessor": true,
+      "target_returncode": 0
+    },
+    {
+      "common_evaluator_count": 9,
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "index": 35,
+      "parent_returncode": 101,
+      "target_returncode": 101
+    },
+    {
+      "common_evaluator_count": 2,
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
+      "index": 56,
+      "parent_returncode": 1,
+      "target_returncode": 0
+    }
+  ],
+  "state": "K2_05_SIX_ROW_MATCHED_VERIFIERS_ROLE_SEPARATELY_REDERIVED",
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

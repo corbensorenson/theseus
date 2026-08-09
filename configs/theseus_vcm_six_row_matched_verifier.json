@@ -1,12 +1,12 @@
 {
   "policy": "project_theseus_vcm_six_row_matched_verifier_v1",
   "state": "PROSPECTIVE_K2_05_SIX_ROW_MATCHED_PARENT_TARGET_VERIFIERS_V1",
-  "attempt": "v3_scoped_mechanics_and_all_features_construct_repair",
+  "attempt": "v4_task_35_interpreter_binding_and_task_12_host_taxonomy_repair",
   "owner": "scripts/theseus_vcm_six_row_matched_verifier.py",
-  "owner_sha256": "46732b81e1350e3f05278eab39d8057d17ef2dee6fcfbf27191f8df3445ded9a",
+  "owner_sha256": "23e52186aaadd5192dda87816815acc719c0854129b1cf7a08895a9c6d39fe0e",
   "audit_policy": "project_theseus_vcm_six_row_matched_verifier_audit_v1",
   "audit_owner": "scripts/theseus_vcm_six_row_matched_verifier_audit.py",
-  "audit_owner_sha256": "2831e16855bfc40be4f36fb36fb5146375c5547ecd9f7482ba510df238fd2462",
+  "audit_owner_sha256": "1b3e1b4cb88ab5a4a2615f5176e382ab14dc82816e4e22d74475f365cd20bb1f",
   "expected_task_count": 6,
   "sources": {
     "repository_closures": {"path": "reports/theseus_vcm_repository_closure_materialization_v2.json", "sha256": "0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df"},
@@ -16,8 +16,10 @@
     "immutable_resolution_audit": {"path": "reports/theseus_vcm_immutable_resolution_segment_audit_v5.json", "sha256": "ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066"},
     "outer_sandbox_wall_v1": {"path": "reports/theseus_vcm_six_row_matched_verifier.json", "sha256": "116b04698e5899e53ef0059bc2bba54adbad84f8f53c84d46053c14b36053441"},
     "outer_sandbox_wall_audit_v1": {"path": "reports/theseus_vcm_six_row_matched_verifier_audit.json", "sha256": "0aac8079fc7f7227d0bcb0700c8fbac8c1201ef53d7f42075491641965b91766"},
-    "matched_verifier_predecessor": {"path": "reports/theseus_vcm_six_row_matched_verifier_v2.json", "sha256": "a8b225a2746c52bccb8762ca266422430e0e0833136ec36d743b6409746e071c"},
-    "matched_verifier_predecessor_audit": {"path": "reports/theseus_vcm_six_row_matched_verifier_audit_v2.json", "sha256": "a742ff5927000ed3192bba666cc5f186766642ec6f2b459c199c962d03e43742"},
+    "matched_verifier_v2_history": {"path": "reports/theseus_vcm_six_row_matched_verifier_v2.json", "sha256": "a8b225a2746c52bccb8762ca266422430e0e0833136ec36d743b6409746e071c"},
+    "matched_verifier_v2_history_audit": {"path": "reports/theseus_vcm_six_row_matched_verifier_audit_v2.json", "sha256": "a742ff5927000ed3192bba666cc5f186766642ec6f2b459c199c962d03e43742"},
+    "matched_verifier_predecessor": {"path": "reports/theseus_vcm_six_row_matched_verifier_v3.json", "sha256": "7c081a6ec8b41e11b1a22e23f35dea75ae578819f7171637f7957e5c0fa9e7f5"},
+    "matched_verifier_predecessor_audit": {"path": "reports/theseus_vcm_six_row_matched_verifier_audit_v3.json", "sha256": "2d5b87fc026c0b7061fac6a5c2d27a2ec1809a7d94a0b5fe2a9a797f8e71f765"},
     "runner_inventory": {"path": "reports/theseus_vcm_repository_runner_inventory.json", "sha256": "ee46932bb9c206975558cd904435a7d70df2f188a9dc35c33c23f44036a6cbcd"}
   },
   "tools": {
@@ -58,14 +60,14 @@
     "required_repair": "run_the_unchanged_sealed_owner_outside_the_outer_codex_filesystem_sandbox_while_retaining_each_inner_denied_network_sandbox",
     "task_evaluator_environment_command_or_budget_change_authorized": false
   },
-  "reuse_predecessor_indices": [13, 16, 25],
-  "scoped_v3_repair": {
-    "task_12": "add_the_parent_manifest_declared_src_package_root_to_pythonpath",
+  "reuse_predecessor_indices": [12, 13, 16, 25, 56],
+  "scoped_v4_repair": {
+    "task_12": "reuse_without_rerun_and_correct_the_disposition_to_a_windows_host_platform_experiment_wall",
     "task_13": "reuse_upstream_dependency_incompatibility_disposition_without_rerun",
     "task_16": "reuse_qualified_receipt_without_rerun",
     "task_25": "reuse_qualified_receipt_without_rerun",
-    "task_35": "rerun_the_same_frozen_hidden_evaluator_with_the_preexisting_ci_all_features_regime",
-    "task_56": "add_the_parent_manifest_declared_src_package_root_to_pythonpath",
+    "task_35": "rerun_only_the_all_features_build_with_PYO3_PYTHON_bound_to_the_existing_qualified_python_3_12_tool",
+    "task_56": "reuse_qualified_receipt_without_rerun",
     "new_evaluator_paths_added": 0,
     "qualified_or_mechanics_inconclusive_surface_reruns": 0
   },
@@ -84,6 +86,9 @@
       "arguments": ["-m", "pytest", "-q", "tests/test_packaging.py"],
       "common_evaluator_paths": ["tests/test_packaging.py"],
       "common_evaluator_sha256": {"tests/test_packaging.py": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958"},
+      "required_host_platform": "win32",
+      "host_platform_evidence_substrings": ["RuntimeError", "Windows"],
+      "reuse_disposition_override": "INCONCLUSIVE_EXPERIMENT_HOST_PLATFORM_BOUNDARY",
       "unchanged_harness_sha256": {},
       "forbidden_transplant_paths": ["CHANGELOG.md", "CODE_OF_CONDUCT.md", "README.md", "ROADMAP.md", "docs/FOUNDATION_READINESS.md", "docs/PACKAGE_DISTRIBUTION.md", "docs/SCREENSHOT_EVIDENCE.md", "docs/assets/authkit-codex-proxy-result-v1.png", "scripts/README.md", "scripts/capture_readme_screenshot.py", "scripts/foundation_audit.py"],
       "target_changed_paths": ["CHANGELOG.md", "CODE_OF_CONDUCT.md", "README.md", "ROADMAP.md", "docs/FOUNDATION_READINESS.md", "docs/PACKAGE_DISTRIBUTION.md", "docs/SCREENSHOT_EVIDENCE.md", "docs/assets/authkit-codex-proxy-result-v1.png", "scripts/README.md", "scripts/capture_readme_screenshot.py", "scripts/foundation_audit.py", "tests/test_packaging.py"]
@@ -153,6 +158,7 @@
       "target_archive": {"path": "runtime/vcm_evaluator/source_archives/35_stranger6667-jsonschema_target.tar.gz", "sha256": "e261b60af50400bb36e3daf510b16bf9b9a50cec3b38516432f31ba4e6550874", "root": "jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484"},
       "working_directory": ".",
       "arguments": ["test", "--locked", "--offline", "--all-features", "-p", "jsonschema", "--test", "canonicalization"],
+      "cargo_environment_tools": {"PYO3_PYTHON": "python"},
       "runner_evidence": {"command": "cargo test --no-fail-fast --all-features --workspace --exclude jsonschema-py --exclude jsonschema-rb --exclude jsonschema-value --exclude benchmark-suite", "receipt_sha256": "6be555d88e8f2321fa4edde4c4575283275dcccea86127b6f61bb5500c45070d", "scoping": "same_all_features_regime_scoped_to_the_frozen_jsonschema_package_and_canonicalization_hidden_evaluator"},
       "common_evaluator_paths": ["crates/jsonschema/tests/canonical-suite/algebra.json", "crates/jsonschema/tests/canonical-suite/dependencies.json", "crates/jsonschema/tests/canonical-suite/errors.json", "crates/jsonschema/tests/canonical-suite/if_then_else.json", "crates/jsonschema/tests/canonical-suite/items.json", "crates/jsonschema/tests/canonical-suite/object.json", "crates/jsonschema/tests/canonical-suite/oneof.json", "crates/jsonschema/tests/canonical-suite/unevaluated.json", "crates/jsonschema/tests/canonicalization.rs"],
       "common_evaluator_sha256": {
@@ -189,9 +195,9 @@
       "target_changed_paths": ["README.md", "src/session_recall/share/cli.py", "src/session_recall/share/transport.py", "tests/test_share_cli.py", "tests/test_share_transport.py"]
     }
   ],
-  "report": "reports/theseus_vcm_six_row_matched_verifier_v3.json",
-  "audit_report": "reports/theseus_vcm_six_row_matched_verifier_audit_v3.json",
+  "report": "reports/theseus_vcm_six_row_matched_verifier_v4.json",
+  "audit_report": "reports/theseus_vcm_six_row_matched_verifier_audit_v4.json",
   "project_selected_output_cap": null,
-  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only that these six exact frozen parent/target source pairs execute under the same target-derived hidden evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete-diagnostic policy, and can scope each row as parent-fail/target-pass or inconclusive. V3 reuses Tasks 13, 16, and 25 exactly from audited V2, adds only the parent-manifest-declared src roots for Tasks 12 and 56, and retries Task 35's unchanged hidden evaluator under the pre-existing CI all-features regime. V1 consumed no evaluator surfaces. Target production paths are never transplanted, Task 16's changed training_test_runner.py is explicitly excluded, the retained shared store must remain byte-identical, and no partial panel is admitted. This qualifies evaluator mechanics only for rows that reach parent-fail/target-pass; it does not admit the 62-task K2 panel, evaluate a model or VCM route, support an ASI Stack claim, or authorize K3.",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only that these six exact frozen parent/target source pairs execute under the same target-derived hidden evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete-diagnostic policy, and can scope each row as parent-fail/target-pass or inconclusive. V4 reuses every V3 row except Task 35, corrects Task 12 to a host-platform experiment wall from its identical parent/target Windows-only import failure, and binds PYO3_PYTHON to the already-qualified Python 3.12 tool before rerunning only Task 35's unchanged all-features evaluator. V1 consumed no evaluator surfaces. Target production paths are never transplanted, Task 16's changed training_test_runner.py is explicitly excluded, the retained shared store must remain byte-identical, and no partial panel is admitted. This qualifies evaluator mechanics only for rows that reach parent-fail/target-pass; it does not admit the 62-task K2 panel, evaluate a model or VCM route, support an ASI Stack claim, or authorize K3.",
   "audit_maximum_inference": "The role-separated audit independently rederives source changes, archive and common-evaluator identities, commands, complete diagnostic hashes, offline policy, exact dispositions, denominators, and retained-store identity from the sealed config and producer receipts. It is role-separated rederivation, not external reproduction, and cannot support a model, VCM, or ASI Stack claim."
 }

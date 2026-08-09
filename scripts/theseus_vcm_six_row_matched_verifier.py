@@ -83,6 +83,7 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
             faults.append("matched_verifier_predecessor_audit_invalid")
         if not reuse_indices.issubset(EXPECTED_INDICES):
             faults.append("reuse_predecessor_indices_invalid")
+    predecessor_rows = {int(item.get("index") or 0): item for item in p2a.dicts(predecessor.get("rows"))}
 
     tools: dict[str, Path] = {}
     for name, raw in p2a.mapping(cfg.get("tools")).items():
@@ -115,6 +116,17 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
             python_roots = p2a.strings(row.get("python_path_roots"))
             if not python_roots or any(Path(value).is_absolute() or ".." in Path(value).parts for value in python_roots):
                 faults.append(f"python_path_roots_invalid:{index}")
+        for variable, tool_name in p2a.mapping(row.get("cargo_environment_tools")).items():
+            if manager != "cargo" or not variable or tool_name not in tools:
+                faults.append(f"cargo_environment_tool_invalid:{index}:{variable}")
+        override = str(row.get("reuse_disposition_override") or "")
+        if override:
+            prior = predecessor_rows.get(index, {})
+            required_platform = str(row.get("required_host_platform") or "")
+            evidence = p2a.strings(row.get("host_platform_evidence_substrings"))
+            diagnostics = "\n".join(str(p2a.mapping(prior.get(side)).get(stream) or "") for side in ("parent", "target") for stream in ("stdout", "stderr"))
+            if index not in reuse_indices or override != "INCONCLUSIVE_EXPERIMENT_HOST_PLATFORM_BOUNDARY" or not required_platform or sys.platform == required_platform or not evidence or any(value not in diagnostics for value in evidence):
+                faults.append(f"reuse_disposition_override_invalid:{index}")
         lock = p2a.resolve(str(row.get("lock") or ""))
         if not lock.is_file() or p2a.sha256_file(lock) != row.get("lock_sha256"):
             faults.append(f"lock_binding_invalid:{index}")
@@ -202,7 +214,8 @@ def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     with tempfile.TemporaryDirectory(prefix="theseus-vcm-six-verifier-", dir="/private/tmp") as raw:
         batch = Path(raw).resolve()
         cache_clones: dict[str, Path] = {}
-        for manager in ("uv", "cargo"):
+        required_managers = {str(bound["rows"][index]["config"].get("manager") or "") for index in EXPECTED_INDICES if index not in bound["reuse_indices"]}
+        for manager in sorted(required_managers):
             source = bound["store"] / manager
             destination = batch / "cache" / manager
             destination.parent.mkdir(parents=True, exist_ok=True)
@@ -364,6 +377,8 @@ def run_verifier(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, Any]
         env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "false"
         env["RUSTC"] = str(bound["tools"]["rustc"])
         env["CARGO_TARGET_DIR"] = str(work / "cargo-target")
+        for variable, tool_name in p2a.mapping(row.get("cargo_environment_tools")).items():
+            env[str(variable)] = str(bound["tools"][str(tool_name)])
         command = [str(executable), *p2a.strings(row.get("arguments"))]
         writable = [work, cache]
     receipt = run_sandboxed(command, cwd, work, writable, env, cfg, "cargo" if row["manager"] == "cargo" else "python")
@@ -373,6 +388,7 @@ def run_verifier(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, Any]
         "declared_arguments": p2a.strings(row.get("arguments")),
         "working_directory": str(row.get("working_directory") or "."),
         "python_path_roots": p2a.strings(row.get("python_path_roots")),
+        "cargo_environment_tools": p2a.mapping(row.get("cargo_environment_tools")),
         "common_evaluator_paths": p2a.strings(row.get("common_evaluator_paths")),
     })
     return receipt
@@ -464,17 +480,18 @@ def reused_row(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, Any]) 
     index = int(row.get("index") or 0)
     predecessor_rows = {int(item.get("index") or 0): item for item in p2a.dicts(bound["sources"]["matched_verifier_predecessor"].get("rows"))}
     prior = predecessor_rows.get(index, {})
+    disposition = str(row.get("reuse_disposition_override") or prior.get("disposition") or "")
     return {
         "index": index, "repository": row.get("repository"), "manager": row.get("manager"),
         "reused_from_predecessor": True,
         "predecessor": {
             "path": p2a.mapping(cfg["sources"])["matched_verifier_predecessor"]["path"],
             "sha256": p2a.mapping(cfg["sources"])["matched_verifier_predecessor"]["sha256"],
-            "disposition": prior.get("disposition"),
+            "disposition": prior.get("disposition"), "disposition_override": str(row.get("reuse_disposition_override") or ""),
         },
         "parent": {key: p2a.mapping(prior.get("parent")).get(key) for key in ("returncode", "boundary_hit", "boundary_reason")},
         "target": {key: p2a.mapping(prior.get("target")).get(key) for key in ("returncode", "boundary_hit", "boundary_reason")},
-        "faults": p2a.strings(prior.get("faults")), "disposition": prior.get("disposition"),
+        "faults": p2a.strings(prior.get("faults")), "disposition": disposition,
     }
 
 

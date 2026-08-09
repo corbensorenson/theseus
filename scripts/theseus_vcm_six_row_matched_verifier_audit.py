@@ -70,7 +70,7 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
             if index not in bound.get("reuse_indices", set()) or predecessor_receipt.get("path") != predecessor_binding.get("path") or predecessor_receipt.get("sha256") != predecessor_binding.get("sha256"):
                 faults.append(f"predecessor_reuse_binding_invalid:{index}")
             for key in ("disposition", "faults"):
-                expected_value = prior.get(key)
+                expected_value = expected.get("reuse_disposition_override") or prior.get(key) if key == "disposition" else prior.get(key)
                 observed_value = actual.get(key)
                 if key == "faults":
                     expected_value, observed_value = p2a.strings(expected_value), p2a.strings(observed_value)
@@ -120,6 +120,8 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
                     faults.append(f"command_receipt_invalid:{index}:{side}")
                 if receipt.get("python_path_roots") != expected.get("python_path_roots", []):
                     faults.append(f"python_path_receipt_invalid:{index}:{side}")
+                if receipt.get("cargo_environment_tools") != expected.get("cargo_environment_tools", {}):
+                    faults.append(f"cargo_environment_tool_receipt_invalid:{index}:{side}")
                 if receipt.get("network_denied") is not True or receipt.get("project_selected_output_cap") is not None:
                     faults.append(f"runtime_policy_receipt_invalid:{index}:{side}")
                 if receipt.get("stdout_complete") is not True or receipt.get("stderr_complete") is not True:
@@ -156,7 +158,10 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
     if report.get("package_installations") != observed_installs:
         faults.append("package_installation_count_rederivation_failed")
     clone_receipts = p2a.mapping(report.get("cache_clone_receipts"))
-    for manager in ("uv", "cargo"):
+    expected_clone_managers = {str(configured[index].get("manager") or "") for index in configured if index not in bound.get("reuse_indices", set())}
+    if set(clone_receipts) != expected_clone_managers:
+        faults.append("cache_clone_denominator_invalid")
+    for manager in expected_clone_managers:
         clone = p2a.mapping(clone_receipts.get(manager))
         if clone.get("returncode") != 0 or clone.get("network_denied_by_absence_of_network_operation") is not True or clone.get("project_selected_output_cap") is not None:
             faults.append(f"cache_clone_receipt_invalid:{manager}")
