@@ -73,6 +73,16 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
         faults.append("environment_predecessor_invalid")
     if environment_audit.get("trigger_state") != "GREEN" or environment_audit.get("qualified_task_count") != 6:
         faults.append("environment_audit_predecessor_invalid")
+    reuse_indices = {int(value) for value in cfg.get("reuse_predecessor_indices", [])}
+    predecessor = sources.get("matched_verifier_predecessor", {})
+    predecessor_audit = sources.get("matched_verifier_predecessor_audit", {})
+    if reuse_indices:
+        if predecessor.get("trigger_state") != "GREEN" or predecessor.get("task_count") != 6:
+            faults.append("matched_verifier_predecessor_invalid")
+        if predecessor_audit.get("trigger_state") != "GREEN" or predecessor_audit.get("audited_task_count") != 6:
+            faults.append("matched_verifier_predecessor_audit_invalid")
+        if not reuse_indices.issubset(EXPECTED_INDICES):
+            faults.append("reuse_predecessor_indices_invalid")
 
     tools: dict[str, Path] = {}
     for name, raw in p2a.mapping(cfg.get("tools")).items():
@@ -101,6 +111,10 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
             faults.append(f"manager_invalid:{index}")
         if manager == "uv" and str(row.get("python_tool") or "") not in tools:
             faults.append(f"python_tool_invalid:{index}")
+        if manager == "uv":
+            python_roots = p2a.strings(row.get("python_path_roots"))
+            if not python_roots or any(Path(value).is_absolute() or ".." in Path(value).parts for value in python_roots):
+                faults.append(f"python_path_roots_invalid:{index}")
         lock = p2a.resolve(str(row.get("lock") or ""))
         if not lock.is_file() or p2a.sha256_file(lock) != row.get("lock_sha256"):
             faults.append(f"lock_binding_invalid:{index}")
@@ -113,6 +127,10 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
             elif archive_root(archive) != archive_binding.get("root"):
                 faults.append(f"archive_root_invalid:{index}:{side}")
             archives[side] = archive
+        if manager == "uv":
+            for relative in p2a.strings(row.get("python_path_roots")):
+                if any(not archive_has_prefix(archive, relative) for archive in archives.values()):
+                    faults.append(f"python_path_root_missing:{index}:{relative}")
         observed_changes = archive_changes(archives.get("parent"), archives.get("target")) if all(path.is_file() for path in archives.values()) else []
         declared_changes = sorted(p2a.strings(row.get("target_changed_paths")))
         evaluators = sorted(p2a.strings(row.get("common_evaluator_paths")))
@@ -133,6 +151,14 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
             target_payload = archive_member(archives.get("target"), support)
             if parent_payload is None or parent_payload != target_payload or hashlib.sha256(parent_payload).hexdigest() != expected_sha:
                 faults.append(f"unchanged_harness_binding_invalid:{index}:{support}")
+        runner_evidence = p2a.mapping(row.get("runner_evidence"))
+        if runner_evidence:
+            inventory_rows = {int(item.get("index") or 0): item for item in p2a.dicts(sources.get("runner_inventory", {}).get("rows"))}
+            inventory = inventory_rows.get(index, {})
+            for side in ("parent", "target"):
+                receipts = p2a.dicts(p2a.mapping(inventory.get(side)).get("runner_receipts"))
+                if not any(receipt.get("command") == runner_evidence.get("command") and receipt.get("receipt_sha256") == runner_evidence.get("receipt_sha256") for receipt in receipts):
+                    faults.append(f"runner_evidence_binding_invalid:{index}:{side}")
         bound_rows[index] = {"config": row, "lock": lock, "archives": archives}
 
     authority = p2a.mapping(cfg.get("authority"))
@@ -144,7 +170,7 @@ def preflight(path: Path = DEFAULT_CONFIG, *, verify_store: bool = True) -> tupl
     for key, value in authority.items():
         if value is not (key in expected_true):
             faults.append(f"authority_invalid:{key}")
-    return cfg, {"sources": sources, "tools": tools, "store": store, "rows": bound_rows}, sorted(set(faults))
+    return cfg, {"sources": sources, "tools": tools, "store": store, "rows": bound_rows, "reuse_indices": reuse_indices}, sorted(set(faults))
 
 
 def preflight_report(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
@@ -186,6 +212,9 @@ def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
             cache_clones[manager] = destination
         if not faults:
             for index in EXPECTED_INDICES:
+                if index in bound["reuse_indices"]:
+                    rows.append(reused_row(cfg, bound, bound["rows"][index]["config"]))
+                    continue
                 if resource_boundary_closed or shutil.disk_usage(ROOT).free < reserve:
                     rows.append(not_executed_row(bound["rows"][index]["config"], "INCONCLUSIVE_EXPERIMENT_HOST_RESOURCE_BOUNDARY"))
                     resource_boundary_closed = True
@@ -322,7 +351,8 @@ def run_verifier(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, Any]
     if row["manager"] == "uv":
         venv_bin = executable.parent
         env["PATH"] = f"{venv_bin}:/usr/bin:/bin"
-        env["PYTHONPATH"] = os.pathsep.join([str(cwd), str(root)])
+        python_roots = p2a.strings(row.get("python_path_roots"))
+        env["PYTHONPATH"] = os.pathsep.join(str((root / relative).resolve()) for relative in python_roots)
         env["PYTHONDONTWRITEBYTECODE"] = "1"
         env["QT_QPA_PLATFORM"] = "offscreen"
         command = [str(executable), *p2a.strings(row.get("arguments"))]
@@ -342,6 +372,7 @@ def run_verifier(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, Any]
         "manager": row["manager"],
         "declared_arguments": p2a.strings(row.get("arguments")),
         "working_directory": str(row.get("working_directory") or "."),
+        "python_path_roots": p2a.strings(row.get("python_path_roots")),
         "common_evaluator_paths": p2a.strings(row.get("common_evaluator_paths")),
     })
     return receipt
@@ -429,6 +460,24 @@ def not_executed_row(row: dict[str, Any], disposition: str) -> dict[str, Any]:
     return {"index": int(row.get("index") or 0), "repository": row.get("repository"), "manager": row.get("manager"), "parent": {}, "target": {}, "faults": ["not_executed_host_resource_boundary"], "disposition": disposition}
 
 
+def reused_row(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, Any]) -> dict[str, Any]:
+    index = int(row.get("index") or 0)
+    predecessor_rows = {int(item.get("index") or 0): item for item in p2a.dicts(bound["sources"]["matched_verifier_predecessor"].get("rows"))}
+    prior = predecessor_rows.get(index, {})
+    return {
+        "index": index, "repository": row.get("repository"), "manager": row.get("manager"),
+        "reused_from_predecessor": True,
+        "predecessor": {
+            "path": p2a.mapping(cfg["sources"])["matched_verifier_predecessor"]["path"],
+            "sha256": p2a.mapping(cfg["sources"])["matched_verifier_predecessor"]["sha256"],
+            "disposition": prior.get("disposition"),
+        },
+        "parent": {key: p2a.mapping(prior.get("parent")).get(key) for key in ("returncode", "boundary_hit", "boundary_reason")},
+        "target": {key: p2a.mapping(prior.get("target")).get(key) for key in ("returncode", "boundary_hit", "boundary_reason")},
+        "faults": p2a.strings(prior.get("faults")), "disposition": prior.get("disposition"),
+    }
+
+
 def extract_regular_archive(archive: Path, destination: Path) -> tuple[Path, list[str]]:
     faults: list[str] = []
     roots: set[str] = set()
@@ -478,6 +527,18 @@ def archive_member(archive: Path | None, relative: str) -> bytes | None:
             return None
         extracted = handle.extractfile(members[0])
         return extracted.read() if extracted is not None else None
+
+
+def archive_has_prefix(archive: Path, relative: str) -> bool:
+    if relative in {"", "."}:
+        return True
+    prefix = PurePosixPath(relative).parts
+    with tarfile.open(archive, "r:gz") as handle:
+        for member in handle:
+            parts = PurePosixPath(member.name).parts[1:]
+            if tuple(parts[:len(prefix)]) == prefix:
+                return True
+    return False
 
 
 def archive_changes(parent: Path | None, target: Path | None) -> list[str]:

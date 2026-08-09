@@ -1,0 +1,1352 @@
+{
+  "cache_clone_receipts": {
+    "cargo": {
+      "command": [
+        "/bin/cp",
+        "-cR",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1/cargo",
+        "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/cargo"
+      ],
+      "destination_kind": "disposable_copy_on_write_clone",
+      "duration_ms": 6334.91,
+      "network_denied_by_absence_of_network_operation": true,
+      "project_selected_output_cap": null,
+      "returncode": 0,
+      "source": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1/cargo",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uv": {
+      "command": [
+        "/bin/cp",
+        "-cR",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1/uv",
+        "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv"
+      ],
+      "destination_kind": "disposable_copy_on_write_clone",
+      "duration_ms": 16213.081,
+      "network_denied_by_absence_of_network_operation": true,
+      "project_selected_output_cap": null,
+      "returncode": 0,
+      "source": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1/uv",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_matched_verifier.json",
+    "sha256": "69557ed4d253e2fc69de91368e82cba13804125a1b051ba12574f96ee943cd15"
+  },
+  "created_utc": "2026-08-09T04:34:30.363364Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "host_resource_boundary_closed": false,
+  "inconclusive_task_count": 4,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only that these six exact frozen parent/target source pairs execute under the same target-derived hidden evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete-diagnostic policy, and can scope each row as parent-fail/target-pass or inconclusive. V2 changes only the outer execution wrapper after V1 proved that Codex's outer filesystem sandbox rejected every inner sandbox before uv, pytest, or Cargo began; no evaluator surface was consumed in V1. Target production paths are never transplanted, Task 16's changed training_test_runner.py is explicitly excluded, the retained shared store must remain byte-identical, and no partial panel is admitted. This qualifies evaluator mechanics for the six-row immutable-resolution segment; it does not admit the 62-task K2 panel, evaluate a model or VCM route, support an ASI Stack claim, or authorize K3.",
+  "network_enabled_calls": 0,
+  "package_installations": 5,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 12,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_six_row_matched_verifier_v1",
+  "project_installations": 0,
+  "project_selected_output_cap": null,
+  "qualified_task_count": 2,
+  "repository_runner_executions": 12,
+  "retained_store_after": {
+    "bytes": 1754707286,
+    "file_count": 95673,
+    "identity_sha256": "bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "retained_store_before": {
+    "bytes": 1754707286,
+    "file_count": 95673,
+    "identity_sha256": "bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "retained_store_unchanged": true,
+  "rows": [
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/12_rickli0822-prog-windows-ai-login-doctor_parent.tar.gz",
+          "sha256": "3958886a0ab9697e38e98c29c950e173e6d79d540c816c28c0c6426de5d646e6"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/12_rickli0822-prog-windows-ai-login-doctor_target.tar.gz",
+          "sha256": "5ae1f0640b06d7f7f6a66f790f52c5b33dedd20ef4f46d7d2f62e0d6c0b497e9"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_packaging.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "path": "tests/test_packaging.py",
+          "sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "path": "tests/test_packaging.py",
+          "sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-12\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 347.42,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "27e96650dfefcc8058cdb82586225b5281bcfeec310cfe333e7e18d3e2127bd7",
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 6 packages in 22ms\nInstalled 6 packages in 228ms\n + iniconfig==2.3.0\n + packaging==26.3\n + pillow==12.3.0\n + pluggy==1.6.0\n + pygments==2.20.0\n + pytest==9.1.1\n",
+          "stderr_bytes": 210,
+          "stderr_complete": true,
+          "stderr_sha256": "1eaa4d85ef09986ebb92e2142d1f12194468237071961acf8f68bd6b28793bc4",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": "/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-12\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 463.937,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "27e96650dfefcc8058cdb82586225b5281bcfeec310cfe333e7e18d3e2127bd7",
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md",
+        "README.md",
+        "ROADMAP.md",
+        "docs/FOUNDATION_READINESS.md",
+        "docs/PACKAGE_DISTRIBUTION.md",
+        "docs/SCREENSHOT_EVIDENCE.md",
+        "docs/assets/authkit-codex-proxy-result-v1.png",
+        "scripts/README.md",
+        "scripts/capture_readme_screenshot.py",
+        "scripts/foundation_audit.py"
+      ],
+      "index": 12,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+        "sha256": "62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd"
+      },
+      "manager": "uv",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/parent\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_packaging.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/test_packaging.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_packaging.py"
+        ],
+        "duration_ms": 994.899,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 2,
+        "sandbox_profile_sha256": "f0a5eb9421732eeec51cb1fbd416c3cbd1f314107393b63fba2426be501e4e80",
+        "side": "parent",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "\n==================================== ERRORS ====================================\n___________________ ERROR collecting tests/test_packaging.py ___________________\nImportError while importing test module '/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/parent/source/windows-ai-login-doctor-9d8928512151942cd516e9eab4dde89b435804bf/tests/test_packaging.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_packaging.py:9: in <module>\n    from authkit.brand import ICON_ICO, ICON_PNG_48\nE   ModuleNotFoundError: No module named 'authkit'\n=========================== short test summary info ============================\nERROR tests/test_packaging.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.10s\n",
+        "stdout_bytes": 1031,
+        "stdout_complete": true,
+        "stdout_sha256": "f5d1e67afde5c9c5babd6b686ad5fd751268616416537cf8d0edf5f5f5186a79",
+        "working_directory": "."
+      },
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/target\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_packaging.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/test_packaging.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_packaging.py"
+        ],
+        "duration_ms": 667.445,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 2,
+        "sandbox_profile_sha256": "6112bd8cb21b43478b9f296dcd26cdcdc8849896f81f3fa80e5a71cecbe4f486",
+        "side": "target",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "\n==================================== ERRORS ====================================\n___________________ ERROR collecting tests/test_packaging.py ___________________\nImportError while importing test module '/private/tmp/theseus-vcm-six-verifier-12406gag/task-12/target/source/windows-ai-login-doctor-82aab22b9788d402dd2b32cd8f2bd5818f7a0176/tests/test_packaging.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_packaging.py:9: in <module>\n    from authkit.brand import ICON_ICO, ICON_PNG_48\nE   ModuleNotFoundError: No module named 'authkit'\n=========================== short test summary info ============================\nERROR tests/test_packaging.py\n!!!!!!!!!!!!!!!!!!!! Interrupted: 1 error during collection !!!!!!!!!!!!!!!!!!!!\n1 error in 0.11s\n",
+        "stdout_bytes": 1031,
+        "stdout_complete": true,
+        "stdout_sha256": "907551aafbc8076323d1c0a4c8536c596a6c29d105b5492f31225665f6ab292e",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 11
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/13_dknowles2-ha-pitboss_parent.tar.gz",
+          "sha256": "6bd4afec9af2668a3a679c033d176e7ceeac21a7da41cae47f9067c02fe965af"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/13_dknowles2-ha-pitboss_target.tar.gz",
+          "sha256": "13ab7d38aadeef369f2a6d103f3a26fd011876460a73eea7565411ef74a9c62b"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_sensor.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "path": "tests/test_sensor.py",
+          "sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "path": "tests/test_sensor.py",
+          "sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-13\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--find-links",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/wheels"
+          ],
+          "duration_ms": 30305.585,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "ff5e2941dab08e247b20070e336ad4519f85ed2219a63dd39d0a37d53e488f19",
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 158 packages in 103ms\nInstalled 158 packages in 29.93s\n + acme==5.4.0\n + aiodns==4.0.4\n + aioesphomeapi==45.7.0\n + aiogithubapi==26.0.0\n + aiohappyeyeballs==2.7.1\n + aiohasupervisor==0.5.0\n + aiohttp==3.14.3\n + aiohttp-asyncmdnsresolver==0.2.0\n + aiohttp-cors==0.8.1\n + aiohttp-fast-zlib==0.3.0\n + aiooui==0.1.9\n + aiosignal==1.4.0\n + aiousbwatcher==1.1.2\n + aiozoneinfo==0.2.3\n + annotated-types==0.8.0\n + annotatedyaml==1.0.2\n + anyio==4.14.2\n + ast-serialize==0.8.0\n + astral==2.2\n + async-interrupt==1.2.2\n + asyncinotify==4.4.4\n + atomicwrites-homeassistant==1.4.1\n + attrs==26.1.0\n + audioop-lts==0.2.2\n + awesomeversion==25.8.0\n + backoff==2.2.1\n + bcrypt==5.0.0\n + bleak==3.0.2\n + bleak-retry-connector==4.6.3\n + bluetooth-adapters==2.4.0\n + bluetooth-auto-recovery==1.6.4\n + bluetooth-data-tools==1.29.6\n + boolean-py==5.0\n + boto3==1.43.67\n + botocore==1.43.67\n + btsocket==0.3.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + chacha20poly1305-reuseable==0.13.2\n + charset-normalizer==3.4.9\n + ciso8601==2.3.3\n + colorlog==6.12.0\n + coverage==7.14.1\n + cronsim==2.7\n + cryptography==48.0.1\n + dukpy==0.6.0\n + envs==1.4\n + execnet==2.1.2\n + fnv-hash-fast==2.0.3\n + fnvhash==0.2.1\n + freezegun==1.5.5\n + frozenlist==1.8.0\n + grpcio==1.83.0\n + h11==0.16.0\n + habluetooth==6.1.0\n + hass-nabucasa==2.2.0\n + home-assistant-bluetooth==2.0.0\n + homeassistant==2026.7.4\n + httpcore==1.0.9\n + httpx==0.28.1\n + icmplib==3.0.4\n + idna==3.18\n + ifaddr==0.2.0\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + jmespath==1.1.0\n + josepy==2.2.0\n + librt==0.15.0\n + license-expression==30.4.3\n + lru-dict==1.4.1\n + markupsafe==3.0.3\n + mashumaro==3.22\n + mock-open==1.4.0\n + multidict==6.7.1\n + mypy==2.3.0\n + mypy-extensions==1.1.0\n + noiseprotocol==0.3.1\n + numpy==2.3.2\n + orjson==3.11.9\n + packaging==26.3\n + paho-mqtt==2.1.0\n + pathspec==1.1.1\n + pillow==12.2.0\n + pip==26.2.1\n + pipdeptree==2.26.1\n + pluggy==1.6.0\n + propcache==0.5.2\n + protobuf==7.35.1\n + psutil==7.2.2\n + psutil-home-assistant==0.0.1\n + pycares==5.0.1\n + pycognito==2024.5.1\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pyjwt==2.12.1\n + pynacl==1.6.2\n + pyobjc-core==12.2.1\n + pyobjc-framework-cocoa==12.2.1\n + pyobjc-framework-corebluetooth==12.2.1\n + pyobjc-framework-libdispatch==12.2.1\n + pyopenssl==26.2.0\n + pyrfc3339==2.1.0\n + pyric==0.1.6.3\n + pyserial==3.5\n + pyserial-asyncio==0.6\n + pytboss==2026.8.3\n + pytest==9.0.3\n + pytest-aiohttp==1.1.1\n + pytest-asyncio==1.4.0\n + pytest-cov==7.1.0\n + pytest-freezer==0.4.9\n + pytest-github-actions-annotate-failures==0.4.0\n + pytest-homeassistant-custom-component==0.13.348\n + pytest-picked==0.5.1\n + pytest-socket==0.8.0\n + pytest-timeout==2.4.0\n + pytest-unordered==0.8.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + python-slugify==8.0.4\n + pytz==2026.3.post1\n + pyyaml==6.0.3\n + regex==2026.7.19\n + requests==2.34.2\n + requests-mock==1.12.1\n + respx==0.23.1\n + ruff==0.16.0\n + s3transfer==0.19.2\n + securetar==2026.4.1\n + sentence-stream==1.3.0\n + serialx==1.8.2\n + six==1.17.0\n + snitun==0.45.1\n + sqlalchemy==2.0.51\n + standard-aifc==3.13.0\n + standard-chunk==3.13.0\n + standard-telnetlib==3.13.0\n + syrupy==5.3.2\n + text-unidecode==1.3\n + tqdm==4.67.1\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + tzdata==2026.3\n + tzlocal==5.4.4\n + uart-devices==0.1.1\n + ulid-transform==2.2.9\n + unidiff==0.7.5\n + urllib3==2.7.0\n + usb-devices==0.5.1\n + uv==0.11.25\n + voluptuous==0.15.2\n + voluptuous-openapi==0.4.1\n + voluptuous-serialize==2.7.0\n + webrtc-models==0.3.0\n + yarl==1.24.5\n + zeroconf==0.150.0\n",
+          "stderr_bytes": 3624,
+          "stderr_complete": true,
+          "stderr_sha256": "a655948e18205e462026e52790f160f2e01869210fb6ed6c0b17245a571233d2",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": "/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-13\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 234.612,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "ff5e2941dab08e247b20070e336ad4519f85ed2219a63dd39d0a37d53e488f19",
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "custom_components/pitboss/coordinator.py",
+        "custom_components/pitboss/sensor.py"
+      ],
+      "index": 13,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+        "sha256": "f9802c9804d8527d671a342c8add16225fcc20218d740f9076122b3f36226fef"
+      },
+      "manager": "uv",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/parent\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_sensor.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/test_sensor.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_sensor.py"
+        ],
+        "duration_ms": 16338.774,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 4,
+        "sandbox_profile_sha256": "839d63fbe18e147cc306ab69aa534cd1a6ad2898306b610f8458a760900df06a",
+        "side": "parent",
+        "stderr": "ImportError while loading conftest '/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/parent/source/ha-pitboss-43f1f62f3dc281a417233d0040c3e325b4365bff/tests/conftest.py'.\ntests/conftest.py:13: in <module>\n    from custom_components.pitboss.const import DOMAIN, PROTOCOL_WSS\ncustom_components/pitboss/__init__.py:11: in <module>\n    from homeassistant.components import bluetooth\n../../../venv/lib/python3.14/site-packages/homeassistant/components/bluetooth/__init__.py:27: in <module>\n    from habluetooth import (\nE   ImportError: cannot import name 'BluetoothReachabilityIntent' from 'habluetooth' (/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv/lib/python3.14/site-packages/habluetooth/__init__.py)\n",
+        "stderr_bytes": 721,
+        "stderr_complete": true,
+        "stderr_sha256": "07cebce2d7a5ac3854fa0514a5567d2ae36128d378e4acfc5202dcbbf79d5176",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_directory": "."
+      },
+      "repository": "dknowles2/ha-pitboss",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/target\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_sensor.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/test_sensor.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_sensor.py"
+        ],
+        "duration_ms": 6377.358,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 4,
+        "sandbox_profile_sha256": "9c327cb1888439bf63d974315b6876b6c90eb1cb279e9d96b2fa0c2a43e0e982",
+        "side": "target",
+        "stderr": "ImportError while loading conftest '/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/target/source/ha-pitboss-b9ba58fc1a47cfab9c8577c5163ce553f2c35de7/tests/conftest.py'.\ntests/conftest.py:13: in <module>\n    from custom_components.pitboss.const import DOMAIN, PROTOCOL_WSS\ncustom_components/pitboss/__init__.py:11: in <module>\n    from homeassistant.components import bluetooth\n../../../venv/lib/python3.14/site-packages/homeassistant/components/bluetooth/__init__.py:27: in <module>\n    from habluetooth import (\nE   ImportError: cannot import name 'BluetoothReachabilityIntent' from 'habluetooth' (/private/tmp/theseus-vcm-six-verifier-12406gag/task-13/venv/lib/python3.14/site-packages/habluetooth/__init__.py)\n",
+        "stderr_bytes": 721,
+        "stderr_complete": true,
+        "stderr_sha256": "81554c372f51411d0ba864ca9e206a2352bbdaf28bfcfa89461d1a56aae39194",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 2
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_parent.tar.gz",
+          "sha256": "46e74b1a28265f06454de0dd488e501eb0c763c20ed983ca1b48db393324892f"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_target.tar.gz",
+          "sha256": "1bbc4a3d47db5d94dba594b5ca61baef447cc0c4ba5029405d4b70c827a2c9f4"
+        }
+      },
+      "common_evaluator_paths": [
+        "ops-server/dashboard/test_arena_auth.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "path": "ops-server/dashboard/test_arena_auth.py",
+          "sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "path": "ops-server/dashboard/test_arena_auth.py",
+          "sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "side": "target"
+        }
+      ],
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-16\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 843.874,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "c1b546c6004e992c14150b09467562df2b3aec286f9237317dabc5833ef3fc7a",
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 35 packages in 36ms\nInstalled 35 packages in 629ms\n + annotated-doc==0.0.5\n + annotated-types==0.8.0\n + anyio==4.14.2\n + certifi==2026.7.22\n + cffi==2.1.1\n + click==8.4.2\n + cryptography==50.0.0\n + fastapi==0.141.1\n + h11==0.16.0\n + httpcore==1.0.9\n + httptools==0.8.0\n + httpx==0.28.1\n + idna==3.18\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + markupsafe==3.0.3\n + packaging==26.3\n + pluggy==1.6.0\n + psutil==7.2.2\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pytest==9.1.1\n + pytest-mock==3.15.1\n + python-dotenv==1.2.2\n + pyyaml==6.0.3\n + redis==8.1.0\n + starlette==1.6.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + uvicorn==0.52.1\n + uvloop==0.22.1\n + watchfiles==1.2.0\n + websockets==17.0.1\n",
+          "stderr_bytes": 798,
+          "stderr_complete": true,
+          "stderr_sha256": "8c1f88d9be1788b5f87cc9dea93816c17dde13ecf22caaa2053b850ecd5ccef2",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": "/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-16\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 133.596,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "c1b546c6004e992c14150b09467562df2b3aec286f9237317dabc5833ef3fc7a",
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "ops-server/dashboard/app.py",
+        "ops-server/tools/agentic_validator.py",
+        "ops-server/tools/bootcamp_loadtest.py",
+        "ops-server/tools/training_test_runner.py"
+      ],
+      "index": 16,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+        "sha256": "55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a"
+      },
+      "manager": "uv",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/parent\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "dashboard/test_arena_auth.py"
+        ],
+        "common_evaluator_paths": [
+          "ops-server/dashboard/test_arena_auth.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "dashboard/test_arena_auth.py"
+        ],
+        "duration_ms": 2990.593,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 1,
+        "sandbox_profile_sha256": "ca806da3b2239051e183bfae2693788263421610901e533a7f858f52be93b50b",
+        "side": "parent",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "F.FFF.F.                                                                 [100%]\n=================================== FAILURES ===================================\n______________ test_compat_anonymous_passes_gate_and_logs_legacy _______________\n\ncaplog = <_pytest.logging.LogCaptureFixture object at 0x1062f7440>\n\n    def test_compat_anonymous_passes_gate_and_logs_legacy(caplog):\n        for method, path, body in GATED:\n            with caplog.at_level(logging.WARNING, logger=\"ops-dashboard\"):\n                caplog.clear()\n                r = _call(method, path, body)\n                # Gate passed: the endpoint answered from (empty) state, not 401.\n                assert r.status_code in (200, 404, 409), \\\n                    f\"{method} {path} -> {r.status_code} (expected pass-through)\"\n>               assert any(\"ARENA-LEGACY-CALLER\" in rec.getMessage()\n                           for rec in caplog.records), \\\n                    f\"{method} {path}: no ARENA-LEGACY-CALLER warning logged\"\nE               AssertionError: POST /api/arena/provision: no ARENA-LEGACY-CALLER warning logged\nE               assert False\nE                +  where False = any(<generator object test_compat_anonymous_passes_gate_and_logs_legacy.<locals>.<genexpr> at 0x106a235e0>)\n\ndashboard/test_arena_auth.py:92: AssertionError\n_________________ test_compat_legacy_warning_names_method_path _________________\n\ncaplog = <_pytest.logging.LogCaptureFixture object at 0x10619fc20>\n\n    def test_compat_legacy_warning_names_method_path(caplog):\n        with caplog.at_level(logging.WARNING, logger=\"ops-dashboard\"):\n            client.post(\"/api/arena/sessions/job-9/shell-token\")\n        msgs = [rec.getMessage() for rec in caplog.records\n                if \"ARENA-LEGACY-CALLER\" in rec.getMessage()]\n>       assert msgs and \"POST\" in msgs[0] and \"/api/arena/sessions/job-9/shell-token\" in msgs[0]\nE       assert ([])\n\ndashboard/test_arena_auth.py:110: AssertionError\n____________________ test_enforce_anonymous_401_everywhere _____________________\n\n    def test_enforce_anonymous_401_everywhere():\n        os.environ[\"ARENA_AUTH_ENFORCE\"] = \"1\"\n        try:\n            for method, path, body in GATED:\n                r = _call(method, path, body)\n>               assert r.status_code == 401, \\\n                    f\"{method} {path} -> {r.status_code} (expected 401)\"\nE                   AssertionError: POST /api/arena/provision -> 404 (expected 401)\nE                   assert 404 == 401\nE                    +  where 404 = <Response [404 Not Found]>.status_code\n\ndashboard/test_arena_auth.py:120: AssertionError\n_______________________ test_enforce_wrong_bearer_is_401 _______________________\n\n    def test_enforce_wrong_bearer_is_401():\n        os.environ[\"ARENA_AUTH_ENFORCE\"] = \"1\"\n        try:\n            r = client.post(\"/api/arena/sessions/job-1/shell-token\",\n                            headers={\"Authorization\": \"Bearer wrong\"})\n>           assert r.status_code == 401\nE           assert 404 == 401\nE            +  where 404 = <Response [404 Not Found]>.status_code\n\ndashboard/test_arena_auth.py:131: AssertionError\n________________ test_enforce_spoofed_empty_x_auth_user_is_401 _________________\n\n    def test_enforce_spoofed_empty_x_auth_user_is_401():\n        # nginx clears X-Auth-User on /api/arena/ \u2014 an empty header must not\n        # count as a signed-in member.\n        os.environ[\"ARENA_AUTH_ENFORCE\"] = \"1\"\n        try:\n            r = client.post(\"/api/arena/sessions/job-1/shell-token\",\n                            headers={\"X-Auth-User\": \"\"})\n>           assert r.status_code == 401\nE           assert 404 == 401\nE            +  where 404 = <Response [404 Not Found]>.status_code\n\ndashboard/test_arena_auth.py:152: AssertionError\n=============================== warnings summary ===============================\ndashboard/app.py:4594\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/parent/source/codespaces-framework-a8819219cb38c41a921c3ec78716942e08f39606/ops-server/dashboard/app.py:4594: SyntaxWarning: invalid escape sequence '\\['\n    </html>\"\"\")\n\ndashboard/app.py:368\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/parent/source/codespaces-framework-a8819219cb38c41a921c3ec78716942e08f39606/ops-server/dashboard/app.py:368: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"startup\")\n\n../../../../venv/lib/python3.12/site-packages/fastapi/applications.py:4681\n../../../../venv/lib/python3.12/site-packages/fastapi/applications.py:4681\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/lib/python3.12/site-packages/fastapi/applications.py:4681: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    return self.router.on_event(event_type)  # ty: ignore[deprecated]\n\ndashboard/app.py:382\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/parent/source/codespaces-framework-a8819219cb38c41a921c3ec78716942e08f39606/ops-server/dashboard/app.py:382: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"shutdown\")\n\n../../../../venv/lib/python3.12/site-packages/fastapi/testclient.py:1\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n=========================== short test summary info ============================\nFAILED dashboard/test_arena_auth.py::test_compat_anonymous_passes_gate_and_logs_legacy - AssertionError: POST /api/arena/provision: no ARENA-LEGACY-CALLER warning logged\nassert False\n +  where False = any(<generator object test_compat_anonymous_passes_gate_and_logs_legacy.<locals>.<genexpr> at 0x106a235e0>)\nFAILED dashboard/test_arena_auth.py::test_compat_legacy_warning_names_method_path - assert ([])\nFAILED dashboard/test_arena_auth.py::test_enforce_anonymous_401_everywhere - AssertionError: POST /api/arena/provision -> 404 (expected 401)\nassert 404 == 401\n +  where 404 = <Response [404 Not Found]>.status_code\nFAILED dashboard/test_arena_auth.py::test_enforce_wrong_bearer_is_401 - assert 404 == 401\n +  where 404 = <Response [404 Not Found]>.status_code\nFAILED dashboard/test_arena_auth.py::test_enforce_spoofed_empty_x_auth_user_is_401 - assert 404 == 401\n +  where 404 = <Response [404 Not Found]>.status_code\n5 failed, 3 passed, 6 warnings in 1.93s\n",
+        "stdout_bytes": 7040,
+        "stdout_complete": true,
+        "stdout_sha256": "a0e9751400a76f41cb1cadec2ab49309c52bee89eadb46bf67ad1708d7b711fe",
+        "working_directory": "ops-server"
+      },
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/target\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "dashboard/test_arena_auth.py"
+        ],
+        "common_evaluator_paths": [
+          "ops-server/dashboard/test_arena_auth.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "dashboard/test_arena_auth.py"
+        ],
+        "duration_ms": 2021.588,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 0,
+        "sandbox_profile_sha256": "a5d2ac23ec23d151bd13302e482a7e2c12cf494eee4e1bb60feeb00e6a053c4e",
+        "side": "target",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "........                                                                 [100%]\n=============================== warnings summary ===============================\ndashboard/app.py:4650\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/target/source/codespaces-framework-178c8f9d9e05f14c29776086d14b3a9753e00c85/ops-server/dashboard/app.py:4650: SyntaxWarning: invalid escape sequence '\\['\n    </html>\"\"\")\n\ndashboard/app.py:368\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/target/source/codespaces-framework-178c8f9d9e05f14c29776086d14b3a9753e00c85/ops-server/dashboard/app.py:368: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"startup\")\n\n../../../../venv/lib/python3.12/site-packages/fastapi/applications.py:4681\n../../../../venv/lib/python3.12/site-packages/fastapi/applications.py:4681\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/lib/python3.12/site-packages/fastapi/applications.py:4681: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    return self.router.on_event(event_type)  # ty: ignore[deprecated]\n\ndashboard/app.py:382\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/target/source/codespaces-framework-178c8f9d9e05f14c29776086d14b3a9753e00c85/ops-server/dashboard/app.py:382: DeprecationWarning: \n          on_event is deprecated, use lifespan event handlers instead.\n  \n          Read more about it in the\n          [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).\n          \n    @app.on_event(\"shutdown\")\n\n../../../../venv/lib/python3.12/site-packages/fastapi/testclient.py:1\n  /private/tmp/theseus-vcm-six-verifier-12406gag/task-16/venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.\n    from starlette.testclient import TestClient as TestClient  # noqa\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n8 passed, 6 warnings in 1.14s\n",
+        "stdout_bytes": 2364,
+        "stdout_complete": true,
+        "stdout_sha256": "e1d96fe0fa857e7801a12cd266d0f4f9a18efe9b679d99148de3de5018893c9b",
+        "working_directory": "ops-server"
+      },
+      "target_production_or_nontransplanted_path_count": 4
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_parent.tar.gz",
+          "sha256": "6181909b18c8ac3062c1611bbe4d3cc273478ebbda8b9070f1d65bc77211ac7e"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_target.tar.gz",
+          "sha256": "2f584468f375eb28c080c897473cf3bceb70511dc6b99a21e26a55fbedbe6d7a"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/autolamella/test_status_dict_vocabulary.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "path": "tests/autolamella/test_status_dict_vocabulary.py",
+          "sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "path": "tests/autolamella/test_status_dict_vocabulary.py",
+          "sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "side": "target"
+        }
+      ],
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-25\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 3052.471,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "bfeba7cb78624618cec4645a1d64b9067acf5456fa7f1f12e504cda07ffa7a2a",
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 39 packages in 18ms\nInstalled 39 packages in 2.94s\n + annotated-types==0.8.0\n + contourpy==1.3.3\n + cycler==0.12.1\n + execnet==2.1.2\n + fonttools==4.63.0\n + imageio==2.37.4\n + iniconfig==2.3.0\n + kiwisolver==1.5.0\n + lazy-loader==0.5\n + lxml==6.1.1\n + lxml-html-clean==0.4.5\n + matplotlib==3.11.1\n + networkx==3.6.1\n + numpy==2.5.1\n + ome-types==0.6.3\n + opencv-python-headless==5.0.0.93\n + packaging==26.3\n + pandas==3.0.5\n + petname==2.9\n + pillow==12.3.0\n + pluggy==1.6.0\n + psygnal==0.15.1\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pydantic-extra-types==2.11.1\n + pygments==2.20.0\n + pyparsing==3.3.2\n + pytest==9.1.1\n + pytest-timeout==2.4.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + pyyaml==6.0.3\n + scikit-image==0.26.0\n + scipy==1.18.0\n + six==1.17.0\n + tifffile==2026.7.31\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + xsdata==26.2\n",
+          "stderr_bytes": 927,
+          "stderr_complete": true,
+          "stderr_sha256": "3ee60550c5d088d83dee921ddd121ebef227c466be6ba1e34d9a121cb2faa258",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": "/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-25\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 41.982,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "bfeba7cb78624618cec4645a1d64b9067acf5456fa7f1f12e504cda07ffa7a2a",
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "fibsem/applications/autolamella/ui/AutoLamellaMainUI.py",
+        "fibsem/applications/autolamella/workflows/tasks/manager.py",
+        "fibsem/ui/fm/widgets/fm_overview_widget.py",
+        "fibsem/ui/widgets/workflow_timeline_widget.py",
+        "tests/ui/test_fm_overview_widget.py"
+      ],
+      "index": 25,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+        "sha256": "8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6"
+      },
+      "manager": "uv",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/parent\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/autolamella/test_status_dict_vocabulary.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/autolamella/test_status_dict_vocabulary.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/autolamella/test_status_dict_vocabulary.py"
+        ],
+        "duration_ms": 34147.874,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 1,
+        "sandbox_profile_sha256": "c28a0f49d16db27ad308034fc8134b2e51d7f4e57f3b86f2f9197f35bbdff389",
+        "side": "parent",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "FF.                                                                      [100%]\n=================================== FAILURES ===================================\n__________ test_the_status_dict_names_the_item_the_way_the_hook_does ___________\n\nmanager = <fibsem.applications.autolamella.workflows.tasks.manager.TaskManager object at 0x12b88e6c0>\n\n    def test_the_status_dict_names_the_item_the_way_the_hook_does(manager: TaskManager):\n        status = _emit(manager)\n    \n>       assert status[\"item_name\"] == \"lam-1\"\n               ^^^^^^^^^^^^^^^^^^^\nE       KeyError: 'item_name'\n\n/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/parent/source/fibsem-os-d7211ba810a3f3db75017ed34da85cb60cc5076a/tests/autolamella/test_status_dict_vocabulary.py:68: KeyError\n___________ test_the_old_key_is_still_emitted_for_outside_consumers ____________\n\nmanager = <fibsem.applications.autolamella.workflows.tasks.manager.TaskManager object at 0x12c0c5040>\n\n    def test_the_old_key_is_still_emitted_for_outside_consumers(manager: TaskManager):\n        \"\"\"Same deprecation shape as the HookContext shims: emit both until v0.6.\"\"\"\n        status = _emit(manager, name=\"lam-7\")\n    \n>       assert status[\"lamella_name\"] == status[\"item_name\"]\n                                         ^^^^^^^^^^^^^^^^^^^\nE       KeyError: 'item_name'\n\n/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/parent/source/fibsem-os-d7211ba810a3f3db75017ed34da85cb60cc5076a/tests/autolamella/test_status_dict_vocabulary.py:77: KeyError\n=========================== short test summary info ============================\nFAILED tests/autolamella/test_status_dict_vocabulary.py::test_the_status_dict_names_the_item_the_way_the_hook_does - KeyError: 'item_name'\nFAILED tests/autolamella/test_status_dict_vocabulary.py::test_the_old_key_is_still_emitted_for_outside_consumers - KeyError: 'item_name'\n2 failed, 1 passed in 33.32s\n",
+        "stdout_bytes": 1895,
+        "stdout_complete": true,
+        "stdout_sha256": "431cc92ff6bcf5245625fc06ef67113b469b5cf9f90e73ab672d6433de3a2114",
+        "working_directory": "."
+      },
+      "repository": "fibsem-os/fibsem-os",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/target\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-25/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/autolamella/test_status_dict_vocabulary.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/autolamella/test_status_dict_vocabulary.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/autolamella/test_status_dict_vocabulary.py"
+        ],
+        "duration_ms": 6440.383,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 0,
+        "sandbox_profile_sha256": "2b1e593d68835978f2c0a118c7db225ce14cbbbc6e003099e4ff48d8ce66a518",
+        "side": "target",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "...                                                                      [100%]\n3 passed in 5.40s\n",
+        "stdout_bytes": 98,
+        "stdout_complete": true,
+        "stdout_sha256": "6ce4ad38c588cef7b7def6d10ff364974119c1c4ab3ab62d327047ea422eddfa",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 5
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/35_stranger6667-jsonschema_parent.tar.gz",
+          "sha256": "1dd9564528eb4d07e4a992fca3eb4a8ce49a865ce05aeb10735681298f2f3431"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/35_stranger6667-jsonschema_target.tar.gz",
+          "sha256": "e261b60af50400bb36e3daf510b16bf9b9a50cec3b38516432f31ba4e6550874"
+        }
+      },
+      "common_evaluator_paths": [
+        "crates/jsonschema/tests/canonical-suite/algebra.json",
+        "crates/jsonschema/tests/canonical-suite/dependencies.json",
+        "crates/jsonschema/tests/canonical-suite/errors.json",
+        "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+        "crates/jsonschema/tests/canonical-suite/items.json",
+        "crates/jsonschema/tests/canonical-suite/object.json",
+        "crates/jsonschema/tests/canonical-suite/oneof.json",
+        "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+        "crates/jsonschema/tests/canonicalization.rs"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "path": "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "path": "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "path": "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "path": "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "path": "crates/jsonschema/tests/canonical-suite/errors.json",
+          "sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "path": "crates/jsonschema/tests/canonical-suite/errors.json",
+          "sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "path": "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "path": "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "path": "crates/jsonschema/tests/canonical-suite/items.json",
+          "sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "path": "crates/jsonschema/tests/canonical-suite/items.json",
+          "sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "path": "crates/jsonschema/tests/canonical-suite/object.json",
+          "sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "path": "crates/jsonschema/tests/canonical-suite/object.json",
+          "sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "path": "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "path": "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "path": "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "path": "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "path": "crates/jsonschema/tests/canonicalization.rs",
+          "sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "path": "crates/jsonschema/tests/canonicalization.rs",
+          "sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_EXPERIMENT_EVALUATOR_NOT_DISCRIMINATIVE",
+      "environment": {
+        "cargo_home": "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/cargo",
+        "network_denied": true,
+        "parent_lock_sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6",
+        "project_installation": false,
+        "target_lock_sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "crates/jsonschema/src/canonical/algebra.rs"
+      ],
+      "index": 35,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-35-Cargo.lock",
+        "sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+      },
+      "manager": "cargo",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/cargo\"))",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "common_evaluator_paths": [
+          "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "crates/jsonschema/tests/canonical-suite/errors.json",
+          "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "crates/jsonschema/tests/canonical-suite/items.json",
+          "crates/jsonschema/tests/canonical-suite/object.json",
+          "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "crates/jsonschema/tests/canonicalization.rs"
+        ],
+        "declared_arguments": [
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "duration_ms": 84258.375,
+        "manager": "cargo",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 0,
+        "sandbox_profile_sha256": "7a22da461944285778d0ff3a85b07e87be22cfe279dd004a2692bf9968e31df0",
+        "side": "parent",
+        "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.47\n   Compiling libc v0.2.189\n   Compiling cfg-if v1.0.4\n   Compiling itoa v1.0.18\n   Compiling find-msvc-tools v0.1.10\n   Compiling memchr v2.8.3\n   Compiling shlex v2.0.1\n   Compiling serde_core v1.0.229\n   Compiling once_cell v1.21.4\n   Compiling zmij v1.0.23\n   Compiling autocfg v1.5.1\n   Compiling serde v1.0.229\n   Compiling num-traits v0.2.19\n   Compiling serde_json v1.0.151\n   Compiling stable_deref_trait v1.2.1\n   Compiling pin-project-lite v0.2.17\n   Compiling smallvec v1.15.2\n   Compiling bytes v1.12.1\n   Compiling syn v3.0.3\n   Compiling syn v2.0.119\n   Compiling jobserver v0.1.34\n   Compiling futures-core v0.3.33\n   Compiling cc v1.4.2\n   Compiling bitflags v2.13.1\n   Compiling pkg-config v0.3.33\n   Compiling fs_extra v1.3.0\n   Compiling dunce v1.0.5\n   Compiling futures-sink v0.3.33\n   Compiling mio v1.2.2\n   Compiling socket2 v0.6.5\n   Compiling litemap v0.7.4\n   Compiling writeable v0.5.5\n   Compiling equivalent v1.0.2\n   Compiling icu_locid_transform_data v1.5.1\n   Compiling icu_properties_data v1.5.1\n   Compiling aws-lc-rs v1.18.0\n   Compiling slab v0.4.12\n   Compiling cmake v0.1.58\n   Compiling futures-channel v0.3.33\n   Compiling http v1.5.0\n   Compiling zeroize v1.8.2\n   Compiling icu_normalizer_data v1.5.1\n   Compiling getrandom v0.3.4\n   Compiling regex-syntax v0.8.11\n   Compiling futures-io v0.3.33\n   Compiling rand_core v0.10.1\n   Compiling futures-task v0.3.33\n   Compiling aws-lc-sys v0.44.0\n   Compiling percent-encoding v2.3.2\n   Compiling getrandom v0.4.3\n   Compiling futures-util v0.3.33\n   Compiling http-body v1.1.0\n   Compiling rustls-pki-types v1.15.1\n   Compiling num-integer v0.1.46\n   Compiling aho-corasick v1.1.5\n   Compiling tracing-core v0.1.36\n   Compiling write16 v1.0.0\n   Compiling serde_derive v1.0.229\n   Compiling displaydoc v0.2.7\n   Compiling synstructure v0.13.2\n   Compiling tokio-macros v2.7.2\n   Compiling hashbrown v0.16.1\n   Compiling either v1.17.0\n   Compiling rustls v0.23.43\n   Compiling tokio v1.53.1\n   Compiling utf16_iter v1.0.5\n   Compiling untrusted v0.9.0\n   Compiling parking_lot_core v0.9.12\n   Compiling utf8_iter v1.0.4\n   Compiling httparse v1.10.1\n   Compiling zerofrom-derive v0.1.7\n   Compiling yoke-derive v0.7.5\n   Compiling zerovec-derive v0.10.3\n   Compiling icu_provider_macros v1.5.0\n   Compiling indexmap v2.11.4\n   Compiling regex-automata v0.4.18\n   Compiling tracing v0.1.44\n   Compiling same-file v1.0.6\n   Compiling zerofrom v0.1.8\n   Compiling try-lock v0.2.5\n   Compiling fnv v1.0.7\n   Compiling zerocopy v0.8.56\n   Compiling subtle v2.6.1\n   Compiling yoke v0.7.5\n   Compiling atomic-waker v1.1.2\n   Compiling tower-service v0.3.3\n   Compiling cfg_aliases v0.2.2\n   Compiling scopeguard v1.2.0\n   Compiling core-foundation-sys v0.8.7\n   Compiling version_check v0.9.5\n   Compiling lock_api v0.4.14\n   Compiling zerovec v0.10.4\n   Compiling nix v0.31.3\n   Compiling ahash v0.8.12\n   Compiling want v0.3.1\n   Compiling walkdir v2.5.0\n   Compiling num-bigint v0.4.8\n   Compiling half v2.4.1\n   Compiling allocator-api2 v0.2.21\n   Compiling rustversion v1.0.23\n   Compiling rustix v1.1.4\n   Compiling tinystr v0.7.6\n   Compiling icu_collections v1.5.0\n   Compiling foldhash v0.2.0\n   Compiling anyhow v1.0.104\n   Compiling icu_locid v1.5.0\n   Compiling ciborium-io v0.2.2\n   Compiling anstyle v1.0.14\n   Compiling clap_lex v1.0.1\n   Compiling ref-cast v1.0.26\n   Compiling cast v0.3.0\n   Compiling heck v0.5.0\n   Compiling icu_provider v1.5.0\n   Compiling clap_builder v4.5.61\n   Compiling num-rational v0.4.2\n   Compiling regex v1.13.1\n   Compiling icu_locid_transform v1.5.0\n   Compiling tokio-util v0.7.19\n   Compiling ciborium-ll v0.2.2\n   Compiling hashbrown v0.17.1\n   Compiling h2 v0.4.15\n   Compiling icu_properties v1.5.1\n   Compiling parking_lot v0.12.5\n   Compiling security-framework-sys v2.17.0\n   Compiling core-foundation v0.10.1\n   Compiling ref-cast-impl v1.0.26\n   Compiling num-iter v0.1.46\n   Compiling form_urlencoded v1.2.2\n   Compiling codspeed v5.0.1\n   Compiling errno v0.3.14\n   Compiling num-complex v0.4.6\n   Compiling approx v0.5.1\n   Compiling sync_wrapper v1.0.2\n   Compiling dashu-int v0.4.3\n   Compiling base64 v0.22.1\n   Compiling libm v0.2.16\n   Compiling tower-layer v0.3.3\n   Compiling icu_normalizer v1.5.0\n   Compiling ipnet v2.12.1\n   Compiling hyper v1.11.0\n   Compiling idna_adapter v1.2.0\n   Compiling idna v1.1.0\n   Compiling tower v0.5.3\n   Compiling url v2.5.8\n   Compiling num v0.4.3\n   Compiling statrs v0.18.0\n   Compiling hyper-util v0.1.20\n   Compiling security-framework v3.6.0\n   Compiling clap v4.5.61\n   Compiling ciborium v0.2.2\n   Compiling tinytemplate v1.2.1\n   Compiling itertools v0.10.5\n   Compiling chacha20 v0.10.1\n   Compiling alloca v0.4.0\n   Compiling anes v0.1.6\n   Compiling log v0.4.33\n   Compiling paste v1.0.15\n   Compiling dashu-base v0.4.3\n   Compiling static_assertions v1.1.0\n   Compiling lazy_static v1.5.0\n   Compiling unicode-general-category v1.1.0\n   Compiling fastrand v2.5.0\n   Compiling oorandom v11.1.5\n   Compiling borrow-or-share v0.2.4\n   Compiling crc32fast v1.5.0\n   Compiling num-modular v0.6.5\n   Compiling adler2 v2.0.1\n   Compiling bit-vec v0.8.0\n   Compiling glob v0.3.4\n   Compiling colored v3.1.1\n   Compiling bit-set v0.8.0\n   Compiling miniz_oxide v0.8.9\n   Compiling fluent-uri v0.4.1\n   Compiling tempfile v3.27.0\n   Compiling criterion-plot v0.5.0\n   Compiling fraction v0.15.4\n   Compiling jsonschema-testsuite-internal v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema-testsuite-internal)\n   Compiling rand v0.10.2\n   Compiling tower-http v0.6.11\n   Compiling strum_macros v0.28.0\n   Compiling itertools v0.13.0\n   Compiling testsuite-common v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/testsuite-common)\n   Compiling test-case-core v3.3.1\n   Compiling http-body-util v0.1.4\n   Compiling is-terminal v0.4.17\n   Compiling num-cmp v0.1.0\n   Compiling bytecount v0.6.9\n   Compiling codspeed-criterion-compat v5.0.1\n   Compiling vsimd v0.8.0\n   Compiling outref v0.5.2\n   Compiling micromap v0.3.0\n   Compiling rustc-hash v2.1.3\n   Compiling jsonschema-value v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema-value)\n   Compiling criterion-plot v0.8.2\n   Compiling uuid-simd v0.8.0\n   Compiling referencing v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema-referencing)\n   Compiling strum v0.28.0\n   Compiling codspeed-criterion-compat-walltime v5.0.1\n   Compiling test-case-macros v3.3.1\n   Compiling jsonschema-testsuite-codegen v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema-testsuite-codegen)\n   Compiling fancy-regex v0.18.0\n   Compiling hegeltest-c v0.30.5\n   Compiling email_address v0.2.9\n   Compiling hegeltest-macros v0.28.8\n   Compiling jsonschema-regex v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema-regex)\n   Compiling page_size v0.6.0\n   Compiling data-encoding v2.11.1\n   Compiling jsonschema-testsuite v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema-testsuite)\n   Compiling criterion v0.8.2\n   Compiling test-case v3.3.1\n   Compiling benchmark v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/benchmark)\n   Compiling futures v0.3.33\n   Compiling hegeltest v0.28.8\n   Compiling rustls-webpki v0.103.13\n   Compiling tokio-rustls v0.26.4\n   Compiling rustls-platform-verifier v0.6.2\n   Compiling hyper-rustls v0.27.7\n   Compiling reqwest v0.13.3\n   Compiling jsonschema v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/source/jsonschema-e72a1b2bbd5ae4b8df4ff8dd163b4c49ba8faf67/crates/jsonschema)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 23s\n     Running tests/canonicalization.rs (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/parent/cargo-target/debug/deps/canonicalization-bb69ae4878612e79)\n",
+        "stderr_bytes": 8539,
+        "stderr_complete": true,
+        "stderr_sha256": "59448ce3cd335303719ce27bc62adbfb63883736c1867a50d0fbe3d55b7c291b",
+        "stdout": "\nrunning 142 tests\ntest an_invalid_schema_type_error_has_no_cause ... ok\ntest array_view_exposes_prefix_items ... ok\ntest a_resolution_error_carries_its_cause ... ok\ntest array_view_exposes_bounds ... ok\ntest absolute_self_reference_collapses_to_the_root_pointer ... ok\ntest canonical_schema_ordering ... ok\ntest const_intersects_enum ... ok\ntest a_definition_name_spelling_a_canonical_uri_does_not_alias_a_registry_resource ... ok\ntest contains_counts_without_modeled_form_stay_raw::maximum_past_u64 ... ok\ntest const_identity_is_value_identity ... ok\ntest contains_counts_without_modeled_form_stay_raw::minimum_past_u64 ... ok\ntest divisor_no_decimal_spells_is_modeled ... ok\ntest divisor_keeps_member_past_representable_range ... ok\ntest divisor_oracle_matches_the_validator::_0_123456789_expects ... ok\ntest divisor_oracle_matches_the_validator::_0_5_expects ... ok\ntest divisor_oracle_matches_the_validator::_0_75_expects ... ok\ntest divisor_oracle_matches_the_validator::_1e300_expects ... ok\ntest divisor_oracle_matches_the_validator::_1_5_expects ... ok\ntest divisor_oracle_matches_the_validator::_1_expects ... ok\ntest divisor_oracle_matches_the_validator::_2_expects ... ok\ntest divisor_oracle_matches_the_validator::_1e_7_expects ... ok\ntest divisor_oracle_matches_the_validator::_3_expects ... ok\ntest divisor_oracle_matches_the_validator::_4503599627370496_expects ... ok\ntest divisor_oracle_matches_the_validator::_9007199254740992_expects ... ok\ntest divisor_oracle_matches_the_validator::_9007199254740993_expects ... ok\ntest divisors_past_exact_precision::a_divisor_no_decimal_spells_is_kept_as_written ... ok\ntest divisors_past_exact_precision::a_divisor_past_f64_precision_is_kept_as_written ... ok\ntest divisors_past_exact_precision::a_divisor_past_the_integer_range_is_kept_as_written ... ok\ntest draft4_integer_typed_group_intersects_bound::bound_excludes_all ... ok\ntest draft4_integer_typed_group_intersects_bound::bound_before_typed_group ... ok\ntest divisors_past_exact_precision::divisors_with_no_exact_common_multiple_keep_a_snapped_bound ... ok\ntest divisors_past_exact_precision::divisors_whose_common_multiple_no_decimal_spells_stay_apart ... ok\ntest draft4_integer_typed_group_intersects_bound::narrows_to_survivors ... ok\ntest draft4_integer_typed_group_intersects_bound::mixed_type_set_guards_only_integers ... ok\ntest draft4_integer_values_are_a_typed_group::same_object ... ok\ntest draft4_integer_values_are_a_typed_group::value_set_meets_a_bound ... ok\ntest divisors_past_exact_precision::divisors_with_no_exact_common_multiple_stay_apart ... ok\ntest error_display::invalid_pattern ... ok\ntest error_display::invalid_schema_type ... ok\ntest dynamic_reference_only_in_an_external_resource_is_modeled ... ok\ntest finite_value_set_saturation::partial_set_stays_enum ... ok\ntest external_registry_reference_emits_a_self_contained_definition ... ok\ntest draft_stamps_its_schema_uri::draft6 ... ok\ntest huge_count_bound_stays_raw::_array_maxitems_expects ... ok\ntest finite_value_set_saturation::saturates_null_and_boolean ... ok\ntest huge_count_bound_stays_raw::_array_minitems_expects ... ok\ntest finite_value_set_saturation::saturates_boolean ... ok\ntest huge_count_bound_stays_raw::_object_minproperties_expects ... ok\ntest huge_count_bound_stays_raw::_object_maxproperties_expects ... ok\ntest dynamic_anchor_in_a_const_value_does_not_bind ... ok\ntest huge_count_bound_stays_raw::_string_minlength_expects ... ok\ntest huge_count_bound_stays_raw::_string_maxlength_expects ... ok\ntest deeply_nested_document_round_trips ... ok\ntest huge_numeric_bound_stays_raw::integer_maximum ... ok\ntest huge_numeric_bound_stays_raw::integer_maximum_at_u64_max ... ok\ntest huge_numeric_bound_stays_raw::interval_meeting_integer ... ok\ntest huge_numeric_bound_stays_raw::integer_minimum ... ok\ntest huge_numeric_bound_stays_raw::number_maximum ... ok\ntest huge_numeric_bound_stays_raw::number_maximum_at_u64_max ... ok\ntest huge_numeric_bound_stays_raw::integer_minimum_below_negative_i64 ... ok\ntest huge_numeric_bound_stays_raw::number_minimum ... ok\ntest huge_numeric_bound_stays_raw::untyped_maximum_below_negative_i64 ... ok\ntest huge_numeric_bound_stays_raw::untyped_minimum_below_negative_i64 ... ok\ntest huge_numeric_bound_stays_raw::untyped_maximum_at_u64_max ... ok\ntest integer_valued_float_const_folds_to_integer::negative ... ok\ntest integer_valued_float_const_folds_to_integer::positive ... ok\ntest integer_view_exposes_bounds ... ok\ntest kind_reports_its_label::boolean_false ... ok\ntest kind_reports_its_label::empty_object ... ok\ntest kind_reports_its_label::const_value ... ok\ntest kind_reports_its_label::enum_values ... ok\ntest identity_divisor_drops_beside_a_whole_one ... ok\ntest kind_reports_its_label::integer_leaf ... ok\ntest kind_reports_its_label::number_leaf ... ok\ntest kind_reports_its_label::multi_type ... ok\ntest kind_reports_its_label::raw ... ok\ntest negated_type_set_complement_converges_with_direct_spelling ... ok\ntest object_view_exposes_bounds ... ok\ntest number_view_exposes_bounds ... ok\ntest object_view_exposes_property_names ... ok\ntest oversized_integer_compares_by_overflow_direction::cross_branch_minimum_keeps_oversized ... ok\ntest object_view_exposes_properties ... ok\ntest oversized_integer_compares_by_overflow_direction::maximum_drops_oversized ... ok\ntest oversized_integer_compares_by_overflow_direction::maximum_keeps_undersized ... ok\ntest oversized_integer_compares_by_overflow_direction::minimum_keeps_oversized ... ok\ntest oversized_integer_compares_by_overflow_direction::minimum_drops_undersized ... ok\ntest oversized_member_absorption::absorbed_above_every_maximum ... ok\ntest oversized_member_absorption::kept_beyond_the_maximum ... ok\ntest reference_view_exposes_its_canonical_definition ... ok\ntest pattern_engine_selects_dialect ... ok\ntest registry_already_holding_the_root_uri_still_canonicalizes ... ok\ntest redeclared_dynamic_anchor_in_an_embedded_resource_binds ... ok\ntest representable_range_boundary::maximum_at_i64_max_is_modeled ... ok\ntest representable_range_boundary::maximum_one_past_i64_max_stays_raw ... ok\ntest representable_range_boundary::minimum_at_first_float_below_i64_min_stays_raw ... ok\ntest representable_range_boundary::minimum_at_i64_min_is_modeled ... ok\ntest representable_range_boundary::minimum_one_past_i64_min_rounds_to_i64_min ... ok\ntest relative_id_beside_ref_with_assertion_siblings_canonicalizes ... ok\ntest string_view_exposes_facets ... ok\ntest resource_anchors_bind_below_any_entry_point::stray_id_key ... ok\ntest symbolic_reference_operations_have_distinct_views ... ok\ntest resource_anchors_bind_below_any_entry_point::pointer_entry ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::contains_schema ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::contains_under_a_property ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::key_constraint ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::item_schema ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::nested_object ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::untyped_property_schema ... ok\ntest unmodeled_document_round_trips_verbatim::unevaluated_properties_beside_an_applicator ... ok\ntest uncheckable_format_scan_walks_a_typed_group ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::property_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::_2020_12_items_is_not_a_tuple ... ok\ntest unsupported_reference_target_keeps_the_whole_document_raw ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::dependency_is_neither_schema_nor_name_list ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::dependent_requirement_is_not_a_name ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::contains_beside_unevaluated_items_is_not_a_schema ... ok\ntest unmodeled_documents_hash_by_document_identity ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::hoisted_properties_is_not_an_object ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::dependent_schema_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::item_cover_branch_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::property_cover_branch_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::subschema_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::padded_tuple_is_not_an_array ... ok\ntest validation_error_display_and_source ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::type_is_not_a_name ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::target_declares_another_draft ... ok\ntest view_exposes_anyof_branches ... ok\ntest view_matches_expected::const_value ... ok\ntest view_matches_expected::boolean_true ... ok\ntest view_matches_expected::empty_object ... ok\ntest view_matches_expected::boolean_false ... ok\ntest view_matches_expected::enum_values ... ok\ntest view_matches_expected::multi_type ... ok\ntest wide_bounds_keep_validation::a_bound_with_no_representable_multiple ... ok\ntest wide_bounds_keep_validation::an_integer_bound_with_no_representable_multiple ... ok\ntest wide_bounds_keep_validation::an_excluded_end_past_exact_precision ... ok\ntest wide_bounds_keep_validation::an_upper_end_past_exact_precision ... ok\ntest draft_stamps_its_schema_uri::draft2019_09 ... ok\ntest back_reference_through_an_anchored_resource_is_not_the_root ... ok\ntest recursive_ref_chain_breaks_at_an_anchorless_resource ... ok\ntest nested_recursive_anchor_does_not_bind_the_resource ... ok\ntest bundled_metaschemas_are_modeled ... ok\n\ntest result: ok. 142 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s\n\n",
+        "stdout_bytes": 9785,
+        "stdout_complete": true,
+        "stdout_sha256": "a7ab723353b52ecf182e7c32bea280aa30add45212078568c6f6bf5a1c6e35ea",
+        "working_directory": "."
+      },
+      "repository": "Stranger6667/jsonschema",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/cargo\"))",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "common_evaluator_paths": [
+          "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "crates/jsonschema/tests/canonical-suite/errors.json",
+          "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "crates/jsonschema/tests/canonical-suite/items.json",
+          "crates/jsonschema/tests/canonical-suite/object.json",
+          "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "crates/jsonschema/tests/canonicalization.rs"
+        ],
+        "declared_arguments": [
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "duration_ms": 91612.982,
+        "manager": "cargo",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 0,
+        "sandbox_profile_sha256": "68eb3d7e0b933f1195f8d8d4a9b082c277241d366b6d48c8e1a135b884b017af",
+        "side": "target",
+        "stderr": "   Compiling proc-macro2 v1.0.107\n   Compiling unicode-ident v1.0.24\n   Compiling quote v1.0.47\n   Compiling libc v0.2.189\n   Compiling cfg-if v1.0.4\n   Compiling itoa v1.0.18\n   Compiling find-msvc-tools v0.1.10\n   Compiling memchr v2.8.3\n   Compiling shlex v2.0.1\n   Compiling serde_core v1.0.229\n   Compiling once_cell v1.21.4\n   Compiling zmij v1.0.23\n   Compiling autocfg v1.5.1\n   Compiling serde v1.0.229\n   Compiling num-traits v0.2.19\n   Compiling serde_json v1.0.151\n   Compiling pin-project-lite v0.2.17\n   Compiling smallvec v1.15.2\n   Compiling stable_deref_trait v1.2.1\n   Compiling syn v3.0.3\n   Compiling syn v2.0.119\n   Compiling bytes v1.12.1\n   Compiling jobserver v0.1.34\n   Compiling futures-core v0.3.33\n   Compiling bitflags v2.13.1\n   Compiling cc v1.4.2\n   Compiling fs_extra v1.3.0\n   Compiling dunce v1.0.5\n   Compiling pkg-config v0.3.33\n   Compiling futures-sink v0.3.33\n   Compiling mio v1.2.2\n   Compiling socket2 v0.6.5\n   Compiling equivalent v1.0.2\n   Compiling icu_locid_transform_data v1.5.1\n   Compiling writeable v0.5.5\n   Compiling litemap v0.7.4\n   Compiling aws-lc-rs v1.18.0\n   Compiling slab v0.4.12\n   Compiling icu_properties_data v1.5.1\n   Compiling futures-channel v0.3.33\n   Compiling http v1.5.0\n   Compiling icu_normalizer_data v1.5.1\n   Compiling cmake v0.1.58\n   Compiling zeroize v1.8.2\n   Compiling getrandom v0.3.4\n   Compiling futures-task v0.3.33\n   Compiling futures-io v0.3.33\n   Compiling percent-encoding v2.3.2\n   Compiling getrandom v0.4.3\n   Compiling regex-syntax v0.8.11\n   Compiling rand_core v0.10.1\n   Compiling aws-lc-sys v0.44.0\n   Compiling http-body v1.1.0\n   Compiling futures-util v0.3.33\n   Compiling rustls-pki-types v1.15.1\n   Compiling num-integer v0.1.46\n   Compiling aho-corasick v1.1.5\n   Compiling tracing-core v0.1.36\n   Compiling untrusted v0.9.0\n   Compiling write16 v1.0.0\n   Compiling parking_lot_core v0.9.12\n   Compiling serde_derive v1.0.229\n   Compiling displaydoc v0.2.7\n   Compiling tokio-macros v2.7.2\n   Compiling synstructure v0.13.2\n   Compiling tokio v1.53.1\n   Compiling utf16_iter v1.0.5\n   Compiling utf8_iter v1.0.4\n   Compiling httparse v1.10.1\n   Compiling hashbrown v0.16.1\n   Compiling either v1.17.0\n   Compiling rustls v0.23.43\n   Compiling regex-automata v0.4.18\n   Compiling indexmap v2.11.4\n   Compiling tracing v0.1.44\n   Compiling zerofrom-derive v0.1.7\n   Compiling yoke-derive v0.7.5\n   Compiling zerovec-derive v0.10.3\n   Compiling icu_provider_macros v1.5.0\n   Compiling zerofrom v0.1.8\n   Compiling zerocopy v0.8.56\n   Compiling scopeguard v1.2.0\n   Compiling try-lock v0.2.5\n   Compiling yoke v0.7.5\n   Compiling tower-service v0.3.3\n   Compiling subtle v2.6.1\n   Compiling atomic-waker v1.1.2\n   Compiling cfg_aliases v0.2.2\n   Compiling same-file v1.0.6\n   Compiling version_check v0.9.5\n   Compiling fnv v1.0.7\n   Compiling core-foundation-sys v0.8.7\n   Compiling walkdir v2.5.0\n   Compiling zerovec v0.10.4\n   Compiling nix v0.31.3\n   Compiling ahash v0.8.12\n   Compiling want v0.3.1\n   Compiling lock_api v0.4.14\n   Compiling num-bigint v0.4.8\n   Compiling half v2.4.1\n   Compiling ref-cast v1.0.26\n   Compiling cast v0.3.0\n   Compiling rustix v1.1.4\n   Compiling clap_lex v1.0.1\n   Compiling tinystr v0.7.6\n   Compiling icu_collections v1.5.0\n   Compiling anstyle v1.0.14\n   Compiling icu_locid v1.5.0\n   Compiling heck v0.5.0\n   Compiling anyhow v1.0.104\n   Compiling rustversion v1.0.23\n   Compiling ciborium-io v0.2.2\n   Compiling tokio-util v0.7.19\n   Compiling foldhash v0.2.0\n   Compiling icu_provider v1.5.0\n   Compiling allocator-api2 v0.2.21\n   Compiling hashbrown v0.17.1\n   Compiling icu_locid_transform v1.5.0\n   Compiling h2 v0.4.15\n   Compiling regex v1.13.1\n   Compiling ciborium-ll v0.2.2\n   Compiling num-rational v0.4.2\n   Compiling clap_builder v4.5.61\n   Compiling icu_properties v1.5.1\n   Compiling parking_lot v0.12.5\n   Compiling security-framework-sys v2.17.0\n   Compiling core-foundation v0.10.1\n   Compiling ref-cast-impl v1.0.26\n   Compiling num-iter v0.1.46\n   Compiling codspeed v5.0.1\n   Compiling form_urlencoded v1.2.2\n   Compiling approx v0.5.1\n   Compiling num-complex v0.4.6\n   Compiling errno v0.3.14\n   Compiling sync_wrapper v1.0.2\n   Compiling base64 v0.22.1\n   Compiling ipnet v2.12.1\n   Compiling libm v0.2.16\n   Compiling hyper v1.11.0\n   Compiling icu_normalizer v1.5.0\n   Compiling tower-layer v0.3.3\n   Compiling dashu-int v0.4.3\n   Compiling tower v0.5.3\n   Compiling idna_adapter v1.2.0\n   Compiling idna v1.1.0\n   Compiling url v2.5.8\n   Compiling hyper-util v0.1.20\n   Compiling clap v4.5.61\n   Compiling num v0.4.3\n   Compiling statrs v0.18.0\n   Compiling security-framework v3.6.0\n   Compiling ciborium v0.2.2\n   Compiling tinytemplate v1.2.1\n   Compiling itertools v0.10.5\n   Compiling chacha20 v0.10.1\n   Compiling alloca v0.4.0\n   Compiling fastrand v2.5.0\n   Compiling static_assertions v1.1.0\n   Compiling lazy_static v1.5.0\n   Compiling dashu-base v0.4.3\n   Compiling num-modular v0.6.5\n   Compiling log v0.4.33\n   Compiling oorandom v11.1.5\n   Compiling paste v1.0.15\n   Compiling adler2 v2.0.1\n   Compiling borrow-or-share v0.2.4\n   Compiling colored v3.1.1\n   Compiling bit-vec v0.8.0\n   Compiling crc32fast v1.5.0\n   Compiling anes v0.1.6\n   Compiling unicode-general-category v1.1.0\n   Compiling glob v0.3.4\n   Compiling bit-set v0.8.0\n   Compiling fluent-uri v0.4.1\n   Compiling miniz_oxide v0.8.9\n   Compiling tempfile v3.27.0\n   Compiling criterion-plot v0.5.0\n   Compiling fraction v0.15.4\n   Compiling rand v0.10.2\n   Compiling jsonschema-testsuite-internal v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema-testsuite-internal)\n   Compiling tower-http v0.6.11\n   Compiling strum_macros v0.28.0\n   Compiling itertools v0.13.0\n   Compiling testsuite-common v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/testsuite-common)\n   Compiling test-case-core v3.3.1\n   Compiling http-body-util v0.1.4\n   Compiling is-terminal v0.4.17\n   Compiling vsimd v0.8.0\n   Compiling bytecount v0.6.9\n   Compiling rustc-hash v2.1.3\n   Compiling outref v0.5.2\n   Compiling num-cmp v0.1.0\n   Compiling codspeed-criterion-compat v5.0.1\n   Compiling micromap v0.3.0\n   Compiling jsonschema-value v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema-value)\n   Compiling uuid-simd v0.8.0\n   Compiling strum v0.28.0\n   Compiling referencing v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema-referencing)\n   Compiling codspeed-criterion-compat-walltime v5.0.1\n   Compiling criterion-plot v0.8.2\n   Compiling test-case-macros v3.3.1\n   Compiling jsonschema-testsuite-codegen v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema-testsuite-codegen)\n   Compiling fancy-regex v0.18.0\n   Compiling hegeltest-c v0.30.5\n   Compiling email_address v0.2.9\n   Compiling hegeltest-macros v0.28.8\n   Compiling jsonschema-regex v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema-regex)\n   Compiling page_size v0.6.0\n   Compiling data-encoding v2.11.1\n   Compiling jsonschema-testsuite v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema-testsuite)\n   Compiling criterion v0.8.2\n   Compiling test-case v3.3.1\n   Compiling benchmark v0.1.0 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/benchmark)\n   Compiling futures v0.3.33\n   Compiling hegeltest v0.28.8\n   Compiling rustls-webpki v0.103.13\n   Compiling tokio-rustls v0.26.4\n   Compiling rustls-platform-verifier v0.6.2\n   Compiling hyper-rustls v0.27.7\n   Compiling reqwest v0.13.3\n   Compiling jsonschema v0.49.3 (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/source/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/crates/jsonschema)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 30s\n     Running tests/canonicalization.rs (/private/tmp/theseus-vcm-six-verifier-12406gag/task-35/target/cargo-target/debug/deps/canonicalization-bb69ae4878612e79)\n",
+        "stderr_bytes": 8539,
+        "stderr_complete": true,
+        "stderr_sha256": "4967e4368753802c3690036a40686c95294bd6f16e5d7f609344da5b247b00b2",
+        "stdout": "\nrunning 142 tests\ntest an_invalid_schema_type_error_has_no_cause ... ok\ntest array_view_exposes_bounds ... ok\ntest a_resolution_error_carries_its_cause ... ok\ntest array_view_exposes_prefix_items ... ok\ntest absolute_self_reference_collapses_to_the_root_pointer ... ok\ntest a_definition_name_spelling_a_canonical_uri_does_not_alias_a_registry_resource ... ok\ntest canonical_schema_ordering ... ok\ntest const_identity_is_value_identity ... ok\ntest const_intersects_enum ... ok\ntest contains_counts_without_modeled_form_stay_raw::maximum_past_u64 ... ok\ntest contains_counts_without_modeled_form_stay_raw::minimum_past_u64 ... ok\ntest divisor_keeps_member_past_representable_range ... ok\ntest divisor_no_decimal_spells_is_modeled ... ok\ntest divisor_oracle_matches_the_validator::_0_5_expects ... ok\ntest divisor_oracle_matches_the_validator::_0_123456789_expects ... ok\ntest divisor_oracle_matches_the_validator::_0_75_expects ... ok\ntest divisor_oracle_matches_the_validator::_1_expects ... ok\ntest divisor_oracle_matches_the_validator::_1e300_expects ... ok\ntest divisor_oracle_matches_the_validator::_1_5_expects ... ok\ntest divisor_oracle_matches_the_validator::_3_expects ... ok\ntest divisor_oracle_matches_the_validator::_2_expects ... ok\ntest divisor_oracle_matches_the_validator::_1e_7_expects ... ok\ntest divisor_oracle_matches_the_validator::_9007199254740992_expects ... ok\ntest divisor_oracle_matches_the_validator::_4503599627370496_expects ... ok\ntest divisors_past_exact_precision::a_divisor_past_f64_precision_is_kept_as_written ... ok\ntest divisors_past_exact_precision::a_divisor_no_decimal_spells_is_kept_as_written ... ok\ntest divisor_oracle_matches_the_validator::_9007199254740993_expects ... ok\ntest divisors_past_exact_precision::a_divisor_past_the_integer_range_is_kept_as_written ... ok\ntest divisors_past_exact_precision::divisors_whose_common_multiple_no_decimal_spells_stay_apart ... ok\ntest divisors_past_exact_precision::divisors_with_no_exact_common_multiple_stay_apart ... ok\ntest draft4_integer_typed_group_intersects_bound::bound_before_typed_group ... ok\ntest divisors_past_exact_precision::divisors_with_no_exact_common_multiple_keep_a_snapped_bound ... ok\ntest draft4_integer_typed_group_intersects_bound::bound_excludes_all ... ok\ntest draft4_integer_typed_group_intersects_bound::mixed_type_set_guards_only_integers ... ok\ntest draft4_integer_typed_group_intersects_bound::narrows_to_survivors ... ok\ntest draft4_integer_values_are_a_typed_group::same_object ... ok\ntest draft4_integer_values_are_a_typed_group::value_set_meets_a_bound ... ok\ntest deeply_nested_document_round_trips ... ok\ntest dynamic_reference_only_in_an_external_resource_is_modeled ... ok\ntest error_display::invalid_pattern ... ok\ntest error_display::invalid_schema_type ... ok\ntest dynamic_anchor_in_a_const_value_does_not_bind ... ok\ntest finite_value_set_saturation::saturates_boolean ... ok\ntest finite_value_set_saturation::partial_set_stays_enum ... ok\ntest finite_value_set_saturation::saturates_null_and_boolean ... ok\ntest external_registry_reference_emits_a_self_contained_definition ... ok\ntest huge_count_bound_stays_raw::_array_maxitems_expects ... ok\ntest huge_count_bound_stays_raw::_object_minproperties_expects ... ok\ntest huge_count_bound_stays_raw::_array_minitems_expects ... ok\ntest huge_count_bound_stays_raw::_object_maxproperties_expects ... ok\ntest huge_count_bound_stays_raw::_string_maxlength_expects ... ok\ntest huge_count_bound_stays_raw::_string_minlength_expects ... ok\ntest huge_numeric_bound_stays_raw::integer_maximum ... ok\ntest huge_numeric_bound_stays_raw::integer_maximum_at_u64_max ... ok\ntest huge_numeric_bound_stays_raw::integer_minimum_below_negative_i64 ... ok\ntest huge_numeric_bound_stays_raw::integer_minimum ... ok\ntest draft_stamps_its_schema_uri::draft6 ... ok\ntest huge_numeric_bound_stays_raw::number_maximum ... ok\ntest huge_numeric_bound_stays_raw::interval_meeting_integer ... ok\ntest huge_numeric_bound_stays_raw::number_minimum ... ok\ntest huge_numeric_bound_stays_raw::number_maximum_at_u64_max ... ok\ntest huge_numeric_bound_stays_raw::untyped_maximum_at_u64_max ... ok\ntest huge_numeric_bound_stays_raw::untyped_maximum_below_negative_i64 ... ok\ntest huge_numeric_bound_stays_raw::untyped_minimum_below_negative_i64 ... ok\ntest integer_valued_float_const_folds_to_integer::negative ... ok\ntest integer_valued_float_const_folds_to_integer::positive ... ok\ntest kind_reports_its_label::boolean_false ... ok\ntest integer_view_exposes_bounds ... ok\ntest kind_reports_its_label::const_value ... ok\ntest kind_reports_its_label::enum_values ... ok\ntest kind_reports_its_label::integer_leaf ... ok\ntest kind_reports_its_label::empty_object ... ok\ntest kind_reports_its_label::multi_type ... ok\ntest identity_divisor_drops_beside_a_whole_one ... ok\ntest kind_reports_its_label::number_leaf ... ok\ntest kind_reports_its_label::raw ... ok\ntest number_view_exposes_bounds ... ok\ntest negated_type_set_complement_converges_with_direct_spelling ... ok\ntest object_view_exposes_bounds ... ok\ntest object_view_exposes_properties ... ok\ntest object_view_exposes_property_names ... ok\ntest oversized_integer_compares_by_overflow_direction::maximum_drops_oversized ... ok\ntest oversized_integer_compares_by_overflow_direction::cross_branch_minimum_keeps_oversized ... ok\ntest oversized_integer_compares_by_overflow_direction::minimum_drops_undersized ... ok\ntest oversized_integer_compares_by_overflow_direction::minimum_keeps_oversized ... ok\ntest oversized_member_absorption::absorbed_above_every_maximum ... ok\ntest oversized_integer_compares_by_overflow_direction::maximum_keeps_undersized ... ok\ntest oversized_member_absorption::kept_beyond_the_maximum ... ok\ntest pattern_engine_selects_dialect ... ok\ntest reference_view_exposes_its_canonical_definition ... ok\ntest registry_already_holding_the_root_uri_still_canonicalizes ... ok\ntest redeclared_dynamic_anchor_in_an_embedded_resource_binds ... ok\ntest representable_range_boundary::maximum_at_i64_max_is_modeled ... ok\ntest representable_range_boundary::minimum_at_first_float_below_i64_min_stays_raw ... ok\ntest representable_range_boundary::maximum_one_past_i64_max_stays_raw ... ok\ntest relative_id_beside_ref_with_assertion_siblings_canonicalizes ... ok\ntest representable_range_boundary::minimum_one_past_i64_min_rounds_to_i64_min ... ok\ntest representable_range_boundary::minimum_at_i64_min_is_modeled ... ok\ntest string_view_exposes_facets ... ok\ntest resource_anchors_bind_below_any_entry_point::stray_id_key ... ok\ntest resource_anchors_bind_below_any_entry_point::pointer_entry ... ok\ntest symbolic_reference_operations_have_distinct_views ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::contains_schema ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::contains_under_a_property ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::item_schema ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::nested_object ... ok\ntest draft_stamps_its_schema_uri::draft2019_09 ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::key_constraint ... ok\ntest back_reference_through_an_anchored_resource_is_not_the_root ... ok\ntest unmodeled_document_round_trips_verbatim::unevaluated_properties_beside_an_applicator ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::untyped_property_schema ... ok\ntest uncheckable_format_keeps_the_value_beside_the_leaf::property_schema ... ok\ntest uncheckable_format_scan_walks_a_typed_group ... ok\ntest recursive_ref_chain_breaks_at_an_anchorless_resource ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::_2020_12_items_is_not_a_tuple ... ok\ntest unsupported_reference_target_keeps_the_whole_document_raw ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::contains_beside_unevaluated_items_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::dependency_is_neither_schema_nor_name_list ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::dependent_requirement_is_not_a_name ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::dependent_schema_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::item_cover_branch_is_not_a_schema ... ok\ntest unmodeled_documents_hash_by_document_identity ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::padded_tuple_is_not_an_array ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::subschema_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::hoisted_properties_is_not_an_object ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::property_cover_branch_is_not_a_schema ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::target_declares_another_draft ... ok\ntest validation_error_display_and_source ... ok\ntest view_exposes_anyof_branches ... ok\ntest view_matches_expected::boolean_false ... ok\ntest unvalidated_registry_target_keeps_the_document_raw::type_is_not_a_name ... ok\ntest nested_recursive_anchor_does_not_bind_the_resource ... ok\ntest view_matches_expected::boolean_true ... ok\ntest view_matches_expected::empty_object ... ok\ntest view_matches_expected::const_value ... ok\ntest view_matches_expected::enum_values ... ok\ntest view_matches_expected::multi_type ... ok\ntest wide_bounds_keep_validation::an_excluded_end_past_exact_precision ... ok\ntest wide_bounds_keep_validation::a_bound_with_no_representable_multiple ... ok\ntest wide_bounds_keep_validation::an_integer_bound_with_no_representable_multiple ... ok\ntest wide_bounds_keep_validation::an_upper_end_past_exact_precision ... ok\ntest bundled_metaschemas_are_modeled ... ok\n\ntest result: ok. 142 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s\n\n",
+        "stdout_bytes": 9785,
+        "stdout_complete": true,
+        "stdout_sha256": "5ce64ea1ce4a99f9543ba79bd715fea252ebf25942422e9c67bada8ca5f52b52",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 1
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_parent.tar.gz",
+          "sha256": "970326306f6c83d7f23c7dcf0ba79b820c1a400ed1358a6cda1d7ab68e32d55f"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_target.tar.gz",
+          "sha256": "87ce5c0d72e64f0c2973c60d21e1236ab7f5e9e3d29fba098c96451e0c6d9a69"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_share_cli.py",
+        "tests/test_share_transport.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "path": "tests/test_share_cli.py",
+          "sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "path": "tests/test_share_cli.py",
+          "sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "path": "tests/test_share_transport.py",
+          "sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "path": "tests/test_share_transport.py",
+          "sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-56\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 2005.001,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "7ae43057cd430655ecf062fe2bda067c1d6825e2498508c6b41213f1e5dcc8d5",
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 74 packages in 29ms\nInstalled 74 packages in 1.80s\n + aiohappyeyeballs==2.7.1\n + aiohttp==3.14.3\n + aiolimiter==1.2.1\n + aiosignal==1.4.0\n + annotated-types==0.8.0\n + anyio==4.14.2\n + attrs==26.1.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + charset-normalizer==3.4.9\n + click==8.4.2\n + cryptography==50.0.0\n + distro==1.9.0\n + filelock==3.32.2\n + frozenlist==1.8.0\n + fsspec==2026.7.0\n + h11==0.16.0\n + hf-xet==1.6.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + httpx-sse==0.4.3\n + huggingface-hub==1.27.0\n + idna==3.18\n + iniconfig==2.3.0\n + jsonpatch==1.33\n + jsonpointer==3.1.1\n + jsonschema==4.26.0\n + jsonschema-specifications==2025.9.1\n + langchain-core==1.5.3\n + langchain-protocol==0.0.18\n + langchain-text-splitters==1.1.2\n + langsmith==0.10.17\n + mcp==1.29.0\n + multidict==6.7.1\n + numpy==2.5.1\n + orjson==3.11.9\n + packaging==26.3\n + pillow==12.3.0\n + pluggy==1.6.0\n + propcache==0.5.2\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pydantic-settings==2.15.0\n + pygments==2.20.0\n + pyjwt==2.13.0\n + pynacl==1.6.2\n + pysqlite3==0.6.0\n + pytest==9.1.1\n + pytest-mock==3.15.1\n + python-dotenv==1.2.2\n + python-multipart==0.0.32\n + pyyaml==6.0.3\n + referencing==0.37.0\n + requests==2.34.2\n + requests-toolbelt==1.0.0\n + rpds-py==2026.6.3\n + sniffio==1.3.1\n + sqlite-vec==0.1.9\n + sse-starlette==3.4.8\n + starlette==1.6.0\n + tenacity==9.1.4\n + tokenizers==0.23.1\n + tqdm==4.70.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + urllib3==2.7.0\n + uuid-utils==0.17.0\n + uvicorn==0.52.1\n + voyageai==0.5.0\n + websockets==17.0.1\n + xxhash==3.8.1\n + yarl==1.24.5\n + zstandard==0.25.0\n",
+          "stderr_bytes": 1656,
+          "stderr_complete": true,
+          "stderr_sha256": "06a2f128246ede9366477470b377362d785c771c21eddb0f21d8a899d1ce5fc9",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": "/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-56\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 76.465,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "sandbox_profile_sha256": "7ae43057cd430655ecf062fe2bda067c1d6825e2498508c6b41213f1e5dcc8d5",
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "README.md",
+        "src/session_recall/share/cli.py",
+        "src/session_recall/share/transport.py"
+      ],
+      "index": 56,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+        "sha256": "edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b"
+      },
+      "manager": "uv",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/parent\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_share_cli.py",
+          "tests/test_share_transport.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/test_share_cli.py",
+          "tests/test_share_transport.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_share_cli.py",
+          "tests/test_share_transport.py"
+        ],
+        "duration_ms": 3852.714,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 2,
+        "sandbox_profile_sha256": "dbf124ac46c2664bba33bfb7eb10e971c5da1ffafc7e24cdf60b3bd083b2f6dc",
+        "side": "parent",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "\n==================================== ERRORS ====================================\n___________________ ERROR collecting tests/test_share_cli.py ___________________\nImportError while importing test module '/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/parent/source/session-recall-e9b86bc20db00efef894f9c23eed38fd55c9b3b4/tests/test_share_cli.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_share_cli.py:6: in <module>\n    from session_recall import cli, config\nE   ModuleNotFoundError: No module named 'session_recall'\n________________ ERROR collecting tests/test_share_transport.py ________________\nImportError while importing test module '/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/parent/source/session-recall-e9b86bc20db00efef894f9c23eed38fd55c9b3b4/tests/test_share_transport.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_share_transport.py:5: in <module>\n    from session_recall.share.transport import (\nE   ModuleNotFoundError: No module named 'session_recall'\n=========================== short test summary info ============================\nERROR tests/test_share_cli.py\nERROR tests/test_share_transport.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.14s\n",
+        "stdout_bytes": 1804,
+        "stdout_complete": true,
+        "stdout_sha256": "95b4ae4d8f8505f7e7ac1c204e17f0358640a8216a53a4022831204e83830003",
+        "working_directory": "."
+      },
+      "repository": "AbsoluteMode/session-recall",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/target\"))",
+          "/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/venv/bin/python",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_share_cli.py",
+          "tests/test_share_transport.py"
+        ],
+        "common_evaluator_paths": [
+          "tests/test_share_cli.py",
+          "tests/test_share_transport.py"
+        ],
+        "declared_arguments": [
+          "-m",
+          "pytest",
+          "-q",
+          "tests/test_share_cli.py",
+          "tests/test_share_transport.py"
+        ],
+        "duration_ms": 1678.018,
+        "manager": "uv",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 2,
+        "sandbox_profile_sha256": "bba7562a5cbb3f052b1d9271ee94b8477fc9438a0075bc2244650496a21846ab",
+        "side": "target",
+        "stderr": "",
+        "stderr_bytes": 0,
+        "stderr_complete": true,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout": "\n==================================== ERRORS ====================================\n___________________ ERROR collecting tests/test_share_cli.py ___________________\nImportError while importing test module '/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/target/source/session-recall-8f2beafd775613953cf6607c5448aad0625505d6/tests/test_share_cli.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_share_cli.py:6: in <module>\n    from session_recall import cli, config\nE   ModuleNotFoundError: No module named 'session_recall'\n________________ ERROR collecting tests/test_share_transport.py ________________\nImportError while importing test module '/private/tmp/theseus-vcm-six-verifier-12406gag/task-56/target/source/session-recall-8f2beafd775613953cf6607c5448aad0625505d6/tests/test_share_transport.py'.\nHint: make sure your test modules/packages have valid Python names.\nTraceback:\n/Library/Frameworks/Python.framework/Versions/3.12/lib/python3.12/importlib/__init__.py:90: in import_module\n    return _bootstrap._gcd_import(name[level:], package, level)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\ntests/test_share_transport.py:5: in <module>\n    from session_recall.share.transport import (\nE   ModuleNotFoundError: No module named 'session_recall'\n=========================== short test summary info ============================\nERROR tests/test_share_cli.py\nERROR tests/test_share_transport.py\n!!!!!!!!!!!!!!!!!!! Interrupted: 2 errors during collection !!!!!!!!!!!!!!!!!!!!\n2 errors in 0.13s\n",
+        "stdout_bytes": 1804,
+        "stdout_complete": true,
+        "stdout_sha256": "2bf33419488875c11354ceba00fba9534189c24c5d70212a9a9986bae6ad3922",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 3
+    }
+  ],
+  "source_build_executions": 2,
+  "state": "K2_05_SIX_ROW_MATCHED_VERIFIERS_EXECUTED_WITH_SCOPED_DISPOSITIONS",
+  "target_production_transplant_count": 0,
+  "task_count": 6,
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

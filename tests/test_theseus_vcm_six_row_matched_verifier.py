@@ -38,3 +38,15 @@ def test_dispositions_preserve_mechanics_and_construct_boundaries() -> None:
     assert owner.derive_disposition({"parent": failed, "target": failed}, []) == "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS"
     assert owner.derive_disposition({"parent": boundary, "target": passed}, []) == "INCONCLUSIVE_EXPERIMENT_HOST_RESOURCE_BOUNDARY"
     assert owner.derive_disposition({"parent": failed, "target": passed}, ["environment_failed"]) == "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS"
+
+
+def test_v3_repairs_only_declared_residuals_and_reuses_sealed_rows() -> None:
+    cfg, bound, faults = owner.preflight(CONFIG, verify_store=False)
+    assert faults == []
+    assert cfg["reuse_predecessor_indices"] == [13, 16, 25]
+    assert sorted(bound["reuse_indices"]) == [13, 16, 25]
+    rows = {row["index"]: row for row in cfg["rows"]}
+    assert rows[12]["python_path_roots"] == [".", "src"]
+    assert rows[56]["python_path_roots"] == [".", "src"]
+    assert "--all-features" in rows[35]["arguments"]
+    assert rows[35]["runner_evidence"]["receipt_sha256"] == "6be555d88e8f2321fa4edde4c4575283275dcccea86127b6f61bb5500c45070d"

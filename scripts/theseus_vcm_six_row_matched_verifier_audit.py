@@ -55,11 +55,38 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
     audited: list[dict[str, Any]] = []
     observed_executions = 0
     observed_installs = 0
+    reused_count = 0
+    predecessor_rows = {int(row.get("index") or 0): row for row in p2a.dicts(p2a.mapping(bound.get("sources")).get("matched_verifier_predecessor", {}).get("rows"))}
     for actual in p2a.dicts(report.get("rows")):
         index = int(actual.get("index") or 0)
         expected = configured.get(index, {})
         if actual.get("repository") != expected.get("repository") or actual.get("manager") != expected.get("manager"):
             faults.append(f"row_identity_invalid:{index}")
+        if actual.get("reused_from_predecessor") is True:
+            reused_count += 1
+            prior = predecessor_rows.get(index, {})
+            predecessor_receipt = p2a.mapping(actual.get("predecessor"))
+            predecessor_binding = p2a.mapping(cfg.get("sources")).get("matched_verifier_predecessor", {})
+            if index not in bound.get("reuse_indices", set()) or predecessor_receipt.get("path") != predecessor_binding.get("path") or predecessor_receipt.get("sha256") != predecessor_binding.get("sha256"):
+                faults.append(f"predecessor_reuse_binding_invalid:{index}")
+            for key in ("disposition", "faults"):
+                expected_value = prior.get(key)
+                observed_value = actual.get(key)
+                if key == "faults":
+                    expected_value, observed_value = p2a.strings(expected_value), p2a.strings(observed_value)
+                if observed_value != expected_value:
+                    faults.append(f"predecessor_reuse_receipt_invalid:{index}:{key}")
+            for side in ("parent", "target"):
+                for key in ("returncode", "boundary_hit", "boundary_reason"):
+                    if p2a.mapping(actual.get(side)).get(key) != p2a.mapping(prior.get(side)).get(key):
+                        faults.append(f"predecessor_side_reuse_invalid:{index}:{side}:{key}")
+            audited.append({
+                "index": index, "parent_returncode": p2a.mapping(actual.get("parent")).get("returncode"),
+                "target_returncode": p2a.mapping(actual.get("target")).get("returncode"),
+                "disposition": actual.get("disposition"), "common_evaluator_count": len(p2a.mapping(expected.get("common_evaluator_sha256"))),
+                "reused_from_predecessor": True,
+            })
+            continue
         lock = p2a.resolve(str(p2a.mapping(actual.get("lock")).get("path") or ""))
         if not lock.is_file() or p2a.sha256_file(lock) != expected.get("lock_sha256") or p2a.mapping(actual.get("lock")).get("sha256") != expected.get("lock_sha256"):
             faults.append(f"lock_receipt_invalid:{index}")
@@ -91,6 +118,8 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
                 observed_executions += 1
                 if receipt.get("declared_arguments") != expected.get("arguments") or receipt.get("working_directory") != expected.get("working_directory"):
                     faults.append(f"command_receipt_invalid:{index}:{side}")
+                if receipt.get("python_path_roots") != expected.get("python_path_roots", []):
+                    faults.append(f"python_path_receipt_invalid:{index}:{side}")
                 if receipt.get("network_denied") is not True or receipt.get("project_selected_output_cap") is not None:
                     faults.append(f"runtime_policy_receipt_invalid:{index}:{side}")
                 if receipt.get("stdout_complete") is not True or receipt.get("stderr_complete") is not True:
@@ -146,7 +175,7 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
         "faults": sorted(set(faults)), "config": {"path": p2a.rel(path), "sha256": p2a.sha256_file(path)},
         "producer_report": {"path": cfg.get("report"), "sha256": p2a.sha256_file(p2a.resolve(str(cfg.get("report") or ""))) if execution is None else None},
         "audited_task_count": len(audited), "qualified_task_count": qualified,
-        "inconclusive_task_count": len(audited) - qualified, "rows": audited,
+        "inconclusive_task_count": len(audited) - qualified, "reused_predecessor_task_count": reused_count, "rows": audited,
         "retained_store_identity_rederived": before == after == expected_store,
         "panel_admitted": False, "audit_kind": "role-separated rederivation",
         "network_or_dependency_execution_performed": False, "parent_target_or_evaluator_executions": 0,
