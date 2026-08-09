@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 
 POLICY = "project_theseus_vcm_immutable_resolution_segment_v1"
-STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_CLI_REPAIR_V2"
+STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PYTHON314_REPAIR_V3"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_immutable_resolution_segment.json"
 EXPECTED_INDICES = [12, 13, 16, 25, 35, 56]
 
@@ -77,10 +77,16 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
             predecessor[name] = p2a.read_json(predecessor_path)
     previous_report = predecessor.get("producer_report", {})
     previous_audit = predecessor.get("audit_report", {})
-    if previous_report.get("trigger_state") != "GREEN" or previous_report.get("qualified_task_count") != 1 or previous_report.get("inconclusive_task_count") != 5:
+    if previous_report.get("trigger_state") != "GREEN" or previous_report.get("qualified_task_count") != 5 or previous_report.get("inconclusive_task_count") != 1:
         faults.append("predecessor_producer_state_invalid")
-    if previous_audit.get("trigger_state") != "GREEN" or previous_audit.get("qualified_task_count") != 1 or previous_audit.get("inconclusive_task_count") != 5:
+    expected_audit_faults = {"diagnostic_receipt_invalid:35:stderr", "diagnostic_receipt_invalid:35:stdout"}
+    if previous_audit.get("trigger_state") != "RED" or set(p2a.strings(previous_audit.get("faults"))) != expected_audit_faults or previous_audit.get("qualified_task_count") != 5 or previous_audit.get("inconclusive_task_count") != 1:
         faults.append("predecessor_audit_state_invalid")
+    acquisition = sources.get("python314_toolchain_acquisition", {})
+    interpreter = p2a.mapping(acquisition.get("interpreter"))
+    python314 = p2a.mapping(p2a.mapping(cfg.get("tools")).get("python_3_14"))
+    if acquisition.get("trigger_state") != "GREEN" or interpreter.get("path") != python314.get("path") or interpreter.get("sha256") != python314.get("sha256") or interpreter.get("version") != "3.14.2":
+        faults.append("python314_acquisition_binding_invalid")
 
     tools: dict[str, str] = {}
     for name, raw in p2a.mapping(cfg.get("tools")).items():
@@ -125,6 +131,8 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
         language = str(classification.get("query_language") or "")
         if (manager, language) not in {("uv", "Python"), ("cargo", "Rust")}:
             faults.append(f"manager_language_invalid:{index}")
+        if manager == "uv" and str(row.get("python_tool") or "") not in tools:
+            faults.append(f"python_tool_binding_invalid:{index}")
         faults.extend(f"task_{index}:{fault}" for fault in static_input_safety(row, archive, str(target.get("source_archive_root") or "")))
         bound_rows[index] = {"row": row, "closure": closure, "runner": runner, "classification": classification, "target": target, "archive": archive}
 
@@ -220,14 +228,15 @@ def resolution_command(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str
     home = temp_root / f"home-{index:02d}"
     tmp = temp_root / f"tmp-{index:02d}"
     home.mkdir(); tmp.mkdir()
-    env = {"HOME": str(home), "TMPDIR": str(tmp), "PATH": "/usr/bin:/bin", "CI": "1", "NO_COLOR": "1", "LANG": "C.UTF-8", "LC_ALL": "C.UTF-8"}
+    env = {"HOME": str(home), "TMPDIR": str(tmp), "PATH": "/usr/bin:/bin", "CI": "1", "NO_COLOR": "1", "LANG": "C", "LC_ALL": "C"}
     if row.get("manager") == "uv":
         generated = temp_root / f"task-{index:02d}-requirements.lock"
+        python = tools[str(row.get("python_tool") or "")]
         command = [tools["uv"], "pip", "compile", *[str(root / value) for value in p2a.strings(row.get("inputs"))]]
         for extra in p2a.strings(row.get("extras")):
             command.extend(["--extra", extra])
-        command.extend(["--python", tools["python"], "--python-platform", "aarch64-apple-darwin", "--generate-hashes", "--no-build", "--index-strategy", "first-index", "--default-index", "https://pypi.org/simple", "--cache-dir", str(cache_root / "uv"), "--output-file", str(generated), "--color", "never", "--no-progress"])
-        env.update({"UV_PYTHON": tools["python"], "UV_PYTHON_DOWNLOADS": "never", "UV_NO_CONFIG": "1"})
+        command.extend(["--python", python, "--python-platform", "aarch64-apple-darwin", "--generate-hashes", "--no-build", "--index-strategy", "first-index", "--default-index", "https://pypi.org/simple", "--cache-dir", str(cache_root / "uv"), "--output-file", str(generated), "--color", "never", "--no-progress"])
+        env.update({"UV_PYTHON": python, "UV_PYTHON_DOWNLOADS": "never", "UV_NO_CONFIG": "1"})
     else:
         generated = root / "Cargo.lock"
         command = [tools["cargo"], "generate-lockfile", "--manifest-path", str(root / "Cargo.toml"), "--config", "net.git-fetch-with-cli=false"]
@@ -368,7 +377,7 @@ def validate_lock(manager: str, path: Path) -> tuple[dict[str, Any], list[str]]:
 def reusable_predecessor_lock(bound: dict[str, Any], index: int, output: Path) -> dict[str, Any]:
     previous = p2a.mapping(p2a.mapping(bound.get("predecessor")).get("producer_report"))
     row = next((item for item in p2a.dicts(previous.get("rows")) if int(item.get("index") or 0) == index), {})
-    if row.get("disposition") != "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK":
+    if not str(row.get("disposition") or "").startswith("RESOLUTION_QUALIFIED_IMMUTABLE_LOCK"):
         return {}
     lock = p2a.mapping(p2a.mapping(row.get("receipt")).get("lock"))
     lock_path = p2a.resolve(str(lock.get("path") or ""))

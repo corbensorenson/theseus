@@ -1,0 +1,52 @@
+{
+  "policy": "project_theseus_vcm_python314_toolchain_acquisition_receipt_v1",
+  "created_utc": "2026-08-09T02:53:11Z",
+  "trigger_state": "GREEN",
+  "state": "PROJECT_LOCAL_CPYTHON_3_14_2_ACQUIRED",
+  "reason": "Task 13's exact Home Assistant 2026.7.4 dependency requires Python >=3.14.2; the previously pinned Python 3.12.5 resolver receipt was scoped INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION.",
+  "installer": {
+    "path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+    "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf",
+    "version": "0.11.28"
+  },
+  "command": [
+    "runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+    "python",
+    "install",
+    "3.14.2",
+    "--install-dir",
+    "runtime/vcm_evaluator/toolchains/uv-python",
+    "--cache-dir",
+    "runtime/vcm_evaluator/dependency_store/python-acquisition",
+    "--no-bin",
+    "--no-config",
+    "--no-progress",
+    "--color",
+    "never"
+  ],
+  "returncode": 0,
+  "stdout": "",
+  "stderr": "Downloading cpython-3.14.2-macos-aarch64-none (download) (17.3MiB)\n Downloaded cpython-3.14.2-macos-aarch64-none (download)\nInstalled Python 3.14.2 in 3.76s\n + cpython-3.14.2-macos-aarch64-none\n",
+  "global_bin_registration_performed": false,
+  "interpreter": {
+    "path": "runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+    "sha256": "3d6400b63b150164e89a690d9813af8b0eb420af9f336ef1f6c5102c6da60eae",
+    "version": "3.14.2"
+  },
+  "installed_tree": {
+    "path": "runtime/vcm_evaluator/toolchains/uv-python",
+    "file_count": 1929,
+    "bytes": 48741243,
+    "identity_sha256": "5419883f82ebd2d2f6c92373a743fb8197ba65f8cd069cad0432214491c478bb"
+  },
+  "network_downloads": 1,
+  "package_installations": 0,
+  "project_installations": 0,
+  "repository_runner_executions": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "candidate_or_control_calls": 0,
+  "external_reference_calls": 0,
+  "teacher_calls": 0,
+  "cost_usd": 0,
+  "maximum_inference": "This receipt proves only that a project-local CPython 3.14.2 interpreter was acquired by the pinned uv installer without global bin registration. It does not prove dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, or an ASI Stack claim."
+}

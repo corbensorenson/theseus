@@ -16,7 +16,7 @@ def test_preflight_binds_exact_six_immutable_resolution_rows() -> None:
     assert faults == []
     assert [row["index"] for row in cfg["rows"]] == [12, 13, 16, 25, 35, 56]
     assert {row["manager"] for row in cfg["rows"]} == {"uv", "cargo"}
-    assert set(bound["tools"]) == {"uv", "python", "cargo"}
+    assert set(bound["tools"]) == {"uv", "python", "python_3_14", "cargo"}
 
 
 def test_resolution_contract_has_no_execution_or_model_authority() -> None:
@@ -42,3 +42,6 @@ def test_resolution_outputs_are_one_generic_manifest_driven_family(tmp_path: Pat
     command, _, _ = owner.resolution_command(cfg, bound, cfg["rows"][0], tmp_path, tmp_path / "cache", tmp_path)
     assert "--no-build" in command
     assert "--only-binary" not in command
+    task13 = next(row for row in cfg["rows"] if row["index"] == 13)
+    command13, _, _ = owner.resolution_command(cfg, bound, task13, tmp_path, tmp_path / "cache", tmp_path)
+    assert str(owner.p2a.resolve(cfg["tools"]["python_3_14"]["path"])) in command13

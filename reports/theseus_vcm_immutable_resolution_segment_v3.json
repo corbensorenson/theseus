@@ -1,0 +1,29 @@
+{
+  "cache": {},
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "cf5575937b034d1e6e423464ce42f02d38d2a467ab7b99f7e50637e9ad7a3eaf"
+  },
+  "created_utc": "2026-08-09T02:55:11.120333Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 16501264384,
+  "free_bytes_before": 16501264384,
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were resolved under the pinned uv/Python or Cargo resolver, registry, no-build, host-reserve, and output contracts; the five V2-qualified locks are reused byte-for-byte and only Task 13 is retried with the project-local Python 3.14.2 required by its exact Home Assistant manifest. Each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. The V3 audit repairs V2's reused-row diagnostic bookkeeping and rederives every reused lock. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
+  "qualified_task_count": 0,
+  "repository_runner_executions": 0,
+  "rows": [],
+  "source_build_executions": 0,
+  "state": "READY_FOR_SIX_IMMUTABLE_RESOLUTION_CLOSURES",
+  "task_count": 0,
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}

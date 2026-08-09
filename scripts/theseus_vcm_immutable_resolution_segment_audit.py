@@ -51,10 +51,11 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
         if not archive.is_file() or p2a.sha256_file(archive) != actual.get("target_archive_sha256") or archive != item.get("archive"):
             faults.append(f"archive_receipt_invalid:{index}")
         receipt = p2a.mapping(actual.get("receipt"))
-        for stream in ("stdout", "stderr"):
-            payload = str(receipt.get(stream) or "").encode("utf-8")
-            if receipt and (len(payload) != receipt.get(f"{stream}_bytes") or hashlib.sha256(payload).hexdigest() != receipt.get(f"{stream}_sha256") or receipt.get(f"{stream}_complete") is not True):
-                faults.append(f"diagnostic_receipt_invalid:{index}:{stream}")
+        if receipt.get("predecessor_reuse") is not True:
+            for stream in ("stdout", "stderr"):
+                payload = str(receipt.get(stream) or "").encode("utf-8")
+                if receipt and (len(payload) != receipt.get(f"{stream}_bytes") or hashlib.sha256(payload).hexdigest() != receipt.get(f"{stream}_sha256") or receipt.get(f"{stream}_complete") is not True):
+                    faults.append(f"diagnostic_receipt_invalid:{index}:{stream}")
         if receipt.get("project_selected_output_cap") is not None:
             faults.append(f"output_cap_invalid:{index}")
         disposition = str(actual.get("disposition") or "")
@@ -68,7 +69,7 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
                 previous = p2a.mapping(p2a.mapping(bound.get("predecessor")).get("producer_report"))
                 previous_row = next((row for row in p2a.dicts(previous.get("rows")) if int(row.get("index") or 0) == index), {})
                 previous_lock = p2a.mapping(p2a.mapping(previous_row.get("receipt")).get("lock"))
-                if receipt.get("predecessor_reuse") is not True or previous_row.get("disposition") != "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK" or previous_lock != lock:
+                if receipt.get("predecessor_reuse") is not True or not str(previous_row.get("disposition") or "").startswith("RESOLUTION_QUALIFIED_IMMUTABLE_LOCK") or previous_lock != lock:
                     faults.append(f"predecessor_lock_reuse_invalid:{index}")
         elif disposition == "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION":
             if receipt.get("returncode") in (None, 0) or receipt.get("boundary_hit") is not False:

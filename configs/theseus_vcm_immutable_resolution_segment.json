@@ -1,11 +1,11 @@
 {
   "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
-  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_CLI_REPAIR_V2",
+  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PYTHON314_REPAIR_V3",
   "owner": "scripts/theseus_vcm_immutable_resolution_segment.py",
-  "owner_sha256": "20f31933b6faf268b95b934897b547ca6b40478e45ec8efaf735ec2a5bd87cb0",
+  "owner_sha256": "0ae0c7466833f992ef313be8c74d72afdf740345c86d5d9f6aed55464ff5d550",
   "audit_policy": "project_theseus_vcm_immutable_resolution_segment_audit_v1",
   "audit_owner": "scripts/theseus_vcm_immutable_resolution_segment_audit.py",
-  "audit_owner_sha256": "8f383ec5ffc626816bdd4dfffb2fa9fa28ad22423da6c6ea9b549956c078021c",
+  "audit_owner_sha256": "74f4cf6466bb90b06eb87a2e0c17f32b3eac53b504fbbd927137b08fb489afee",
   "sources": [
     {
       "id": "repository_closures",
@@ -21,16 +21,21 @@
       "id": "dependency_classes",
       "path": "reports/theseus_vcm_dependency_class_audit_v2.json",
       "sha256": "1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"
+    },
+    {
+      "id": "python314_toolchain_acquisition",
+      "path": "reports/theseus_vcm_python314_toolchain_acquisition.json",
+      "sha256": "bc670ee18f79ce3866daf0cb781d53b50c32e503b9d99e2bd036db6693e3d31a"
     }
   ],
   "predecessor": {
     "producer_report": {
-      "path": "reports/theseus_vcm_immutable_resolution_segment.json",
-      "sha256": "ce1b5cd97427359386e5caf37260a075932d067134890d87fff7ef7500daa9ad"
+      "path": "reports/theseus_vcm_immutable_resolution_segment_v2.json",
+      "sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2"
     },
     "audit_report": {
-      "path": "reports/theseus_vcm_immutable_resolution_segment_audit.json",
-      "sha256": "e1397899e3b3f97eb85904439b80ecf6d7918a7324d04572ba78b56d848ec0ac"
+      "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v2.json",
+      "sha256": "e21ee4445eda2569a906020fb2f49a3aa887df9bc1e47e274e30a7e101d97aa3"
     }
   },
   "tools": {
@@ -44,6 +49,11 @@
       "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
       "version": "3.12.5"
     },
+    "python_3_14": {
+      "path": "runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+      "sha256": "3d6400b63b150164e89a690d9813af8b0eb420af9f336ef1f6c5102c6da60eae",
+      "version": "3.14.2"
+    },
     "cargo": {
       "path": "runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
       "sha256": "7672ead309d505577c018fff2cafb3433601f073e38cbe87359ac1f7b944bbf5",
@@ -55,6 +65,7 @@
       "index": 12,
       "repository": "rickli0822-prog/windows-ai-login-doctor",
       "manager": "uv",
+      "python_tool": "python",
       "inputs": ["pyproject.toml"],
       "extras": ["dev"],
       "manifest_receipts": [
@@ -67,6 +78,7 @@
       "index": 13,
       "repository": "dknowles2/ha-pitboss",
       "manager": "uv",
+      "python_tool": "python_3_14",
       "inputs": ["requirements.txt"],
       "extras": [],
       "manifest_receipts": [
@@ -79,6 +91,7 @@
       "index": 16,
       "repository": "dynatrace-wwse/codespaces-framework",
       "manager": "uv",
+      "python_tool": "python",
       "inputs": ["ops-server/requirements.txt", "requirements-dev.txt"],
       "extras": [],
       "manifest_receipts": [
@@ -92,6 +105,7 @@
       "index": 25,
       "repository": "fibsem-os/fibsem-os",
       "manager": "uv",
+      "python_tool": "python",
       "inputs": ["pyproject.toml"],
       "extras": ["test"],
       "manifest_receipts": [
@@ -127,6 +141,7 @@
       "index": 56,
       "repository": "AbsoluteMode/session-recall",
       "manager": "uv",
+      "python_tool": "python",
       "inputs": ["pyproject.toml"],
       "extras": ["dev"],
       "manifest_receipts": [
@@ -139,8 +154,8 @@
   "expected_task_count": 6,
   "shared_cache_root": "runtime/vcm_evaluator/dependency_store/immutable-resolution",
   "output_directory": "reports/theseus_vcm_immutable_resolution_locks",
-  "report": "reports/theseus_vcm_immutable_resolution_segment_v2.json",
-  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit_v2.json",
+  "report": "reports/theseus_vcm_immutable_resolution_segment_v3.json",
+  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit_v3.json",
   "partial_panel_admission_forbidden": true,
   "declared_dependency_gap_policy": "Use only exact target-declared dependency inputs and do not guess, stub, or hand-author undeclared imports; preserve any resulting evaluator wall as scoped instrument evidence.",
   "limits": {
@@ -175,6 +190,6 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were offered to the pinned uv/Python or Cargo resolver under the sealed registry, no-build, host-reserve, and output contracts; the previously qualified Rust lock is reused byte-for-byte and only the five Python rows rejected before resolution by the V1 CLI flag conflict are retried under the repaired command. Each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were resolved under the pinned uv/Python or Cargo resolver, registry, no-build, host-reserve, and output contracts; the five V2-qualified locks are reused byte-for-byte and only Task 13 is retried with the project-local Python 3.14.2 required by its exact Home Assistant manifest. Each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. The V3 audit repairs V2's reused-row diagnostic bookkeeping and rederives every reused lock. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
   "audit_maximum_inference": "The audit is role-separated rederivation inside this repository. It checks the six-row denominator, target/archive/tool identities, full diagnostics, lock hashes and syntax, scoped dispositions, zero execution/model counters, and no partial-panel admission. It is not producer-independent replay or external reproduction and cannot support a VCM or ASI Stack capability claim."
 }
