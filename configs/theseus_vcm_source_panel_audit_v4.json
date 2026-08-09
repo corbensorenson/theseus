@@ -1,0 +1,20 @@
+{
+  "policy":"project_theseus_vcm_source_panel_audit_v4",
+  "state":"PROSPECTIVE_ROLE_SEPARATED_PANEL_ASSEMBLY_AFTER_THREE_ADEQUACY_REPLACEMENTS",
+  "reports":{
+    "source_panel_v3":{"path":"reports/theseus_vcm_source_panel_audit_v3.json","sha256":"867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff"},
+    "adequacy_replacements":{"path":"reports/theseus_vcm_three_row_adequacy_replacements.json","sha256":"a387ddaa1156b0a98a99aec546d186a09cae217853f61ae439aeb2276544a2cd"},
+    "adequacy_replacement_audit":{"path":"reports/theseus_vcm_three_row_adequacy_replacements_audit_v2.json","sha256":"23de522b29782b30995f586f8bb650ad720a4fbe7b1cbfd370e7df44de0efa16"}
+  },
+  "owner_bindings":[
+    {"path":"scripts/theseus_vcm_source_panel_audit_v4.py","sha256":"d3ef4f6566e66aec1ad7a01461e0cc1025193517af982072f9833700e2a0b6d3"},
+    {"path":"tests/test_theseus_vcm_source_panel_audit_v4.py","sha256":"7b12b8e089757c767ebc3e30c6c993669856e470896f85a6544344e69df024f3"}
+  ],
+  "replacement_indices":[12,13,35],
+  "forbidden_unicode_scripts":[{"name":"Cyrillic","start":"0400","end":"052F"},{"name":"Hebrew","start":"0590","end":"05FF"},{"name":"Arabic","start":"0600","end":"06FF"},{"name":"Devanagari","start":"0900","end":"097F"},{"name":"Thai","start":"0E00","end":"0E7F"},{"name":"Hiragana","start":"3040","end":"309F"},{"name":"Katakana","start":"30A0","end":"30FF"},{"name":"CJK","start":"3400","end":"9FFF"},{"name":"Hangul","start":"AC00","end":"D7AF"}],
+  "binary_extensions":[".png",".jpg",".jpeg",".gif",".webp",".ico",".pdf",".zip",".gz",".wasm",".bin"],
+  "expected_quotas":[{"panel":"claim","query_language":"JavaScript","count":11},{"panel":"claim","query_language":"Python","count":17},{"panel":"claim","query_language":"Rust","count":11},{"panel":"claim","query_language":"TypeScript","count":14},{"panel":"control_qualification","query_language":"JavaScript","count":2},{"panel":"control_qualification","query_language":"Python","count":3},{"panel":"control_qualification","query_language":"Rust","count":2},{"panel":"control_qualification","query_language":"TypeScript","count":2}],
+  "authority":{"network_calls_authorized":false,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "report":"reports/theseus_vcm_source_panel_audit_v4.json",
+  "maximum_inference":"A GREEN v4 report proves only that exactly three audited source-disjoint adequacy replacements were substituted into the 62-row source panel while 59 rows, all panel/language quotas, English-title and selected-content scope, licenses, deterministic archives, and changed source/verifier bytes remain valid. It performs no repository or evaluator execution and does not qualify the three replacement evaluators, open candidate or Luna calls, establish a VCM effect, or support D1, D2, training, serving, or an ASI Stack claim."
+}
