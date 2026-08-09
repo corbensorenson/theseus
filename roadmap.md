@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V6_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V6_RUST_GREEN_TYPESCRIPT_PARENT_PREREQUISITE_GAP` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v6` |
-| Current wall | `typescript_diagnostic_and_rust_risk_receipt_not_executed_or_audited` |
+| Current wall | `task61_full_project_typecheck_requires_missing_generated_parent_source` |
 | Last closed task | 26 |
-| Next legal action | `execute_v6_zero_network_typescript_diagnostic_and_independent_rust_then_audit` |
+| Next legal action | `seal_narrow_real_parent_typescript_mechanics_canary_then_role_separately_audit_k2_03` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -389,6 +389,13 @@ non-safety failure.
 V6 is now prospectively sealed with zero network and zero acquisition authority.
 It verifies both retained stores, replays them offline, retains the TypeScript
 stdout diagnostic, and continues to Rust after a non-safety TypeScript failure.
+
+V6 requalified both retained stores offline, retained the exact TypeScript
+diagnostic, and qualified Task 36 Rust compilation. The TypeScript failure is a
+parent prerequisite gap: `framework/src/index-octane.ts` imports absent
+`framework/src/styles.generated.ts`. A new seal may compile one real parent
+TypeScript source that does not require generated content for mechanics-only
+coverage, then K2.03 must undergo role-separated audit.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

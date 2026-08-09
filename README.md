@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V6_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V6_RUST_GREEN_TYPESCRIPT_PARENT_PREREQUISITE_GAP` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v6` |
-| Current wall | `typescript_diagnostic_and_rust_risk_receipt_not_executed_or_audited` |
+| Current wall | `task61_full_project_typecheck_requires_missing_generated_parent_source` |
 | Last closed task | 26 |
-| Next legal action | `execute_v6_zero_network_typescript_diagnostic_and_independent_rust_then_audit` |
+| Next legal action | `seal_narrow_real_parent_typescript_mechanics_canary_then_role_separately_audit_k2_03` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
