@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_03_V5_BUN_YARN_GREEN_TYPESCRIPT_UNRESOLVED",
+      "state": "VCM_V3_K2_03_RISK_EXECUTOR_V6_PROSPECTIVELY_SEALED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v5",
-      "current_blocker": "typescript_nonzero_stdout_diagnostic_not_retained_and_rust_not_executed",
+      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v6",
+      "current_blocker": "typescript_diagnostic_and_rust_risk_receipt_not_executed_or_audited",
       "last_closed_task_index": 26,
-      "next_legal_action": "seal_v6_zero_network_typescript_diagnostic_and_independent_rust_continuation",
+      "next_legal_action": "execute_v6_zero_network_typescript_diagnostic_and_independent_rust_then_audit",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V5 qualified a disposable 216-link Bun rebase, network-denied Bun replay with unchanged source, and exact Yarn online acquisition plus network-denied replay with unchanged source and a retained shared Yarn store. Task 61 TypeScript returned 2 after 35.2 seconds at 415.8 MiB RSS without a safety boundary, but only its stdout hash was retained, so repository baseline versus instrument cause is unresolved. Rust was not executed. V6 may use only retained stores and zero network to capture the TypeScript diagnostic and continue independently to Rust. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V5 qualified a disposable 216-link Bun rebase, network-denied Bun replay with unchanged source, and exact Yarn online acquisition plus network-denied replay with unchanged source and a retained shared Yarn store. Task 61 TypeScript returned 2 without a safety boundary, but only its stdout hash was retained; Rust was not executed. V6 is prospectively sealed for zero network and zero acquisition: it verifies both retained stores, replays them offline, retains the exact TypeScript stdout diagnostic, and continues independently to Rust after a non-safety TypeScript failure. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -265,7 +265,7 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V5 qualified disposable Bun rebase/offline replay and Yarn online/offline replay, retaining one shared Yarn store. TypeScript returned 2 without a host boundary but its stdout diagnostic was not retained; Rust did not execute. V6 must be zero-network, retain the diagnostic, and continue independently to Rust."
+            "latest_observation": "V5 qualified disposable Bun rebase/offline replay and Yarn online/offline replay, retaining one shared Yarn store. TypeScript returned 2 without a host boundary but its stdout diagnostic was not retained; Rust did not execute. V6 is sealed for zero-network retained-store replays, diagnostic capture, and independent Rust continuation."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",

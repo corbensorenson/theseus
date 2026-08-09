@@ -60,7 +60,6 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     allowed = {
         "static_evidence_replay_authorized",
         "four_risk_canary_executions_authorized",
-        "one_network_dependency_acquisition_authorized",
         "network_denied_replays_authorized",
         "untrusted_parent_typescript_transpilation_authorized",
         "untrusted_parent_rust_compilation_authorized",
@@ -239,7 +238,7 @@ def validate_risk_plan(
     cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
 ) -> dict[str, Any]:
     plan = p2a.mapping(cfg.get("risk_canary_plan"))
-    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V5_DISPOSABLE_SYMLINK_REBASE" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v5":
+    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V6_ZERO_NETWORK_DIAGNOSTIC" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v6":
         faults.append("risk_campaign_identity_invalid")
     rows = p2a.dicts(plan.get("rows"))
     if [row.get("risk_class") for row in rows] != [
@@ -312,6 +311,8 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     resume = p2a.mapping(cfg.get("risk_resume"))
     expected_bun = p2a.mapping(resume.get("qualified_bun_store"))
     observed_bun = tree_receipt(stores["bun"])
+    expected_yarn = p2a.mapping(resume.get("qualified_yarn_store"))
+    observed_yarn = tree_receipt(stores["yarn"])
     if (
         not stores["bun"].is_dir()
         or observed_bun.get("identity_sha256") != expected_bun.get("identity_sha256")
@@ -319,8 +320,13 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         or observed_bun.get("bytes") != expected_bun.get("bytes")
     ):
         return finish_risks(before, ["qualified_bun_resume_store_identity_invalid"], {"observed_bun_store": observed_bun}, False)
-    if stores["yarn"].exists():
-        return finish_risks(before, [f"retained_store_already_exists:{p2a.rel(stores['yarn'])}"], {}, False)
+    if (
+        not stores["yarn"].is_dir()
+        or observed_yarn.get("identity_sha256") != expected_yarn.get("identity_sha256")
+        or observed_yarn.get("file_count") != expected_yarn.get("file_count")
+        or observed_yarn.get("bytes") != expected_yarn.get("bytes")
+    ):
+        return finish_risks(before, ["qualified_yarn_resume_store_identity_invalid"], {"observed_yarn_store": observed_yarn}, False)
     free_before = shutil.disk_usage(ROOT).free
     if free_before < reserve + max(int(p2a.mapping(row["resource_projection"])["projected_peak_temporary_bytes"]) for row in rows):
         return finish_risks(before, ["host_reserve_preflight_boundary_hit"], {"free_bytes_before": free_before}, False)
@@ -330,7 +336,9 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "rows": [],
         "resumed_from_commit": resume.get("source_commit"),
         "qualified_bun_store_before": observed_bun,
+        "qualified_yarn_store_before": observed_yarn,
         "bun_network_acquisition_repeated": False,
+        "yarn_network_acquisition_repeated": False,
     }
     with tempfile.TemporaryDirectory(prefix="theseus-vcm-generic-risks-", dir="/private/tmp") as raw:
         work = Path(raw).resolve()
@@ -363,20 +371,20 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         if not faults:
             yarn_row = rows[1]
             yarn_cache = work / "yarn-cache"; yarn_home = work / "yarn-home"; yarn_tmp = work / "yarn-tmp"
-            yarn_cache.mkdir(); yarn_home.mkdir(); yarn_tmp.mkdir()
+            shutil.copytree(stores["yarn"], yarn_cache, symlinks=True, ignore=shutil.ignore_patterns(*HOST_METADATA_NAMES)); yarn_home.mkdir(); yarn_tmp.mkdir()
             yarn_env = minimal_env(yarn_home, yarn_tmp, "/usr/bin:/bin")
             node = str(p2a.resolve(str(p2a.mapping(yarn_row["tool"])["path"])))
             args = p2a.strings(yarn_row["command"]); yarn_js = str(p2a.resolve(args[0])); base_args = [node, yarn_js, *args[1:-1], str(yarn_cache)]
             cwd = repos[4] / str(yarn_row.get("working_directory") or ".")
-            faults.extend(run_install_pair("yarn", base_args, [*base_args, "--offline"], cwd, work, yarn_env, cfg, receipts))
-            if not faults:
-                stores["yarn"].parent.mkdir(parents=True, exist_ok=True); os.replace(yarn_cache, stores["yarn"])
+            faults.extend(run_offline_replay("yarn_resume", [*base_args, "--offline"], cwd, work, yarn_env, cfg, receipts))
         if not faults:
             ts_row = rows[2]; bun = str(p2a.resolve(str(p2a.mapping(ts_row["tool"])["path"])))
             receipt = bounded.run_sandboxed([bun, *p2a.strings(ts_row["command"])], repos[61], work, bun_env, cfg, network_denied=True)
+            stdout_path = work / "offline.stdout"
+            receipt["stdout_head"] = stdout_path.read_text(encoding="utf-8", errors="replace")[:2000] if stdout_path.is_file() else ""
             receipts["typescript_transpilation"] = receipt
             if base.command_failed(receipt): faults.append("typescript_transpilation_failed")
-        if not faults:
+        if not [fault for fault in faults if fault != "typescript_transpilation_failed"]:
             rust_row = rows[3]; cargo = str(p2a.resolve(str(p2a.mapping(rust_row["tool"])["path"])))
             cargo_home = work / "cargo-home"; shutil.copytree(p2a.resolve("runtime/vcm_evaluator/dependency_store/cargo/task-36"), cargo_home)
             rust_home = work / "rust-home"; rust_tmp = work / "rust-tmp"; rust_home.mkdir(); rust_tmp.mkdir()
@@ -388,8 +396,11 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         if receipts["free_bytes_during"] < reserve: faults.append("host_reserve_postflight_boundary_hit")
     receipts["stores"] = {name: tree_receipt(store) for name, store in stores.items() if store.exists()}
     receipts["qualified_bun_store_after"] = tree_receipt(stores["bun"])
+    receipts["qualified_yarn_store_after"] = tree_receipt(stores["yarn"])
     if receipts["qualified_bun_store_after"] != observed_bun:
         faults.append("qualified_bun_store_mutated_during_resume")
+    if receipts["qualified_yarn_store_after"] != observed_yarn:
+        faults.append("qualified_yarn_store_mutated_during_resume")
     receipts["free_bytes_after"] = shutil.disk_usage(ROOT).free
     return finish_risks(before, faults, receipts, True)
 
