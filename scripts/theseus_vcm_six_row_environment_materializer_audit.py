@@ -24,13 +24,15 @@ def audit(path:Path=DEFAULT_CONFIG)->dict[str,Any]:
      if len(payload)!=receipt.get(f"{stream}_bytes") or hashlib.sha256(payload).hexdigest()!=receipt.get(f"{stream}_sha256") or receipt.get(f"{stream}_complete") is not True:faults.append(f"diagnostic_invalid:{index}:{name}:{stream}")
    if receipt.get("project_selected_output_cap") is not None:faults.append(f"output_cap_invalid:{index}:{name}")
   online=p2a.mapping(receipts.get("online_sync") or receipts.get("online_fetch"));offline=p2a.mapping(receipts.get("offline_sync") or receipts.get("offline_fetch"))
-  if disposition=="ENVIRONMENT_MATERIALIZATION_QUALIFIED":
+  if disposition=="ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR":
+   if receipts.get("predecessor_reuse") is not True:faults.append(f"predecessor_reuse_invalid:{index}")
+  elif disposition=="ENVIRONMENT_MATERIALIZATION_QUALIFIED":
    if online.get("returncode")!=0 or offline.get("returncode")!=0 or online.get("network_denied") is not False or offline.get("network_denied") is not True:faults.append(f"qualified_receipt_invalid:{index}")
    if row.get("manager")=="uv" and receipts.get("online_environment")!=receipts.get("offline_environment"):faults.append(f"environment_replay_mismatch:{index}")
   elif not disposition.startswith("INCONCLUSIVE_"):faults.append(f"unknown_disposition:{index}")
   audited.append({"index":index,"manager":row.get("manager"),"disposition":disposition,"online_returncode":online.get("returncode"),"offline_returncode":offline.get("returncode")})
  if [r["index"] for r in audited]!=[12,13,16,25,35,56]:faults.append("audited_denominator_invalid")
- qualified=sum(r["disposition"]=="ENVIRONMENT_MATERIALIZATION_QUALIFIED" for r in audited)
+ qualified=sum(r["disposition"].startswith("ENVIRONMENT_MATERIALIZATION_QUALIFIED") for r in audited)
  if report.get("qualified_task_count")!=qualified or report.get("inconclusive_task_count")!=len(audited)-qualified:faults.append("producer_counts_invalid")
  for key in ("source_build_executions","project_installations","repository_runner_executions","parent_target_or_evaluator_executions","candidate_or_control_calls","external_reference_calls","teacher_calls"):
   if report.get(key)!=0:faults.append(f"zero_boundary_invalid:{key}")

@@ -23,7 +23,7 @@ import theseus_vcm_immutable_resolution_segment as resolver  # noqa: E402
 import theseus_vcm_six_row_environment_preflight as fit_owner  # noqa: E402
 
 POLICY = "project_theseus_vcm_six_row_environment_materializer_v1"
-STATE = "PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V1"
+STATE = "PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V2_RESUME"
 DEFAULT_CONFIG = ROOT / "configs/theseus_vcm_six_row_environment_materializer.json"
 
 
@@ -52,6 +52,8 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
         else: sources[name] = p2a.read_json(source)
     if sources.get("fit", {}).get("execution_ready") is not True or sources.get("fit_audit", {}).get("trigger_state") != "GREEN": faults.append("fit_predecessor_invalid")
     if sources.get("resolution", {}).get("qualified_task_count") != 6 or sources.get("resolution_audit", {}).get("trigger_state") != "GREEN": faults.append("resolution_predecessor_invalid")
+    predecessor = sources.get("materializer_v1", {}); predecessor_audit = sources.get("materializer_audit_v1", {})
+    if predecessor.get("trigger_state") != "GREEN" or predecessor.get("qualified_task_count") != 4 or predecessor.get("inconclusive_task_count") != 2 or predecessor_audit.get("trigger_state") != "GREEN": faults.append("materializer_predecessor_invalid")
     resolver_cfg, resolver_bound, resolver_faults = resolver.preflight(ROOT / "configs/theseus_vcm_immutable_resolution_segment.json")
     faults.extend(f"resolver:{fault}" for fault in resolver_faults)
     tools: dict[str, str] = {}
@@ -75,6 +77,7 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
         if value is not (key in allowed): faults.append(f"authority_invalid:{key}")
     store = p2a.resolve(str(cfg.get("store") or ""))
     if store != (ROOT / "runtime/vcm_evaluator/dependency_store/six-row-environments-v1").resolve(): faults.append("store_binding_invalid")
+    if not store.is_dir() or tree_identity(store) != predecessor.get("retained_shared_store"): faults.append("predecessor_store_binding_invalid")
     return cfg, {"sources": sources, "tools": tools, "rows": bound_rows, "resolver_cfg": resolver_cfg, "store": store}, sorted(set(faults))
 
 
@@ -87,16 +90,17 @@ def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     if faults: return finish(cfg, path, faults, [], False, {})
     fit = fit_owner.evaluate(ROOT / "configs/theseus_vcm_six_row_environment_preflight.json")
     if fit.get("execution_ready") is not True: return finish(cfg, path, ["current_fit_boundary_closed"], [], False, {})
-    if store.exists(): return finish(cfg, path, ["retained_store_already_exists"], [], False, {})
     limits = p2a.mapping(cfg["limits"]); rows: list[dict[str, Any]] = []
     with tempfile.TemporaryDirectory(prefix="theseus-vcm-six-env-", dir="/private/tmp") as raw:
-        batch = Path(raw).resolve(); cache = batch / "shared-cache"; cache.mkdir()
+        batch = Path(raw).resolve(); cache = store; previous = {int(row.get("index") or 0): row for row in p2a.dicts(bound["sources"]["materializer_v1"].get("rows"))}
         for index in resolver.EXPECTED_INDICES:
             item = bound["rows"][index]; row = p2a.mapping(item["config"])
+            if previous.get(index, {}).get("disposition") == "ENVIRONMENT_MATERIALIZATION_QUALIFIED":
+                rows.append({"index":index,"repository":row["repository"],"manager":row["manager"],"lock":{"path":p2a.rel(item["lock"]),"sha256":row["sha256"],"package_count":row["package_count"]},"receipts":{"predecessor_reuse":True,"predecessor_report_sha256":p2a.mapping(cfg["sources"])["materializer_v1"]["sha256"]},"faults":[],"disposition":"ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR"})
+                continue
             rows.append(materialize_row(cfg, bound, row, item, batch, cache))
             if shutil.disk_usage(ROOT).free < int(limits["minimum_free_bytes_after_execution"]): faults.append("free_space_reserve_postflight_boundary_hit"); break
             if tree_identity(cache)["bytes"] > int(limits["maximum_shared_store_bytes"]): faults.append("shared_store_size_boundary_hit"); break
-        if cache.exists(): store.parent.mkdir(parents=True, exist_ok=True); os.replace(cache, store)
     if len(rows) != 6: faults.append("row_denominator_not_completed")
     return finish(cfg, path, faults, rows, True, tree_identity(store))
 
@@ -138,7 +142,7 @@ def materialize_row(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, A
 
 
 def run_sandboxed(command: list[str], cwd: Path, batch: Path, env: dict[str, str], cfg: dict[str, Any], network_denied: bool) -> dict[str, Any]:
-    profile = "\n".join(["(version 1)", "(allow default)", *( ["(deny network*)"] if network_denied else []), f'(deny file-write* (require-not (subpath "{batch}")))', '(allow file-write* (literal "/dev/null"))'])
+    cache_root = p2a.resolve(str(cfg["store"])); profile = "\n".join(["(version 1)", "(allow default)", *( ["(deny network*)"] if network_denied else []), f'(deny file-write* (require-not (subpath "{batch}")))', f'(allow file-write* (subpath "{cache_root}"))', '(allow file-write* (literal "/dev/null"))'])
     full = [str(p2a.resolve(str(p2a.mapping(cfg["tools"])["sandbox_exec"]["path"]))), "-p", profile, *command]; started = time.monotonic(); boundary = ""
     try: done = subprocess.run(full, cwd=cwd, env=env, stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=int(p2a.mapping(cfg["limits"])["wall_seconds_per_command"]), check=False)
     except subprocess.TimeoutExpired as exc: done = subprocess.CompletedProcess(full, 124, exc.stdout or b"", exc.stderr or b""); boundary = "wall_timeout"
@@ -170,7 +174,7 @@ def normalize_name(value: str) -> str: return re.sub(r"[-_.]+", "-", value).lowe
 
 
 def finish(cfg: dict[str, Any], path: Path, faults: list[str], rows: list[dict[str, Any]], executed: bool, store: dict[str, Any]) -> dict[str, Any]:
-    qualified=sum(row.get("disposition")=="ENVIRONMENT_MATERIALIZATION_QUALIFIED" for row in rows); online=sum("online_sync" in p2a.mapping(r.get("receipts")) or "online_fetch" in p2a.mapping(r.get("receipts")) for r in rows); offline=sum("offline_sync" in p2a.mapping(r.get("receipts")) or "offline_fetch" in p2a.mapping(r.get("receipts")) for r in rows)
+    qualified=sum(str(row.get("disposition") or "").startswith("ENVIRONMENT_MATERIALIZATION_QUALIFIED") for row in rows); online=sum("online_sync" in p2a.mapping(r.get("receipts")) or "online_fetch" in p2a.mapping(r.get("receipts")) for r in rows); offline=sum("offline_sync" in p2a.mapping(r.get("receipts")) or "offline_fetch" in p2a.mapping(r.get("receipts")) for r in rows)
     return {"policy":POLICY,"created_utc":p2a.now(),"trigger_state":"RED" if faults else ("GREEN" if executed else "PAUSED"),"state":"K2_05_SIX_ROW_ENVIRONMENTS_MATERIALIZED_WITH_SCOPED_DISPOSITIONS" if executed and not faults else ("READY_FOR_SIX_ROW_ENVIRONMENT_MATERIALIZATION" if not faults else "K2_05_SIX_ROW_ENVIRONMENT_MATERIALIZATION_INVALID"),"faults":sorted(set(faults)),"config":{"path":p2a.rel(path),"sha256":p2a.sha256_file(path)},"execution_performed":executed,"task_count":len(rows),"qualified_task_count":qualified,"inconclusive_task_count":len(rows)-qualified,"rows":rows,"retained_shared_store":store,"network_enabled_materializations":online,"network_denied_replays":offline,"package_installations":online+offline,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"candidate_or_control_calls":0,"external_reference_calls":0,"teacher_calls":0,"panel_admitted":False,"partial_panel_admission_forbidden":True,"maximum_inference":cfg.get("maximum_inference")}
 
 
