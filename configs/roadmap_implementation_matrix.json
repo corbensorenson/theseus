@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K3_TERMINAL_INCONCLUSIVE_EXPERIMENT_HOST_OPERABILITY_REDESIGN_REQUIRED",
+      "state": "VCM_V4_CHUNKED_ROUTE_PREFLIGHT_GREEN_LARGEST_MATCHED_HOST_PAIR_REQUIRED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K3_REAL_WORK_MATCHED_CANARY",
       "selected_task_index": 26,
-      "active_attempt_id": "vcm_v4_parent_page_granularity_and_matched_route_operability_repair_v1",
-      "current_blocker": "the_exact_123235_token_ordinary_retrieval_host_canary_reached_the_600_second_host_interlock_with_zero_generated_tokens_so_the_v3_whole_file_and_broad_positive_set_materializer_cannot_supply_an_adequate_matched_screen_on_this_host",
+      "active_attempt_id": "vcm_v4_largest_information_matched_flat_and_governed_host_pair_v1",
+      "current_blocker": "v4_sub_file_paging_is_call_free_green_and_role_audited_with_six_physically_addressable_vcm_flat_pairs_but_the_new_largest_57626_and_57699_token_matched_pair_has_not_yet_passed_the_non_scoring_host_interlock",
       "last_closed_task_index": 26,
-      "next_legal_action": "open_one_new_identity_vcm_v4_instrument_repair_that_preserves_the_frozen_parent_snapshots_requests_evaluators_model_and_consumed_v3_receipts_but_replaces_whole_file_pages_with_deterministic_provenance_retaining_sub_file_chunks_and_replaces_global_largest_route_operability_with_predeclared_per_task_treatment_control_pair_eligibility;_role_audit_information_matching_blindness_chunk_coverage_and_host_cost_before_any_new_local_call;_never_rerun_the_consumed_148_or_123235_token_v3_canaries;_keep_the_nine_task_screen_Luna_D1_D2_training_serving_and_book_promotion_closed",
-      "observed_residual": "whole_file_pages_and_broad_positive_retrieval_sets_create_monolithic_prompts_that_are_addressable_but_not_operable_on_the_current_TMax_MLX_host_and_global_route_maxima_are_too_coarse_a_screen_gate",
+      "next_legal_action": "build_prospectively_seal_and_role_audit_one_two_call_non_scoring_v4_host_owner_for_the_new_row4_information_matched_flat_57626_token_prompt_followed_by_the_same_information_governed_vcm_57699_token_prompt_using_the_exact_frozen_TMax_tokenizer_decoder_wrapper_and_600_second_host_interlock_with_complete_artifact_or_model_EOS_and_no_project_selected_quality_token_cap;_stop_on_first_interlock;_never_call_any_consumed_v3_prompt;_authorize_the_nine_task_local_screen_only_if_both_new_receipts_are_GREEN;_keep_Luna_omitted",
+      "observed_residual": "v3_whole_file_granularity_was_repaired_call_free_by_3246_reconstructable_chunks_reducing_the_largest_vcm_prompt_from_207653_to_57699_tokens_and_restoring_six_of_six_physically_addressable_vcm_flat_pairs",
       "next_evidence_class": "VCM_PARENT_PAGE_GRANULARITY_AND_PER_TASK_MATCHED_HOST_ADEQUACY_REPAIR",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "K2 and the K3 call-free route preflight remain GREEN. The prospectively sealed v3 physical-host campaign made two of six authorized non-scoring local calls and then stopped exactly as declared: the 148-token no-context prompt completed by model EOS after 122 generated tokens, while the exact 123,235-token ordinary-retrieval prompt matched its tokenizer receipt but produced zero tokens before the 600-second host interlock. Four larger calls were not made. The producer disposition is INCONCLUSIVE_EXPERIMENT_HOST_OPERABILITY and its custody is role-separately rederived. No evaluator, Luna, teacher, training, serving, D1, D2, or book action occurred, raw outputs were not retained, and the nine-task screen is closed. This does not show that TMax lacks competence or that VCM, retrieval, compression, or the ASI Stack claim fails. It shows that the v3 whole-file/broad-set packet materializer and global-largest-route host gate are inadequate for this host. Any repair must use a new identity, retain deterministic parent-only provenance and information matching, operate at sub-file granularity, define eligibility per matched task-route pair, and never rerun the consumed v3 calls.",
+      "maximum_inference": "The v3 host result remains a scoped INCONCLUSIVE_EXPERIMENT and neither consumed v3 prompt may be rerun. The new v4 call-free producer and role-separated audit are GREEN: all 3,115 parent text files reconstruct exactly from 3,246 deterministic newline-preferring chunks; all 36 route packets materialize; all six information-matched VCM/flat pairs are physically addressable; one unchanged consumed no-context identity exists statically but has zero new call authority; and no model, evaluator, Luna, teacher, training, serving, D1, D2, or book action occurred. Sub-file paging reduced row 1 VCM from an over-context lower bound above 286,706 to 38,019 tokens and row 4 VCM from 207,653 to 57,699. This is instrument repair evidence only, not VCM utility. The next boundary is exactly two new non-scoring calls on the largest matched flat/VCM pair. The nine-task screen remains closed unless both pass.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -443,6 +443,38 @@
           "nine_task_screen_authorized": false,
           "maximum_inference": "The exact v3 host regime cannot ingest the 123,235-token ordinary-retrieval packet through the frozen TMax/MLX stack inside its declared host-safety window. This is an instrument and host-operability result only; it cannot falsify TMax competence, VCM, retrieval, compression, or the book claim."
         },
+        "K3_v4_chunked_route_preflight": {
+          "state": "VCM_V4_CHUNKED_ROUTE_PREFLIGHT_ROLE_SEPARATELY_REDERIVED",
+          "prospective_seal_commits": ["fc2fc062", "0eb3a95a"],
+          "config": "configs/theseus_vcm_v4_chunked_route_preflight.json",
+          "config_sha256": "d974e5ea9161eb1f0c3a3bc688ea9c728929975bf6ab05725214b417f25d3f8b",
+          "owner": "scripts/theseus_vcm_v4_chunked_route_preflight.py",
+          "owner_sha256": "1b17601bb4080b947c813428819df7002bc2727ebf4721ca730338444b07e90c",
+          "audit_owner": "scripts/theseus_vcm_v4_chunked_route_preflight_audit.py",
+          "audit_owner_sha256": "df3b187d7233595d6026e1cd7c8802a6af1026920099f25f8e5d3579ce152b2b",
+          "test": "tests/test_theseus_vcm_v4_chunked_route_preflight.py",
+          "test_sha256": "5002490cf2b443b5b135323f5c62de27596fea96892271d973db45996ca55edc",
+          "report": "reports/theseus_vcm_v4_chunked_route_preflight_v2.json",
+          "report_sha256": "4370e2ab24aa08a754939826227cb5e4a5cf469a5d976213fc3c6c7449569a43",
+          "audit_report": "reports/theseus_vcm_v4_chunked_route_preflight_audit_v2.json",
+          "audit_report_sha256": "752c420f3ec937af347a5657c3c94724107f2f932de9ebb0852eb83c630ad3bc",
+          "packet_manifest": "runtime/vcm_evaluator/v4_chunked_six_row_route_packets_v2.json",
+          "packet_manifest_sha256": "2b2135b800eab1c7cc749a7476ae780864e7aae9af5137588027e631e839f52a",
+          "source_file_count": 3115,
+          "source_chunk_count": 3246,
+          "reconstructed_source_file_count": 3115,
+          "packet_count": 36,
+          "vcm_flat_physically_addressable_matched_pair_count": 6,
+          "consumed_v3_prompt_identity_count": 1,
+          "consumed_v3_prompt_new_call_authority": 0,
+          "largest_matched_pair_row_ordinal": 4,
+          "largest_flat_prompt_tokens": 57626,
+          "largest_governed_vcm_prompt_tokens": 57699,
+          "new_local_model_calls": 0,
+          "hidden_evaluator_calls": 0,
+          "external_reference_calls": 0,
+          "maximum_inference": "Sub-file paging restores physical addressability and information matching for all six VCM/flat pairs. This is call-free instrument evidence only and cannot establish host operation, model competence, VCM utility, economics, transfer, or book support."
+        },
         "execution_work_packages": [
           {
             "id": "K2_01_TASK26_FINAL_BESPOKE_CANARY",
@@ -510,7 +542,7 @@
           },
           {
             "id": "K3_01R_PARENT_PAGE_AND_MATCHED_HOST_ADEQUACY_REPAIR",
-            "status": "ACTIVE",
+            "status": "ACTIVE_LARGEST_MATCHED_HOST_PAIR_REQUIRED",
             "depends_on": [
               "K3_01_CALL_FREE_CAMPAIGN_FREEZE"
             ],
@@ -1905,6 +1937,11 @@
         "state":"INCONCLUSIVE_EXPERIMENT_HOST_OPERABILITY_ROLE_SEPARATELY_REDERIVED","prospective_seal_commit":"2f57b458","config":"configs/theseus_vcm_k3_host_canaries.json","config_sha256":"ddc711db86f3910d89261970e6b9ce8baac806c845c5e2ca87dd5fe6f89ac27e","owner":"scripts/theseus_vcm_k3_host_canaries.py","owner_sha256":"ef20fd46c25589b32b847be17dbd5e293eede3eb706ac50ff5eb457762f5d026","audit_owner":"scripts/theseus_vcm_k3_host_canaries_audit.py","audit_owner_sha256":"fc2ded703d93dc577623248bba154ff9dc6ddf6896a1c371773892bc2ccbdf2f","test":"tests/test_theseus_vcm_k3_host_canaries.py","test_sha256":"43ffb59a16f0616b861cbef00722d49bcbc0e35cd2dd3de801c7812756db2155","report":"reports/theseus_vcm_k3_host_canaries_v1.json","report_sha256":"54c26a0883cf2f55b6d89ae566feeae74f7a4c7721672d881d3dac3793fb353d","audit_report":"reports/theseus_vcm_k3_host_canaries_audit_v1.json","audit_report_sha256":"6e12b607d258a79f632ad688eab57dd2d3234b3bf04b89a262a1151c336f0e77",
         "planned_call_count":6,"completed_call_count":2,"green_call_count":1,"unexecuted_call_count":4,"consumed_prompt_tokens":[148,123235],"consumed_generated_tokens":[122,0],"terminal_route":"ordinary_direct_retrieval_same_parent_store_query_and_context_opportunity","terminal_reason":"host_safety_wall_time","terminal_generation_wall_ms":609018.408,"exact_consumed_surface_rerun_authorized":false,"local_model_calls":2,"hidden_evaluator_calls":0,"external_reference_calls":0,"teacher_calls":0,"raw_response_stored":false,"capability_or_mechanism_evidence":false,"nine_task_screen_authorized":false,
         "maximum_inference":"the exact v3 whole-file and broad-positive-set materializer is not host-operable at its 123,235-token ordinary-retrieval canary on this TMax/MLX/host regime. This is instrument and host evidence only, not model or mechanism evidence.","next_boundary":"open one new-identity target-free sub-file paging and per-task matched-operability repair; never rerun either consumed v3 prompt"
+      },
+      "vcm_v4_chunked_route_preflight": {
+        "state":"VCM_V4_CHUNKED_ROUTE_PREFLIGHT_ROLE_SEPARATELY_REDERIVED","prospective_seal_commits":["fc2fc062","0eb3a95a"],"config":"configs/theseus_vcm_v4_chunked_route_preflight.json","config_sha256":"d974e5ea9161eb1f0c3a3bc688ea9c728929975bf6ab05725214b417f25d3f8b","owner":"scripts/theseus_vcm_v4_chunked_route_preflight.py","owner_sha256":"1b17601bb4080b947c813428819df7002bc2727ebf4721ca730338444b07e90c","audit_owner":"scripts/theseus_vcm_v4_chunked_route_preflight_audit.py","audit_owner_sha256":"df3b187d7233595d6026e1cd7c8802a6af1026920099f25f8e5d3579ce152b2b","test":"tests/test_theseus_vcm_v4_chunked_route_preflight.py","test_sha256":"5002490cf2b443b5b135323f5c62de27596fea96892271d973db45996ca55edc","report":"reports/theseus_vcm_v4_chunked_route_preflight_v2.json","report_sha256":"4370e2ab24aa08a754939826227cb5e4a5cf469a5d976213fc3c6c7449569a43","audit_report":"reports/theseus_vcm_v4_chunked_route_preflight_audit_v2.json","audit_report_sha256":"752c420f3ec937af347a5657c3c94724107f2f932de9ebb0852eb83c630ad3bc","packet_manifest":"runtime/vcm_evaluator/v4_chunked_six_row_route_packets_v2.json","packet_manifest_sha256":"2b2135b800eab1c7cc749a7476ae780864e7aae9af5137588027e631e839f52a",
+        "source_file_count":3115,"source_chunk_count":3246,"reconstructed_source_file_count":3115,"packet_count":36,"vcm_flat_physically_addressable_matched_pair_count":6,"consumed_v3_prompt_identity_count":1,"consumed_v3_prompt_new_call_authority":0,"largest_matched_pair_prompt_tokens":[57626,57699],"local_model_calls":0,"hidden_evaluator_calls":0,"external_reference_calls":0,"teacher_calls":0,
+        "maximum_inference":"v4 target-free reconstructable sub-file paging restores all six physically addressable information-matched VCM/flat pairs and materially lowers the worst VCM prompts. This is call-free instrument evidence only.","next_boundary":"seal and role-audit exactly two new non-scoring calls on the largest row-4 flat/VCM matched pair; keep the screen closed unless both pass"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

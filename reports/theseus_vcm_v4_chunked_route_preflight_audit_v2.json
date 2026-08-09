@@ -1,0 +1,15 @@
+{
+  "audited_matched_pair_count": 6,
+  "audited_packet_count": 36,
+  "audited_row_count": 6,
+  "audited_source_chunk_count": 3246,
+  "created_utc": "2026-08-09T07:47:38.840711Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "hidden_evaluator_calls": 0,
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN audit establishes only call-free sub-file reconstruction, route packet identity, matching, and physical addressability for the v4 instrument. It is not model or VCM utility evidence.",
+  "policy": "project_theseus_vcm_v4_chunked_route_preflight_audit_v2",
+  "state": "VCM_V4_CHUNKED_ROUTE_PREFLIGHT_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}

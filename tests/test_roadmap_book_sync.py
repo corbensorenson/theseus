@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_K3_TERMINAL_INCONCLUSIVE_EXPERIMENT_HOST_OPERABILITY_REDESIGN_REQUIRED",
+            "VCM_V4_CHUNKED_ROUTE_PREFLIGHT_GREEN_LARGEST_MATCHED_HOST_PAIR_REQUIRED",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
