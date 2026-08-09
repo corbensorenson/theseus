@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_05_STATIC_SEGMENT_REPAIR_ACTIVE` | K2.05's target-free plan and all-62 parent stores are GREEN; three static evaluators qualify and five require scoped diagnostic repair, while the locked batch remains closed by the 40.6 GiB deficit |
+| Active VCM claim | `VCM_V3_K2_05_IMMUTABLE_RESOLUTION_ACTIVE` | K2.05's target-free plan, all-62 parent stores, and all eight static evaluators are GREEN; six immutable-resolution closures are next, while the locked batch remains closed by the 40.6 GiB deficit |
 | VCM information flow | `BROAD_PARENT_ROOT_AND_SELECTOR_AUDIT_GREEN` | The prospective claim contract no longer exposes target-derived `allowed_effect_paths`; every arm uses broad root `repository`, and the K2.04 audit rederived all candidate-visible bytes and request/parent-only selector inputs |
 | VCM natural-task route | `REPRESENTATIVE_PARENT_ONLY_MATERIALIZER_GREEN` | Four exact parent archives produced complete uncapped text frontiers, matched governed/plain/maximal/retrieval information identities, production VCM ABI receipts, and zero downstream calls; all-62 coverage remains K2.05 work |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -67,10 +67,10 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`k2_05_static_segment_diagnostic_repair_v2`, last closed task 26, and the wall
-`five_of_eight_static_evaluator_constructs_not_parent_fail_target_pass`.
+`k2_05_immutable_resolution_segment_v1`, last closed task 26, and the wall
+`six_immutable_resolution_dependency_closures_not_yet_materialized`.
 The next legal action is
-`prospectively_seal_diagnostic_retention_and_repair_five_static_evaluator_constructs_without_partial_panel_admission`.
+`prospectively_seal_and_materialize_six_immutable_resolution_closures_without_partial_panel_admission`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -136,10 +136,12 @@ all 62 archive-backed parent stores across 133,048 regular files and 130,968
 UTF-8 pages, rederived 248 candidate-visible fields, duplicated no payload, and
 made zero downstream calls. Static Tasks 10, 22, and 27 then qualified exact
 parent-fail/target-pass behavior; Tasks 1, 20, 23, 57, and 58 remain scoped
-construct-inconclusive. The earlier uniform code-71 run is retained as an
-enclosing-sandbox launch wall. K2.05 remains active for diagnostic retention
-and repair of those five rows; the locked segment retains the storage wall,
-with no evidence deletion or partial-panel admission.
+construct-inconclusive. The earlier uniform code-71 run remains an enclosing-
+sandbox launch wall. The repaired owner then froze identical target-verifier
+bytes across parent and target, preserved archive modes, isolated Task 23's
+scoped test, retained diagnostics, and qualified all eight rows under the role
+audit. K2.05 is now active for six immutable-resolution closures; the locked
+segment retains the storage wall, with no evidence deletion or partial panel.
 
 ## Active Claim And Residual
 
@@ -797,10 +799,10 @@ authorize regenerating historical reports or reopening neural work.
    full-project TypeScript caveat.
 4. **COMPLETE:** Build the production parent-only VCM store/materializer on qualified rows and
    remove target-derived effect paths before any candidate packet exists.
-5. **CURRENT — STATIC REPAIR:** Preserve the three qualified static rows and
-   prospectively seal diagnostic retention plus bounded repair for the five
-   inconclusive constructs; retain all 62 rows and forbid partial admission.
-   The locked segment remains closed by the 40.6 GiB deficit pending a fit.
+5. **CURRENT — IMMUTABLE RESOLUTION:** Preserve the GREEN static segment and
+   prospectively seal the six immutable-resolution closures; retain all 62 rows
+   and forbid partial admission. The locked segment remains closed by the
+   40.6 GiB deficit pending a bounded fit.
 6. Implement and call-free freeze the local baseline routes, host canaries,
    competence/futility rules, paired analysis, cost ledger, and decisions.
    Freeze the optional VCM reference envelope.

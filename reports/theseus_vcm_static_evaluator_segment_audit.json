@@ -4,12 +4,12 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_static_evaluator_segment.json",
-    "sha256": "41d712b18b25ad442f860bffb5b9a39f4219339bd739ff32ad7e68858ac33f3b"
+    "sha256": "00ab8338072b9cc85bc44450f043522b659d16a7b07327f3a009b62403e5c7ca"
   },
-  "created_utc": "2026-08-09T02:28:21.314408Z",
+  "created_utc": "2026-08-09T02:30:54.386985Z",
   "external_reference_calls": 0,
   "faults": [],
-  "inconclusive_task_count": 5,
+  "inconclusive_task_count": 0,
   "maximum_inference": "A GREEN role-separated audit rederives only the eight configured archive, command, verifier, complete-output, physical-boundary, parent-fail, target-pass, and scoped-disposition receipts. It performs no evaluator or model call, admits no partial panel, and establishes no candidate competence, VCM utility, economics, transfer, or book support.",
   "network_or_dependency_execution_performed": false,
   "panel_admitted": false,
@@ -17,15 +17,15 @@
   "policy": "project_theseus_vcm_static_evaluator_segment_audit_v1",
   "producer_report": {
     "path": "reports/theseus_vcm_static_evaluator_segment.json",
-    "sha256": "024c52f2f0f0c930f550dbf97276b0eb42c76291926d9a42756539e4b6876acd"
+    "sha256": "033347115805fb2118a89308d4be2746ea583a3fc5043b93b38713dc4e435c6a"
   },
-  "qualified_task_count": 3,
+  "qualified_task_count": 8,
   "rows": [
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 1,
-      "parent_failed": false,
-      "parent_returncode": 0,
+      "parent_failed": true,
+      "parent_returncode": 1,
       "target_passed": true,
       "target_returncode": 0
     },
@@ -38,12 +38,12 @@
       "target_returncode": 0
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 20,
       "parent_failed": true,
       "parent_returncode": 1,
-      "target_passed": false,
-      "target_returncode": 1
+      "target_passed": true,
+      "target_returncode": 0
     },
     {
       "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
@@ -54,34 +54,34 @@
       "target_returncode": 0
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 23,
       "parent_failed": true,
-      "parent_returncode": 4,
-      "target_passed": false,
-      "target_returncode": 4
+      "parent_returncode": 1,
+      "target_passed": true,
+      "target_returncode": 0
     },
     {
       "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 27,
       "parent_failed": true,
-      "parent_returncode": 4,
+      "parent_returncode": 2,
       "target_passed": true,
       "target_returncode": 0
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 57,
-      "parent_failed": false,
-      "parent_returncode": 0,
+      "parent_failed": true,
+      "parent_returncode": 1,
       "target_passed": true,
       "target_returncode": 0
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 58,
-      "parent_failed": false,
-      "parent_returncode": 0,
+      "parent_failed": true,
+      "parent_returncode": 1,
       "target_passed": true,
       "target_returncode": 0
     }
