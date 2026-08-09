@@ -1,0 +1,33 @@
+{
+  "policy":"project_theseus_vcm_six_row_environment_materializer_v1",
+  "state":"PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V1",
+  "owner":"scripts/theseus_vcm_six_row_environment_materializer.py","owner_sha256":"d560ad926c3abec13965c9c308656b1d55ce7f31aa66c6d21175e21020faa983",
+  "audit_policy":"project_theseus_vcm_six_row_environment_materializer_audit_v1","audit_owner":"scripts/theseus_vcm_six_row_environment_materializer_audit.py","audit_owner_sha256":"5585f30d9e32556af450402f3b0e7c3fba37a6f501ff001bb934ecc68db5c1d4",
+  "sources":{
+    "fit":{"path":"reports/theseus_vcm_six_row_environment_preflight.json","sha256":"159b08e8a3760634a8200fcbc30e54210c0437279faca521dfe9a9da6a4be7ee"},
+    "fit_audit":{"path":"reports/theseus_vcm_six_row_environment_preflight_audit.json","sha256":"2f098b7812a137913055450044618c15a1a0f0c3b8ea10fdae88e392a792bf9e"},
+    "resolution":{"path":"reports/theseus_vcm_immutable_resolution_segment_v5.json","sha256":"2a96925e2d2604faea3ddcfe9d7b706e300446c9ee6ee94e72813d479e838275"},
+    "resolution_audit":{"path":"reports/theseus_vcm_immutable_resolution_segment_audit_v5.json","sha256":"ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066"}
+  },
+  "tools":{
+    "sandbox_exec":{"path":"/usr/bin/sandbox-exec","sha256":"196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},
+    "uv":{"path":"runtime/task_complete_toolchains/uv-bootstrap/bin/uv","sha256":"0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf"},
+    "python":{"path":"runtime/venvs/mlx-0.32.0-py312/bin/python","sha256":"9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3"},
+    "python_3_14":{"path":"runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14","sha256":"3d6400b63b150164e89a690d9813af8b0eb420af9f336ef1f6c5102c6da60eae"},
+    "cargo":{"path":"runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo","sha256":"7672ead309d505577c018fff2cafb3433601f073e38cbe87359ac1f7b944bbf5"}
+  },
+  "rows":[
+    {"index":12,"repository":"rickli0822-prog/windows-ai-login-doctor","manager":"uv","python_tool":"python","lock":"reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock","sha256":"62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd","package_count":6},
+    {"index":13,"repository":"dknowles2/ha-pitboss","manager":"uv","python_tool":"python_3_14","find_links":"runtime/vcm_evaluator/dependency_store/wheels","lock":"reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock","sha256":"f9802c9804d8527d671a342c8add16225fcc20218d740f9076122b3f36226fef","package_count":158},
+    {"index":16,"repository":"dynatrace-wwse/codespaces-framework","manager":"uv","python_tool":"python","lock":"reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock","sha256":"55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a","package_count":35},
+    {"index":25,"repository":"fibsem-os/fibsem-os","manager":"uv","python_tool":"python","lock":"reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock","sha256":"8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6","package_count":39},
+    {"index":35,"repository":"Stranger6667/jsonschema","manager":"cargo","lock":"reports/theseus_vcm_immutable_resolution_locks/task-35-Cargo.lock","sha256":"5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6","package_count":404},
+    {"index":56,"repository":"AbsoluteMode/session-recall","manager":"uv","python_tool":"python","lock":"reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock","sha256":"edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b","package_count":74}
+  ],
+  "store":"runtime/vcm_evaluator/dependency_store/six-row-environments-v1",
+  "limits":{"minimum_free_bytes_after_execution":10737418240,"maximum_shared_store_bytes":2147483648,"wall_seconds_per_command":1200},
+  "authority":{"serialized_network_dependency_materialization_authorized":true,"network_denied_offline_replay_authorized":true,"wheel_only_python_installation_authorized":true,"cargo_fetch_without_build_authorized":true,"shared_store_retention_authorized":true,"disposable_environment_authorized":true,"source_build_authorized":false,"build_backend_execution_authorized":false,"project_installation_authorized":false,"repository_runner_execution_authorized":false,"parent_target_evaluator_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "report":"reports/theseus_vcm_six_row_environment_materializer.json","audit_report":"reports/theseus_vcm_six_row_environment_materializer_audit.json",
+  "maximum_inference":"A GREEN producer plus GREEN role-separated audit proves only that the six exact immutable locks can materialize through one shared uv/Cargo store into disposable environments and replay with network denied, with Python source builds disabled, Cargo limited to fetch, exact lock membership checked, complete diagnostics retained, and the 10 GiB reserve preserved. It does not run a repository verifier, establish parent-fail/target-pass behavior, admit a panel, evaluate a model or VCM, or support an ASI Stack claim.",
+  "audit_maximum_inference":"The audit role-separately rederives the shared-store identity, diagnostics, online/offline command boundaries, environment equality, denominator, dispositions, and zero downstream calls. It is not producer-independent replay or external reproduction."
+}
