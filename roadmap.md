@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_THREE_ROW_ADEQUACY_REPAIR_ACTIVE` |
+| State | `VCM_V3_K2_05_REPLACEMENT_EVALUATOR_QUALIFICATION_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_three_row_source_host_toolchain_adequacy_repair_v1` |
-| Current wall | `matched_verifier_panel_3_of_6_qualified_task12_host_platform_task13_dependency_task35_ruby_toolchain_inconclusive` |
+| Active attempt | `k2_05_three_row_replacement_evaluator_qualification_v1` |
+| Current wall | `replacement_sources_admitted_but_tasks_12_13_35_dependency_and_common_evaluator_receipts_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_bind_one_new_campaign_adequacy_repair_for_tasks_12_13_35_without_rerunning_qualified_surfaces_or_admitting_partial_panel` |
+| Next legal action | `materialize_and_role_audit_exact_dependency_and_parent_fail_target_pass_common_evaluator_receipts_for_replacement_tasks_12_13_35_then_reuse_qualified_16_25_56_without_rerun` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -463,19 +463,19 @@ sdist qualification and network-denied wheel builds for its sdist frontier.
 The resolution phase installed no packages and ran no repository evaluator or
 model. One generic, serial, reserve-safe owner has now materialized and
 role-separately rederived all six common evaluator environments through a
-1.75 GB shared uv/Cargo store with network-denied replay. The terminal matched
-verifier campaign then qualified Tasks 16, 25, and 56. Task 12 is
-`INCONCLUSIVE_EXPERIMENT_HOST_PLATFORM_BOUNDARY` because the common evaluator
-imports a Windows-only package on Darwin; Task 13 remains
-`INCONCLUSIVE_IMPLEMENTATION` because its exact upstream Home Assistant stack
-is internally incompatible; Task 35 remains `INCONCLUSIVE_IMPLEMENTATION`
-because the pre-existing CI all-features regime reaches the host's incompatible
-Ruby/Magnus toolchain before the hidden evaluator. The role audit is GREEN,
-the shared store is unchanged, and no model or reference call occurred. The
-six-row panel is 3/6 and unadmitted. One new campaign may repair or
-invalidation-replace only Tasks 12, 13, and 35 without rerunning Tasks 16, 25,
-or 56. The full locked batch remains closed by the existing storage wall and
-may not be smuggled through partial panel admission.
+1.75 GB shared uv/Cargo store with network-denied replay. The predecessor
+matched-verifier campaign qualified Tasks 16, 25, and 56 and scoped Tasks 12,
+13, and 35 to host-platform or implementation-toolchain walls. A sealed,
+all-or-none replacement transaction then selected `plwp/chief-wiggum`,
+`frame-consulting/QuantLibXlOil`, and `knoguchi/marsdb` for exactly those slots
+under the original rank while preserving panel, programming language, and
+source disjointness. Its audit-only counter repair is GREEN, and source-panel
+v4 rederives 62 unique repositories, 248 archives, 672 members, all 62 changed
+source/verifier pairs, unchanged quotas, and zero selected-content violations.
+No repository, evaluator, model, Luna, teacher, or reference call occurred.
+Replacement source adequacy is repaired, but dependency and common-evaluator
+receipts remain open. Tasks 16, 25, and 56 may not rerun, and the full locked
+batch remains closed by the existing storage wall.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

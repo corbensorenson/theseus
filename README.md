@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_THREE_ROW_ADEQUACY_REPAIR_ACTIVE` |
+| State | `VCM_V3_K2_05_REPLACEMENT_EVALUATOR_QUALIFICATION_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_three_row_source_host_toolchain_adequacy_repair_v1` |
-| Current wall | `matched_verifier_panel_3_of_6_qualified_task12_host_platform_task13_dependency_task35_ruby_toolchain_inconclusive` |
+| Active attempt | `k2_05_three_row_replacement_evaluator_qualification_v1` |
+| Current wall | `replacement_sources_admitted_but_tasks_12_13_35_dependency_and_common_evaluator_receipts_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_bind_one_new_campaign_adequacy_repair_for_tasks_12_13_35_without_rerunning_qualified_surfaces_or_admitting_partial_panel` |
+| Next legal action | `materialize_and_role_audit_exact_dependency_and_parent_fail_target_pass_common_evaluator_receipts_for_replacement_tasks_12_13_35_then_reuse_qualified_16_25_56_without_rerun` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -151,12 +151,15 @@ plan. All 62 archive-backed parent stores are now role-separately GREEN across
 and 27 first qualified; the common target-verifier repair then qualified all
 eight exact parent-fail/target-pass constructs. All six immutable dependency
 locks and all six common evaluator environments are now role-separately GREEN.
-The terminal matched-verifier campaign qualified Tasks 16, 25, and 56. Task 12
-requires a Windows host, Task 13's frozen upstream Python dependencies are
-internally incompatible, and Task 35 hit the host Ruby/Magnus toolchain before
-its all-features evaluator ran. The six-row panel is 3/6 and remains unadmitted.
-Only those three residual rows may enter one new-campaign adequacy repair or
-invalidation replacement; the qualified surfaces may not rerun.
+The predecessor matched-verifier campaign qualified Tasks 16, 25, and 56 and
+scoped Tasks 12, 13, and 35 to host or toolchain walls. One sealed all-or-none
+replacement campaign has now selected source-disjoint same-panel,
+same-language successors for exactly those three rows under the original rank
+rule. Its role-separated audit and the revised 62-row source-panel audit are
+GREEN: all 248 archives, 672 member receipts, language quotas, source/verifier
+changes, and content-scope checks pass. This repairs source adequacy only. The
+three new dependency closures and common evaluators still need qualification;
+Tasks 16, 25, and 56 remain frozen and may not rerun.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under
