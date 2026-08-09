@@ -2,7 +2,7 @@
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "state": "GENERIC_MANIFEST_OWNER_STATIC_REPLAY_BEFORE_FORWARD_EXECUTION",
   "owner": "scripts/theseus_vcm_instrument_builder.py",
-  "owner_sha256": "cf540b9d185a4ef8d626927f6d658ffb42b55811dc22b2982075a5981ca98850",
+  "owner_sha256": "431fbd3726e4e91b0d9b221af1ddd37a29b68be535335c41ae9a5cefab522c39",
   "schedule": {
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"

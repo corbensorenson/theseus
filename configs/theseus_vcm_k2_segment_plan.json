@@ -1,0 +1,27 @@
+{
+  "policy": "project_theseus_vcm_k2_segment_plan_v1",
+  "audit_policy": "project_theseus_vcm_k2_segment_plan_audit_v1",
+  "state": "PROSPECTIVE_K2_05_TARGET_FREE_SEGMENT_PLAN_ZERO_EXECUTION",
+  "owner": "scripts/theseus_vcm_instrument_builder.py",
+  "owner_sha256": "431fbd3726e4e91b0d9b221af1ddd37a29b68be535335c41ae9a5cefab522c39",
+  "audit_owner": "scripts/theseus_vcm_k2_segment_plan_audit.py",
+  "audit_owner_sha256": "0927b9af69e8b7beb47c3d854f2623829fba6be58149eafa8c7fcfcfb1cf23a3",
+  "expected_task_count": 62,
+  "expected_segment_counts": {
+    "static_no_project_lock": 8,
+    "immutable_resolution_required": 6,
+    "locked_closure": 48
+  },
+  "sources": [
+    {"id":"source_panel","path":"reports/theseus_vcm_source_panel_audit_v3.json","sha256":"867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff"},
+    {"id":"repository_closures","path":"reports/theseus_vcm_repository_closure_materialization_v2.json","sha256":"0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df"},
+    {"id":"runner_inventory","path":"reports/theseus_vcm_repository_runner_inventory_v3.json","sha256":"0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"},
+    {"id":"dependency_classes","path":"reports/theseus_vcm_dependency_class_audit_v2.json","sha256":"1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"},
+    {"id":"dependency_plan","path":"reports/theseus_vcm_dependency_prefetch_plan.json","sha256":"de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"}
+  ],
+  "manifest_out": "runtime/vcm_evaluator/parent_only_batch_manifest_v1.json",
+  "report": "reports/theseus_vcm_k2_segment_plan.json",
+  "audit_report": "reports/theseus_vcm_k2_segment_plan_audit.json",
+  "maximum_inference": "A GREEN segment plan proves only that the authoritative 62-row v3 source panel, full parent archives, runner inventory, dependency classifications, and dependency schedule align and can be projected into one target-free parent manifest plus three non-admitting execution segments. It executes no dependency, repository, evaluator, packet, model, Luna, D1, D2, training, serving, or book action.",
+  "audit_maximum_inference": "A GREEN role-separated audit rederives only the 62-row source alignment, safe parent-manifest bytes, 8/6/48 segment counts, common broad effect root, absence of target-derived selector fields, and withheld panel admission. It does not qualify dependencies, evaluators, candidate packets, model use, VCM utility, or any book claim."
+}

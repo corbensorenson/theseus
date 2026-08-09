@@ -39,8 +39,18 @@ def main() -> int:
     parser.add_argument("--execute-risks", action="store_true")
     parser.add_argument("--execute-typescript-repair", action="store_true")
     parser.add_argument("--preflight-batch", action="store_true")
+    parser.add_argument("--compile-segment-plan", action="store_true")
     args = parser.parse_args()
     path = p2a.resolve(args.config)
+    if args.compile_segment_plan:
+        cfg = p2a.read_json(path)
+        result, manifest = compile_segment_plan(path)
+        manifest_path = p2a.resolve(str(cfg.get("manifest_out") or ""))
+        p2a.write_json(manifest_path, manifest)
+        result["parent_only_manifest_artifact"] = base.identity(manifest_path)
+        p2a.write_json(p2a.resolve(args.out or str(cfg.get("report") or "")), result)
+        print(json.dumps({key: result.get(key) for key in ("trigger_state", "state", "faults", "task_count", "segment_counts", "candidate_or_control_calls", "external_reference_calls")}, indent=2, sort_keys=True))
+        return 0 if result["trigger_state"] == "GREEN" else 2
     result = preflight_batch(path) if args.preflight_batch else execute_typescript_repair(path) if args.execute_typescript_repair else execute_risks(path) if args.execute_risks else build(path)
     p2a.write_json(p2a.resolve(args.out or p2a.read_json(path)["report"]), result)
     print(json.dumps(summary(result), indent=2, sort_keys=True))
@@ -357,6 +367,134 @@ def preflight_batch(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "external_reference_calls": 0,
         "maximum_inference": plan.get("maximum_inference"),
     }
+
+
+def compile_segment_plan(path: Path) -> tuple[dict[str, Any], dict[str, Any]]:
+    """Compile one target-free parent manifest and segmented K2.05 schedule."""
+    cfg = p2a.read_json(path)
+    faults: list[str] = []
+    if cfg.get("policy") != "project_theseus_vcm_k2_segment_plan_v1":
+        faults.append("segment_policy_invalid")
+    owner = p2a.resolve(str(cfg.get("owner") or ""))
+    if owner != Path(__file__).resolve() or p2a.sha256_file(owner) != cfg.get("owner_sha256"):
+        faults.append("segment_owner_binding_invalid")
+    payloads: dict[str, dict[str, Any]] = {}
+    for binding in p2a.dicts(cfg.get("sources")):
+        source_id = str(binding.get("id") or "")
+        source = p2a.resolve(str(binding.get("path") or ""))
+        if not source_id or source_id in payloads:
+            faults.append(f"segment_source_id_invalid:{source_id}")
+            continue
+        if not source.is_file() or p2a.sha256_file(source) != binding.get("sha256"):
+            faults.append(f"segment_source_binding_invalid:{source_id}")
+            payloads[source_id] = {}
+        else:
+            payloads[source_id] = p2a.read_json(source)
+    panel_rows = index_rows(payloads.get("source_panel", {}).get("assembled_rows"), "index")
+    closure_rows = index_rows(payloads.get("repository_closures", {}).get("tasks"), "campaign_index")
+    runner_rows = index_rows(payloads.get("runner_inventory", {}).get("rows"), "index")
+    class_rows = index_rows(payloads.get("dependency_classes", {}).get("rows"), "index")
+    plan_rows = index_rows(payloads.get("dependency_plan", {}).get("rows"), "index")
+    expected = int(cfg.get("expected_task_count") or 0)
+    if any(len(rows) != expected for rows in (panel_rows, closure_rows, runner_rows, class_rows, plan_rows)):
+        faults.append("segment_source_denominator_invalid")
+
+    safe_rows: list[dict[str, Any]] = []
+    schedule: list[dict[str, Any]] = []
+    request_ids: set[str] = set()
+    for index in range(1, expected + 1):
+        panel = panel_rows.get(index, {})
+        closure = closure_rows.get(index, {})
+        runner = runner_rows.get(index, {})
+        classification = class_rows.get(index, {})
+        dependency = plan_rows.get(index, {})
+        repositories = {str(row.get("repository") or "") for row in (panel, closure, runner, classification, dependency)}
+        if len(repositories) != 1 or "" in repositories:
+            faults.append(f"segment_repository_alignment_invalid:{index}")
+        parent = next((row for row in p2a.dicts(closure.get("artifacts")) if row.get("label") == "parent"), {})
+        if (
+            str(parent.get("revision") or "") != str(panel.get("base_revision") or "")
+            or not str(parent.get("normalized") or "").endswith("_parent.tar.gz")
+            or "target" in str(parent.get("normalized") or "").lower()
+        ):
+            faults.append(f"segment_parent_alignment_invalid:{index}")
+        request = str(panel.get("natural_language_request") or "")
+        request_sha = str(panel.get("natural_language_request_sha256") or "")
+        if p2a.sha256_text(request) != request_sha:
+            faults.append(f"segment_request_hash_invalid:{index}")
+        request_id = base.digest_json({"request_sha256": request_sha, "parent_archive_sha256": parent.get("normalized_sha256"), "policy": "project_theseus_vcm_parent_only_batch_manifest_v1"})
+        if request_id in request_ids:
+            faults.append(f"segment_request_id_duplicate:{index}")
+        request_ids.add(request_id)
+        safe_rows.append({
+            "natural_language_request": request,
+            "natural_language_request_sha256": request_sha,
+            "parent_archive": parent.get("normalized"),
+            "parent_archive_sha256": parent.get("normalized_sha256"),
+            "parent_archive_root": parent.get("source_archive_root"),
+            "parent_revision": parent.get("revision"),
+            "license_spdx": panel.get("license_spdx"),
+            "sanitization_report": parent.get("sanitization_report"),
+            "sanitization_report_sha256": parent.get("sanitization_report_sha256"),
+        })
+        manager = str(dependency.get("manager") or "")
+        segment = "static_no_project_lock" if manager == "trusted_runtime_or_harness" else "immutable_resolution_required" if manager == "resolver_required" else "locked_closure"
+        schedule.append({
+            "panel_index": index,
+            "request_id": request_id,
+            "segment": segment,
+            "manager": manager,
+            "dependency_class": dependency.get("dependency_class"),
+            "evaluator_execution_ready": classification.get("evaluator_execution_ready") is True,
+            "parent_store_materialization_ready": True,
+            "panel_admission": "withheld_until_all_62_rows_complete",
+        })
+    segment_counts = {name: sum(row["segment"] == name for row in schedule) for name in ("static_no_project_lock", "immutable_resolution_required", "locked_closure")}
+    expected_counts = p2a.mapping(cfg.get("expected_segment_counts"))
+    if segment_counts != expected_counts:
+        faults.append("segment_counts_invalid")
+    manifest = {
+        "policy": "project_theseus_vcm_parent_only_batch_manifest_v1",
+        "created_utc": p2a.now(),
+        "source_boundary": "exact_parent_snapshots_and_authoritative_v3_natural_requests_only",
+        "broad_parent_effect_root": "repository",
+        "candidate_visible_fields": ["natural_language_request", "callable_signature_when_present", "broad_parent_effect_root", "arm_specific_model_visible_context"],
+        "rows": safe_rows,
+        "candidate_or_control_calls": 0,
+        "external_reference_calls": 0,
+    }
+    return ({
+        "policy": "project_theseus_vcm_k2_segment_plan_v1",
+        "created_utc": p2a.now(),
+        "trigger_state": "GREEN" if not faults else "RED",
+        "state": "K2_05_TARGET_FREE_SEGMENT_PLAN_COMPILED" if not faults else "K2_05_SEGMENT_PLAN_FAILED",
+        "faults": sorted(set(faults)),
+        "config": base.identity(path),
+        "task_count": len(schedule),
+        "segment_counts": segment_counts,
+        "schedule": schedule,
+        "parent_only_manifest_projection_sha256": base.digest_json(manifest),
+        "candidate_packet_materialization_opened": False,
+        "panel_admitted": False,
+        "partial_panel_admission_forbidden": True,
+        "target_archive_read_by_candidate_path": False,
+        "target_derived_selector_input_present": False,
+        "network_or_dependency_execution_performed": False,
+        "repository_runner_executions": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "candidate_or_control_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": cfg.get("maximum_inference"),
+    }, manifest)
+
+
+def index_rows(raw: Any, key: str) -> dict[int, dict[str, Any]]:
+    rows: dict[int, dict[str, Any]] = {}
+    for row in p2a.dicts(raw):
+        index = int(row.get(key) or 0)
+        if index > 0 and index not in rows:
+            rows[index] = row
+    return rows
 
 
 def directory_bytes(path: Path) -> int:
