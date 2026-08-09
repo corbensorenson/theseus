@@ -1,0 +1,26 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sdist_batch_preflight.json",
+    "sha256": "0feded7db554a962a4fdc2e1e686e39712f94a2365f32c836606f4589f4d2aad"
+  },
+  "created_utc": "2026-08-09T03:15:09.124561Z",
+  "eligible_row_count": 0,
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_row_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists named by the V4 resolver wall were downloaded by hash, retained, safely expanded under bounded static inspection, license-identified, and assigned exact declared or legacy build backends and build requirements. Eligible rows authorize only one separately sealed network-denied manifest-driven batch build. No build, package installation, repository runner, evaluator, model, Luna, D1, D2, or book-support action occurred, and no partial batch is admitted.",
+  "next_authorized_boundary": "repair_inconclusive_static_rows",
+  "package_installations": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_batch_admission": false,
+  "policy": "project_theseus_vcm_sdist_batch_preflight_v1",
+  "repository_runner_executions": 0,
+  "row_count": 0,
+  "rows": [],
+  "source_build_executions": 0,
+  "state": "READY_FOR_TASK13_TRANSITIVE_SDIST_BATCH_STATIC_PREFLIGHT",
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}

@@ -1,0 +1,27 @@
+{
+  "policy":"project_theseus_vcm_sdist_batch_preflight_v1",
+  "state":"PROSPECTIVE_TASK13_TRANSITIVE_SDIST_BATCH_STATIC_PREFLIGHT_V1",
+  "owner":"scripts/theseus_vcm_sdist_batch_preflight.py",
+  "owner_sha256":"c76c5e96c00fa83ee9f992ff3aebf5babbe5b6b985e096a38fcacfaaea894b38",
+  "audit_policy":"project_theseus_vcm_sdist_batch_preflight_audit_v1",
+  "audit_owner":"scripts/theseus_vcm_sdist_batch_preflight_audit.py",
+  "audit_owner_sha256":"cb026a0c31f1794f6f62a6ade91b906c5149c4d2be65ad1d728387419fd1a00e",
+  "sources":{
+    "immutable_resolution_v4":{"path":"reports/theseus_vcm_immutable_resolution_segment_v4.json","sha256":"22f208f69181cc13717f7cf4e37a03b4d7347dc9385737a06233e1ba9e3ca9ed"},
+    "immutable_resolution_audit_v4":{"path":"reports/theseus_vcm_immutable_resolution_segment_audit_v4.json","sha256":"f80416c4308408ba00e107fad4be1c3f094b4d2dd8f2e5bcd09db8c81810df0c"}
+  },
+  "packages":[
+    {"name":"habluetooth","version":"6.26.5","filename":"habluetooth-6.26.5.tar.gz","url":"https://files.pythonhosted.org/packages/8a/f0/412176ea8862bcf77590f9af79510829d3beb9d4ff5d98eefe2f86009ba5/habluetooth-6.26.5.tar.gz","bytes":123351,"sha256":"d8b1d271ac4bd43bb298bd13366b195751553ef25ddcba17771b58dc621bf90c","license":"Apache-2.0"},
+    {"name":"bluetooth-data-tools","version":"1.29.21","filename":"bluetooth_data_tools-1.29.21.tar.gz","url":"https://files.pythonhosted.org/packages/27/12/659fd6ac0e517d61e62113874dd2388698140c11ee3f5d439f3c556ad072/bluetooth_data_tools-1.29.21.tar.gz","bytes":21153,"sha256":"2ccf1e90212092cb6af825fd93f3f2f392c543fe2a3a894e7831cbc6f6851c15","license":"Apache-2.0"},
+    {"name":"PyRIC","version":"0.1.6.3","filename":"PyRIC-0.1.6.3.tar.gz","url":"https://files.pythonhosted.org/packages/08/64/a99f27d3b4347486c7bfc0aa516016c46dc4c0f380ffccbd742a61af1eda/PyRIC-0.1.6.3.tar.gz","bytes":870401,"sha256":"b539b01cafebd2406c00097f94525ea0f8ecd1dd92f7731f43eac0ef16c2ccc9","license":"GPLv3"}
+  ],
+  "curl":{"path":"/usr/bin/curl","sha256":"e5aa97456dcc9f5b1d4a0f6773647dfaf050c1cefed1b85834a3d2796aaa7d0b","version":"8.7.1","tls_backend":"SecureTransport"},
+  "store":"runtime/vcm_evaluator/dependency_store/sdist-batch/task-13",
+  "allowed_build_backend_prefixes":["setuptools.build_meta","maturin","hatchling.build","mesonpy","scikit_build_core","uv_build"],
+  "limits":{"minimum_free_bytes_after_execution":10737418240,"maximum_total_download_bytes":4194304,"maximum_single_download_bytes":2097152,"maximum_uncompressed_bytes":67108864,"maximum_single_member_bytes":16777216,"maximum_member_count":2000,"network_timeout_seconds":120},
+  "authority":{"exact_sdist_download_authorized":true,"static_archive_inspection_authorized":true,"content_addressed_sdist_retention_authorized":true,"source_build_authorized":false,"build_backend_execution_authorized":false,"package_installation_authorized":false,"project_installation_authorized":false,"repository_runner_execution_authorized":false,"parent_target_evaluator_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "report":"reports/theseus_vcm_sdist_batch_preflight.json",
+  "audit_report":"reports/theseus_vcm_sdist_batch_preflight_audit.json",
+  "maximum_inference":"A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists named by the V4 resolver wall were downloaded by hash, retained, safely expanded under bounded static inspection, license-identified, and assigned exact declared or legacy build backends and build requirements. Eligible rows authorize only one separately sealed network-denied manifest-driven batch build. No build, package installation, repository runner, evaluator, model, Luna, D1, D2, or book-support action occurred, and no partial batch is admitted.",
+  "audit_maximum_inference":"This role-separated audit rederives the three retained sdist identities, archive safety receipts, license presence, build backends, build requirements, AST setup.py characteristics, and dispositions without network or build execution. It is not producer-independent replay or external reproduction."
+}
