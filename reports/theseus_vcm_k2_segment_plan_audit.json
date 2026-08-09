@@ -1,0 +1,36 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_task_count": 62,
+  "candidate_or_control_calls": 0,
+  "candidate_visible_field_count": 4,
+  "config": {
+    "path": "configs/theseus_vcm_k2_segment_plan.json",
+    "sha256": "a4bfdf50b98afccba2fb56053406016fe183e1d4a96e7fc98834475aa9b700f2"
+  },
+  "created_utc": "2026-08-09T01:58:35.543984Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN role-separated audit rederives only the 62-row source alignment, safe parent-manifest bytes, 8/6/48 segment counts, common broad effect root, absence of target-derived selector fields, and withheld panel admission. It does not qualify dependencies, evaluators, candidate packets, model use, VCM utility, or any book claim.",
+  "network_or_dependency_execution_performed": false,
+  "panel_admitted": false,
+  "parent_only_manifest": {
+    "path": "runtime/vcm_evaluator/parent_only_batch_manifest_v1.json",
+    "projection_sha256": "627dbd23de8e2089856dabeb6af16a8f9d25bdd6af94b64fa3a33e6d938100f0",
+    "sha256": "f0ba8adaf09745f100981600fc74e8fca32b27c6fc8eac9dce15c809ffa15954"
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_k2_segment_plan_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_k2_segment_plan.json",
+    "sha256": "a84e4b24fb71a1a12c2c346d227ee73e9e888007d26a49fcb79440af8486ba52"
+  },
+  "repository_runner_executions": 0,
+  "segment_counts": {
+    "immutable_resolution_required": 6,
+    "locked_closure": 48,
+    "static_no_project_lock": 8
+  },
+  "state": "K2_05_TARGET_FREE_SEGMENT_PLAN_ROLE_SEPARATELY_REDERIVED",
+  "target_derived_selector_input_count": 0,
+  "trigger_state": "GREEN"
+}

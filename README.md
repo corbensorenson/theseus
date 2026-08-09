@@ -55,13 +55,13 @@ availability alone cannot resume neural training.
 - The sole active claim is now `virtual-context-abi.core`, selected because the
   terminal residual is model-visible context materialization and prompt-ingest
   burden. The frozen source panel binds nine local instrument/control tasks plus
-  a fresh 53-task powered claim panel. Its deterministic mechanics are useful,
-  but the natural-task instrument is not campaign-ready: Task 26's exact
-  wheel-only uv canary failed closed on sdist-only `proxy-tools==0.1.0` and its
-  role-separated audit scoped that to the instrument policy; no parent-only
-  external-task VCM materializer exists, and the v1
-  candidate protocol must remove target-derived `allowed_effect_paths`. No local
-  or Luna claim call is authorized.
+  a fresh 53-task powered claim panel. Task 26's exact wheel-only uv canary
+  failed closed on sdist-only `proxy-tools==0.1.0`, scoped to instrument policy.
+  K2.04 subsequently qualified representative parent-only materialization and
+  removed target-derived `allowed_effect_paths`; K2.05 now has a role-audited
+  target-free 62-row segment plan. All parent stores, static and immutable
+  execution paths, locked closures, and evaluator receipts remain unfinished.
+  No local or Luna claim call is authorized.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
   separately denominated OpenAI measurement-only reference. The retained
   Responses API adapter is offline qualification evidence only and authorizes
@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_04_PARENT_ONLY_MATERIALIZER_ACTIVE` |
+| State | `VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_04_parent_only_store_materializer_v1` |
-| Current wall | `production_parent_only_vcm_store_absent_and_v1_effect_paths_target_derived` |
+| Active attempt | `k2_05_parent_store_batch_v1` |
+| Current wall | `all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `implement_and_role_separately_audit_parent_only_vcm_store_materializer_and_broad_effect_root` |
+| Next legal action | `materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -137,23 +137,17 @@ disposable installed environments. Special handling is limited to Bun, Yarn,
 TypeScript transpilation, and untrusted Rust risk classes; a storage/host-reserve
 preflight may stop the instrument before bulk materialization.
 
-That generic owner is now GREEN for static replay only: it normalizes the six
-qualified closures into six content-bound rows across npm, pnpm, Cargo, and uv,
-while reserving manager-shared forward stores and disposable environments. It
-has not executed forward dependency work. K2.03 must replace its placeholder
-resource projections and qualify the four named ecosystem risk classes before
-bulk materialization.
-
-The K2.03 representative selection and resource preflight are now bound at zero
-execution inside that same owner: parent-only Task 61 for Bun and TypeScript,
-Task 4 for Yarn, and Task 36 for exact Rust 1.97.1 compilation. The eventual
-execution must be serialized, each row must preserve a 10 GiB host reserve, and
-no evaluator or model authority is open. The generic sandboxed executor is now
-source-bound and prospectively sealed at zero execution.
-The v1 launch failed before its first external command because the generic
-config lacked the sandbox-executable binding. That attempt is retained as
-`INCONCLUSIVE_IMPLEMENTATION`; v2 adds the exact binding and is sealed at zero
-commands, network calls, and store writes.
+The generic owner has replayed the existing npm, pnpm, Cargo, and uv evidence;
+K2.03 role-separately qualified Bun, Yarn, narrow real-parent TypeScript, and
+untrusted Rust mechanics; and K2.04 role-separately qualified the production
+parent-only materializer on four representative rows. The monolithic K2.05
+locked batch remains closed by a conservative 40.6 GiB reserve-safe storage
+deficit. A separate audit has now rederived one target-free 62-row parent
+manifest and an 8 static / 6 immutable-resolution / 48 locked schedule from
+the authoritative aligned sources. Panel admission is withheld and no model,
+Luna, evaluator, repository runner, or dependency execution occurred. The next
+transaction materializes all 62 archive-backed parent stores, then qualifies
+the static segment without treating it as a partial panel.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

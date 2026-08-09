@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_05_BATCH_PREFLIGHT_HOST_STORAGE_WALL",
+      "state": "VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_05_segmented_batch_redesign_v1",
-      "current_blocker": "full_batch_no_dedupe_safety_projection_exceeds_current_safe_headroom_by_40614855880_bytes",
+      "active_attempt_id": "k2_05_parent_store_batch_v1",
+      "current_blocker": "all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified",
       "last_closed_task_index": 26,
-      "next_legal_action": "design_and_audit_segmented_k2_05_execution_with_no_dependency_rows_and_parent_stores_first_without_partial_panel_admission_or_evidence_deletion",
+      "next_legal_action": "materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified four ecosystem risk classes and K2.04 role-separately qualified parent-only store/materializer mechanics on four representative rows. The K2.05 call-free preflight validated the 62-row denominator but closed bulk execution: 32,290 locked entries project a conservative 51,413,161,160-byte incremental peak against 10,798,305,280 bytes of safe headroom, a 40,614,855,880-byte deficit. This no-cross-lock-deduplication upper bound is host-safety evidence, not expected spend or a task, evaluator, model, or VCM negative. K2.05 remains active only for a segmented generic-owner redesign that begins with no-dependency work and admits no partial panel. Local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified four ecosystem risk classes and K2.04 role-separately qualified parent-only store/materializer mechanics on four representative rows. K2.05's call-free preflight still closes monolithic locked-batch execution with a conservative 40,614,855,880-byte reserve-safe deficit. The role-separated segmented-plan audit now rederives one target-free 62-row parent manifest and an 8 static / 6 immutable-resolution / 48 locked schedule from the authoritative aligned sources, with panel admission withheld and all execution/call counters zero. This is plan and information-flow mechanics only. All parent stores, static and immutable paths, locked closures, evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain unqualified or closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -276,6 +276,23 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_05_target_free_segment_plan": {
+            "path": "reports/theseus_vcm_k2_segment_plan.json",
+            "sha256": "a84e4b24fb71a1a12c2c346d227ee73e9e888007d26a49fcb79440af8486ba52",
+            "audit_path": "reports/theseus_vcm_k2_segment_plan_audit.json",
+            "audit_sha256": "c3b550480df22160248d142b80971158e04c407d92eea7d7e2f14df69a61e038",
+            "state": "K2_05_TARGET_FREE_SEGMENT_PLAN_ROLE_SEPARATELY_REDERIVED",
+            "task_count": 62,
+            "static_no_project_lock_count": 8,
+            "immutable_resolution_required_count": 6,
+            "locked_closure_count": 48,
+            "broad_parent_effect_root": "repository",
+            "target_derived_selector_input_count": 0,
+            "partial_panel_admission_forbidden": true,
+            "panel_admitted": false,
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -344,13 +361,13 @@
           },
           {
             "id": "K2_05_BATCH_CLOSURES_AND_EVALUATORS",
-            "status": "ACTIVE_WITH_SCOPED_HOST_STORAGE_WALL",
+            "status": "ACTIVE",
             "depends_on": [
               "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER"
             ],
             "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
             "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden.",
-            "latest_observation": "The call-free full-batch upper-bound preflight is governance-GREEN but execution-closed: its 51.4 GiB incremental peak exceeds current reserve-safe headroom by 40.6 GiB. No fetch, install, build, runner, evaluator, packet, model, or reference call occurred. Redesign must stay generic, preserve evidence, start with no-dependency rows and parent stores, and never treat partial coverage as panel admission."
+            "latest_observation": "The call-free full-batch upper-bound preflight remains execution-closed by a 40.6 GiB reserve-safe deficit. A separately audited generic compiler corrected the input path away from the historically misaligned v1 materialization rows, bound the authoritative v3 source panel plus current parent closures, runner inventory, dependency classes, and schedule, and rederived one target-free 62-row parent manifest with 8 static, 6 immutable-resolution, and 48 locked rows. Panel admission is withheld and no dependency, repository, evaluator, packet, model, or reference call occurred. All 62 parent stores are the next common work; the static segment follows without partial admission."
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
@@ -1660,9 +1677,15 @@
       },
       "vcm_instrument_builder": {
         "config":"configs/theseus_vcm_instrument_builder.json","owner":"scripts/theseus_vcm_instrument_builder.py","test":"tests/test_theseus_vcm_instrument_builder.py","report":"reports/theseus_vcm_instrument_builder.json",
-        "owner_sha256":"cf540b9d185a4ef8d626927f6d658ffb42b55811dc22b2982075a5981ca98850","config_sha256":"70bb2a18d51a6f91e27c74b1f374e7062bed4f7c74ef3b1cdbd9bee056b9b207","test_sha256":"0d729e578213b72440a3a403ae71055e44d4e56b0f8b75a31d5e95737f6440e0","report_sha256":"1481616e20ddaa5931c11aca0f2fc914f8db652f654c571c4d2bef436aa5cc45",
+        "owner_sha256":"431fbd3726e4e91b0d9b221af1ddd37a29b68be535335c41ae9a5cefab522c39","config_sha256":"ab1e85555454af3134d1261183414aaebec56bdbb63462df2fd6c7b8f292b958","test_sha256":"0d729e578213b72440a3a403ae71055e44d4e56b0f8b75a31d5e95737f6440e0","report_sha256":"1481616e20ddaa5931c11aca0f2fc914f8db652f654c571c4d2bef436aa5cc45",
         "state":"K2_05_BATCH_PREFLIGHT_GREEN_EXECUTION_BLOCKED_HOST_STORAGE","replayed_closure_count":6,"replayed_managers":["cargo","npm","pnpm","uv"],"shared_content_addressed_manager_stores_required":true,"installed_environments_are_disposable":true,"per_task_duplicate_package_cache_authorized":false,"resource_projection_state":"FULL_BATCH_CLOSED_HOST_STORAGE_SEGMENTED_REDESIGN_REQUIRED","risk_canary_campaign_id":"k2_03_generic_ecosystem_risk_canaries_v7","risk_canary_task_indices":[61,4,61,36],"risk_classes":["bun_real_lock_install","yarn_real_lock_install","typescript_parent_repository_transpilation","rust_parent_repository_untrusted_compilation"],"risk_canary_execution_authorized":false,"prior_risk_attempt_count":6,"prior_external_commands_started":0,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
-        "maximum_inference":"the frozen 62-row batch is coverage-valid but its conservative no-cross-lock-deduplication upper bound exceeds current reserve-safe headroom by 40,614,855,880 bytes; this is a scoped host-storage preflight wall, not task, evaluator, model, or VCM evidence","next_boundary":"design and audit segmented generic-owner execution with eight static and six immutable-resolution rows plus parent stores first, preserving the full denominator and admitting no partial panel"
+        "maximum_inference":"the frozen 62-row batch is coverage-valid but its conservative no-cross-lock-deduplication upper bound exceeds current reserve-safe headroom by 40,614,855,880 bytes; this is a scoped host-storage preflight wall, not task, evaluator, model, or VCM evidence","next_boundary":"use the audited target-free segment plan to materialize every parent store before static-segment qualification"
+      },
+      "vcm_k2_segment_plan": {
+        "config":"configs/theseus_vcm_k2_segment_plan.json","owner":"scripts/theseus_vcm_instrument_builder.py","test":"tests/test_theseus_vcm_k2_segment_plan.py","report":"reports/theseus_vcm_k2_segment_plan.json","audit_owner":"scripts/theseus_vcm_k2_segment_plan_audit.py","audit_report":"reports/theseus_vcm_k2_segment_plan_audit.json",
+        "owner_sha256":"431fbd3726e4e91b0d9b221af1ddd37a29b68be535335c41ae9a5cefab522c39","config_sha256":"a4bfdf50b98afccba2fb56053406016fe183e1d4a96e7fc98834475aa9b700f2","test_sha256":"a9bd6ea204e08ae7121eeb0441377e4c3ad334329c9aeff2108adeb20b815453","report_sha256":"a84e4b24fb71a1a12c2c346d227ee73e9e888007d26a49fcb79440af8486ba52","audit_owner_sha256":"0927b9af69e8b7beb47c3d854f2623829fba6be58149eafa8c7fcfcfb1cf23a3","audit_report_sha256":"c3b550480df22160248d142b80971158e04c407d92eea7d7e2f14df69a61e038",
+        "state":"K2_05_TARGET_FREE_SEGMENT_PLAN_ROLE_SEPARATELY_REDERIVED","task_count":62,"segment_counts":{"static_no_project_lock":8,"immutable_resolution_required":6,"locked_closure":48},"broad_parent_effect_root":"repository","target_derived_selector_input_count":0,"panel_admitted":false,"partial_panel_admission_forbidden":true,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"role-separated plan mechanics only: the authoritative aligned sources produce one target-free 62-row parent manifest and an 8/6/48 non-admitting schedule; no parent store, dependency, evaluator, packet, model, VCM utility, or book claim is qualified","next_boundary":"materialize all 62 parent stores from the audited safe manifest, then qualify the static segment without partial panel admission"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

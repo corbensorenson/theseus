@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_BATCH_PREFLIGHT_HOST_STORAGE_WALL` |
+| State | `VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_segmented_batch_redesign_v1` |
-| Current wall | full-batch conservative peak exceeds reserve-safe headroom by 40,614,855,880 bytes |
+| Active attempt | `k2_05_parent_store_batch_v1` |
+| Current wall | `all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `design_and_audit_segmented_k2_05_execution_with_no_dependency_rows_and_parent_stores_first_without_partial_panel_admission_or_evidence_deletion` |
+| Next legal action | `materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -437,9 +437,18 @@ space: 51,413,161,160 incremental bytes in total. Current free space minus the
 deficit. This deliberately conservative no-cross-lock-deduplication upper bound
 is not expected spend and does not falsify a task, evaluator, VCM, or model.
 No fetch, install, build, runner, evaluator, packet, or inference call occurred.
-K2.05 must now segment the same generic owner, start with the eight static and
-six immutable-resolution rows plus archive-backed parent stores, preserve all
-evidence, and forbid partial-panel admission.
+K2.05 now has a GREEN role-separated segment-plan audit. The compiler rejected
+the historically misaligned v1 materialization rows as a new manifest source
+and instead binds the authoritative v3 source panel, v2 parent closures, v3
+runner inventory, dependency classes, and dependency schedule. It rederived
+one target-free 62-row parent manifest and an 8 static / 6 immutable-resolution
+/ 48 locked schedule with broad effect root `repository`, zero target-derived
+selector fields, and panel admission withheld. No dependency, repository,
+evaluator, packet, local-model, or reference call occurred. The next bounded
+transaction materializes all 62 archive-backed parent stores through the common
+owner; only then does the static segment qualify. The full locked batch remains
+closed by the existing storage wall and may not be smuggled through partial
+panel admission.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -753,10 +762,11 @@ retention through governed custody rather than ad hoc cleanup.
 4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. **CURRENT — FULL-BATCH STORAGE WALL:** Segment the remaining frozen dependency
-   closures after a 40.6 GiB reserve-safe deficit, beginning with static/immutable
-   execution classes and archive-backed parent stores. Preserve the 62-row
-   denominator and do not admit a partial panel.
+5. **CURRENT — PARENT-STORE BATCH:** Materialize all 62 archive-backed parent
+   stores from the role-audited target-free manifest, then qualify the eight-row
+   static segment. Preserve the 62-row denominator and do not admit a partial
+   panel. The 48-row locked segment remains separately closed by the 40.6 GiB
+   reserve-safe storage deficit until a bounded acquisition plan fits.
 6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/
    intervention/cost identity and complete producer-independent replay plus the
    role-separated blindness audit.

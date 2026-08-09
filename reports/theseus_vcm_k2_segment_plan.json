@@ -1,0 +1,655 @@
+{
+  "candidate_or_control_calls": 0,
+  "candidate_packet_materialization_opened": false,
+  "config": {
+    "path": "configs/theseus_vcm_k2_segment_plan.json",
+    "sha256": "a4bfdf50b98afccba2fb56053406016fe183e1d4a96e7fc98834475aa9b700f2"
+  },
+  "created_utc": "2026-08-09T01:58:35.317279Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN segment plan proves only that the authoritative 62-row v3 source panel, full parent archives, runner inventory, dependency classifications, and dependency schedule align and can be projected into one target-free parent manifest plus three non-admitting execution segments. It executes no dependency, repository, evaluator, packet, model, Luna, D1, D2, training, serving, or book action.",
+  "network_or_dependency_execution_performed": false,
+  "panel_admitted": false,
+  "parent_only_manifest_artifact": {
+    "path": "runtime/vcm_evaluator/parent_only_batch_manifest_v1.json",
+    "sha256": "f0ba8adaf09745f100981600fc74e8fca32b27c6fc8eac9dce15c809ffa15954"
+  },
+  "parent_only_manifest_projection_sha256": "627dbd23de8e2089856dabeb6af16a8f9d25bdd6af94b64fa3a33e6d938100f0",
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_k2_segment_plan_v1",
+  "repository_runner_executions": 0,
+  "schedule": [
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 1,
+      "parent_store_materialization_ready": true,
+      "request_id": "c6c99cd6f87e9d99f14565b0de8ae7409fdfa6b4b2dfe5bfb34a8223bfc53bcc",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 2,
+      "parent_store_materialization_ready": true,
+      "request_id": "7496e65104b9818fdc72eba41cbf785d6876edec0785f771feea210286014a3d",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 3,
+      "parent_store_materialization_ready": true,
+      "request_id": "92041035b424c6100e5a0b7498d13fb0f2ed6db3c7f3fc23b3ea33eef466090f",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "yarn",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 4,
+      "parent_store_materialization_ready": true,
+      "request_id": "092c9845f9698217638c60e0ab0063a2f48efe23bb2ac4556bc387f1d4270109",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 5,
+      "parent_store_materialization_ready": true,
+      "request_id": "b5203b948d83c18515806171139e9c1d054d605497c2c325f5b184a5e7a58f1b",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 6,
+      "parent_store_materialization_ready": true,
+      "request_id": "c5de8c6166c310281515190892bd6009b69b9258271e908bd5ceaa1bb7b40f68",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 7,
+      "parent_store_materialization_ready": true,
+      "request_id": "a6cf5b23feed37d833d96b615b9e385f0c10a3aa834df0ed47f4f883027c8d4f",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 8,
+      "parent_store_materialization_ready": true,
+      "request_id": "412c74e2ce55aec5220f9abbaead31b2ac4cbe4ec8a63f850ba5913e85c8cc39",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 9,
+      "parent_store_materialization_ready": true,
+      "request_id": "0aa60fe50461b81bea360a463c29c1b72b38143d5bdecd0a2e32a1f9ccd6a940",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 10,
+      "parent_store_materialization_ready": true,
+      "request_id": "c7168c9ad9be6909f5b6d3138660b75a415d37080024de7b20298a5dbf022db9",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 11,
+      "parent_store_materialization_ready": true,
+      "request_id": "8f094d8f6a842492d992b5a0eb2dc7f3f213bb7104133b2afaeef77596996c8b",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "manager": "resolver_required",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 12,
+      "parent_store_materialization_ready": true,
+      "request_id": "ab063b65492e7eed95d9bd4a833e3273594804177c7317b6a330e7f931f06216",
+      "segment": "immutable_resolution_required"
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "manager": "resolver_required",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 13,
+      "parent_store_materialization_ready": true,
+      "request_id": "f3b5203310857d6ec3552dd2e501c36672a61baa3f76da7f46fbced2734155d6",
+      "segment": "immutable_resolution_required"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 14,
+      "parent_store_materialization_ready": true,
+      "request_id": "f9641386cdb3a5615807e292ebe512a232389bea9152a537c767d527d64385d0",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 15,
+      "parent_store_materialization_ready": true,
+      "request_id": "3e15e628cabb0bab039463071366dd6afcffa248a2bbd6e3e0f569dfab8f49c8",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "manager": "resolver_required",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 16,
+      "parent_store_materialization_ready": true,
+      "request_id": "101bf376b72f65d39731e8dbb9d0c5551c4d788ab5a3faba95d44b1b100f84e3",
+      "segment": "immutable_resolution_required"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 17,
+      "parent_store_materialization_ready": true,
+      "request_id": "53e5fa95a63c79ae1e859ae0d1690fa793fc479af567e78444d4f328eea701a4",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 18,
+      "parent_store_materialization_ready": true,
+      "request_id": "4dd0a35cefec74a548f344e25493f036bf431b099479911276e7804c7eee8e53",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 19,
+      "parent_store_materialization_ready": true,
+      "request_id": "60a32b65453989f849426a3e252c25e4f79953a974d530a00affa04ef2c76ebb",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 20,
+      "parent_store_materialization_ready": true,
+      "request_id": "90e378f780e76a91c192258232ea248b77859e7181fcd2df1decbac4d38e1733",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 21,
+      "parent_store_materialization_ready": true,
+      "request_id": "775cb84ec54e439a2c7d091ca2dc7a50f350fa0e107a41780d7c31165064654f",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 22,
+      "parent_store_materialization_ready": true,
+      "request_id": "e1d119264c3d6bcdf1026dbacf1b6169966bfa65f4dfe783fdadcbe36b701808",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 23,
+      "parent_store_materialization_ready": true,
+      "request_id": "d72b185963382660cdfa6673eda65a6444b366866061c66e53fb7b1c8f251840",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 24,
+      "parent_store_materialization_ready": true,
+      "request_id": "edf6568dd2328e14e4d513781bb5610908508180ce17c98e3ff3b384f04dfc3c",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "manager": "resolver_required",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 25,
+      "parent_store_materialization_ready": true,
+      "request_id": "77a58fc7f0e415849a8802fee986131402c668bb811bd78878190ea169d44329",
+      "segment": "immutable_resolution_required"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 26,
+      "parent_store_materialization_ready": true,
+      "request_id": "ccb381115b50b582088e408d7f25935916039650f6a9d567541204a560847b3b",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 27,
+      "parent_store_materialization_ready": true,
+      "request_id": "c58177d7e62d217626fe8401573178803e4f48b2377906edae0875d37f5b9588",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "uv",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 28,
+      "parent_store_materialization_ready": true,
+      "request_id": "9d230bd89de88476c4c5637beeb881751c8e1bac9241f1373d9d277c6fed4e04",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 29,
+      "parent_store_materialization_ready": true,
+      "request_id": "acb091905394308d07d2fe5a0ccedb52c9e162f9ba329f8828cfdb22c90760a5",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 30,
+      "parent_store_materialization_ready": true,
+      "request_id": "3cd53adc4dd26f05d9863804ac0e086b3fe6ddad78e10ff0d75900375ea84a83",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 31,
+      "parent_store_materialization_ready": true,
+      "request_id": "c629dd9f6ad3e590b52feecc42687cc7345171a7b1be7efc36ee3fefded92712",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 32,
+      "parent_store_materialization_ready": true,
+      "request_id": "0541288c3fb9c5ecf1bd2022f199c67f1ea552e0e235488fa949fa53675abacb",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 33,
+      "parent_store_materialization_ready": true,
+      "request_id": "821ec3a87fee5da830634f88d5cca99974b60f23660f0a1a176a9f3ae1571546",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 34,
+      "parent_store_materialization_ready": true,
+      "request_id": "f7bbfc8586ca36228c6e4baf830ce371c76a5cd9792ba629ab6fdb780aad6a6e",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "manager": "resolver_required",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 35,
+      "parent_store_materialization_ready": true,
+      "request_id": "306169a111dd113bdf0d297d56accc725e64cb3ca5ac758385f243f1b03437f4",
+      "segment": "immutable_resolution_required"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 36,
+      "parent_store_materialization_ready": true,
+      "request_id": "bfe62072804509292020dbe78d28d56af09aa2303188730d04dd672d5bc368de",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 37,
+      "parent_store_materialization_ready": true,
+      "request_id": "53eefee396d93b86e57f1875c29d877f86fe726c38d691333b485dc015ea367c",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 38,
+      "parent_store_materialization_ready": true,
+      "request_id": "9344dba7cbf5a62be58083a80712d90e68ee34746de15eb1de31e5bacbde2fb3",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 39,
+      "parent_store_materialization_ready": true,
+      "request_id": "8aa70b636d46b1007e8106473f453f7c9cf8f33f378e986645446a7eadc11580",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 40,
+      "parent_store_materialization_ready": true,
+      "request_id": "63d82e909aa1d8a0c5337cbb884d2c8f6f84d1dc6faf3c3b45ae91ddf514cdd6",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 41,
+      "parent_store_materialization_ready": true,
+      "request_id": "e3462fadf9fdd0f425d371a40c3a726f643acc7f30f76d63cb4e75f2ca75f836",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 42,
+      "parent_store_materialization_ready": true,
+      "request_id": "068f74ebe58d094a9eaf46b153ead6ad8f3be0c7fcf10d1bb4870e56595b7557",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 43,
+      "parent_store_materialization_ready": true,
+      "request_id": "c197b4a510f7d85b0a4ee4c75bc991b1ad0efa750b0b33d66f77e309201d6a44",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 44,
+      "parent_store_materialization_ready": true,
+      "request_id": "56db2f6898dafd1739259e0cae0d773730af410ba2b0e75f840531ff8d6ec6db",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 45,
+      "parent_store_materialization_ready": true,
+      "request_id": "901f36f3a76be8839539fc4ca2273d8f18452246b3008447600d7ba2a2363f45",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "bun",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 46,
+      "parent_store_materialization_ready": true,
+      "request_id": "337c6593d3a8b97e7596d1fcbf8556a83f30c58ea947e04792ae55dd4a8745b3",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 47,
+      "parent_store_materialization_ready": true,
+      "request_id": "1b61cda2f2299929cca9ce2b2bdd4c1d2ab919f43401da31e29d624e1a94e274",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "bun",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 48,
+      "parent_store_materialization_ready": true,
+      "request_id": "9bd90085c3a41113e60dcb11ad2ba357d423f7d3d6015e4476356bb66ba5a85e",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 49,
+      "parent_store_materialization_ready": true,
+      "request_id": "3efa39d95975b0ae64091a7144849641877943706274e99c026b360be8c87ab2",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "bun",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 50,
+      "parent_store_materialization_ready": true,
+      "request_id": "a5eb7a13acc638e9af3dadf431070089dd017e2365b6a12ce867c1eba0bfea71",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 51,
+      "parent_store_materialization_ready": true,
+      "request_id": "ba76f4b8d2b7196dbf29a19afe49ceb34ed8672ca1db7daf504ea1f82d4af394",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "pnpm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 52,
+      "parent_store_materialization_ready": true,
+      "request_id": "067e83eec2877f53aef2927db5ecee010dff97fdf8a73c2999b5fdebbb0a7317",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 53,
+      "parent_store_materialization_ready": true,
+      "request_id": "90ddd5f088dcd8544073a57b5b73c802f9b16ce2c5cc7f03d54901ebc7ae9eb2",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 54,
+      "parent_store_materialization_ready": true,
+      "request_id": "c25ff1442f3f1992687eaa702cdbaadf5b33682f8e27b20ef71baccab42753e2",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 55,
+      "parent_store_materialization_ready": true,
+      "request_id": "4c26f64b8422fa1030f053386fa4b22d5b8d142ed77bd4b2b2f1722da97a3275",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "IMMUTABLE_RESOLUTION_REQUIRED",
+      "evaluator_execution_ready": false,
+      "manager": "resolver_required",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 56,
+      "parent_store_materialization_ready": true,
+      "request_id": "919528d2ab6b434230abc398e979253bc75048ae381bfbe84026765d91a0363a",
+      "segment": "immutable_resolution_required"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 57,
+      "parent_store_materialization_ready": true,
+      "request_id": "36cc2adf0a7f19b29d397dcf854f39ce85f8f27b43630671cc396b3191ec2404",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "LOCK_NOT_REQUIRED_FOR_STATIC_EVALUATOR_CLOSURE",
+      "evaluator_execution_ready": false,
+      "manager": "trusted_runtime_or_harness",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 58,
+      "parent_store_materialization_ready": true,
+      "request_id": "4b43c68fe54543068f75821628bbbdbf28499527aa5f9ad143f07f9b3e471b68",
+      "segment": "static_no_project_lock"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 59,
+      "parent_store_materialization_ready": true,
+      "request_id": "d53df9f28e4288110c0582ff529c3e670e12ec6d0c5d935574d20e35b123de12",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "cargo",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 60,
+      "parent_store_materialization_ready": true,
+      "request_id": "6a9ac63c50d9c732b583ef1b290dccf3d1eee82f5841b3aac0f31d55e9960eb7",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "bun",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 61,
+      "parent_store_materialization_ready": true,
+      "request_id": "c394026fb1e22c1d6d3182b63e684f2abc190afd30681f5671711d8536068aee",
+      "segment": "locked_closure"
+    },
+    {
+      "dependency_class": "EXACT_EVALUATOR_ECOSYSTEM_LOCK_RECEIPT_PRESENT",
+      "evaluator_execution_ready": false,
+      "manager": "npm",
+      "panel_admission": "withheld_until_all_62_rows_complete",
+      "panel_index": 62,
+      "parent_store_materialization_ready": true,
+      "request_id": "5fac1f6bb8fc7aea3e3d2169b42117690a5c6c0fc315e1c450b360d0c95645aa",
+      "segment": "locked_closure"
+    }
+  ],
+  "segment_counts": {
+    "immutable_resolution_required": 6,
+    "locked_closure": 48,
+    "static_no_project_lock": 8
+  },
+  "state": "K2_05_TARGET_FREE_SEGMENT_PLAN_COMPILED",
+  "target_archive_read_by_candidate_path": false,
+  "target_derived_selector_input_present": false,
+  "task_count": 62,
+  "trigger_state": "GREEN"
+}

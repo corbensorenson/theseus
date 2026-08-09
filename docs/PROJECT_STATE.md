@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_05_BATCH_PREFLIGHT_HOST_STORAGE_WALL` | K2.04 is role-separately GREEN; K2.05's coverage-valid full-batch preflight is execution-closed by a 40.6 GiB reserve-safe storage deficit and now requires a segmented generic-owner design |
+| Active VCM claim | `VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE` | K2.04 is role-separately GREEN; K2.05's 62-row target-free 8/6/48 segment plan is role-separately GREEN, all parent stores are next, and the locked batch remains execution-closed by the 40.6 GiB reserve-safe storage deficit |
 | VCM information flow | `BROAD_PARENT_ROOT_AND_SELECTOR_AUDIT_GREEN` | The prospective claim contract no longer exposes target-derived `allowed_effect_paths`; every arm uses broad root `repository`, and the K2.04 audit rederived all candidate-visible bytes and request/parent-only selector inputs |
 | VCM natural-task route | `REPRESENTATIVE_PARENT_ONLY_MATERIALIZER_GREEN` | Four exact parent archives produced complete uncapped text frontiers, matched governed/plain/maximal/retrieval information identities, production VCM ABI receipts, and zero downstream calls; all-62 coverage remains K2.05 work |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -67,10 +67,10 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`k2_05_segmented_batch_redesign_v1`, last closed task 26, and the wall
-`full_batch_no_dedupe_safety_projection_exceeds_current_safe_headroom_by_40614855880_bytes`.
+`k2_05_parent_store_batch_v1`, last closed task 26, and the wall
+`all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified`.
 The next legal action is
-`design_and_audit_segmented_k2_05_execution_with_no_dependency_rows_and_parent_stores_first_without_partial_panel_admission_or_evidence_deletion`.
+`materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -125,9 +125,15 @@ No model, Luna, evaluator, runner, training, serving, D1, D2, or book action
 occurred. K2.05's call-free coverage preflight then found 51,413,161,160 bytes
 of conservative incremental peak demand against 10,798,305,280 bytes of
 reserve-safe headroom. Its 40,614,855,880-byte deficit closes full-batch
-execution without constituting task or subsystem evidence. K2.05 remains active
-for a segmented generic-owner redesign: no-dependency rows and parent stores
-first, no evidence deletion, and no partial-panel admission.
+execution without constituting task or subsystem evidence. The role-separated
+K2.05 plan audit then rederived one target-free 62-row parent manifest from the
+authoritative aligned v3 panel and current closure, runner, classification, and
+schedule sources. It corrected away from a historically misaligned v1
+materialization report, froze 8 static / 6 immutable-resolution / 48 locked
+segments, preserved broad effect root `repository`, withheld panel admission,
+and made zero downstream calls. K2.05 remains active for all 62 parent stores
+first and the static segment second; the locked segment retains the storage
+wall, with no evidence deletion or partial-panel admission.
 
 ## Active Claim And Residual
 
@@ -785,9 +791,10 @@ authorize regenerating historical reports or reopening neural work.
    full-project TypeScript caveat.
 4. **COMPLETE:** Build the production parent-only VCM store/materializer on qualified rows and
    remove target-derived effect paths before any candidate packet exists.
-5. **CURRENT — FULL-BATCH STORAGE WALL:** Segment the remaining closures after
-   the 40.6 GiB reserve-safe deficit, starting with no-dependency rows and
-   archive-backed parent stores; retain all 62 rows and forbid partial admission.
+5. **CURRENT — PARENT-STORE BATCH:** Materialize all 62 archive-backed parent
+   stores from the role-audited safe manifest, then qualify the static segment;
+   retain all 62 rows and forbid partial admission. The locked segment remains
+   closed by the 40.6 GiB reserve-safe deficit pending a bounded fit.
 6. Implement and call-free freeze the local baseline routes, host canaries,
    competence/futility rules, paired analysis, cost ledger, and decisions.
    Freeze the optional VCM reference envelope.
