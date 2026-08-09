@@ -6,7 +6,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/"scripts"))
 import theseus_assistant_p2a as p2a  # noqa:E402
 import theseus_vcm_immutable_resolution_segment as prior  # noqa:E402
-POLICY="project_theseus_vcm_replacement_resolution_audit_v1";DEFAULT_CONFIG=ROOT/"configs"/"theseus_vcm_replacement_resolution.json"
+POLICY="project_theseus_vcm_replacement_resolution_audit_v2";DEFAULT_CONFIG=ROOT/"configs"/"theseus_vcm_replacement_resolution.json"
 def main():
  p=argparse.ArgumentParser();p.add_argument("--config",default=p2a.rel(DEFAULT_CONFIG));p.add_argument("--out",default="");a=p.parse_args();path=p2a.resolve(a.config);cfg=p2a.read_json(path);r=audit(path);p2a.write_json(p2a.resolve(a.out or cfg["audit_report"]),r);print(json.dumps({k:r.get(k) for k in ("trigger_state","state","task_count","qualified_task_count","package_count","network_resolution_task_count","static_lock_task_count","parent_target_or_evaluator_executions","faults")},indent=2,sort_keys=True));return 0 if r["trigger_state"]=="GREEN" else 2
 def audit(path=DEFAULT_CONFIG):

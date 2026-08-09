@@ -8,7 +8,7 @@ from typing import Any
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/"scripts"))
 import theseus_assistant_p2a as p2a  # noqa:E402
 import theseus_vcm_immutable_resolution_segment as prior  # noqa:E402
-POLICY="project_theseus_vcm_replacement_resolution_v1";DEFAULT_CONFIG=ROOT/"configs"/"theseus_vcm_replacement_resolution.json";EXPECTED=[12,13,35]
+POLICY="project_theseus_vcm_replacement_resolution_v2";DEFAULT_CONFIG=ROOT/"configs"/"theseus_vcm_replacement_resolution.json";EXPECTED=[12,13,35]
 
 def main()->int:
  p=argparse.ArgumentParser();p.add_argument("--config",default=p2a.rel(DEFAULT_CONFIG));p.add_argument("--out",default="");p.add_argument("--execute",action="store_true");a=p.parse_args();path=p2a.resolve(a.config);cfg=p2a.read_json(path);r=execute(path) if a.execute else preflight_report(path);p2a.write_json(p2a.resolve(a.out or cfg["report"]),r);print(json.dumps(summary(r),indent=2,sort_keys=True));return 0 if r["trigger_state"] in {"GREEN","PAUSED"} else 2
@@ -68,13 +68,16 @@ def execute(path:Path=DEFAULT_CONFIG)->dict[str,Any]:
     if not source.is_file():results.append(failure(row,item,"INCONCLUSIVE_IMPLEMENTATION_LOCK_OUTPUT_MISSING",["repository_cargo_lock_missing"]));continue
     generated=source
    else:
-    generated=tmp/f"task-{index:02d}-requirements.lock";python=p2a.mapping(cfg["tools"])[str(row["python_tool"])]["path"];uv=p2a.mapping(cfg["tools"])["uv"]["path"];home=tmp/f"home-{index:02d}";temp=tmp/f"tmp-{index:02d}";home.mkdir();temp.mkdir();env={"HOME":str(home),"TMPDIR":str(temp),"PATH":"/usr/bin:/bin","CI":"1","NO_COLOR":"1","LANG":"C","LC_ALL":"C","UV_PYTHON":python,"UV_PYTHON_DOWNLOADS":"never","UV_NO_CONFIG":"1"};command=[uv,"pip","compile",str(root/row["input"])]
+    generated=tmp/f"task-{index:02d}-requirements.lock";python=str(p2a.resolve(p2a.mapping(cfg["tools"])[str(row["python_tool"])]["path"]));uv=str(p2a.resolve(p2a.mapping(cfg["tools"])["uv"]["path"]));home=tmp/f"home-{index:02d}";temp=tmp/f"tmp-{index:02d}";home.mkdir();temp.mkdir();env={"HOME":str(home),"TMPDIR":str(temp),"PATH":"/usr/bin:/bin","CI":"1","NO_COLOR":"1","LANG":"C","LC_ALL":"C","UV_PYTHON":python,"UV_PYTHON_DOWNLOADS":"never","UV_NO_CONFIG":"1"};command=[uv,"pip","compile",str(root/row["input"])]
     for extra in p2a.strings(row.get("extras")):command.extend(["--extra",extra])
     for group in p2a.strings(row.get("groups")):command.extend(["--group",group])
-    command.extend(["--python",python,"--python-platform","aarch64-apple-darwin","--generate-hashes","--no-build","--index-strategy","first-index","--default-index","https://pypi.org/simple","--cache-dir",str(cache/"uv"),"--output-file",str(generated),"--color","never","--no-progress"]);receipt=prior.run(command,root,env,limits)
+    command.extend(["--python",python,"--python-platform","aarch64-apple-darwin","--generate-hashes","--no-build","--index-strategy","first-index","--default-index","https://pypi.org/simple","--cache-dir",str(cache/"uv"),"--output-file",str(generated),"--color","never","--no-progress"])
+    try:receipt=prior.run(command,root,env,limits)
+    except OSError as exc:receipt={"returncode":None,"duration_ms":0.0,"boundary_hit":False,"stdout":"","stderr":"","stdout_complete":True,"stderr_complete":True,"project_selected_output_cap":None,"spawn_error":{"type":type(exc).__name__,"message":str(exc)}}
    after=prior.tree_identity(root);receipt.update({"source_before":before,"source_after":after});row_faults=[]
    if before!=after:row_faults.append("source_mutated_during_resolution")
    if receipt.get("boundary_hit"):disposition="INCONCLUSIVE_EXPERIMENT_HOST_RESOURCE_BOUNDARY"
+   elif receipt.get("spawn_error"):disposition="INCONCLUSIVE_IMPLEMENTATION_RESOLVER_SPAWN"
    elif receipt.get("returncode")!=0:disposition="INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION"
    elif not generated.is_file():disposition="INCONCLUSIVE_IMPLEMENTATION_LOCK_OUTPUT_MISSING";row_faults.append("generated_lock_missing")
    else:
@@ -97,6 +100,6 @@ def execute(path:Path=DEFAULT_CONFIG)->dict[str,Any]:
 def failure(row,item,disposition,faults):return {"index":row["index"],"repository":row["repository"],"manager":row["manager"],"target_archive":p2a.rel(item["archive"]),"target_archive_sha256":p2a.sha256_file(item["archive"]),"command":[],"receipt":{},"faults":sorted(set(faults)),"disposition":disposition}
 def finish(cfg,path,rows,faults,executed,cache,free_before):
  qualified=sum(r.get("disposition")=="RESOLUTION_QUALIFIED_IMMUTABLE_LOCK" for r in rows);green=executed and not faults and qualified==3
- return {"policy":POLICY,"created_utc":p2a.now(),"trigger_state":"GREEN" if green else ("PAUSED" if not faults else "RED"),"state":"THREE_REPLACEMENT_LOCKS_RESOLUTION_QUALIFIED" if green else ("READY_FOR_THREE_REPLACEMENT_RESOLUTIONS" if not executed and not faults else "REPLACEMENT_RESOLUTION_SCOPED_DISPOSITIONS"),"faults":sorted(set(faults)),"config":{"path":p2a.rel(path),"sha256":p2a.sha256_file(path)},"execution_performed":executed,"task_count":len(rows),"qualified_task_count":qualified,"inconclusive_task_count":len(rows)-qualified,"rows":rows,"cache":prior.tree_identity(cache) if cache else {},"free_bytes_before":free_before,"free_bytes_after":shutil.disk_usage(ROOT).free,"panel_admitted":False,"partial_panel_admission_forbidden":True,"package_installations":0,"source_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"candidate_or_control_calls":0,"external_reference_calls":0,"teacher_calls":0,"project_selected_output_cap":None,"maximum_inference":cfg.get("maximum_inference")}
+ return {"policy":POLICY,"created_utc":p2a.now(),"trigger_state":"GREEN" if green else ("PAUSED" if not faults else "RED"),"state":"THREE_REPLACEMENT_LOCKS_RESOLUTION_QUALIFIED" if green else ("READY_FOR_THREE_REPLACEMENT_RESOLUTIONS" if not executed and not faults else "REPLACEMENT_RESOLUTION_SCOPED_DISPOSITIONS"),"faults":sorted(set(faults)),"config":{"path":p2a.rel(path),"sha256":p2a.sha256_file(path)},"predecessor_invalidated_attempt":cfg.get("predecessor_invalidated_attempt"),"execution_performed":executed,"task_count":len(rows),"qualified_task_count":qualified,"inconclusive_task_count":len(rows)-qualified,"rows":rows,"cache":prior.tree_identity(cache) if cache else {},"free_bytes_before":free_before,"free_bytes_after":shutil.disk_usage(ROOT).free,"panel_admitted":False,"partial_panel_admission_forbidden":True,"package_installations":0,"source_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"candidate_or_control_calls":0,"external_reference_calls":0,"teacher_calls":0,"project_selected_output_cap":None,"maximum_inference":cfg.get("maximum_inference")}
 def summary(r):return {k:r.get(k) for k in ("trigger_state","state","faults","execution_performed","task_count","qualified_task_count","inconclusive_task_count","package_installations","source_build_executions","parent_target_or_evaluator_executions","candidate_or_control_calls","external_reference_calls")}
 if __name__=="__main__":raise SystemExit(main())
