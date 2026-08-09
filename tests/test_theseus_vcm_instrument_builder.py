@@ -44,8 +44,8 @@ def test_builder_executes_nothing_and_grants_no_downstream_authority() -> None:
 
 def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
     plan = REPORT["risk_canary_plan"]
-    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME"
-    assert plan["campaign_id"] == "k2_03_generic_ecosystem_risk_canaries_v3"
+    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V4_HOST_METADATA_NORMALIZED"
+    assert plan["campaign_id"] == "k2_03_generic_ecosystem_risk_canaries_v4"
     assert [row["risk_class"] for row in plan["rows"]] == [
         "bun_real_lock_install",
         "yarn_real_lock_install",
@@ -57,5 +57,6 @@ def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
     assert [row["attempt_id"] for row in REPORT["prior_risk_attempts"]] == [
         "k2_03_generic_ecosystem_risk_canaries_v1",
         "k2_03_generic_ecosystem_risk_canaries_v2",
+        "k2_03_generic_ecosystem_risk_canaries_v3",
     ]
     assert REPORT["prior_risk_attempts"][1]["retained_bun_store_identity_sha256"] == "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d"

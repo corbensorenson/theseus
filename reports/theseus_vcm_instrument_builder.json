@@ -2,14 +2,12 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_instrument_builder.json",
-    "sha256": "37b34a9029b3492cab4b05a9deb60d887e14b88a6d4063497d4b1c3d5943703f"
+    "sha256": "28c8ee6d880cf8cc07ad3c4e5adde895f1e28f10a165d1299f60f5458565816c"
   },
-  "created_utc": "2026-08-09T00:53:31.221194Z",
+  "created_utc": "2026-08-09T00:56:54.217057Z",
   "external_reference_calls": 0,
-  "faults": [
-    "qualified_bun_resume_store_identity_invalid"
-  ],
-  "maximum_inference": "A GREEN V3 execution report may prove only that the qualified Bun store was reused without reacquisition or mutation and that the exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
+  "faults": [],
+  "maximum_inference": "A GREEN V4 execution report may prove only that the qualified Bun package payload was reused without reacquisition or mutation while declared host metadata was separately reported, and that exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
   "network_or_dependency_execution_performed": false,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
@@ -40,6 +38,17 @@
       "source_report_sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e",
       "state": "INCONCLUSIVE_IMPLEMENTATION",
       "typescript_executed": false
+    },
+    {
+      "attempt_id": "k2_03_generic_ecosystem_risk_canaries_v3",
+      "candidate_or_control_calls": 0,
+      "external_commands_started": 0,
+      "external_reference_calls": 0,
+      "fault": "generic_tree_receipt_counted_posthoc_macos_ds_store_as_dependency_content",
+      "network_calls": 0,
+      "source_commit": "91498aec6301ea7ad708a557cf6dc3a6dce5e09d",
+      "source_report_sha256": "0e20d30cb1522fc3c09d100d418bf46cc097f9703558fdb1471c3097ad92f8db",
+      "state": "INCONCLUSIVE_IMPLEMENTATION"
     }
   ],
   "replayed_closure_count": 6,
@@ -51,7 +60,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 20375302144,
+    "host_free_bytes": 20378669056,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -62,10 +71,10 @@
     "untrusted_build_risk_class": "none_static_replay"
   },
   "risk_canary_plan": {
-    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v3",
+    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v4",
     "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 20375302144,
+    "host_free_bytes": 20378669056,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -190,18 +199,12 @@
         }
       }
     ],
-    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME"
-  },
-  "risk_execution_performed": false,
-  "risk_receipts": {
-    "observed_bun_store": {
-      "bytes": 169916988,
-      "file_count": 8321,
-      "identity_sha256": "c3ce28799987fdcdd2a9cfc6b4e1726881c4be6fbbbaeeed2a3259790d42a3b2",
-      "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
-    }
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V4_HOST_METADATA_NORMALIZED"
   },
   "risk_resume": {
+    "content_identity_excluded_host_metadata_names": [
+      ".DS_Store"
+    ],
     "node_repair": {
       "archive_sha256": "db4b275b83736df67533529a18cc55de2549a8329ace6c7bcc68f8d22d3c9000",
       "network_requests": 1,
@@ -402,7 +405,7 @@
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
   },
-  "state": "K2_03_RISK_CANARIES_FAILED",
+  "state": "GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
   "static_evidence_replay_only": true,
   "store_contract": {
     "historical_task_specific_stores": "retained evidence only; never forward topology",
@@ -418,5 +421,5 @@
     },
     "per_task_duplicate_package_cache_authorized": false
   },
-  "trigger_state": "RED"
+  "trigger_state": "GREEN"
 }

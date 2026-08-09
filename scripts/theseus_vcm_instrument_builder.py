@@ -29,6 +29,7 @@ RESOURCE_FIELDS = (
     "projected_wall_time",
     "untrusted_build_risk_class",
 )
+HOST_METADATA_NAMES = frozenset({".DS_Store"})
 
 
 def main() -> int:
@@ -203,6 +204,8 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     if host_free < resource["host_reserve_bytes"]:
         faults.append("host_reserve_boundary_hit")
     risk_plan = validate_risk_plan(cfg, schedule, host_free, faults)
+    if p2a.strings(p2a.mapping(cfg.get("risk_resume")).get("content_identity_excluded_host_metadata_names")) != sorted(HOST_METADATA_NAMES):
+        faults.append("host_metadata_exclusion_contract_invalid")
 
     return {
         "policy": POLICY,
@@ -234,7 +237,7 @@ def validate_risk_plan(
     cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
 ) -> dict[str, Any]:
     plan = p2a.mapping(cfg.get("risk_canary_plan"))
-    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v3":
+    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V4_HOST_METADATA_NORMALIZED" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v4":
         faults.append("risk_campaign_identity_invalid")
     rows = p2a.dicts(plan.get("rows"))
     if [row.get("risk_class") for row in rows] != [
@@ -411,8 +414,16 @@ def minimal_env(home: Path, tmp: Path, path: str) -> dict[str,str]:
 
 
 def tree_receipt(root: Path) -> dict[str,Any]:
-    files=[p for p in sorted(root.rglob("*")) if p.is_file() and not p.is_symlink()] if root.exists() else []
-    return {"path":p2a.rel(root),"file_count":len(files),"bytes":sum(p.stat().st_size for p in files),"identity_sha256":base.digest_json([{"path":p.relative_to(root).as_posix(),"bytes":p.stat().st_size,"sha256":p2a.sha256_file(p)} for p in files])}
+    all_files=[p for p in sorted(root.rglob("*")) if p.is_file() and not p.is_symlink()] if root.exists() else []
+    metadata=[p for p in all_files if p.name in HOST_METADATA_NAMES]
+    files=[p for p in all_files if p.name not in HOST_METADATA_NAMES]
+    return {
+        "path":p2a.rel(root),
+        "file_count":len(files),
+        "bytes":sum(p.stat().st_size for p in files),
+        "identity_sha256":base.digest_json([{"path":p.relative_to(root).as_posix(),"bytes":p.stat().st_size,"sha256":p2a.sha256_file(p)} for p in files]),
+        "excluded_host_metadata":[{"path":p.relative_to(root).as_posix(),"bytes":p.stat().st_size,"sha256":p2a.sha256_file(p)} for p in metadata],
+    }
 
 
 def finish_risks(before: dict[str,Any], faults: list[str], receipts: dict[str,Any], executed: bool) -> dict[str,Any]:
