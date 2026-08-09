@@ -1,0 +1,24 @@
+{
+  "build_tool_package_installations": 0,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sandbox_wheel_build_canary.json",
+    "sha256": "a4a9fd2ec621ac6ddc4179e9921d9e9fa6cc54073389a037f8072cf573cf7d9e"
+  },
+  "created_utc": "2026-08-09T03:07:09.435485Z",
+  "evaluator_package_installations": 0,
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact prequalified mock-open 1.4.0 sdist built one pure-Python wheel with pinned build tools while sandbox-exec denied network and writes outside a disposable root, and that the retained wheel identity and metadata were rederived. It does not install the evaluator dependency set, run repository code or evaluators, qualify Task 13, test VCM or a model, consume D1/D2, or support an ASI Stack claim.",
+  "network_denied_builds": 0,
+  "next_authorized_boundary": "none",
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_sandbox_wheel_build_canary_v1",
+  "receipt": {},
+  "repository_runner_executions": 0,
+  "source_build_executions": 0,
+  "state": "READY_FOR_NETWORK_DENIED_EXACT_SDIST_WHEEL_BUILD",
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}

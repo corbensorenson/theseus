@@ -1,0 +1,50 @@
+{
+  "policy": "project_theseus_vcm_sandbox_wheel_build_canary_v1",
+  "state": "PROSPECTIVE_NETWORK_DENIED_EXACT_SDIST_WHEEL_BUILD_V1",
+  "owner": "scripts/theseus_vcm_sandbox_wheel_build_canary.py",
+  "owner_sha256": "b8510a1e595c9edc7cbc227f8e383e506e6205b12bdf8f3ac77751da89ab17a4",
+  "audit_policy": "project_theseus_vcm_sandbox_wheel_build_canary_audit_v1",
+  "audit_owner": "scripts/theseus_vcm_sandbox_wheel_build_canary_audit.py",
+  "audit_owner_sha256": "b56ea24201c1e9470b74141fc34833a25ed62fcb5fd58b666ffd2c686e3f5514",
+  "sources": {
+    "sdist_preflight": {"path": "reports/theseus_vcm_untrusted_build_preflight_v3.json", "sha256": "ce4450e090ac8cc8452a804f5672fa9cae5fc48b2d4af4cc66d90b2ddc0f379d"},
+    "sdist_preflight_audit": {"path": "reports/theseus_vcm_untrusted_build_preflight_audit_v3.json", "sha256": "39d0cbb26bc7f16352cb167fc162aed6d801553e1cee24db90099325d40cf96a"}
+  },
+  "tools": {
+    "uv": {"path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv", "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf", "version": "0.11.28"},
+    "python": {"path": "runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14", "sha256": "3d6400b63b150164e89a690d9813af8b0eb420af9f336ef1f6c5102c6da60eae", "version": "3.14.2"},
+    "sandbox_exec": {"path": "/usr/bin/sandbox-exec", "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"}
+  },
+  "sdist": "runtime/vcm_evaluator/dependency_store/sdist/mock-open-1.4.0.tar.gz",
+  "sdist_sha256": "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100",
+  "build_tool_requirements": ["setuptools==80.9.0", "wheel==0.45.1"],
+  "wheel_store": "runtime/vcm_evaluator/dependency_store/wheels",
+  "limits": {"minimum_free_bytes_after_execution": 10737418240, "maximum_temporary_bytes": 1073741824, "wall_seconds_per_command": 300},
+  "authority": {
+    "disposable_build_tool_environment_authorized": true,
+    "network_build_tool_wheel_sync_authorized": true,
+    "single_exact_sdist_build_authorized": true,
+    "network_denied_sandbox_build_authorized": true,
+    "built_wheel_retention_authorized": true,
+    "arbitrary_sdist_build_authorized": false,
+    "build_network_access_authorized": false,
+    "evaluator_package_installation_authorized": false,
+    "project_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "report": "reports/theseus_vcm_sandbox_wheel_build_canary.json",
+  "audit_report": "reports/theseus_vcm_sandbox_wheel_build_canary_audit.json",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact prequalified mock-open 1.4.0 sdist built one pure-Python wheel with pinned build tools while sandbox-exec denied network and writes outside a disposable root, and that the retained wheel identity and metadata were rederived. It does not install the evaluator dependency set, run repository code or evaluators, qualify Task 13, test VCM or a model, consume D1/D2, or support an ASI Stack claim.",
+  "audit_maximum_inference": "This role-separated audit rederives the retained wheel identity, archive safety, pure-Python status, metadata, and network-denied command receipt. It does not rerun the build and is not producer-independent replay or external reproduction."
+}
