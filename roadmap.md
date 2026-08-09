@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_BATCH_CLOSURES_ACTIVE` |
+| State | `VCM_V3_K2_05_BATCH_PREFLIGHT_HOST_STORAGE_WALL` |
 | Selected task | 26 |
-| Active attempt | `k2_05_generic_batch_closures_v1` |
-| Current wall | none; bounded resource preflight precedes batch execution |
+| Active attempt | `k2_05_segmented_batch_redesign_v1` |
+| Current wall | full-batch conservative peak exceeds reserve-safe headroom by 40,614,855,880 bytes |
 | Last closed task | 26 |
-| Next legal action | `preflight_and_batch_remaining_closures_static_classes_parent_only_stores_packets_and_parent_fail_target_pass_evaluators_through_generic_owner` |
+| Next legal action | `design_and_audit_segmented_k2_05_execution_with_no_dependency_rows_and_parent_stores_first_without_partial_panel_admission_or_evidence_deletion` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -427,6 +427,20 @@ adequacy and model usefulness remain untested. K2.05 is now active for the
 remaining frozen closures, static execution classes, stores, packets, and
 parent-fail/target-pass evaluator receipts through the one generic owner.
 
+The first K2.05 call-free batch preflight validates the frozen coverage but
+closes full-batch execution on current host storage. The 48 locked rows contain
+32,290 package entries. Manager-specific upper coefficients derived from the
+qualified npm, pnpm, Cargo, uv, Bun, and Yarn stores project 35.6 GiB of new
+downloads, an 11.5 GiB largest serial disposable install, and 4 GiB temporary
+space: 51,413,161,160 incremental bytes in total. Current free space minus the
+10 GiB reserve provides 10,798,305,280 safe bytes, leaving a 40,614,855,880-byte
+deficit. This deliberately conservative no-cross-lock-deduplication upper bound
+is not expected spend and does not falsify a task, evaluator, VCM, or model.
+No fetch, install, build, runner, evaluator, packet, or inference call occurred.
+K2.05 must now segment the same generic owner, start with the eight static and
+six immutable-resolution rows plus archive-backed parent stores, preserve all
+evidence, and forbid partial-panel admission.
+
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
 free space and protected reserve; memory; and untrusted-build risk. If the
@@ -739,9 +753,10 @@ retention through governed custody rather than ad hoc cleanup.
 4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. **CURRENT:** Materialize the remaining frozen dependency closures, static/immutable
-   execution classes, parent-only stores, and all 62 parent-fail/target-pass
-   evaluator receipts through the generic owner.
+5. **CURRENT — FULL-BATCH STORAGE WALL:** Segment the remaining frozen dependency
+   closures after a 40.6 GiB reserve-safe deficit, beginning with static/immutable
+   execution classes and archive-backed parent stores. Preserve the 62-row
+   denominator and do not admit a partial panel.
 6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/
    intervention/cost identity and complete producer-independent replay plus the
    role-separated blindness audit.

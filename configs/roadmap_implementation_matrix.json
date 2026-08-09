@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_05_BATCH_CLOSURES_ACTIVE",
+      "state": "VCM_V3_K2_05_BATCH_PREFLIGHT_HOST_STORAGE_WALL",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_05_generic_batch_closures_v1",
-      "current_blocker": null,
+      "active_attempt_id": "k2_05_segmented_batch_redesign_v1",
+      "current_blocker": "full_batch_no_dedupe_safety_projection_exceeds_current_safe_headroom_by_40614855880_bytes",
       "last_closed_task_index": 26,
-      "next_legal_action": "preflight_and_batch_remaining_closures_static_classes_parent_only_stores_packets_and_parent_fail_target_pass_evaluators_through_generic_owner",
+      "next_legal_action": "design_and_audit_segmented_k2_05_execution_with_no_dependency_rows_and_parent_stores_first_without_partial_panel_admission_or_evidence_deletion",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified the four ecosystem risk classes with the full-project Task 61 TypeScript caveat preserved. K2.04 now has a role-separately GREEN parent-only archive-backed store/materializer on four representative rows: 2,816 regular files and 2,478 text pages, complete uncapped retrieval frontiers, matched non-VCM information identities, production VCM ABI receipts, one broad repository write root, and independently rederived candidate-visible bytes. This is call-free mechanics only, not retrieval adequacy, evaluator validity, task competence, model use, utility, or causal VCM evidence. K2.05 is active for the remaining frozen closures, static classes, stores, packets, and parent-fail/target-pass evaluators. Local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified four ecosystem risk classes and K2.04 role-separately qualified parent-only store/materializer mechanics on four representative rows. The K2.05 call-free preflight validated the 62-row denominator but closed bulk execution: 32,290 locked entries project a conservative 51,413,161,160-byte incremental peak against 10,798,305,280 bytes of safe headroom, a 40,614,855,880-byte deficit. This no-cross-lock-deduplication upper bound is host-safety evidence, not expected spend or a task, evaluator, model, or VCM negative. K2.05 remains active only for a segmented generic-owner redesign that begins with no-dependency work and admits no partial panel. Local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -262,6 +262,20 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_05_batch_resource_preflight": {
+            "path": "reports/theseus_vcm_instrument_builder.json",
+            "sha256": "1481616e20ddaa5931c11aca0f2fc914f8db652f654c571c4d2bef436aa5cc45",
+            "state": "K2_05_BATCH_PREFLIGHT_GREEN_EXECUTION_BLOCKED_HOST_STORAGE",
+            "task_count": 62,
+            "locked_entry_count": 32290,
+            "required_incremental_peak_bytes": 51413161160,
+            "safe_incremental_headroom_bytes": 10798305280,
+            "host_storage_deficit_bytes": 40614855880,
+            "execution_gate": "CLOSED_HOST_STORAGE",
+            "disposition": "INCONCLUSIVE_EXPERIMENT_HOST_STORAGE_PREFLIGHT",
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -330,12 +344,13 @@
           },
           {
             "id": "K2_05_BATCH_CLOSURES_AND_EVALUATORS",
-            "status": "ACTIVE",
+            "status": "ACTIVE_WITH_SCOPED_HOST_STORAGE_WALL",
             "depends_on": [
               "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER"
             ],
             "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
-            "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden."
+            "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden.",
+            "latest_observation": "The call-free full-batch upper-bound preflight is governance-GREEN but execution-closed: its 51.4 GiB incremental peak exceeds current reserve-safe headroom by 40.6 GiB. No fetch, install, build, runner, evaluator, packet, model, or reference call occurred. Redesign must stay generic, preserve evidence, start with no-dependency rows and parent stores, and never treat partial coverage as panel admission."
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
@@ -1645,9 +1660,9 @@
       },
       "vcm_instrument_builder": {
         "config":"configs/theseus_vcm_instrument_builder.json","owner":"scripts/theseus_vcm_instrument_builder.py","test":"tests/test_theseus_vcm_instrument_builder.py","report":"reports/theseus_vcm_instrument_builder.json",
-        "owner_sha256":"ad30595d876c5049f7b58b46f4a7900cc06e4b19e027cc1868f9110e34b5a760","config_sha256":"093b89f7dbe82b2648ecb46def450a463607327f752d8681167a189545049bdc","test_sha256":"ca3e02bb1bb20dd63f4c30a1cb04d3deaf0ff81fc7e233857c248864fd3ef914","report_sha256":"dc4b0ffb40e44f47af1464190ae45131438c52b96a5c6d26b6e584b877107b2e",
-        "state":"GREEN_GENERIC_VCM_INSTRUMENT_K2_03_RISK_EXECUTOR_V2_SEALED","replayed_closure_count":6,"replayed_managers":["cargo","npm","pnpm","uv"],"shared_content_addressed_manager_stores_required":true,"installed_environments_are_disposable":true,"per_task_duplicate_package_cache_authorized":false,"resource_projection_state":"V1_INCONCLUSIVE_IMPLEMENTATION_MISSING_SANDBOX_BINDING_V2_SEALED_ZERO_EXTERNAL_COMMANDS","risk_canary_campaign_id":"k2_03_generic_ecosystem_risk_canaries_v2","risk_canary_task_indices":[61,4,61,36],"risk_classes":["bun_real_lock_install","yarn_real_lock_install","typescript_parent_repository_transpilation","rust_parent_repository_untrusted_compilation"],"risk_canary_execution_authorized":true,"prior_risk_attempt_count":1,"prior_external_commands_started":0,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
-        "maximum_inference":"six already qualified closures replay through one content-bound row schema and a prospective shared-store/disposable-environment topology; no forward dependency, build, evaluator, VCM, model, or claim execution is qualified","next_boundary":"preflight real shared-store resource projections and qualify only Bun Yarn TypeScript transpilation and untrusted Rust risk classes"
+        "owner_sha256":"cf540b9d185a4ef8d626927f6d658ffb42b55811dc22b2982075a5981ca98850","config_sha256":"70bb2a18d51a6f91e27c74b1f374e7062bed4f7c74ef3b1cdbd9bee056b9b207","test_sha256":"0d729e578213b72440a3a403ae71055e44d4e56b0f8b75a31d5e95737f6440e0","report_sha256":"1481616e20ddaa5931c11aca0f2fc914f8db652f654c571c4d2bef436aa5cc45",
+        "state":"K2_05_BATCH_PREFLIGHT_GREEN_EXECUTION_BLOCKED_HOST_STORAGE","replayed_closure_count":6,"replayed_managers":["cargo","npm","pnpm","uv"],"shared_content_addressed_manager_stores_required":true,"installed_environments_are_disposable":true,"per_task_duplicate_package_cache_authorized":false,"resource_projection_state":"FULL_BATCH_CLOSED_HOST_STORAGE_SEGMENTED_REDESIGN_REQUIRED","risk_canary_campaign_id":"k2_03_generic_ecosystem_risk_canaries_v7","risk_canary_task_indices":[61,4,61,36],"risk_classes":["bun_real_lock_install","yarn_real_lock_install","typescript_parent_repository_transpilation","rust_parent_repository_untrusted_compilation"],"risk_canary_execution_authorized":false,"prior_risk_attempt_count":6,"prior_external_commands_started":0,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"the frozen 62-row batch is coverage-valid but its conservative no-cross-lock-deduplication upper bound exceeds current reserve-safe headroom by 40,614,855,880 bytes; this is a scoped host-storage preflight wall, not task, evaluator, model, or VCM evidence","next_boundary":"design and audit segmented generic-owner execution with eight static and six immutable-resolution rows plus parent stores first, preserving the full denominator and admitting no partial panel"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

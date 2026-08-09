@@ -8,6 +8,9 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_vcm_instrument_builder as owner  # noqa: E402
 
 REPORT = owner.build(ROOT / "configs" / "theseus_vcm_instrument_builder.json")
+BATCH_PREFLIGHT = owner.preflight_batch(
+    ROOT / "configs" / "theseus_vcm_instrument_builder.json"
+)
 
 
 def test_existing_closures_replay_through_one_row_schema() -> None:
@@ -40,6 +43,23 @@ def test_builder_executes_nothing_and_grants_no_downstream_authority() -> None:
         "external_reference_calls",
     ):
         assert REPORT[key] == 0
+
+
+def test_k2_05_batch_preflight_closes_on_current_host_storage_without_execution() -> None:
+    assert BATCH_PREFLIGHT["trigger_state"] == "GREEN"
+    assert BATCH_PREFLIGHT["state"] == "K2_05_BATCH_PREFLIGHT_GREEN_EXECUTION_BLOCKED_HOST_STORAGE"
+    preflight = BATCH_PREFLIGHT["batch_preflight"]
+    assert preflight["task_count"] == 62
+    assert preflight["locked_task_count"] == 48
+    assert preflight["static_task_count"] == 8
+    assert preflight["immutable_resolution_task_count"] == 6
+    assert preflight["locked_entry_count"] == 32290
+    assert preflight["execution_ready"] is False
+    assert preflight["execution_gate"] == "CLOSED_HOST_STORAGE"
+    assert preflight["host_storage_deficit_bytes"] > 0
+    assert BATCH_PREFLIGHT["network_or_dependency_execution_performed"] is False
+    assert BATCH_PREFLIGHT["candidate_or_control_calls"] == 0
+    assert BATCH_PREFLIGHT["external_reference_calls"] == 0
 
 
 def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
