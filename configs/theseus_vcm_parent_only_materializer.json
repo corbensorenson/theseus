@@ -1,0 +1,62 @@
+{
+  "policy": "project_theseus_vcm_parent_only_materializer_v1",
+  "audit_policy": "project_theseus_vcm_parent_only_materializer_audit_v1",
+  "state": "PROSPECTIVE_K2_04_PARENT_ONLY_MATERIALIZER_ZERO_CALLS",
+  "owner": "scripts/theseus_vcm_parent_only_materializer.py",
+  "owner_sha256": "d4b9a6870aef09bdeb84226fabc0a281e69c8b355f682c514bd9a48c3ef29fba",
+  "audit_owner": "scripts/theseus_vcm_parent_only_materializer_audit.py",
+  "audit_owner_sha256": "0cd9dd31a84bb40136fcf7654e3e7e384fbbe4cfbc9f87e4f6ceb65247513274",
+  "broad_parent_effect_root": "repository",
+  "expected_row_count": 4,
+  "rows": [
+    {
+      "natural_language_request": "fix(hosts): close kimi adapter review follow-ups",
+      "natural_language_request_sha256": "2a2638f2fc49ae0082e586ef3127ea4aced6478d74c7165d1b30c84475e8df1c",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_parent.tar.gz",
+      "parent_archive_sha256": "3368e4e6ec82bdfc671040a82544644caeb40acc197cd99f01175ad54d75cf7d",
+      "parent_archive_root": "better-harness-6ba2ed637894d2cae4c4b14863a7018e4fd5703d",
+      "parent_revision": "6ba2ed637894d2cae4c4b14863a7018e4fd5703d",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/03_qoderai-better-harness_parent.json",
+      "sanitization_report_sha256": "4cb3dc49c61c853c6fdc1521cf8cac284b5aeb475e31d38b56eff5a5632c6edc"
+    },
+    {
+      "natural_language_request": "feat: Writer-style Share dialog — general-access-first, 3 view tiers, per-member roles (#106)",
+      "natural_language_request_sha256": "c5471195d0c7b029a8349093a7d1af85b020f421540d296f7f93105b9796434d",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/04_frappe-draw_parent.tar.gz",
+      "parent_archive_sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79",
+      "parent_archive_root": "draw-8aa6784b6dc2e570ff9679a52236d89d07d650fa",
+      "parent_revision": "8aa6784b6dc2e570ff9679a52236d89d07d650fa",
+      "license_spdx": "AGPL-3.0",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/04_frappe-draw_parent.json",
+      "sanitization_report_sha256": "61c4f27c27e483d72793ac92e76b30318d13bd447e84b27689a21708007f3bce"
+    },
+    {
+      "natural_language_request": "Stop allocating to compare a literal path segment",
+      "natural_language_request_sha256": "5422c5d1ffc5c3810ed759f3ed1aa06ed8e2fa7cf7d036122d4f48e737c0a938",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_parent.tar.gz",
+      "parent_archive_sha256": "7bfba9fcf161ebeb08cbaca77a8746d628675b728857d0fc345699a81a694b1d",
+      "parent_archive_root": "godlint-2cce6eb6cd77bb18d74b1c22e75f0e85deeaf15b",
+      "parent_revision": "2cce6eb6cd77bb18d74b1c22e75f0e85deeaf15b",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/36_tomerwave-godlint_parent.json",
+      "sanitization_report_sha256": "494f22f283da8b790771fa6a8501bb5a3922c93cff1c8f4ad1a60c70c7959c97"
+    },
+    {
+      "natural_language_request": "fix(components): portal hosts are hit-transparent — the constant-33 hardware bug",
+      "natural_language_request_sha256": "4472ccf193219e8db8eca69c8524b6664f2fc67bab70194048668f7b675f526a",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz",
+      "parent_archive_sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e",
+      "parent_archive_root": "pocketjs-8910dac8937ba808d6e162ad18cc5d75868d309f",
+      "parent_revision": "8910dac8937ba808d6e162ad18cc5d75868d309f",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/61_pocket-stack-pocketjs_parent.json",
+      "sanitization_report_sha256": "4c76fd52d9ce7ebb27203cf7834fac0cb8d3801b8ecc84d5148f8d872bd7d969"
+    }
+  ],
+  "store_out": "runtime/vcm_evaluator/parent_only_store_v1.json",
+  "report": "reports/theseus_vcm_parent_only_materializer.json",
+  "audit_report": "reports/theseus_vcm_parent_only_materializer_audit.json",
+  "maximum_inference": "A GREEN producer receipt establishes only that four already-qualified representative parent archives can be indexed as complete archive-backed VCM stores and wrapped in production VCM consumer-ABI packets using the natural request, parent paths/content, and fixed policy only. It creates no model candidate, executes no evaluator, and does not establish retrieval adequacy, useful model behavior, causal VCM benefit, campaign readiness, or book support.",
+  "audit_maximum_inference": "A GREEN role-separated audit establishes only the exact K2.04 mechanics boundary on four representative rows: parent-only archive identity, complete uncapped text frontier, request-and-parent-only selector inputs, byte-level candidate-surface receipts, one broad parent write root, absence of target-derived effect paths, and production VCM ABI readiness. It does not establish context adequacy, evaluator validity, model use, utility, economics, transfer, training, serving, or book support."
+}
