@@ -1,0 +1,63 @@
+{
+  "policy": "project_theseus_vcm_three_row_adequacy_replacements_v1",
+  "state": "PROSPECTIVE_ALL_OR_NONE_REPLACEMENT_AFTER_SIX_ROW_MATCHED_VERIFIER_ADEQUACY_AUDIT",
+  "purpose": "Replace only Tasks 12, 13, and 35 after prospectively recognized host-platform or implementation-toolchain invalidation classes, while preserving Tasks 16, 25, and 56 and the original frozen source-selection rules.",
+  "base_replacement_config": "configs/theseus_vcm_language_replacements_v2.json",
+  "source_panel": "reports/theseus_vcm_source_panel_audit_v3.json",
+  "matched_verifier_report": "reports/theseus_vcm_six_row_matched_verifier_v4.json",
+  "matched_verifier_audit": "reports/theseus_vcm_six_row_matched_verifier_audit_v4.json",
+  "source_bindings": [
+    {"id":"replacement_owner","path":"scripts/theseus_vcm_three_row_adequacy_replacements.py","sha256":"a0227eb44e25d1c5ef0a70471dbcb521f364915fa7a1aa264901ba9f67dfb659"},
+    {"id":"replacement_audit_owner","path":"scripts/theseus_vcm_three_row_adequacy_replacements_audit.py","sha256":"fb319c6e4050075ead2c7ad2e3b032c428b4a26496a7da82a47c7b9e8198a4a9"},
+    {"id":"replacement_test","path":"tests/test_theseus_vcm_three_row_adequacy_replacements.py","sha256":"2713387226836e43517b35ca86a7046d210b7803a2e70e181cc5a8755a5245c1"},
+    {"id":"base_replacement_owner","path":"scripts/theseus_vcm_language_replacements.py","sha256":"df007f82774f4d1ccf2c29a81ab4a51a1c8510991379e366a22ead626972792f"},
+    {"id":"content_scope_owner","path":"scripts/theseus_vcm_content_language_replacements.py","sha256":"87096b9780a6fb48e0358dd51f35b1a81406cdb07af63105bd5ad3c19dbfa532"},
+    {"id":"source_materializer","path":"scripts/theseus_vcm_source_materialization.py","sha256":"d632093e45e856ce0526dfbe7e544d6b24ab6b688543bc8b24db8921af0334bf"},
+    {"id":"language_classifier","path":"scripts/theseus_language_scope.swift","sha256":"547c188b979350cb51fb2336b9770a0df4bd40192f39daeb6709cc896e9c284d"},
+    {"id":"base_replacement_config","path":"configs/theseus_vcm_language_replacements_v2.json","sha256":"cfbc930cbdbba06932520ea4c39c70def845fe38ec83e2bc1d01ef03bf8fc370"},
+    {"id":"source_panel","path":"reports/theseus_vcm_source_panel_audit_v3.json","sha256":"867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff"},
+    {"id":"matched_verifier_report","path":"reports/theseus_vcm_six_row_matched_verifier_v4.json","sha256":"5840f0e2e2c783466b012be68071e3f8b28da7c547b75873f8c21fb0c028b9bd"},
+    {"id":"matched_verifier_audit","path":"reports/theseus_vcm_six_row_matched_verifier_audit_v4.json","sha256":"c30582b58e7ee38954447df1abeb4e8a5e37a044af72f4879a42e462be080ca2"}
+  ],
+  "required_dispositions": [
+    {"index":12,"disposition":"INCONCLUSIVE_EXPERIMENT_HOST_PLATFORM_BOUNDARY"},
+    {"index":13,"disposition":"INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS"},
+    {"index":16,"disposition":"QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS"},
+    {"index":25,"disposition":"QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS"},
+    {"index":35,"disposition":"INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS"},
+    {"index":56,"disposition":"QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS"}
+  ],
+  "replacement_slots": [
+    {"index":12,"panel":"claim","query_language":"Python","rejected_repository":"rickli0822-prog/windows-ai-login-doctor","rejected_title_sha256":"05c31f3b1fdf5fd47c89a8d9b76841c2eddaeb29549521b051eea10af1617958","invalidation_class":"host_platform_boundary"},
+    {"index":13,"panel":"claim","query_language":"Python","rejected_repository":"dknowles2/ha-pitboss","rejected_title_sha256":"d00994787fad868ffcd35ceeae70b85dbf1648a65ccab4cb8bf31c0122e3fe9d","invalidation_class":"exact_upstream_dependency_incompatibility"},
+    {"index":35,"panel":"claim","query_language":"Rust","rejected_repository":"Stranger6667/jsonschema","rejected_title_sha256":"53b94cbb43877fe5313b3efead1f5a1966d9a25fc0b6ba8f7bebfc3238b27c62","invalidation_class":"common_evaluator_nondiscrimination_and_host_ruby_toolchain_boundary"}
+  ],
+  "frozen_qualified_indices": [16,25,56],
+  "replacement_policy": {
+    "same_original_search_window_query_pages_order_pacing_seed_and_metadata_eligibility_required": true,
+    "same_panel_and_programming_language_required": true,
+    "all_current_sixty_two_and_all_tracked_prior_repositories_excluded": true,
+    "one_pull_request_per_repository": true,
+    "english_natural_language_request_required": true,
+    "english_selected_source_and_verifier_text_required": true,
+    "selected_source_bytes_must_change": true,
+    "selected_verifier_bytes_must_change": true,
+    "first_ranked_content_and_language_qualified_candidate_required": true,
+    "all_three_or_none_admission": true,
+    "qualified_rows_must_not_be_rerun": true,
+    "reference_outputs_may_select_replacements": false
+  },
+  "forbidden_unicode_scripts": [
+    {"name":"Cyrillic","start":"0400","end":"052F"},{"name":"Hebrew","start":"0590","end":"05FF"},{"name":"Arabic","start":"0600","end":"06FF"},{"name":"Devanagari","start":"0900","end":"097F"},{"name":"Thai","start":"0E00","end":"0E7F"},{"name":"Hiragana","start":"3040","end":"309F"},{"name":"Katakana","start":"30A0","end":"30FF"},{"name":"CJK","start":"3400","end":"9FFF"},{"name":"Hangul","start":"AC00","end":"D7AF"}
+  ],
+  "binary_extensions": [".png",".jpg",".jpeg",".gif",".webp",".ico",".pdf",".zip",".gz",".wasm",".bin"],
+  "transport_retry_policy": {"maximum_attempts_per_logical_request":8,"retry_delays_seconds":[1.0,2.0,4.0,8.0,16.0,32.0,45.0],"maximum_total_backoff_seconds_per_logical_request":108.0,"transient_http_statuses":[408,429,500,502,503,504],"permanent_candidate_http_statuses":[404,410],"retry_unknown_network_failures":true,"rate_limited_403_retryable_when_explicit":true,"host_transport_activation_is_not_task_or_mechanism_failure":true},
+  "output_directory": "tests/fixtures/theseus_vcm_adequacy_replacements_v1",
+  "report": "reports/theseus_vcm_three_row_adequacy_replacements.json",
+  "checkpoint": "reports/theseus_vcm_three_row_adequacy_replacements_checkpoint.json",
+  "audit_report": "reports/theseus_vcm_three_row_adequacy_replacements_audit.json",
+  "authority": {"public_metadata_queries_authorized":true,"public_source_file_retrieval_authorized":true,"public_pr_title_metadata_retrieval_authorized":true,"local_language_scope_classification_authorized":true,"selected_content_static_language_scan_authorized":true,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "audit_authority": {"network_calls_authorized":false,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference": "A GREEN producer report proves only that three source-disjoint same-panel same-language replacements were selected under the original frozen rank rules, have English titles and selected text, and were materialized all-or-none without executing candidate code or rerunning qualified Tasks 16, 25, or 56. It does not admit a revised 62-row panel until role-separated audit, qualify replacement evaluators, authorize model or Luna calls, establish a VCM effect, or support D1, D2, training, serving, or an ASI Stack claim.",
+  "audit_maximum_inference": "A GREEN audit role-separately rederives only the integrity, source-disjointness, language scope, archive completeness, changed source/verifier bytes, all-or-none cardinality, and zero-execution boundary of the three replacement rows. It is not external reproduction and does not qualify their evaluators, admit a revised 62-row panel by itself, authorize model or Luna calls, or support a VCM or ASI Stack claim."
+}
