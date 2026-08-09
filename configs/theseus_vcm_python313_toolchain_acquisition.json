@@ -1,0 +1,22 @@
+{
+  "policy":"project_theseus_vcm_python_toolchain_acquisition_v1",
+  "state":"PROSPECTIVE_EXACT_PROJECT_LOCAL_CPYTHON_3_13_14_ACQUISITION_FOR_TASK_13_INTERPRETER_ADEQUACY",
+  "reason":"The sealed replacement-resolution v2 receipt showed Task 13 was inconclusive only because its declared Python 3.13 CI environment was resolved under Python 3.14, where watchdog had no usable wheel while source builds were correctly forbidden.",
+  "bindings":[
+    {"id":"owner","path":"scripts/theseus_vcm_python_toolchain_acquisition.py","sha256":"ce914ce2d39840dea9102a38702ddaa64016fe2b33d909cd2f3c6a1e4d368673"},
+    {"id":"test","path":"tests/test_theseus_vcm_python_toolchain_acquisition.py","sha256":"b5f1381bb4f693df1650c5c15690fe35bcd6278f089ed6691b1f5e85f557396c"},
+    {"id":"v2_resolution_disposition","path":"reports/theseus_vcm_replacement_resolution.json","sha256":"d9bfa00446483a778e7c5ae4d98c3d91a1a448a49a2c2a731b061c1579fe5bb8"},
+    {"id":"uv","path":"runtime/task_complete_toolchains/uv-bootstrap/bin/uv","sha256":"0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf"}
+  ],
+  "installer":{"path":"runtime/task_complete_toolchains/uv-bootstrap/bin/uv","sha256":"0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf","version":"0.11.28"},
+  "version":"3.13.14",
+  "toolchain_key":"cpython-3.13.14-macos-aarch64-none",
+  "catalog_download_url":"https://releases.astral.sh/github/python-build-standalone/releases/download/20260623/cpython-3.13.14%2B20260623-aarch64-apple-darwin-install_only_stripped.tar.gz",
+  "install_root":"runtime/vcm_evaluator/toolchains/uv-python",
+  "cache_root":"runtime/vcm_evaluator/dependency_store/python313-acquisition-v1",
+  "interpreter_path":"runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+  "report":"reports/theseus_vcm_python313_toolchain_acquisition.json",
+  "limits":{"minimum_free_bytes_after_execution":10737418240,"maximum_acquisition_and_cache_bytes":536870912,"wall_seconds_per_command":600,"cpu_seconds_per_command":600,"terminate_grace_seconds":10,"open_files":4096,"user_processes":512},
+  "authority":{"exact_official_toolchain_acquisition_authorized":true,"exact_version_probe_authorized":true,"isolated_toolchain_retention_authorized":true,"global_bin_registration_authorized":false,"dependency_resolution_authorized":false,"package_installation_authorized":false,"source_build_authorized":false,"repository_runner_authorized":false,"parent_target_or_evaluator_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "maximum_inference":"A GREEN receipt proves only that the pinned uv installer acquired and version-probed the exact project-local CPython 3.13.14 macOS arm64 toolchain within the declared host bounds and without global bin registration. It does not prove dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, or ASI Stack book support."
+}
