@@ -1,0 +1,408 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sdist_batch_build.json",
+    "sha256": "348c9a35da669c8a6841c559ba30e772bf0e31fad38263454becf6ea99de7f68"
+  },
+  "created_utc": "2026-08-09T03:25:31.955654Z",
+  "evaluator_package_installations": 0,
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_row_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists statically qualified by the sealed V2 batch were built one at a time from those retained archives under a network-denied macOS sandbox, using prospectively pinned disposable build environments, and that the resulting wheels have safe paths and exact package identities. V2 repairs only the V1 sandbox write scope by permitting writes anywhere beneath the bounded disposable batch root so the declared shared uv cache is usable; network access remains denied during every source build. It does not prove installability, evaluator adequacy, target behavior, subsystem benefit, general dependency safety, cross-platform reproducibility, model capability, or any ASI Stack claim. Build-tool wheels may be fetched only before the source build and only for the pinned disposable build environment; no target/evaluator dependency is fetched or installed here. No partial batch is admitted.",
+  "network_denied_builds": 3,
+  "next_authorized_boundary": "replay_task13_resolution_with_all_prequalified_local_wheels",
+  "parent_target_or_evaluator_executions": 0,
+  "partial_batch_admitted": false,
+  "policy": "project_theseus_vcm_sdist_batch_build_v1",
+  "qualified_row_count": 3,
+  "repository_runner_executions": 0,
+  "row_count": 3,
+  "rows": [
+    {
+      "disposition": "QUALIFIED_NETWORK_DENIED_SDIST_WHEEL_BUILD",
+      "faults": [],
+      "name": "habluetooth",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "Cython==3.1.3",
+        "poetry-core==2.2.1"
+      ],
+      "receipts": {
+        "build_tool_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "install",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/bin/python",
+            "--no-build",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "setuptools==80.9.0",
+            "Cython==3.1.3",
+            "poetry-core==2.2.1"
+          ],
+          "duration_ms": 994.837,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 3 packages in 364ms\nDownloading setuptools (1.1MiB)\nDownloading cython (2.7MiB)\n Downloaded setuptools\n Downloaded cython\nPrepared 3 packages in 506ms\nInstalled 3 packages in 15ms\n + cython==3.1.3\n + poetry-core==2.2.1\n + setuptools==80.9.0\n",
+          "stderr_bytes": 291,
+          "stderr_complete": true,
+          "stderr_sha256": "309ece48f0247b543493090c22dfadcb998241c14d10d1014836f0305339f3d8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "retained_wheel": {
+          "bytes": 219870,
+          "path": "runtime/vcm_evaluator/dependency_store/wheels/habluetooth-6.26.5-cp314-cp314-macosx_15_0_arm64.whl",
+          "sha256": "62b2631c1d2d8f289a8f8fe40f8ab92276bd9865c7a1240335f0a05730d40409"
+        },
+        "sandbox_build": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "build",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/habluetooth-6.26.5.tar.gz",
+            "--wheel",
+            "--out-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/bin/python",
+            "--no-build-isolation",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 4558.437,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Building wheel from source distribution...\nA setup.py file already exists. Using it.\nwarning: src/habluetooth/advertisement_tracker.py:69:44: Unknown type declaration '_str' in annotation, ignoring\nwarning: src/habluetooth/auto_scheduler.py:303:27: Unknown type declaration 'asyncio.AbstractEventLoop' in annotation, ignoring\nwarning: src/habluetooth/auto_scheduler.py:844:33: Unknown type declaration 'asyncio.AbstractEventLoop' in annotation, ignoring\nwarning: src/habluetooth/auto_scheduler.py:915:35: Unknown type declaration 'BaseHaScanner' in annotation, ignoring\nwarning: src/habluetooth/auto_scheduler.py:929:38: Unknown type declaration 'BaseHaScanner' in annotation, ignoring\nwarning: src/habluetooth/auto_scheduler.py:1198:20: Unknown type declaration 'BaseHaScanner' in annotation, ignoring\nwarning: src/habluetooth/auto_scheduler.py:1200:21: Unknown type declaration 'asyncio.AbstractEventLoop' in annotation, ignoring\n\nError compiling Cython file:\n------------------------------------------------------------\n...\n            or (requests := self._requests_by_address.get(address)) is None\n        ):\n            return\n        now = loop.time()\n        coarse_now = monotonic_time_coarse()\n        self._rescue_owner_side(address, owner_source, requests, now, coarse_now)\n                                                       ^\n------------------------------------------------------------\n\nsrc/habluetooth/auto_scheduler.py:1078:55: local variable 'requests' referenced before assignment\n\nError compiling Cython file:\n------------------------------------------------------------\n...\n            # already carry the scan response, so no window is needed on\n            # its side; record coverage now so the accept grace starts.\n            self._record_rescue_accept(address, coarse_now)\n            return\n        self._rescue_challenger_side(\n            address, challenger, requests, loop, now, coarse_now\n                                 ^\n------------------------------------------------------------\n\nsrc/habluetooth/auto_scheduler.py:1091:33: local variable 'requests' referenced before assignment\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:75: _MissingDynamic: `maintainers` defined outside of `pyproject.toml` is ignored.\n!!\n\n        ********************************************************************************\n        The following seems to be defined outside of `pyproject.toml`:\n\n        `maintainers = 'None'`\n\n        According to the spec (see the link below), however, setuptools CANNOT\n        consider this value unless `maintainers` is listed as `dynamic`.\n\n        https://packaging.python.org/en/latest/specifications/pyproject-toml/#declaring-project-metadata-the-project-table\n\n        To prevent this problem, you can list `maintainers` under `dynamic` or alternatively\n        remove the `[project]` table from your file and rely entirely on other means of\n        configuration.\n        ********************************************************************************\n\n!!\n  _handle_missing_dynamic(dist, project_table)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:75: _MissingDynamic: `dependencies` defined outside of `pyproject.toml` is ignored.\n!!\n\n        ********************************************************************************\n        The following seems to be defined outside of `pyproject.toml`:\n\n        `dependencies = ['async-interrupt>=1.1.1', 'bleak-retry-connector>=4.6.1', 'bleak>=3.0.2', 'bluetooth-adapters>=2.4.0', 'bluetooth-auto-recovery>=1.6.4', 'bluetooth-data-tools>=1.29.18', 'btsocket>=0.3.0']`\n\n        According to the spec (see the link below), however, setuptools CANNOT\n        consider this value unless `dependencies` is listed as `dynamic`.\n\n        https://packaging.python.org/en/latest/specifications/pyproject-toml/#declaring-project-metadata-the-project-table\n\n        To prevent this problem, you can list `dependencies` under `dynamic` or alternatively\n        remove the `[project]` table from your file and rely entirely on other means of\n        configuration.\n        ********************************************************************************\n\n!!\n  _handle_missing_dynamic(dist, project_table)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:75: _MissingDynamic: `optional-dependencies` defined outside of `pyproject.toml` is ignored.\n!!\n\n        ********************************************************************************\n        The following seems to be defined outside of `pyproject.toml`:\n\n        `optional-dependencies = {':platform_system == \"Linux\"': ['dbus-fast>=5.0.22']}`\n\n        According to the spec (see the link below), however, setuptools CANNOT\n        consider this value unless `optional-dependencies` is listed as `dynamic`.\n\n        https://packaging.python.org/en/latest/specifications/pyproject-toml/#declaring-project-metadata-the-project-table\n\n        To prevent this problem, you can list `optional-dependencies` under `dynamic` or alternatively\n        remove the `[project]` table from your file and rely entirely on other means of\n        configuration.\n        ********************************************************************************\n\n!!\n  _handle_missing_dynamic(dist, project_table)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `install_requires` overwritten in `pyproject.toml` (dependencies)\n  corresp(dist, value, root_dir)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `extras_require` overwritten in `pyproject.toml` (optional-dependencies)\n  corresp(dist, value, root_dir)\nCompiling src/habluetooth/advertisement_tracker.py because it changed.\nCompiling src/habluetooth/auto_scheduler.py because it changed.\nCompiling src/habluetooth/base_scanner.py because it changed.\nCompiling src/habluetooth/manager.py because it changed.\nCompiling src/habluetooth/models.py because it changed.\nCompiling src/habluetooth/scanner_bleak.py because it changed.\nCompiling src/habluetooth/channels/bluez.py because it changed.\n[1/7] Cythonizing src/habluetooth/advertisement_tracker.py\n[2/7] Cythonizing src/habluetooth/auto_scheduler.py\nrunning build\nrunning build_py\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/models.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/auto_scheduler.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/util.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/__init__.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/base_scanner.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/wrappers.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_device.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/storage.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_bleak.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/advertisement_tracker.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/central_manager.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_mgmt.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/usage.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/manager.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/const.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/client_mgmt.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/l2cap.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/__init__.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/att.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/bluez.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\nrunning egg_info\ncreating src/habluetooth.egg-info\nwriting src/habluetooth.egg-info/PKG-INFO\nwriting dependency_links to src/habluetooth.egg-info/dependency_links.txt\nwriting top-level names to src/habluetooth.egg-info/top_level.txt\nwriting manifest file 'src/habluetooth.egg-info/SOURCES.txt'\nreading manifest file 'src/habluetooth.egg-info/SOURCES.txt'\nadding license file 'LICENSE'\nwriting manifest file 'src/habluetooth.egg-info/SOURCES.txt'\ncopying src/habluetooth/advertisement_tracker.c -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/advertisement_tracker.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/auto_scheduler.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/base_scanner.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/manager.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/models.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/py.typed -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_bleak.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/models.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/auto_scheduler.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/util.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/__init__.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/base_scanner.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/wrappers.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_device.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/storage.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_bleak.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/advertisement_tracker.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/central_manager.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/scanner_mgmt.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/usage.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/manager.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/const.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/client_mgmt.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth\ncopying src/habluetooth/channels/bluez.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/l2cap.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/__init__.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/att.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\ncopying src/habluetooth/channels/bluez.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/out/.tmpbYy5K6/habluetooth-6.26.5/build/lib/habluetooth/channels\nSuccessfully built out/habluetooth-6.26.5-cp314-cp314-macosx_15_0_arm64.whl\n",
+          "stderr_bytes": 15480,
+          "stderr_complete": true,
+          "stderr_sha256": "6bfb6399661877e9bae42a21dd34427d7a4a3c6831ea6642a141c88f7eb2a1e4",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-01/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 233.042,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "wheel": {
+          "bytes": 219870,
+          "filename": "habluetooth-6.26.5-cp314-cp314-macosx_15_0_arm64.whl",
+          "member_count": 34,
+          "member_receipts_sha256": "6dbe5544b33c70999b379d0dbdb3532364684db14f2df0196c49ab3fe919535b",
+          "metadata_name": "habluetooth",
+          "metadata_version": "6.26.5",
+          "native_members": [],
+          "sha256": "62b2631c1d2d8f289a8f8fe40f8ab92276bd9865c7a1240335f0a05730d40409"
+        }
+      },
+      "sdist": {
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/habluetooth-6.26.5.tar.gz",
+        "sha256": "d8b1d271ac4bd43bb298bd13366b195751553ef25ddcba17771b58dc621bf90c"
+      },
+      "version": "6.26.5"
+    },
+    {
+      "disposition": "QUALIFIED_NETWORK_DENIED_SDIST_WHEEL_BUILD",
+      "faults": [],
+      "name": "bluetooth-data-tools",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "Cython==3.1.3",
+        "poetry-core==2.2.1"
+      ],
+      "receipts": {
+        "build_tool_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "install",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/bin/python",
+            "--no-build",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "setuptools==80.9.0",
+            "Cython==3.1.3",
+            "poetry-core==2.2.1"
+          ],
+          "duration_ms": 113.251,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 3 packages in 1ms\nInstalled 3 packages in 11ms\n + cython==3.1.3\n + poetry-core==2.2.1\n + setuptools==80.9.0\n",
+          "stderr_bytes": 158,
+          "stderr_complete": true,
+          "stderr_sha256": "105500edc98f9fbf2b1508489afccca921081ed529f92f524ddb40a3115f95b5",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "retained_wheel": {
+          "bytes": 110154,
+          "path": "runtime/vcm_evaluator/dependency_store/wheels/bluetooth_data_tools-1.29.21-cp314-cp314-macosx_15_0_arm64.whl",
+          "sha256": "489be53f06991a1311d9d81a12ab3a76a611c822f7419c6109ed199f1a7d633e"
+        },
+        "sandbox_build": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "build",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/bluetooth_data_tools-1.29.21.tar.gz",
+            "--wheel",
+            "--out-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/bin/python",
+            "--no-build-isolation",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 5125.275,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Building wheel from source distribution...\nA setup.py file already exists. Using it.\nCompiling src/bluetooth_data_tools/_time_impl.pyx because it changed.\nCompiling src/bluetooth_data_tools/_utils_impl.pyx because it changed.\nCompiling src/bluetooth_data_tools/gap.py because it changed.\nCompiling src/bluetooth_data_tools/utils.py because it changed.\n[1/4] Cythonizing src/bluetooth_data_tools/_time_impl.pyx\n[2/4] Cythonizing src/bluetooth_data_tools/_utils_impl.pyx\n[3/4] Cythonizing src/bluetooth_data_tools/gap.py\n[4/4] Cythonizing src/bluetooth_data_tools/utils.py\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:75: _MissingDynamic: `maintainers` defined outside of `pyproject.toml` is ignored.\n!!\n\n        ********************************************************************************\n        The following seems to be defined outside of `pyproject.toml`:\n\n        `maintainers = 'None'`\n\n        According to the spec (see the link below), however, setuptools CANNOT\n        consider this value unless `maintainers` is listed as `dynamic`.\n\n        https://packaging.python.org/en/latest/specifications/pyproject-toml/#declaring-project-metadata-the-project-table\n\n        To prevent this problem, you can list `maintainers` under `dynamic` or alternatively\n        remove the `[project]` table from your file and rely entirely on other means of\n        configuration.\n        ********************************************************************************\n\n!!\n  _handle_missing_dynamic(dist, project_table)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:75: _MissingDynamic: `dependencies` defined outside of `pyproject.toml` is ignored.\n!!\n\n        ********************************************************************************\n        The following seems to be defined outside of `pyproject.toml`:\n\n        `dependencies = ['cryptography>=47.0.0']`\n\n        According to the spec (see the link below), however, setuptools CANNOT\n        consider this value unless `dependencies` is listed as `dynamic`.\n\n        https://packaging.python.org/en/latest/specifications/pyproject-toml/#declaring-project-metadata-the-project-table\n\n        To prevent this problem, you can list `dependencies` under `dynamic` or alternatively\n        remove the `[project]` table from your file and rely entirely on other means of\n        configuration.\n        ********************************************************************************\n\n!!\n  _handle_missing_dynamic(dist, project_table)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:75: _MissingDynamic: `optional-dependencies` defined outside of `pyproject.toml` is ignored.\n!!\n\n        ********************************************************************************\n        The following seems to be defined outside of `pyproject.toml`:\n\n        `optional-dependencies = {'docs': ['Sphinx<9,>=5', 'sphinx-rtd-theme<4,>=1', 'myst-parser<4.1,>=0.18']}`\n\n        According to the spec (see the link below), however, setuptools CANNOT\n        consider this value unless `optional-dependencies` is listed as `dynamic`.\n\n        https://packaging.python.org/en/latest/specifications/pyproject-toml/#declaring-project-metadata-the-project-table\n\n        To prevent this problem, you can list `optional-dependencies` under `dynamic` or alternatively\n        remove the `[project]` table from your file and rely entirely on other means of\n        configuration.\n        ********************************************************************************\n\n!!\n  _handle_missing_dynamic(dist, project_table)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `install_requires` overwritten in `pyproject.toml` (dependencies)\n  corresp(dist, value, root_dir)\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/lib/python3.14/site-packages/setuptools/config/_apply_pyprojecttoml.py:82: SetuptoolsWarning: `extras_require` overwritten in `pyproject.toml` (optional-dependencies)\n  corresp(dist, value, root_dir)\nrunning build\nrunning build_py\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/time.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/__init__.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/distance.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/utils.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/gap.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/privacy.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\nrunning egg_info\ncreating src/bluetooth_data_tools.egg-info\nwriting src/bluetooth_data_tools.egg-info/PKG-INFO\nwriting dependency_links to src/bluetooth_data_tools.egg-info/dependency_links.txt\nwriting top-level names to src/bluetooth_data_tools.egg-info/top_level.txt\nwriting manifest file 'src/bluetooth_data_tools.egg-info/SOURCES.txt'\nreading manifest file 'src/bluetooth_data_tools.egg-info/SOURCES.txt'\nadding license file 'LICENSE'\nwriting manifest file 'src/bluetooth_data_tools.egg-info/SOURCES.txt'\ncopying src/bluetooth_data_tools/_time_impl.pyx -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/_utils_impl.pyx -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/gap.pxd -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/py.typed -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/utils_wrapper.h -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/time.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/__init__.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/distance.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/utils.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/gap.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\ncopying src/bluetooth_data_tools/privacy.py -> /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools\nrunning build_ext\nbuilding 'bluetooth_data_tools._time_impl' extension\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools\nbuilding 'bluetooth_data_tools.gap' extension\nbuilding 'bluetooth_data_tools.utils' extension\nbuilding 'bluetooth_data_tools._utils_impl' extension\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools\ncc -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -arch arm64 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -I/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/include -I/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/include/python3.14 -c src/bluetooth_data_tools/gap.c -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/gap.o -O3 -g0 -std=gnu2x\ncreating /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools\ncc -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -arch arm64 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -I/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/include -I/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/include/python3.14 -c src/bluetooth_data_tools/utils.c -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/utils.o -O3 -g0 -std=gnu2x\ncc -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -arch arm64 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -Isrc/bluetooth_data_tools -I/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/include -I/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/include/python3.14 -c src/bluetooth_data_tools/_utils_impl.c -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/_utils_impl.o -O3 -g0 -std=gnu2x\ncc -fno-strict-overflow -Wsign-compare -Wunreachable-code -DNDEBUG -g -O3 -Wall -O3 -arch arm64 -mmacosx-version-min=11.0 -Wno-nullability-completeness -Wno-expansion-to-defined -Wno-undef-prefix -fPIC -I/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv/include -I/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/include/python3.14 -c src/bluetooth_data_tools/_time_impl.c -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/_time_impl.o -O3 -g0 -std=gnu2x\ncc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-Ct9ia4vt'cc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-WwTF8ees' (errno=Operation not permitted)\ncc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-OUQypAlQ' (errno=Operation not permitted)\n (errno=Operation not permitted)\ncc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-eWf45eLp' (errno=Operation not permitted)\nIn file included from src/bluetooth_data_tools/_utils_impl.c:1145:\nsrc/bluetooth_data_tools/utils_wrapper.h:7:1: error: unknown type name 'constexpr'\n    7 | constexpr uint64_t BDADDR_PARSE_ERROR = UINT64_MAX;\n      | ^\nsrc/bluetooth_data_tools/utils_wrapper.h:7:19: error: expected ';' after top level declarator\n    7 | constexpr uint64_t BDADDR_PARSE_ERROR = UINT64_MAX;\n      |                   ^\n      |                   ;\nsrc/bluetooth_data_tools/utils_wrapper.h:33:16: error: use of undeclared identifier 'BDADDR_PARSE_ERROR'\n   33 |         return BDADDR_PARSE_ERROR;\n      |                ^\nsrc/bluetooth_data_tools/utils_wrapper.h:41:20: error: use of undeclared identifier 'BDADDR_PARSE_ERROR'\n   41 |             return BDADDR_PARSE_ERROR;\n      |                    ^\nsrc/bluetooth_data_tools/utils_wrapper.h:47:24: error: use of undeclared identifier 'BDADDR_PARSE_ERROR'\n   47 |                 return BDADDR_PARSE_ERROR;\n      |                        ^\nsrc/bluetooth_data_tools/utils_wrapper.h:59:12: error: unknown type name 'constexpr'\n   59 |     static constexpr char hex_table[] = \"0123456789ABCDEF\";\n      |            ^\nsrc/bluetooth_data_tools/_time_impl.c:6262:9: warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]\n 6262 |         && !CYTHON_COMPILING_IN_GRAAL) {\n      |         ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~\nsrc/bluetooth_data_tools/_time_impl.c:6262:9: note: use '&' for a bitwise operation\n 6262 |         && !CYTHON_COMPILING_IN_GRAAL) {\n      |         ^~\n      |         &\nsrc/bluetooth_data_tools/_time_impl.c:6262:9: note: remove constant to silence this warning\n 6261 |     if (__PYX_LIMITED_VERSION_HEX >= (0x030b0000) && line_table != NULL\n      |                                                                        \n 6262 |         && !CYTHON_COMPILING_IN_GRAAL) {\n      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nsrc/bluetooth_data_tools/_utils_impl.c:2807:35: error: use of undeclared identifier 'BDADDR_PARSE_ERROR'\n 2807 |   __pyx_t_16 = (__pyx_v_result == BDADDR_PARSE_ERROR);\n      |                                   ^\nsrc/bluetooth_data_tools/utils.c:12270:9: warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]\n 12270 |         && !CYTHON_COMPILING_IN_GRAAL) {\n       |         ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~\nsrc/bluetooth_data_tools/utils.c:12270:9: note: use '&' for a bitwise operation\n 12270 |         && !CYTHON_COMPILING_IN_GRAAL) {\n       |         ^~\n       |         &\nsrc/bluetooth_data_tools/utils.c:12270:9: note: remove constant to silence this warning\n 12269 |     if (__PYX_LIMITED_VERSION_HEX >= (0x030b0000) && line_table != NULL\n       |                                                                        \n 12270 |         && !CYTHON_COMPILING_IN_GRAAL) {\n       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nsrc/bluetooth_data_tools/_utils_impl.c:8114:9: warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]\n 8114 |         && !CYTHON_COMPILING_IN_GRAAL) {\n      |         ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~\nsrc/bluetooth_data_tools/_utils_impl.c:8114:9: note: use '&' for a bitwise operation\n 8114 |         && !CYTHON_COMPILING_IN_GRAAL) {\n      |         ^~\n      |         &\nsrc/bluetooth_data_tools/_utils_impl.c:8114:9: note: remove constant to silence this warning\n 8113 |     if (__PYX_LIMITED_VERSION_HEX >= (0x030b0000) && line_table != NULL\n      |                                                                        \n 8114 |         && !CYTHON_COMPILING_IN_GRAAL) {\n      |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n1 warning and 7 errors generated.\nsrc/bluetooth_data_tools/gap.c:16672:9: warning: use of logical '&&' with constant operand [-Wconstant-logical-operand]\n 16672 |         && !CYTHON_COMPILING_IN_GRAAL) {\n       |         ^  ~~~~~~~~~~~~~~~~~~~~~~~~~~\nsrc/bluetooth_data_tools/gap.c:16672:9: note: use '&' for a bitwise operation\n 16672 |         && !CYTHON_COMPILING_IN_GRAAL) {\n       |         ^~\n       |         &\nsrc/bluetooth_data_tools/gap.c:16672:9: note: remove constant to silence this warning\n 16671 |     if (__PYX_LIMITED_VERSION_HEX >= (0x030b0000) && line_table != NULL\n       |                                                                        \n 16672 |         && !CYTHON_COMPILING_IN_GRAAL) {\n       |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n1 warning generated.\ncc -bundle -undefined dynamic_lookup -arch arm64 -mmacosx-version-min=11.0 -LModules/_hacl -Wl,-headerpad,40 /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/_time_impl.o -L/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/lib -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools/_time_impl.cpython-314-darwin.so\ncc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-pln9SBkY' (errno=Operation not permitted)\nld: warning: search path 'Modules/_hacl' not found\n1 warning generated.\ncc -bundle -undefined dynamic_lookup -arch arm64 -mmacosx-version-min=11.0 -LModules/_hacl -Wl,-headerpad,40 /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/utils.o -L/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/lib -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools/utils.cpython-314-darwin.so\ncc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-R21eYK0Q' (errno=Operation not permitted)\nld: warning: search path 'Modules/_hacl' not found\n1 warning generated.\ncc -bundle -undefined dynamic_lookup -arch arm64 -mmacosx-version-min=11.0 -LModules/_hacl -Wl,-headerpad,40 /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/temp.macosx-11.0-arm64-cpython-314/src/bluetooth_data_tools/gap.o -L/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/lib -o /private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/out/.tmpH2aLSh/bluetooth_data_tools-1.29.21/build/lib.macosx-11.0-arm64-cpython-314/bluetooth_data_tools/gap.cpython-314-darwin.so\ncc: error: couldn't create cache file '/var/folders/8t/2fvtl90j4b7d1r83tm2348yw0000gn/T/xcrun_db-6B8UR3Uo' (errno=Operation not permitted)\nld: warning: search path 'Modules/_hacl' not found\nSuccessfully built out/bluetooth_data_tools-1.29.21-cp314-cp314-macosx_15_0_arm64.whl\n",
+          "stderr_bytes": 19665,
+          "stderr_complete": true,
+          "stderr_sha256": "c28dbd1a2622006914dbce729efe2208ef22791ce8b8cbee32da85ac7ec39296",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-02/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 108.706,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "wheel": {
+          "bytes": 110154,
+          "filename": "bluetooth_data_tools-1.29.21-cp314-cp314-macosx_15_0_arm64.whl",
+          "member_count": 18,
+          "member_receipts_sha256": "cac9684a77faa3c19f1c67a36ac8a8f546272b884a2698741a346043e68adb27",
+          "metadata_name": "bluetooth-data-tools",
+          "metadata_version": "1.29.21",
+          "native_members": [
+            "bluetooth_data_tools/_time_impl.cpython-314-darwin.so",
+            "bluetooth_data_tools/gap.cpython-314-darwin.so",
+            "bluetooth_data_tools/utils.cpython-314-darwin.so"
+          ],
+          "sha256": "489be53f06991a1311d9d81a12ab3a76a611c822f7419c6109ed199f1a7d633e"
+        }
+      },
+      "sdist": {
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/bluetooth_data_tools-1.29.21.tar.gz",
+        "sha256": "2ccf1e90212092cb6af825fd93f3f2f392c543fe2a3a894e7831cbc6f6851c15"
+      },
+      "version": "1.29.21"
+    },
+    {
+      "disposition": "QUALIFIED_NETWORK_DENIED_SDIST_WHEEL_BUILD",
+      "faults": [],
+      "name": "PyRIC",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "wheel==0.45.1"
+      ],
+      "receipts": {
+        "build_tool_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "install",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/venv/bin/python",
+            "--no-build",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "setuptools==80.9.0",
+            "wheel==0.45.1"
+          ],
+          "duration_ms": 432.747,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 2 packages in 245ms\nPrepared 1 package in 63ms\nInstalled 2 packages in 8ms\n + setuptools==80.9.0\n + wheel==0.45.1\n",
+          "stderr_bytes": 164,
+          "stderr_complete": true,
+          "stderr_sha256": "dd2bd22caf369dbd15c59b47834d687fdf9908c576a0002be44c65cf989f5e63",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "retained_wheel": {
+          "bytes": 407978,
+          "path": "runtime/vcm_evaluator/dependency_store/wheels/pyric-0.1.6.3-py2.py3-none-any.whl",
+          "sha256": "b485d1ba2028b5952db0427dca02e1fc55b069d042ad867c4abc1dd7aaf3584c"
+        },
+        "sandbox_build": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "build",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/PyRIC-0.1.6.3.tar.gz",
+            "--wheel",
+            "--out-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/out",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/venv/bin/python",
+            "--no-build-isolation",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 728.588,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Building wheel from source distribution...\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/venv/lib/python3.14/site-packages/setuptools/dist.py:759: SetuptoolsDeprecationWarning: License classifiers are deprecated.\n!!\n\n        ********************************************************************************\n        Please consider removing the following classifiers in favor of a SPDX license expression:\n\n        License :: OSI Approved :: GNU General Public License v3 (GPLv3)\n\n        See https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#license for details.\n        ********************************************************************************\n\n!!\n  self._finalize_license_expression()\nrunning bdist_wheel\n/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/venv/lib/python3.14/site-packages/setuptools/_distutils/cmd.py:135: SetuptoolsDeprecationWarning: bdist_wheel.universal is deprecated\n!!\n\n        ********************************************************************************\n        With Python 2.7 end-of-life, support for building universal wheels\n        (i.e., wheels that support both Python 2 and Python 3)\n        is being obviated.\n        Please discontinue using this option, or if you still need it,\n        file an issue with pypa/setuptools describing your use case.\n\n        This deprecation is overdue, please update your project and remove deprecated\n        calls to avoid build errors in the future.\n        ********************************************************************************\n\n!!\n  self.finalize_options()\nrunning build\nrunning build_py\ncreating build/lib/pyric\ncopying pyric/pyw.py -> build/lib/pyric\ncopying pyric/__init__.py -> build/lib/pyric\ncreating build/lib/pyric/net\ncopying pyric/net/genetlink_h.py -> build/lib/pyric/net\ncopying pyric/net/if_h.py -> build/lib/pyric/net\ncopying pyric/net/netlink_h.py -> build/lib/pyric/net\ncopying pyric/net/policy.py -> build/lib/pyric/net\ncopying pyric/net/__init__.py -> build/lib/pyric/net\ncopying pyric/net/sockios_h.py -> build/lib/pyric/net\ncreating build/lib/pyric/utils\ncopying pyric/utils/ouifetch.py -> build/lib/pyric/utils\ncopying pyric/utils/__init__.py -> build/lib/pyric/utils\ncopying pyric/utils/hardware.py -> build/lib/pyric/utils\ncopying pyric/utils/channels.py -> build/lib/pyric/utils\ncopying pyric/utils/rfkill.py -> build/lib/pyric/utils\ncreating build/lib/pyric/nlhelp\ncopying pyric/nlhelp/nlsearch.py -> build/lib/pyric/nlhelp\ncopying pyric/nlhelp/__init__.py -> build/lib/pyric/nlhelp\ncreating build/lib/pyric/lib\ncopying pyric/lib/__init__.py -> build/lib/pyric/lib\ncopying pyric/lib/libio.py -> build/lib/pyric/lib\ncopying pyric/lib/libnl.py -> build/lib/pyric/lib\ncreating build/lib/pyric/net/wireless\ncopying pyric/net/wireless/rfkill_h.py -> build/lib/pyric/net/wireless\ncopying pyric/net/wireless/wlan.py -> build/lib/pyric/net/wireless\ncopying pyric/net/wireless/__init__.py -> build/lib/pyric/net/wireless\ncopying pyric/net/wireless/nl80211_c.py -> build/lib/pyric/net/wireless\ncopying pyric/net/wireless/nl80211_h.py -> build/lib/pyric/net/wireless\ncopying pyric/nlhelp/commands.help -> build/lib/pyric/nlhelp\ncopying pyric/nlhelp/attributes.help -> build/lib/pyric/nlhelp\ncreating build/lib/pyric/utils/data\ncopying pyric/utils/data/oui.txt -> build/lib/pyric/utils/data\ninstalling to build/bdist.macosx-11.0-arm64/wheel\nrunning install\nrunning install_lib\ncreating build/bdist.macosx-11.0-arm64/wheel\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric\ncopying build/lib/pyric/pyw.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric/net\ncopying build/lib/pyric/net/genetlink_h.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net\ncopying build/lib/pyric/net/if_h.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net\ncopying build/lib/pyric/net/netlink_h.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net\ncopying build/lib/pyric/net/policy.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net\ncopying build/lib/pyric/net/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric/net/wireless\ncopying build/lib/pyric/net/wireless/rfkill_h.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net/wireless\ncopying build/lib/pyric/net/wireless/wlan.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net/wireless\ncopying build/lib/pyric/net/wireless/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net/wireless\ncopying build/lib/pyric/net/wireless/nl80211_c.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net/wireless\ncopying build/lib/pyric/net/wireless/nl80211_h.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net/wireless\ncopying build/lib/pyric/net/sockios_h.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/net\ncopying build/lib/pyric/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric/utils\ncopying build/lib/pyric/utils/ouifetch.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/utils\ncopying build/lib/pyric/utils/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/utils\ncopying build/lib/pyric/utils/hardware.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/utils\ncopying build/lib/pyric/utils/channels.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/utils\ncopying build/lib/pyric/utils/rfkill.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/utils\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric/utils/data\ncopying build/lib/pyric/utils/data/oui.txt -> build/bdist.macosx-11.0-arm64/wheel/./pyric/utils/data\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric/nlhelp\ncopying build/lib/pyric/nlhelp/commands.help -> build/bdist.macosx-11.0-arm64/wheel/./pyric/nlhelp\ncopying build/lib/pyric/nlhelp/nlsearch.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/nlhelp\ncopying build/lib/pyric/nlhelp/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/nlhelp\ncopying build/lib/pyric/nlhelp/attributes.help -> build/bdist.macosx-11.0-arm64/wheel/./pyric/nlhelp\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric/lib\ncopying build/lib/pyric/lib/__init__.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/lib\ncopying build/lib/pyric/lib/libio.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/lib\ncopying build/lib/pyric/lib/libnl.py -> build/bdist.macosx-11.0-arm64/wheel/./pyric/lib\nrunning install_egg_info\nrunning egg_info\nwriting PyRIC.egg-info/PKG-INFO\nwriting dependency_links to PyRIC.egg-info/dependency_links.txt\nwriting top-level names to PyRIC.egg-info/top_level.txt\nreading manifest file 'PyRIC.egg-info/SOURCES.txt'\nreading manifest template 'MANIFEST.in'\nadding license file 'LICENSE'\nwriting manifest file 'PyRIC.egg-info/SOURCES.txt'\nCopying PyRIC.egg-info to build/bdist.macosx-11.0-arm64/wheel/./PyRIC-0.1.6.3-py3.14.egg-info\nrunning install_scripts\ncreating build/bdist.macosx-11.0-arm64/wheel/pyric-0.1.6.3.dist-info/WHEEL\ncreating '/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/out/.tmp-i9q0ey5l/pyric-0.1.6.3-py2.py3-none-any.whl' and adding 'build/bdist.macosx-11.0-arm64/wheel' to it\nadding 'pyric/__init__.py'\nadding 'pyric/pyw.py'\nadding 'pyric/lib/__init__.py'\nadding 'pyric/lib/libio.py'\nadding 'pyric/lib/libnl.py'\nadding 'pyric/net/__init__.py'\nadding 'pyric/net/genetlink_h.py'\nadding 'pyric/net/if_h.py'\nadding 'pyric/net/netlink_h.py'\nadding 'pyric/net/policy.py'\nadding 'pyric/net/sockios_h.py'\nadding 'pyric/net/wireless/__init__.py'\nadding 'pyric/net/wireless/nl80211_c.py'\nadding 'pyric/net/wireless/nl80211_h.py'\nadding 'pyric/net/wireless/rfkill_h.py'\nadding 'pyric/net/wireless/wlan.py'\nadding 'pyric/nlhelp/__init__.py'\nadding 'pyric/nlhelp/attributes.help'\nadding 'pyric/nlhelp/commands.help'\nadding 'pyric/nlhelp/nlsearch.py'\nadding 'pyric/utils/__init__.py'\nadding 'pyric/utils/channels.py'\nadding 'pyric/utils/hardware.py'\nadding 'pyric/utils/ouifetch.py'\nadding 'pyric/utils/rfkill.py'\nadding 'pyric/utils/data/oui.txt'\nadding 'pyric-0.1.6.3.dist-info/licenses/LICENSE'\nadding 'pyric-0.1.6.3.dist-info/METADATA'\nadding 'pyric-0.1.6.3.dist-info/WHEEL'\nadding 'pyric-0.1.6.3.dist-info/top_level.txt'\nadding 'pyric-0.1.6.3.dist-info/RECORD'\nremoving build/bdist.macosx-11.0-arm64/wheel\nSuccessfully built out/pyric-0.1.6.3-py2.py3-none-any.whl\n",
+          "stderr_bytes": 8274,
+          "stderr_complete": true,
+          "stderr_sha256": "61c22d8ccaf635aa259b9af2c6c155898ea8008ef2702e213e6bff9f3244d2f4",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-sdist-batch-build-8kq9iteh/row-03/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 96.413,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "wheel": {
+          "bytes": 407978,
+          "filename": "pyric-0.1.6.3-py2.py3-none-any.whl",
+          "member_count": 31,
+          "member_receipts_sha256": "aede9df7ac5f072c9f60c0e0e2937cedd02a1c66306e9866ae36fdafee63797b",
+          "metadata_name": "PyRIC",
+          "metadata_version": "0.1.6.3",
+          "native_members": [],
+          "sha256": "b485d1ba2028b5952db0427dca02e1fc55b069d042ad867c4abc1dd7aaf3584c"
+        }
+      },
+      "sdist": {
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/PyRIC-0.1.6.3.tar.gz",
+        "sha256": "b539b01cafebd2406c00097f94525ea0f8ecd1dd92f7731f43eac0ef16c2ccc9"
+      },
+      "version": "0.1.6.3"
+    }
+  ],
+  "source_build_executions": 3,
+  "state": "TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_COMPLETE",
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}
