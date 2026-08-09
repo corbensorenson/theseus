@@ -1,0 +1,29 @@
+{
+  "cache": {},
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "8afcc205dc045f11d298d5c99514b02363645a11fa3a419bac15f0e8ecc38859"
+  },
+  "created_utc": "2026-08-09T03:08:59.978570Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 18619125760,
+  "free_bytes_before": 18619125760,
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that all six exact target dependency declarations have immutable hashed locks under the pinned uv/Python or Cargo resolver, registry, host-reserve, and output contracts. Five V3-qualified locks are reused byte-for-byte; Task 13 alone is resolved with Python 3.14.2 and the exact separately prequalified network-denied mock-open 1.4.0 wheel while source builds remain disabled in this phase. No package or project was installed, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
+  "qualified_task_count": 0,
+  "repository_runner_executions": 0,
+  "rows": [],
+  "source_build_executions": 0,
+  "state": "READY_FOR_SIX_IMMUTABLE_RESOLUTION_CLOSURES",
+  "task_count": 0,
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}

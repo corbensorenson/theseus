@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 
 POLICY = "project_theseus_vcm_immutable_resolution_segment_v1"
-STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PYTHON314_REPAIR_V3"
+STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PREQUALIFIED_WHEEL_V4"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_immutable_resolution_segment.json"
 EXPECTED_INDICES = [12, 13, 16, 25, 35, 56]
 
@@ -79,14 +79,20 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
     previous_audit = predecessor.get("audit_report", {})
     if previous_report.get("trigger_state") != "GREEN" or previous_report.get("qualified_task_count") != 5 or previous_report.get("inconclusive_task_count") != 1:
         faults.append("predecessor_producer_state_invalid")
-    expected_audit_faults = {"diagnostic_receipt_invalid:35:stderr", "diagnostic_receipt_invalid:35:stdout"}
-    if previous_audit.get("trigger_state") != "RED" or set(p2a.strings(previous_audit.get("faults"))) != expected_audit_faults or previous_audit.get("qualified_task_count") != 5 or previous_audit.get("inconclusive_task_count") != 1:
+    if previous_audit.get("trigger_state") != "GREEN" or p2a.strings(previous_audit.get("faults")) or previous_audit.get("qualified_task_count") != 5 or previous_audit.get("inconclusive_task_count") != 1:
         faults.append("predecessor_audit_state_invalid")
     acquisition = sources.get("python314_toolchain_acquisition", {})
     interpreter = p2a.mapping(acquisition.get("interpreter"))
     python314 = p2a.mapping(p2a.mapping(cfg.get("tools")).get("python_3_14"))
     if acquisition.get("trigger_state") != "GREEN" or interpreter.get("path") != python314.get("path") or interpreter.get("sha256") != python314.get("sha256") or interpreter.get("version") != "3.14.2":
         faults.append("python314_acquisition_binding_invalid")
+    build = sources.get("sandbox_wheel_build", {})
+    build_audit = sources.get("sandbox_wheel_build_audit", {})
+    retained_wheel = p2a.mapping(p2a.mapping(build.get("receipt")).get("retained_wheel"))
+    local_wheel = p2a.mapping(cfg.get("local_wheel"))
+    local_wheel_path = p2a.resolve(str(local_wheel.get("path") or ""))
+    if build.get("trigger_state") != "GREEN" or build_audit.get("trigger_state") != "GREEN" or retained_wheel.get("path") != local_wheel.get("path") or retained_wheel.get("sha256") != local_wheel.get("sha256") or not local_wheel_path.is_file() or p2a.sha256_file(local_wheel_path) != local_wheel.get("sha256"):
+        faults.append("prequalified_local_wheel_binding_invalid")
 
     tools: dict[str, str] = {}
     for name, raw in p2a.mapping(cfg.get("tools")).items():
@@ -235,6 +241,8 @@ def resolution_command(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str
         command = [tools["uv"], "pip", "compile", *[str(root / value) for value in p2a.strings(row.get("inputs"))]]
         for extra in p2a.strings(row.get("extras")):
             command.extend(["--extra", extra])
+        if row.get("find_links"):
+            command.extend(["--find-links", str(p2a.resolve(str(row.get("find_links"))))])
         command.extend(["--python", python, "--python-platform", "aarch64-apple-darwin", "--generate-hashes", "--no-build", "--index-strategy", "first-index", "--default-index", "https://pypi.org/simple", "--cache-dir", str(cache_root / "uv"), "--output-file", str(generated), "--color", "never", "--no-progress"])
         env.update({"UV_PYTHON": python, "UV_PYTHON_DOWNLOADS": "never", "UV_NO_CONFIG": "1"})
     else:

@@ -45,3 +45,5 @@ def test_resolution_outputs_are_one_generic_manifest_driven_family(tmp_path: Pat
     task13 = next(row for row in cfg["rows"] if row["index"] == 13)
     command13, _, _ = owner.resolution_command(cfg, bound, task13, tmp_path, tmp_path / "cache", tmp_path)
     assert str(owner.p2a.resolve(cfg["tools"]["python_3_14"]["path"])) in command13
+    assert "--find-links" in command13
+    assert str(owner.p2a.resolve(task13["find_links"])) in command13

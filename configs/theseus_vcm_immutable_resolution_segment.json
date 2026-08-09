@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
-  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PYTHON314_REPAIR_V3",
+  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PREQUALIFIED_WHEEL_V4",
   "owner": "scripts/theseus_vcm_immutable_resolution_segment.py",
-  "owner_sha256": "0ae0c7466833f992ef313be8c74d72afdf740345c86d5d9f6aed55464ff5d550",
+  "owner_sha256": "64694efe0b771fa645702d0649f352163d35c6700cf54ba63bb921654710ce5a",
   "audit_policy": "project_theseus_vcm_immutable_resolution_segment_audit_v1",
   "audit_owner": "scripts/theseus_vcm_immutable_resolution_segment_audit.py",
   "audit_owner_sha256": "74f4cf6466bb90b06eb87a2e0c17f32b3eac53b504fbbd927137b08fb489afee",
@@ -26,16 +26,26 @@
       "id": "python314_toolchain_acquisition",
       "path": "reports/theseus_vcm_python314_toolchain_acquisition.json",
       "sha256": "bc670ee18f79ce3866daf0cb781d53b50c32e503b9d99e2bd036db6693e3d31a"
+    },
+    {
+      "id": "sandbox_wheel_build",
+      "path": "reports/theseus_vcm_sandbox_wheel_build_canary.json",
+      "sha256": "8bcf2e91d136588534813074aee6e4601c5abd605b78fe76458173eb312bc338"
+    },
+    {
+      "id": "sandbox_wheel_build_audit",
+      "path": "reports/theseus_vcm_sandbox_wheel_build_canary_audit.json",
+      "sha256": "47db84ae6d95a21bddc48ec073b37eb724e91db8c81534f964081e06091b8cc7"
     }
   ],
   "predecessor": {
     "producer_report": {
-      "path": "reports/theseus_vcm_immutable_resolution_segment_v2.json",
-      "sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2"
+      "path": "reports/theseus_vcm_immutable_resolution_segment_v3.json",
+      "sha256": "e605b1bc57432c55e69e93342e99b4dc22672053d4a0b86837d59f5e50701643"
     },
     "audit_report": {
-      "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v2.json",
-      "sha256": "e21ee4445eda2569a906020fb2f49a3aa887df9bc1e47e274e30a7e101d97aa3"
+      "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v3.json",
+      "sha256": "075d83291dfd6c52c7ef0ded2a6592079005c1d07a06844aa833edf5d0690fdc"
     }
   },
   "tools": {
@@ -79,6 +89,7 @@
       "repository": "dknowles2/ha-pitboss",
       "manager": "uv",
       "python_tool": "python_3_14",
+      "find_links": "runtime/vcm_evaluator/dependency_store/wheels",
       "inputs": ["requirements.txt"],
       "extras": [],
       "manifest_receipts": [
@@ -152,10 +163,14 @@
     }
   ],
   "expected_task_count": 6,
+  "local_wheel": {
+    "path": "runtime/vcm_evaluator/dependency_store/wheels/mock_open-1.4.0-py3-none-any.whl",
+    "sha256": "8499185fed7121f699eabaa472fe5741d6561053bd85fc419328bb0b8976c98b"
+  },
   "shared_cache_root": "runtime/vcm_evaluator/dependency_store/immutable-resolution",
   "output_directory": "reports/theseus_vcm_immutable_resolution_locks",
-  "report": "reports/theseus_vcm_immutable_resolution_segment_v3.json",
-  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit_v3.json",
+  "report": "reports/theseus_vcm_immutable_resolution_segment_v4.json",
+  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit_v4.json",
   "partial_panel_admission_forbidden": true,
   "declared_dependency_gap_policy": "Use only exact target-declared dependency inputs and do not guess, stub, or hand-author undeclared imports; preserve any resulting evaluator wall as scoped instrument evidence.",
   "limits": {
@@ -190,6 +205,6 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were resolved under the pinned uv/Python or Cargo resolver, registry, no-build, host-reserve, and output contracts; the five V2-qualified locks are reused byte-for-byte and only Task 13 is retried with the project-local Python 3.14.2 required by its exact Home Assistant manifest. Each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. The V3 audit repairs V2's reused-row diagnostic bookkeeping and rederives every reused lock. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that all six exact target dependency declarations have immutable hashed locks under the pinned uv/Python or Cargo resolver, registry, host-reserve, and output contracts. Five V3-qualified locks are reused byte-for-byte; Task 13 alone is resolved with Python 3.14.2 and the exact separately prequalified network-denied mock-open 1.4.0 wheel while source builds remain disabled in this phase. No package or project was installed, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
   "audit_maximum_inference": "The audit is role-separated rederivation inside this repository. It checks the six-row denominator, target/archive/tool identities, full diagnostics, lock hashes and syntax, scoped dispositions, zero execution/model counters, and no partial-panel admission. It is not producer-independent replay or external reproduction and cannot support a VCM or ASI Stack capability claim."
 }
