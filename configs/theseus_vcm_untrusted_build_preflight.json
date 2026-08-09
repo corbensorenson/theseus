@@ -1,0 +1,71 @@
+{
+  "policy": "project_theseus_vcm_untrusted_build_preflight_v1",
+  "state": "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_V1",
+  "owner": "scripts/theseus_vcm_untrusted_build_preflight.py",
+  "owner_sha256": "b0aef9bcb11354d2e5ef56ce66947317a832788bf78265f663ab5f694cde878b",
+  "audit_policy": "project_theseus_vcm_untrusted_build_preflight_audit_v1",
+  "audit_owner": "scripts/theseus_vcm_untrusted_build_preflight_audit.py",
+  "audit_owner_sha256": "3143723b181da4fb4854e25dccc39f207402a2aa6a06a6bb821248e2c08c3e1d",
+  "sources": {
+    "immutable_resolution_v3": {
+      "path": "reports/theseus_vcm_immutable_resolution_segment_v3.json",
+      "sha256": "e605b1bc57432c55e69e93342e99b4dc22672053d4a0b86837d59f5e50701643"
+    },
+    "immutable_resolution_audit_v3": {
+      "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v3.json",
+      "sha256": "075d83291dfd6c52c7ef0ded2a6592079005c1d07a06844aa833edf5d0690fdc"
+    }
+  },
+  "task": {
+    "index": 13,
+    "repository": "dknowles2/ha-pitboss",
+    "exact_dependency": "mock-open==1.4.0",
+    "causal_chain": "requirements.txt -> pytest-homeassistant-custom-component==0.13.348 -> mock-open==1.4.0"
+  },
+  "package": {
+    "name": "mock-open",
+    "version": "1.4.0",
+    "filename": "mock-open-1.4.0.tar.gz",
+    "url": "https://files.pythonhosted.org/packages/9a/02/cef85a80ff6d3092a458448c46816656d1c532afd45aeeeb8f50a84aed35/mock-open-1.4.0.tar.gz",
+    "sha256": "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100",
+    "pypi_project": "https://pypi.org/project/mock-open/1.4.0/",
+    "pypi_upload_date": "2020-04-15",
+    "pypi_license": "MIT License (MIT)",
+    "wheel_count": 0,
+    "sdist_count": 1
+  },
+  "retained_sdist": "runtime/vcm_evaluator/dependency_store/sdist/mock-open-1.4.0.tar.gz",
+  "limits": {
+    "minimum_free_bytes_after_execution": 10737418240,
+    "maximum_download_bytes": 1048576,
+    "maximum_uncompressed_bytes": 5242880,
+    "maximum_single_member_bytes": 1048576,
+    "maximum_member_count": 200,
+    "network_timeout_seconds": 60
+  },
+  "authority": {
+    "exact_pypi_sdist_download_authorized": true,
+    "static_archive_inspection_authorized": true,
+    "content_addressed_sdist_retention_authorized": true,
+    "source_build_authorized": false,
+    "build_backend_execution_authorized": false,
+    "package_installation_authorized": false,
+    "project_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "report": "reports/theseus_vcm_untrusted_build_preflight.json",
+  "audit_report": "reports/theseus_vcm_untrusted_build_preflight_audit.json",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact PyPI mock-open 1.4.0 source distribution named by Task 13's resolver wall matches its published hash, has safe bounded archive structure, carries a license file, and has a statically low-complexity legacy setup.py with no detected network/process/dynamic-execution tokens. It authorizes only a separately sealed network-denied sandbox wheel-build canary. It does not prove build safety, wheel correctness, dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, model behavior, D1, D2, or an ASI Stack claim.",
+  "audit_maximum_inference": "This role-separated audit rederives the retained sdist identity, archive member receipts, setup.py AST characteristics, license presence, and low-complexity risk classification without network or build execution. It is not producer-independent replay, external reproduction, or evidence of task or VCM capability."
+}

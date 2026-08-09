@@ -1,0 +1,25 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_untrusted_build_preflight.json",
+    "sha256": "a07c5a8a352cde88f6f6e440380195e1331906276e76fb12f35bab2b71f85f40"
+  },
+  "created_utc": "2026-08-09T03:00:17.272697Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 16476450816,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact PyPI mock-open 1.4.0 source distribution named by Task 13's resolver wall matches its published hash, has safe bounded archive structure, carries a license file, and has a statically low-complexity legacy setup.py with no detected network/process/dynamic-execution tokens. It authorizes only a separately sealed network-denied sandbox wheel-build canary. It does not prove build safety, wheel correctness, dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, model behavior, D1, D2, or an ASI Stack claim.",
+  "network_downloads": 0,
+  "next_authorized_boundary": "none",
+  "package_installations": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_untrusted_build_preflight_v1",
+  "receipt": {},
+  "repository_runner_executions": 0,
+  "risk_class": "",
+  "source_build_executions": 0,
+  "state": "READY_FOR_EXACT_SDIST_STATIC_PREFLIGHT",
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}
