@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V3_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V3_HOST_METADATA_RECEIPT_GAP` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v3` |
-| Current wall | `yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited` |
+| Current wall | `bun_store_receipt_includes_posthoc_macos_ds_store_metadata` |
 | Last closed task | 26 |
-| Next legal action | `execute_v3_idempotent_bun_replay_then_yarn_typescript_rust_and_role_separately_audit` |
+| Next legal action | `seal_v4_content_receipt_excluding_host_metadata_then_resume_remaining_risk_canaries` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -360,6 +360,12 @@ project-local, verified against the published archive SHA-256, version-probed,
 and bound by its extracted binary hash. V3 is prospectively sealed to verify
 and replay the qualified Bun store offline without reacquisition, then run
 Yarn, TypeScript, and Rust serially under the same reserve.
+
+V3 stopped before any external command or network request because its generic
+tree receipt included a macOS `.DS_Store` file written after V2 had recorded
+the 8,320 package files. The dependency payload itself is unchanged. Preserve
+V3 as `INCONCLUSIVE_IMPLEMENTATION`; V4 must prospectively exclude declared
+host metadata from package-content identity while still reporting its presence.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

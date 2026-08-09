@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V3_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V3_HOST_METADATA_RECEIPT_GAP` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v3` |
-| Current wall | `yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited` |
+| Current wall | `bun_store_receipt_includes_posthoc_macos_ds_store_metadata` |
 | Last closed task | 26 |
-| Next legal action | `execute_v3_idempotent_bun_replay_then_yarn_typescript_rust_and_role_separately_audit` |
+| Next legal action | `seal_v4_content_receipt_excluding_host_metadata_then_resume_remaining_risk_canaries` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
