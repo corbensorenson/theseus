@@ -1,0 +1,30 @@
+{
+  "policy": "project_theseus_vcm_three_row_adequacy_replacements_audit_v2",
+  "state": "SEALED_AUDIT_ONLY_SUCCESSOR_AFTER_NONEXISTENT_COUNTER_NAME_FALSE_POSITIVE",
+  "purpose": "Repair only the v1 audit's use of nonexistent counter training_rows_admitted instead of the sealed producer schema's training_rows_written; reuse and rederive every source, archive, language, disjointness, and zero-execution field without new network, source-selection, evaluator, model, or training action.",
+  "producer_config": "configs/theseus_vcm_three_row_adequacy_replacements.json",
+  "v1_audit_report": "reports/theseus_vcm_three_row_adequacy_replacements_audit.json",
+  "source_bindings": [
+    {"id":"audit_v2_owner","path":"scripts/theseus_vcm_three_row_adequacy_replacements_audit_v2.py","sha256":"639820e94f7c4d585c1db00b05b683ec7f15f01a9159310355189601b815e720"},
+    {"id":"producer_config","path":"configs/theseus_vcm_three_row_adequacy_replacements.json","sha256":"88e60bb1cd020c2ed20dec88022ad62dadb9724906c8702b541f37ea9bf0c350"},
+    {"id":"producer_report","path":"reports/theseus_vcm_three_row_adequacy_replacements.json","sha256":"a387ddaa1156b0a98a99aec546d186a09cae217853f61ae439aeb2276544a2cd"},
+    {"id":"producer_checkpoint","path":"reports/theseus_vcm_three_row_adequacy_replacements_checkpoint.json","sha256":"dc375527b7aca7c2b56cb7c86645670372689863406161d00402f1d8da4a0e6c"},
+    {"id":"v1_audit_owner","path":"scripts/theseus_vcm_three_row_adequacy_replacements_audit.py","sha256":"fb319c6e4050075ead2c7ad2e3b032c428b4a26496a7da82a47c7b9e8198a4a9"},
+    {"id":"v1_audit_report","path":"reports/theseus_vcm_three_row_adequacy_replacements_audit.json","sha256":"b5b94108a90859e7f2b4b721c1b5e6b54d1e11442a467cc8117460fbc4179a00"},
+    {"id":"counter_schema_owner","path":"scripts/theseus_vcm_source_materialization.py","sha256":"d632093e45e856ce0526dfbe7e544d6b24ab6b688543bc8b24db8921af0334bf"}
+  ],
+  "repair_scope": {
+    "only_v1_fault_may_be_nonexistent_counter_false_positive": true,
+    "producer_report_and_checkpoint_byte_identity_required": true,
+    "v1_integrity_rederivation_must_match_except_created_time": true,
+    "actual_counter_schema_must_equal_sealed_zero_counter_schema_plus_selection_counters": true,
+    "all_real_forbidden_counters_must_equal_zero": true,
+    "source_selection_changed": false,
+    "source_or_archive_bytes_changed": false,
+    "network_calls_authorized": false,
+    "task_or_evaluator_executions_authorized": false
+  },
+  "authority": {"network_calls_authorized":false,"public_source_retrieval_authorized":false,"untrusted_code_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"hidden_evaluation_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "report": "reports/theseus_vcm_three_row_adequacy_replacements_audit_v2.json",
+  "maximum_inference": "A GREEN audit v2 establishes only that the v1 RED was caused solely by its nonexistent counter name, while role-separately rederiving the sealed producer's three-row all-or-none source integrity, English scope, current-panel source disjointness, archive completeness, source/verifier changes, qualified-row freeze, and real zero forbidden-execution counters. It is not external reproduction and does not qualify replacement evaluators, admit a revised 62-row panel, authorize model or Luna calls, or support a VCM or ASI Stack claim."
+}

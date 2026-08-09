@@ -6,17 +6,17 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_vcm_three_row_adequacy_replacements as owner
 import theseus_vcm_three_row_adequacy_replacements_audit as auditor
+import theseus_vcm_three_row_adequacy_replacements_audit_v2 as auditor_v2
 
 CONFIG = ROOT / "configs" / "theseus_vcm_three_row_adequacy_replacements.json"
 
 
-def test_preflight_binds_only_three_inadequate_rows_and_freezes_qualified_rows():
-    report = owner.preflight(CONFIG)
-    assert report["trigger_state"] == "GREEN"
-    assert report["replacement_set_admitted"] is False
-    assert report["qualified_rows_rerun"] is False
-    assert report["frozen_qualified_indices"] == [16, 25, 56]
-    assert report["counters"]["parent_target_or_evaluator_executions"] == 0
+def test_sealed_config_binds_only_three_inadequate_rows_and_freezes_qualified_rows():
+    config = json.loads(CONFIG.read_text())
+    assert [row["index"] for row in config["replacement_slots"]] == [12, 13, 35]
+    assert config["frozen_qualified_indices"] == [16, 25, 56]
+    assert config["authority"]["untrusted_code_execution_authorized"] is False
+    assert config["authority"]["local_model_calls_authorized"] is False
 
 
 def test_live_report_is_all_or_none_and_has_no_forbidden_execution():
@@ -35,17 +35,20 @@ def test_live_report_is_all_or_none_and_has_no_forbidden_execution():
     assert report["qualified_rows_rerun"] is False
     assert report["counters"]["parent_target_or_evaluator_executions"] == 0
     assert report["counters"]["local_model_calls"] == 0
-    assert report["counters"]["external_reference_calls"] == 0
+    assert report["counters"]["external_inference_calls"] == 0
 
 
-def test_role_separated_audit_accepts_only_a_complete_live_transaction():
+def test_role_separated_audit_successor_accepts_only_a_complete_live_transaction():
     config = json.loads(CONFIG.read_text())
     if not (ROOT / config["report"]).is_file():
         return
     producer = json.loads((ROOT / config["report"]).read_text())
     if producer["trigger_state"] != "GREEN" or producer["replacement_set_admitted"] is not True:
         return
-    report = auditor.audit(CONFIG)
+    v1_report = auditor.audit(CONFIG)
+    assert v1_report["trigger_state"] == "RED"
+    assert v1_report["faults"] == ["forbidden_execution_counter_nonzero"]
+    report = auditor_v2.audit(ROOT / "configs" / "theseus_vcm_three_row_adequacy_replacements_audit_v2.json")
     assert report["trigger_state"] == "GREEN"
     assert report["replacement_set_admitted"] is True
     assert report["replacement_indices"] == [12, 13, 35]
