@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K3_SIX_ROW_MATCHED_LOCAL_CANARY_PREFLIGHT_REQUIRED",
+      "state": "VCM_V3_K3_NONSCORING_PHYSICAL_HOST_CANARIES_READY",
       "subsystem_id": "virtual_context_abi",
       "phase": "K3_REAL_WORK_MATCHED_CANARY",
       "selected_task_index": 26,
-      "active_attempt_id": "k3_six_row_matched_local_canary_preflight_v1",
-      "current_blocker": "the_contiguous_six_row_K2_instrument_is_green_and_role_audited_but_no_separate_prospective_K3_owner_yet_binds_the_exact_local_model_route_arm_materializations_blind_evaluator_custody_run_ordering_physical_host_preflight_and_call_authority",
+      "active_attempt_id": "k3_six_route_non_scoring_physical_host_canaries_v1",
+      "current_blocker": "call_free_k3_route_preflight_is_green_and_role_audited_but_six_largest_eligible_route_prompts_have_not_yet_completed_the_non_scoring_physical_host_canaries",
       "last_closed_task_index": 26,
-      "next_legal_action": "build_and_role_audit_one_call_free_prospective_K3_owner_that_consumes_the_frozen_six_row_store_binds_the_exact_TMax_model_tokenizer_decoder_and_route_materializes_each_local_control_packet_without_hidden_metadata_proves_blind_evaluator_and_cost_custody_runs_physical_host_operability_canaries_that_cannot_count_as_capability_evidence_and_authorizes_only_one_complete_matched_local_pass_after_GREEN;_omit_Luna_unless_a_separately_sealed_receipt_proves_Codex_subscription_transport_and_zero_API_billing",
-      "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
+      "next_legal_action": "build_prospectively_seal_and_role_audit_one_generic_non_scoring_host_canary_owner_that_runs_exactly_the_largest_physically_addressable_prompt_for_each_of_the_six_frozen_routes_through_the_same_TMax_tokenizer_decoder_wrapper_and_host_interlock_to_explicit_CANARY_OK_or_model_EOS_without_a_project_selected_quality_token_cap;_stop_on_any_physical_or_host_interlock_as_INVALID_HOST_OPERABILITY_OBSERVATION_and_do_not_open_the_nine_task_screen_until_all_six_receipts_are_audited_GREEN;_keep_Luna_omitted",
+      "observed_residual": "one_of_six_canary_rows_has_no_physically_operable_context_treatment_control_pair_and_twelve_of_thirty_six_route_packets_are_physically_ineligible",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2 is now terminally GREEN for one contiguous six-row real-work canary instrument: predecessor Tasks 16, 25, and 56 plus replacement Tasks 12, 13, and 35 are all bound by role-audited parent-fail/target-pass receipts without evaluator rerun; six exact parent-only stores cover 3,182 regular files and 3,115 UTF-8 text pages; 24 candidate-visible fields were byte-rederived; target archives, diffs, hidden evaluators, answer metadata, and target-derived effect paths never entered the producer; and controls, descriptive canary outcomes, complete-artifact-or-EOS completion, zero arbitrary quality cap, total-system cost custody, invalidation classes, and K3 stop rules are frozen. Current authority remains zero local-model, Luna, teacher, evaluator, network, training, serving, D1, D2, or book-promotion calls. The six rows are an unpowered instrument and residual-exposure canary, not a claim denominator and not evidence for or against VCM utility. The next boundary is a separate prospective K3 owner and call-free preflight for one matched local TMax pass. Luna remains optional and must be omitted unless a pre-call receipt proves Codex-subscription-backed transport with zero API billing and no API credential path.",
+      "maximum_inference": "K2 is terminally GREEN for one contiguous six-row parent-only real-work instrument. K3's separate call-free route preflight and role-separated audit are now GREEN for 36 packets across the six frozen routes with exact TMax model, tokenizer, chat-template, decoder, wrapper, information-flow, counterbalancing, completion, analysis, cost, and custody bindings. No local model, evaluator, Luna, teacher, training, serving, D1, D2, or book action occurred. Twelve packets are physically ineligible; the first row has only its no-context route addressable, so it currently supplies no operable context treatment-control pair. Those are instrument/host observations, not evidence for or against VCM or TMax competence. Exactly six non-scoring host-canary calls are the next boundary, one largest eligible prompt per route, and cannot count as capability evidence. The nine-task screen remains unauthorized. Luna is prospectively omitted for the canary and local screen because no demonstrable Codex-subscription-backed zero-API-billing receipt exists.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -361,6 +361,46 @@
           },
           "failure_action": "preserve_the_62_task_panel_and_redesign_a_simpler_instrument_under_a_new_identity_without_returning_to_per_task_owners"
         },
+        "K3_call_free_route_preflight": {
+          "state": "K3_CALL_FREE_ROUTE_PREFLIGHT_ROLE_SEPARATELY_REDERIVED",
+          "config": "configs/theseus_vcm_k3_route_preflight.json",
+          "config_sha256": "222c0b8bfd87298022b34e1207a74983865ab5d88753dd76a89b029ce3565741",
+          "owner": "scripts/theseus_vcm_k3_route_preflight.py",
+          "owner_sha256": "2034ce4fc11c575c4a99f8cd720d99d1612ee3457888444fcabc01fcdf8e759e",
+          "audit_owner": "scripts/theseus_vcm_k3_route_preflight_audit.py",
+          "audit_owner_sha256": "97a4f920739e4ec40704f85767c4d9379251ba0b5141ea497b437b664e97f6d8",
+          "test": "tests/test_theseus_vcm_k3_route_preflight.py",
+          "test_sha256": "0219bcee8b7efb0f8c49f75b8049acdbdabe14d8ca7ee71dc0b6c5a0aa73e44a",
+          "report": "reports/theseus_vcm_k3_route_preflight_v5.json",
+          "report_sha256": "b63ef9872f356209852a3d6a64e1f0a4d2456a96ca7bc8a0dfc69494c7031d23",
+          "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v5.json",
+          "audit_report_sha256": "b40e8c65f003569203a1eb7b8ac14e62e9bca6c3c87ded19e960b6043ad5c010",
+          "packet_manifest": "runtime/vcm_evaluator/k3_six_row_route_packets_v5.json",
+          "packet_manifest_sha256": "46a93d60ff4d743926be21ce777411ef4fac8e1eac96c149b564527c5ec91e89",
+          "row_count": 6,
+          "route_count": 6,
+          "packet_count": 36,
+          "physically_ineligible_packet_count": 12,
+          "rows_without_operable_context_treatment_control_pair": 1,
+          "grounded_request_term_count_minimum": 4,
+          "grounded_request_term_count_maximum": 12,
+          "project_selected_quality_token_cap": null,
+          "non_scoring_host_canary_calls_authorized": 6,
+          "nine_task_screen_calls_authorized": 0,
+          "local_model_calls": 0,
+          "hidden_evaluator_calls": 0,
+          "external_reference_calls": 0,
+          "teacher_calls": 0,
+          "luna_screen_status": "PROSPECTIVELY_OMITTED_LOCAL_ONLY",
+          "prior_invalid_attempt_count": 4,
+          "prior_invalid_attempt_dispositions": [
+            "INCONCLUSIVE_IMPLEMENTATION",
+            "INCONCLUSIVE_EXPERIMENT",
+            "INCONCLUSIVE_IMPLEMENTATION",
+            "INCONCLUSIVE_IMPLEMENTATION"
+          ],
+          "maximum_inference": "The exact six-route packets, parent-information matching, tokenizer addressability, counterbalancing, blindness, custody, and analysis boundaries are role-separately rederived. This is call-free instrument evidence only, not model competence, VCM utility, economics, transfer, or ASI Stack support."
+        },
         "execution_work_packages": [
           {
             "id": "K2_01_TASK26_FINAL_BESPOKE_CANARY",
@@ -399,7 +439,7 @@
           },
           {
             "id": "K2_05_BATCH_CLOSURES_AND_EVALUATORS",
-            "status": "ACTIVE",
+            "status": "COMPLETE_WITH_SCOPED_FULL_BATCH_STORAGE_WALL_AND_CONTIGUOUS_SIX_ROW_INSTRUMENT",
             "depends_on": [
               "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER"
             ],
@@ -409,7 +449,7 @@
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
-            "status": "PENDING",
+            "status": "COMPLETE_FOR_CONTIGUOUS_SIX_ROW_CANARY",
             "depends_on": [
               "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",
               "K2_05_BATCH_CLOSURES_AND_EVALUATORS"
@@ -419,7 +459,7 @@
           },
           {
             "id": "K3_01_CALL_FREE_CAMPAIGN_FREEZE",
-            "status": "PENDING",
+            "status": "ACTIVE_PHYSICAL_HOST_CANARIES_REQUIRED",
             "depends_on": [
               "K2_06_INSTRUMENT_FREEZE"
             ],
@@ -1804,6 +1844,11 @@
         "generated_artifact_count":3,"generated_artifact_bytes":2557869,"closure_source_files_changed":5,"static_materialization_and_audit_wall_seconds_observed":3.5,"prospective_seal_commit":"1985bbab","planned_bounded_closure_commit_count":2,"role_separated_candidate_row_fraction":1.0,
         "maximum_inference":"one contiguous six-row parent-only VCM canary instrument is frozen and role-separately rederived from six existing parent-fail/target-pass receipts without evaluator rerun. This closes K2 mechanics only. The six rows are unpowered and cannot support or falsify VCM utility, model competence, economics, transfer, training, serving, D1, D2, or ASI Stack support.",
         "next_boundary":"prospectively seal and role-audit one call-free K3 matched-local-canary owner that binds the exact frozen TMax route, five arm packet materializations, blind evaluator custody, run ordering, physical host preflight, actual-token and total-cost capture, one-pass authority, and stop rules; omit Luna unless subscription provenance and zero API billing are demonstrably sealed before any local arm"
+      },
+      "vcm_k3_route_preflight": {
+        "state":"K3_CALL_FREE_ROUTE_PREFLIGHT_ROLE_SEPARATELY_REDERIVED","config":"configs/theseus_vcm_k3_route_preflight.json","config_sha256":"222c0b8bfd87298022b34e1207a74983865ab5d88753dd76a89b029ce3565741","owner":"scripts/theseus_vcm_k3_route_preflight.py","owner_sha256":"2034ce4fc11c575c4a99f8cd720d99d1612ee3457888444fcabc01fcdf8e759e","audit_owner":"scripts/theseus_vcm_k3_route_preflight_audit.py","audit_owner_sha256":"97a4f920739e4ec40704f85767c4d9379251ba0b5141ea497b437b664e97f6d8","test":"tests/test_theseus_vcm_k3_route_preflight.py","test_sha256":"0219bcee8b7efb0f8c49f75b8049acdbdabe14d8ca7ee71dc0b6c5a0aa73e44a","report":"reports/theseus_vcm_k3_route_preflight_v5.json","report_sha256":"b63ef9872f356209852a3d6a64e1f0a4d2456a96ca7bc8a0dfc69494c7031d23","audit_report":"reports/theseus_vcm_k3_route_preflight_audit_v5.json","audit_report_sha256":"b40e8c65f003569203a1eb7b8ac14e62e9bca6c3c87ded19e960b6043ad5c010","packet_manifest":"runtime/vcm_evaluator/k3_six_row_route_packets_v5.json","packet_manifest_sha256":"46a93d60ff4d743926be21ce777411ef4fac8e1eac96c149b564527c5ec91e89",
+        "row_count":6,"route_count":6,"packet_count":36,"physically_ineligible_packet_count":12,"rows_without_operable_context_treatment_control_pair":1,"grounded_request_term_count_range":[4,12],"host_canary_count":6,"project_selected_quality_token_cap":null,"local_model_calls":0,"hidden_evaluator_calls":0,"external_reference_calls":0,"teacher_calls":0,"Luna_calls":0,"nine_task_screen_calls_authorized":0,"luna_canary_and_screen_status":"PROSPECTIVELY_OMITTED_LOCAL_ONLY","prior_invalid_attempt_count":4,
+        "maximum_inference":"the exact six-route packets and their frozen K3 analysis, information-flow, custody, tokenizer, and physical-addressability boundaries are role-separately rederived without any model or evaluator call. Twelve of 36 packets are physically ineligible and one row lacks an operable context treatment-control pair; this is instrument and host evidence only, not model, VCM, economics, transfer, or book evidence.","next_boundary":"run and role-audit exactly six non-scoring physical host canaries, one largest eligible exact prompt per route, before authorizing any nine-task screen call"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

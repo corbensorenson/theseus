@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_K3_SIX_ROW_MATCHED_LOCAL_CANARY_PREFLIGHT_REQUIRED",
+            "VCM_V3_K3_NONSCORING_PHYSICAL_HOST_CANARIES_READY",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
