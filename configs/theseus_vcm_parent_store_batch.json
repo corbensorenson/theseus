@@ -1,0 +1,36 @@
+{
+  "policy": "project_theseus_vcm_parent_store_batch_v1",
+  "audit_policy": "project_theseus_vcm_parent_store_batch_audit_v1",
+  "state": "PROSPECTIVE_K2_05_ALL_PARENT_STORE_MATERIALIZATION_ZERO_CALLS",
+  "owner": "scripts/theseus_vcm_parent_store_batch.py",
+  "owner_sha256": "2f9651810719f6f984119ea2860437e8d401772d0c509380c50ab039c3addb71",
+  "audit_owner": "scripts/theseus_vcm_parent_store_batch_audit.py",
+  "audit_owner_sha256": "4ad33b8284ddc49740a35c5466a8fd8f8d72c97d725130edc7b12413d6387440",
+  "base_materializer": "scripts/theseus_vcm_parent_only_materializer.py",
+  "base_materializer_sha256": "7e48b0eabf447e282d554767013f3876196a74784a83ba4f6a6cdc741d4255ac",
+  "base_audit_owner": "scripts/theseus_vcm_parent_only_materializer_audit.py",
+  "base_audit_owner_sha256": "5ad121982f9fefe49cd1dacd899110a513fbc98ae74efdd3cfc7fc34de9df5d8",
+  "broad_parent_effect_root": "repository",
+  "expected_row_count": 62,
+  "manifest": {
+    "path": "runtime/vcm_evaluator/parent_only_batch_manifest_v1.json",
+    "sha256": "f0ba8adaf09745f100981600fc74e8fca32b27c6fc8eac9dce15c809ffa15954",
+    "required_policy": "project_theseus_vcm_parent_only_batch_manifest_v1"
+  },
+  "manifest_role_audit": {
+    "path": "reports/theseus_vcm_k2_segment_plan_audit.json",
+    "sha256": "c3b550480df22160248d142b80971158e04c407d92eea7d7e2f14df69a61e038",
+    "required_state": "K2_05_TARGET_FREE_SEGMENT_PLAN_ROLE_SEPARATELY_REDERIVED"
+  },
+  "resource_contract": {
+    "host_reserve_bytes": 10737418240,
+    "archive_bytes_to_output_upper_multiplier": 2,
+    "serialization": "one_archive_scan_at_a_time",
+    "content_payload_duplication": false
+  },
+  "store_out": "runtime/vcm_evaluator/parent_only_batch_store_v1.json",
+  "report": "reports/theseus_vcm_parent_store_batch.json",
+  "audit_report": "reports/theseus_vcm_parent_store_batch_audit.json",
+  "maximum_inference": "A GREEN producer receipt establishes only that all 62 frozen exact parent archives can be indexed into complete archive-backed VCM stores and production VCM consumer-ABI packets from the role-audited target-free manifest. It executes no dependency, repository runner, evaluator, model, Luna, D1, D2, training, serving, or book action and establishes no context adequacy or VCM utility.",
+  "audit_maximum_inference": "A GREEN role-separated audit rederives only all 62 exact parent archive inventories, uncapped UTF-8 frontiers, request-and-parent-only selectors, candidate-visible byte receipts, matched information identities, common broad effect root, and production VCM ABI readiness. It does not qualify static or immutable execution, locked closures, evaluators, model use, competence, VCM utility, economics, transfer, or book support."
+}
