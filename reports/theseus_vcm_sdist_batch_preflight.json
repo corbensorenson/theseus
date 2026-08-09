@@ -4,12 +4,12 @@
     "path": "configs/theseus_vcm_sdist_batch_preflight.json",
     "sha256": "0feded7db554a962a4fdc2e1e686e39712f94a2365f32c836606f4589f4d2aad"
   },
-  "created_utc": "2026-08-09T03:15:09.124561Z",
-  "eligible_row_count": 0,
-  "execution_performed": false,
+  "created_utc": "2026-08-09T03:15:30.239768Z",
+  "eligible_row_count": 1,
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
-  "inconclusive_row_count": 0,
+  "inconclusive_row_count": 2,
   "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists named by the V4 resolver wall were downloaded by hash, retained, safely expanded under bounded static inspection, license-identified, and assigned exact declared or legacy build backends and build requirements. Eligible rows authorize only one separately sealed network-denied manifest-driven batch build. No build, package installation, repository runner, evaluator, model, Luna, D1, D2, or book-support action occurred, and no partial batch is admitted.",
   "next_authorized_boundary": "repair_inconclusive_static_rows",
   "package_installations": 0,
@@ -17,10 +17,195 @@
   "partial_batch_admission": false,
   "policy": "project_theseus_vcm_sdist_batch_preflight_v1",
   "repository_runner_executions": 0,
-  "row_count": 0,
-  "rows": [],
+  "row_count": 3,
+  "rows": [
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_UNTRUSTED_BUILD_PREFLIGHT",
+      "download": {
+        "bytes": 123351,
+        "command": [
+          "/usr/bin/curl",
+          "--fail",
+          "--location",
+          "--silent",
+          "--show-error",
+          "--max-time",
+          "120",
+          "--max-filesize",
+          "2097152",
+          "--output",
+          "/private/tmp/theseus-vcm-sdist-batch-m3opoozo/habluetooth-6.26.5.tar.gz",
+          "https://files.pythonhosted.org/packages/8a/f0/412176ea8862bcf77590f9af79510829d3beb9d4ff5d98eefe2f86009ba5/habluetooth-6.26.5.tar.gz"
+        ],
+        "returncode": 0,
+        "sha256": "d8b1d271ac4bd43bb298bd13366b195751553ef25ddcba17771b58dc621bf90c",
+        "stderr": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "faults": [
+        "build_backend_not_allowlisted"
+      ],
+      "inspection": {
+        "archive_root_count": 1,
+        "build_backend": "poetry.core.masonry.api",
+        "build_requirements": [
+          "setuptools>=77.0",
+          "Cython>=3",
+          "poetry-core>=2.0.0"
+        ],
+        "eligible": false,
+        "license_paths": [
+          "LICENSE"
+        ],
+        "member_receipts_sha256": "5f7a1d503b37f1a6307e06c4d155057f6705c4fa90836c4467b90f80677350ce",
+        "regular_file_bytes": 489970,
+        "regular_file_count": 35,
+        "setup_py": {
+          "bytes": 5118,
+          "calls": [
+            "build",
+            "setup"
+          ],
+          "dangerous_tokens": [],
+          "imports": [
+            "build_ext",
+            "setuptools"
+          ],
+          "parse_fault": "",
+          "present": true,
+          "sha256": "75a5aabf3041d2d5c0c9cdfddc41ffd446e1b6f27381e3fa275a3ad436efe787"
+        }
+      },
+      "name": "habluetooth",
+      "retained_sdist": {},
+      "version": "6.26.5"
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_UNTRUSTED_BUILD_PREFLIGHT",
+      "download": {
+        "bytes": 21153,
+        "command": [
+          "/usr/bin/curl",
+          "--fail",
+          "--location",
+          "--silent",
+          "--show-error",
+          "--max-time",
+          "120",
+          "--max-filesize",
+          "2097152",
+          "--output",
+          "/private/tmp/theseus-vcm-sdist-batch-m3opoozo/bluetooth_data_tools-1.29.21.tar.gz",
+          "https://files.pythonhosted.org/packages/27/12/659fd6ac0e517d61e62113874dd2388698140c11ee3f5d439f3c556ad072/bluetooth_data_tools-1.29.21.tar.gz"
+        ],
+        "returncode": 0,
+        "sha256": "2ccf1e90212092cb6af825fd93f3f2f392c543fe2a3a894e7831cbc6f6851c15",
+        "stderr": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "faults": [
+        "build_backend_not_allowlisted"
+      ],
+      "inspection": {
+        "archive_root_count": 1,
+        "build_backend": "poetry.core.masonry.api",
+        "build_requirements": [
+          "setuptools>=77.0",
+          "Cython",
+          "poetry-core>=2.0.0"
+        ],
+        "eligible": false,
+        "license_paths": [
+          "LICENSE"
+        ],
+        "member_receipts_sha256": "9d17dc94a49477d32b7afd0ee5d414f92032490ccbaf38a5ab547501afc6d3d9",
+        "regular_file_bytes": 67707,
+        "regular_file_count": 17,
+        "setup_py": {
+          "bytes": 7136,
+          "calls": [
+            "build",
+            "setup"
+          ],
+          "dangerous_tokens": [],
+          "imports": [
+            "build_ext",
+            "setuptools"
+          ],
+          "parse_fault": "",
+          "present": true,
+          "sha256": "7d82cb032b4fb0c5da1a1d9ca8a0df1d81cd65bfd201ddfad890021936548f6b"
+        }
+      },
+      "name": "bluetooth-data-tools",
+      "retained_sdist": {},
+      "version": "1.29.21"
+    },
+    {
+      "disposition": "ELIGIBLE_FOR_NETWORK_DENIED_BATCH_BUILD",
+      "download": {
+        "bytes": 870401,
+        "command": [
+          "/usr/bin/curl",
+          "--fail",
+          "--location",
+          "--silent",
+          "--show-error",
+          "--max-time",
+          "120",
+          "--max-filesize",
+          "2097152",
+          "--output",
+          "/private/tmp/theseus-vcm-sdist-batch-m3opoozo/PyRIC-0.1.6.3.tar.gz",
+          "https://files.pythonhosted.org/packages/08/64/a99f27d3b4347486c7bfc0aa516016c46dc4c0f380ffccbd742a61af1eda/PyRIC-0.1.6.3.tar.gz"
+        ],
+        "returncode": 0,
+        "sha256": "b539b01cafebd2406c00097f94525ea0f8ecd1dd92f7731f43eac0ef16c2ccc9",
+        "stderr": "",
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "faults": [],
+      "inspection": {
+        "archive_root_count": 1,
+        "build_backend": "setuptools.build_meta:__legacy__",
+        "build_requirements": [
+          "setuptools==80.9.0",
+          "wheel==0.45.1"
+        ],
+        "eligible": true,
+        "license_paths": [
+          "LICENSE"
+        ],
+        "member_receipts_sha256": "4cc9bcebb495388c15914f21178c3f6257a17d87305cbc5f008bc4117b1b8795",
+        "regular_file_bytes": 1774996,
+        "regular_file_count": 41,
+        "setup_py": {
+          "bytes": 2873,
+          "calls": [
+            "find_packages",
+            "setup"
+          ],
+          "dangerous_tokens": [],
+          "imports": [
+            "pyric",
+            "setuptools"
+          ],
+          "parse_fault": "",
+          "present": true,
+          "sha256": "481406223de0b2b5743b6782ff43c4c586b9a07833521b450292e12696ebec2c"
+        }
+      },
+      "name": "PyRIC",
+      "retained_sdist": {
+        "bytes": 870401,
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/PyRIC-0.1.6.3.tar.gz",
+        "sha256": "b539b01cafebd2406c00097f94525ea0f8ecd1dd92f7731f43eac0ef16c2ccc9"
+      },
+      "version": "0.1.6.3"
+    }
+  ],
   "source_build_executions": 0,
-  "state": "READY_FOR_TASK13_TRANSITIVE_SDIST_BATCH_STATIC_PREFLIGHT",
+  "state": "TASK13_TRANSITIVE_SDIST_BATCH_STATIC_PREFLIGHT_COMPLETE",
   "teacher_calls": 0,
-  "trigger_state": "PAUSED"
+  "trigger_state": "GREEN"
 }

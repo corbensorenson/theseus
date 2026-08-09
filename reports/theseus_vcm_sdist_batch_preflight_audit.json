@@ -1,0 +1,54 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_row_count": 3,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sdist_batch_preflight.json",
+    "sha256": "0feded7db554a962a4fdc2e1e686e39712f94a2365f32c836606f4589f4d2aad"
+  },
+  "created_utc": "2026-08-09T03:15:47.255016Z",
+  "eligible_row_count": 1,
+  "external_reference_calls": 0,
+  "faults": [
+    "bluetooth-data-tools:retained_sdist_missing",
+    "habluetooth:retained_sdist_missing",
+    "row_rederivation_invalid:bluetooth-data-tools",
+    "row_rederivation_invalid:habluetooth"
+  ],
+  "inconclusive_row_count": 2,
+  "maximum_inference": "This role-separated audit rederives the three retained sdist identities, archive safety receipts, license presence, build backends, build requirements, AST setup.py characteristics, and dispositions without network or build execution. It is not producer-independent replay or external reproduction.",
+  "network_or_build_execution_performed": false,
+  "policy": "project_theseus_vcm_sdist_batch_preflight_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_sdist_batch_preflight.json",
+    "sha256": "ae97aaec5428ad77cc5744ff9db3996226434e9723289116852bd00b16494e60"
+  },
+  "rows": [
+    {
+      "build_backend": null,
+      "build_requirements": null,
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_UNTRUSTED_BUILD_PREFLIGHT",
+      "name": "habluetooth",
+      "version": "6.26.5"
+    },
+    {
+      "build_backend": null,
+      "build_requirements": null,
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_UNTRUSTED_BUILD_PREFLIGHT",
+      "name": "bluetooth-data-tools",
+      "version": "1.29.21"
+    },
+    {
+      "build_backend": "setuptools.build_meta:__legacy__",
+      "build_requirements": [
+        "setuptools==80.9.0",
+        "wheel==0.45.1"
+      ],
+      "disposition": "ELIGIBLE_FOR_NETWORK_DENIED_BATCH_BUILD",
+      "name": "PyRIC",
+      "version": "0.1.6.3"
+    }
+  ],
+  "state": "TASK13_TRANSITIVE_SDIST_BATCH_AUDIT_FAILED",
+  "trigger_state": "RED"
+}
