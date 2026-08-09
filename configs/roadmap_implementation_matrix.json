@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE",
+      "state": "VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_05_parent_store_batch_v1",
-      "current_blocker": "all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified",
+      "active_attempt_id": "k2_05_static_segment_v1",
+      "current_blocker": "eight_static_parent_fail_target_pass_evaluator_paths_not_yet_qualified",
       "last_closed_task_index": 26,
-      "next_legal_action": "materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission",
+      "next_legal_action": "prospectively_seal_and_qualify_eight_static_parent_fail_target_pass_evaluator_paths_without_partial_panel_admission",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified four ecosystem risk classes and K2.04 role-separately qualified parent-only store/materializer mechanics on four representative rows. K2.05's call-free preflight still closes monolithic locked-batch execution with a conservative 40,614,855,880-byte reserve-safe deficit. The role-separated segmented-plan audit now rederives one target-free 62-row parent manifest and an 8 static / 6 immutable-resolution / 48 locked schedule from the authoritative aligned sources, with panel admission withheld and all execution/call counters zero. This is plan and information-flow mechanics only. All parent stores, static and immutable paths, locked closures, evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain unqualified or closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified four ecosystem risk classes and K2.04 qualified representative parent-only materialization. K2.05's call-free segment-plan audit rederived the target-free 8/6/48 schedule, and the subsequent role-separated batch audit rederived complete archive-backed stores for all 62 exact parents: 133,048 regular files, 130,968 UTF-8 pages, 248 candidate-visible fields, common broad effect root repository, no convenience cap, no payload duplication, and zero downstream calls. This is parent-store and information-flow mechanics only. Static and immutable execution, locked closures, evaluators, model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain unqualified or closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -293,6 +293,23 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_05_all_parent_store_batch": {
+            "path": "reports/theseus_vcm_parent_store_batch.json",
+            "sha256": "438f7e8e10306835ba5b2a0825b0daf9e3095ea26a1c63bf3914d6ea39cec5ce",
+            "audit_path": "reports/theseus_vcm_parent_store_batch_audit.json",
+            "audit_sha256": "3329e5fea68b72b0cc319772f63677927b054bd6f97f217aef75baa6aad6482f",
+            "state": "K2_05_ALL_62_PARENT_STORES_ROLE_SEPARATELY_REDERIVED",
+            "row_count": 62,
+            "regular_file_count": 133048,
+            "text_page_count": 130968,
+            "candidate_visible_field_count": 248,
+            "store_artifact_sha256": "78b3b0d180a567b28fd8ca53228d3ab87e986cd6769ee5ce9a7d6ab6117c8d37",
+            "store_artifact_bytes": 108880763,
+            "archive_backed_without_payload_duplication": true,
+            "panel_admitted": false,
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -367,7 +384,7 @@
             ],
             "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
             "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden.",
-            "latest_observation": "The call-free full-batch upper-bound preflight remains execution-closed by a 40.6 GiB reserve-safe deficit. A separately audited generic compiler corrected the input path away from the historically misaligned v1 materialization rows, bound the authoritative v3 source panel plus current parent closures, runner inventory, dependency classes, and schedule, and rederived one target-free 62-row parent manifest with 8 static, 6 immutable-resolution, and 48 locked rows. Panel admission is withheld and no dependency, repository, evaluator, packet, model, or reference call occurred. All 62 parent stores are the next common work; the static segment follows without partial admission."
+            "latest_observation": "The monolithic locked-batch upper-bound remains execution-closed by a 40.6 GiB reserve-safe deficit. The target-free 8/6/48 segment plan is role-separately GREEN, and the all-parent batch now materializes and independently rederives complete archive-backed stores for all 62 rows: 133,048 regular files, 130,968 UTF-8 pages, 248 visible fields, no payload duplication, no convenience cap, and zero dependency, repository, evaluator, model, or reference calls. Panel admission remains withheld. The eight static parent-fail/target-pass evaluator paths are next; immutable and locked segments remain unopened."
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
@@ -1686,6 +1703,12 @@
         "owner_sha256":"431fbd3726e4e91b0d9b221af1ddd37a29b68be535335c41ae9a5cefab522c39","config_sha256":"a4bfdf50b98afccba2fb56053406016fe183e1d4a96e7fc98834475aa9b700f2","test_sha256":"a9bd6ea204e08ae7121eeb0441377e4c3ad334329c9aeff2108adeb20b815453","report_sha256":"a84e4b24fb71a1a12c2c346d227ee73e9e888007d26a49fcb79440af8486ba52","audit_owner_sha256":"0927b9af69e8b7beb47c3d854f2623829fba6be58149eafa8c7fcfcfb1cf23a3","audit_report_sha256":"c3b550480df22160248d142b80971158e04c407d92eea7d7e2f14df69a61e038",
         "state":"K2_05_TARGET_FREE_SEGMENT_PLAN_ROLE_SEPARATELY_REDERIVED","task_count":62,"segment_counts":{"static_no_project_lock":8,"immutable_resolution_required":6,"locked_closure":48},"broad_parent_effect_root":"repository","target_derived_selector_input_count":0,"panel_admitted":false,"partial_panel_admission_forbidden":true,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"role-separated plan mechanics only: the authoritative aligned sources produce one target-free 62-row parent manifest and an 8/6/48 non-admitting schedule; no parent store, dependency, evaluator, packet, model, VCM utility, or book claim is qualified","next_boundary":"materialize all 62 parent stores from the audited safe manifest, then qualify the static segment without partial panel admission"
+      },
+      "vcm_parent_store_batch": {
+        "config":"configs/theseus_vcm_parent_store_batch.json","owner":"scripts/theseus_vcm_parent_store_batch.py","test":"tests/test_theseus_vcm_parent_store_batch.py","report":"reports/theseus_vcm_parent_store_batch.json","audit_owner":"scripts/theseus_vcm_parent_store_batch_audit.py","audit_report":"reports/theseus_vcm_parent_store_batch_audit.json","store_artifact":"runtime/vcm_evaluator/parent_only_batch_store_v1.json",
+        "owner_sha256":"2f9651810719f6f984119ea2860437e8d401772d0c509380c50ab039c3addb71","config_sha256":"776b95cf09ea1def62cf497c86bdf8bfcbf48851ea2e77ee43ef43c3d4950479","test_sha256":"e6549b5d83c5eb9998dd584afa6b19c63220752664a343d8b0cc832dab01ae34","report_sha256":"438f7e8e10306835ba5b2a0825b0daf9e3095ea26a1c63bf3914d6ea39cec5ce","audit_owner_sha256":"4ad33b8284ddc49740a35c5466a8fd8f8d72c97d725130edc7b12413d6387440","audit_report_sha256":"3329e5fea68b72b0cc319772f63677927b054bd6f97f217aef75baa6aad6482f","store_artifact_sha256":"78b3b0d180a567b28fd8ca53228d3ab87e986cd6769ee5ce9a7d6ab6117c8d37",
+        "state":"K2_05_ALL_62_PARENT_STORES_ROLE_SEPARATELY_REDERIVED","row_count":62,"regular_file_count":133048,"text_page_count":130968,"candidate_visible_field_count":248,"store_artifact_bytes":108880763,"archive_backed_without_payload_duplication":true,"panel_admitted":false,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"all-62 parent-store and information-flow mechanics only; no static, immutable, locked, evaluator, model, VCM utility, economics, transfer, or book claim is qualified","next_boundary":"prospectively seal and qualify the eight static parent-fail/target-pass evaluator paths without partial panel admission"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

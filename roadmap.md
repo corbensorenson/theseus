@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE` |
+| State | `VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_parent_store_batch_v1` |
-| Current wall | `all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified` |
+| Active attempt | `k2_05_static_segment_v1` |
+| Current wall | `eight_static_parent_fail_target_pass_evaluator_paths_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission` |
+| Next legal action | `prospectively_seal_and_qualify_eight_static_parent_fail_target_pass_evaluator_paths_without_partial_panel_admission` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -445,10 +445,12 @@ one target-free 62-row parent manifest and an 8 static / 6 immutable-resolution
 / 48 locked schedule with broad effect root `repository`, zero target-derived
 selector fields, and panel admission withheld. No dependency, repository,
 evaluator, packet, local-model, or reference call occurred. The next bounded
-transaction materializes all 62 archive-backed parent stores through the common
-owner; only then does the static segment qualify. The full locked batch remains
-closed by the existing storage wall and may not be smuggled through partial
-panel admission.
+transaction has now materialized and role-separately rederived all 62
+archive-backed parent stores: 133,048 regular files, 130,968 UTF-8 pages, and
+248 candidate-visible field receipts, with no duplicated payload and zero
+downstream calls. The eight static parent-fail/target-pass evaluator paths are
+now the active segment. The full locked batch remains closed by the existing
+storage wall and may not be smuggled through partial panel admission.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -762,9 +764,9 @@ retention through governed custody rather than ad hoc cleanup.
 4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. **CURRENT — PARENT-STORE BATCH:** Materialize all 62 archive-backed parent
-   stores from the role-audited target-free manifest, then qualify the eight-row
-   static segment. Preserve the 62-row denominator and do not admit a partial
+5. **CURRENT — STATIC SEGMENT:** Preserve the GREEN all-62 parent-store batch,
+   then prospectively seal and qualify the eight static parent-fail/target-pass
+   evaluator paths. Preserve the 62-row denominator and do not admit a partial
    panel. The 48-row locked segment remains separately closed by the 40.6 GiB
    reserve-safe storage deficit until a bounded acquisition plan fits.
 6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/

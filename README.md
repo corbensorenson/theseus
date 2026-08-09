@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE` |
+| State | `VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_parent_store_batch_v1` |
-| Current wall | `all_62_parent_stores_not_yet_materialized_and_static_immutable_segments_not_yet_qualified` |
+| Active attempt | `k2_05_static_segment_v1` |
+| Current wall | `eight_static_parent_fail_target_pass_evaluator_paths_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `materialize_all_62_parent_stores_from_role_audited_target_free_manifest_then_qualify_static_segment_without_partial_panel_admission` |
+| Next legal action | `prospectively_seal_and_qualify_eight_static_parent_fail_target_pass_evaluator_paths_without_partial_panel_admission` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -145,9 +145,10 @@ locked batch remains closed by a conservative 40.6 GiB reserve-safe storage
 deficit. A separate audit has now rederived one target-free 62-row parent
 manifest and an 8 static / 6 immutable-resolution / 48 locked schedule from
 the authoritative aligned sources. Panel admission is withheld and no model,
-Luna, evaluator, repository runner, or dependency execution occurred. The next
-transaction materializes all 62 archive-backed parent stores, then qualifies
-the static segment without treating it as a partial panel.
+Luna, evaluator, repository runner, or dependency execution occurred in the
+plan. All 62 archive-backed parent stores are now role-separately GREEN across
+133,048 regular files and 130,968 UTF-8 pages. The eight static evaluator paths
+are next and cannot be treated as a partial panel.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

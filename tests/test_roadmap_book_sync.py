@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_K2_05_PARENT_STORE_BATCH_ACTIVE",
+            "VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
