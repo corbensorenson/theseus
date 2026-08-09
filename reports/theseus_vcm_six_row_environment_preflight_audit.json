@@ -1,0 +1,68 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_environment_preflight.json",
+    "sha256": "9518f8a2a47695bea4a4e154c7a3d32c6e414a91bd3f0b7bdc923dad824d5ee7"
+  },
+  "created_utc": "2026-08-09T03:40:08.037418Z",
+  "current_host_free_bytes": 17448333312,
+  "execution_ready_rederived": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "The audit role-separately rederives lock package counts and the full arithmetic from committed inputs and confirms the zero-execution boundary. It is not producer-independent replay or external reproduction and does not prove that actual materialization will fit or succeed.",
+  "minimum_free_bytes_after_execution": 10737418240,
+  "network_or_dependency_execution_performed": false,
+  "policy": "project_theseus_vcm_six_row_environment_preflight_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_six_row_environment_preflight.json",
+    "sha256": "159b08e8a3760634a8200fcbc30e54210c0437279faca521dfe9a9da6a4be7ee"
+  },
+  "required_incremental_peak_bytes": 5807060056,
+  "rows": [
+    {
+      "index": 12,
+      "manager": "uv",
+      "package_count": 6,
+      "projected_store_or_environment_bytes": 1322322,
+      "upper_bytes_per_entry": 220387
+    },
+    {
+      "index": 13,
+      "manager": "uv",
+      "package_count": 158,
+      "projected_store_or_environment_bytes": 34821146,
+      "upper_bytes_per_entry": 220387
+    },
+    {
+      "index": 16,
+      "manager": "uv",
+      "package_count": 35,
+      "projected_store_or_environment_bytes": 7713545,
+      "upper_bytes_per_entry": 220387
+    },
+    {
+      "index": 25,
+      "manager": "uv",
+      "package_count": 39,
+      "projected_store_or_environment_bytes": 8595093,
+      "upper_bytes_per_entry": 220387
+    },
+    {
+      "index": 35,
+      "manager": "cargo",
+      "package_count": 404,
+      "projected_store_or_environment_bytes": 721666008,
+      "upper_bytes_per_entry": 1786302
+    },
+    {
+      "index": 56,
+      "manager": "uv",
+      "package_count": 74,
+      "projected_store_or_environment_bytes": 16308638,
+      "upper_bytes_per_entry": 220387
+    }
+  ],
+  "state": "K2_05_SIX_ROW_ENVIRONMENT_PREFLIGHT_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}
