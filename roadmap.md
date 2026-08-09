@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_ALL_RISK_CLASSES_SCOPED_GREEN_AUDIT_PENDING` |
+| State | `VCM_V3_K2_04_PARENT_ONLY_MATERIALIZER_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_03_generic_ecosystem_risk_canaries_v7` |
-| Current wall | `k2_03_risk_evidence_chain_not_role_separately_audited` |
+| Active attempt | `k2_04_parent_only_store_materializer_v1` |
+| Current wall | `production_parent_only_vcm_store_absent_and_v1_effect_paths_target_derived` |
 | Last closed task | 26 |
-| Next legal action | `role_separately_rederive_v2_v5_v6_v7_risk_receipts_and_issue_k2_03_disposition` |
+| Next legal action | `implement_and_role_separately_audit_parent_only_vcm_store_materializer_and_broad_effect_root` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -338,10 +338,9 @@ The generic owner must:
 
 K2.02 is now complete for this bounded boundary: the owner statically replays
 the six already qualified closures as six content-bound rows across npm, pnpm,
-Cargo, and uv, and freezes the manager-shared/disposable forward topology. It
-does not yet execute forward dependency work. K2.03 is current and must replace
-the replay-only zero/null projections with measured resource estimates while
-qualifying the four named ecosystem risk classes.
+Cargo, and uv, and freezes the manager-shared/disposable forward topology.
+K2.03 then qualified the four named ecosystem risk classes through the generic
+owner and role-separated audit. K2.04 is current.
 
 The first K2.03 transaction binds, at zero execution, the exact parent-only
 representatives and order: Task 61 Bun install, Task 4 Yarn install,
@@ -407,6 +406,13 @@ source, and unchanged retained Bun content. Bun, Yarn, narrow TypeScript, and
 Rust therefore have scoped GREEN mechanics. Task 61 full-project typecheck
 remains inconclusive. K2.03 now needs one role-separated rederivation of the
 committed V2/V5/V6/V7 chain before it can close.
+
+That audit is now GREEN. It rederived four committed attempts, all four scoped
+risk classes, reserve and source/store invariants, zero downstream calls, and
+the full-project TypeScript caveat. K2.03 is complete. K2.04 is active: build
+the real parent-only VCM store and production materializer, replace
+target-derived effect paths with one broad parent-snapshot write root, and
+audit every candidate-visible byte and selector input before packet creation.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -714,10 +720,10 @@ retention through governed custody rather than ad hoc cleanup.
 2. Preserve the GREEN generic static replay of six existing closures; it freezes
    the shared-store/disposable-environment schema but grants no execution authority.
    npm, pnpm, Cargo, and uv closure evidence through its common row schema.
-3. **CURRENT:** Preflight storage, memory, wall time, host reserve, and untrusted-build risk;
-   then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust as
-   generic-owner risk classes. Stop K2 if the instrument is not resource-feasible.
-4. Build and independently audit the real parent-only VCM store and
+3. Preserve the role-separated K2.03 qualification of Bun, Yarn, narrow real-parent
+   TypeScript mechanics, and untrusted Rust, including the full-project
+   TypeScript caveat.
+4. **CURRENT:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
 5. Materialize the remaining frozen dependency closures, static/immutable

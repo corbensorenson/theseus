@@ -1,0 +1,18 @@
+{
+  "policy": "project_theseus_vcm_instrument_builder_audit_v1",
+  "state": "ROLE_SEPARATED_COMMITTED_K2_03_RISK_CHAIN_AUDIT",
+  "owner": "scripts/theseus_vcm_instrument_builder_audit.py",
+  "owner_sha256": "b6b5fc477befa28f33aa101a50b44087fea6a6da2dc3be0fbb5759e9ce5d6ff1",
+  "attempts": [
+    {"attempt_id": "v2", "commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f", "path": "reports/theseus_vcm_instrument_builder.json", "sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e"},
+    {"attempt_id": "v5", "commit": "d0ee4516cea4cb2e24f76c1a906c228a9be423cc", "path": "reports/theseus_vcm_instrument_builder.json", "sha256": "3385166806c12a93e633feb1031a227151099d59aec5326a41dcb628e24d102a"},
+    {"attempt_id": "v6", "commit": "2e09f25f317d243128e33efe05080f0b9adccacb", "path": "reports/theseus_vcm_instrument_builder.json", "sha256": "b2b6bcc85d11960c0f687809552e7bace6cd75826042b9a3bc563de9f184b740"},
+    {"attempt_id": "v7", "commit": "fcafc881f0c1ee55e399df00f15c0e3bcbad3447", "path": "reports/theseus_vcm_instrument_builder.json", "sha256": "932a76d330649f22d1b551c65c50f20bffb4e958fce08680929170fd26fa3e07"}
+  ],
+  "expected_bun_store_identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+  "expected_yarn_store_identity_sha256": "bd274a4d589e7209eb6cdbdb25fa5072546a281e0ad7647e63e697e672b881e7",
+  "expected_v7_typescript_command": ["node_modules/typescript/bin/tsc", "--noEmit", "--strict", "--target", "ESNext", "--module", "ESNext", "--moduleResolution", "bundler", "--lib", "ESNext", "--types", "bun", "--skipLibCheck", "framework/src/styles.ts"],
+  "host_reserve_bytes": 10737418240,
+  "report": "reports/theseus_vcm_instrument_builder_audit.json",
+  "maximum_inference": "A GREEN audit role-separately rederives only the committed K2.03 evidence chain: scoped Bun, Yarn, narrow real-parent TypeScript, and untrusted Rust mechanics under their exact regimes. Task 61 full-project typecheck remains inconclusive because its parent omits a generated source. This audit executes no dependency, repository evaluator, VCM packet, model, Luna, D1, D2, training, serving, or book action."
+}

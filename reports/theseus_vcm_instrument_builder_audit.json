@@ -1,0 +1,64 @@
+{
+  "attempt_receipts": [
+    {
+      "attempt_id": "v2",
+      "commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f",
+      "path": "reports/theseus_vcm_instrument_builder.json",
+      "sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e",
+      "state": "K2_03_RISK_CANARIES_FAILED",
+      "trigger_state": "RED"
+    },
+    {
+      "attempt_id": "v5",
+      "commit": "d0ee4516cea4cb2e24f76c1a906c228a9be423cc",
+      "path": "reports/theseus_vcm_instrument_builder.json",
+      "sha256": "3385166806c12a93e633feb1031a227151099d59aec5326a41dcb628e24d102a",
+      "state": "K2_03_RISK_CANARIES_FAILED",
+      "trigger_state": "RED"
+    },
+    {
+      "attempt_id": "v6",
+      "commit": "2e09f25f317d243128e33efe05080f0b9adccacb",
+      "path": "reports/theseus_vcm_instrument_builder.json",
+      "sha256": "b2b6bcc85d11960c0f687809552e7bace6cd75826042b9a3bc563de9f184b740",
+      "state": "K2_03_RISK_CANARIES_FAILED",
+      "trigger_state": "RED"
+    },
+    {
+      "attempt_id": "v7",
+      "commit": "fcafc881f0c1ee55e399df00f15c0e3bcbad3447",
+      "path": "reports/theseus_vcm_instrument_builder.json",
+      "sha256": "932a76d330649f22d1b551c65c50f20bffb4e958fce08680929170fd26fa3e07",
+      "state": "K2_03_NARROW_REAL_PARENT_TYPESCRIPT_MECHANICS_QUALIFIED",
+      "trigger_state": "GREEN"
+    }
+  ],
+  "audit_kind": "role-separated rederivation",
+  "audited_attempt_count": 4,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_instrument_builder_audit.json",
+    "sha256": "94b9f6b7030a32a0955d36906ea24028b4523683dac9928f62427115f8dac382"
+  },
+  "created_utc": "2026-08-09T01:22:17.918416Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN audit role-separately rederives only the committed K2.03 evidence chain: scoped Bun, Yarn, narrow real-parent TypeScript, and untrusted Rust mechanics under their exact regimes. Task 61 full-project typecheck remains inconclusive because its parent omits a generated source. This audit executes no dependency, repository evaluator, VCM packet, model, Luna, D1, D2, training, serving, or book action.",
+  "network_or_dependency_execution_performed": false,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_instrument_builder_audit_v1",
+  "preserved_caveats": [
+    "task61_full_project_typecheck_is_inconclusive_missing_generated_parent_source",
+    "typescript_green_is_narrow_real_file_mechanics_only",
+    "repository_evaluators_and_vcm_packets_not_executed"
+  ],
+  "qualified_risk_classes": [
+    "bun_real_lock_install_and_retained_replay",
+    "yarn_real_lock_install_and_retained_replay",
+    "typescript_real_parent_file_strict_no_emit_mechanics",
+    "rust_parent_repository_untrusted_compilation"
+  ],
+  "repository_runner_executions": 0,
+  "state": "K2_03_GENERIC_ECOSYSTEM_RISK_EVIDENCE_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}

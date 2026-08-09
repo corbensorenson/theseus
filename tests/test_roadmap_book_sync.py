@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_K2_03_ALL_RISK_CLASSES_SCOPED_GREEN_AUDIT_PENDING",
+            "VCM_V3_K2_04_PARENT_ONLY_MATERIALIZER_ACTIVE",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
