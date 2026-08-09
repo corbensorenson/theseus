@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_K2_03_RISK_EXECUTOR_V5_PROSPECTIVELY_SEALED",
+            "VCM_V3_K2_03_V5_BUN_YARN_GREEN_TYPESCRIPT_UNRESOLVED",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])

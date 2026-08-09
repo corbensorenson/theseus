@@ -4,11 +4,13 @@
     "path": "configs/theseus_vcm_instrument_builder.json",
     "sha256": "38fc06ad86c050e14d5679ced0b9b20896cda51215553fc6feb9e17554ccbc29"
   },
-  "created_utc": "2026-08-09T01:01:55.811851Z",
+  "created_utc": "2026-08-09T01:06:13.398479Z",
   "external_reference_calls": 0,
-  "faults": [],
-  "maximum_inference": "A GREEN V5 execution report may prove only that the qualified Bun regular-file payload was reused without reacquisition or mutation, its 216 validated internal absolute links were rebased only in a disposable derived cache, and exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
-  "network_or_dependency_execution_performed": false,
+  "faults": [
+    "typescript_transpilation_failed"
+  ],
+  "maximum_inference": "This RED V5 report qualifies only the disposable 216-link Bun rebase, network-denied Bun replay with unchanged source, and exact Yarn online acquisition plus network-denied replay with unchanged source and a retained shared Yarn store. Task 61 TypeScript returned 2 without a host boundary, but its 135-byte stdout diagnostic was not retained, so the cause remains unresolved instrument evidence. Rust did not execute. This is not task, VCM, model, Luna, D1, D2, training, serving, or book evidence.",
+  "network_or_dependency_execution_performed": true,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "prior_risk_attempts": [
@@ -71,7 +73,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 18064023552,
+    "host_free_bytes": 17792094208,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -85,7 +87,7 @@
     "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v5",
     "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 18064023552,
+    "host_free_bytes": 17792094208,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -211,6 +213,221 @@
       }
     ],
     "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V5_DISPOSABLE_SYMLINK_REBASE"
+  },
+  "risk_execution_performed": true,
+  "risk_receipts": {
+    "bun_disposable_symlink_rebase": {
+      "broken_link_count_after": 0,
+      "original_cache_root": "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache",
+      "retained_source_mutated": false,
+      "transformations_sha256": "1ec1bd63d75e0fe6994e2ae006f74d76f50d207399c567b0e95f990dc730380f",
+      "transformed_link_count": 216
+    },
+    "bun_network_acquisition_repeated": false,
+    "bun_resume_offline": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "/private/tmp/theseus-vcm-generic-risks-1x4rwljz/bun-cache",
+        "--offline"
+      ],
+      "duration_ms": 526.071,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 19.844,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 710,
+      "stdout_sha256": "50bb8e98a2d5ea32169c9789d3ec17a17c113253e7d2ff0e53795d9d4290c19b"
+    },
+    "bun_resume_source_after": {
+      "bytes": 48663631,
+      "file_count": 1102,
+      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
+    },
+    "bun_resume_source_before": {
+      "bytes": 48663631,
+      "file_count": 1102,
+      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
+    },
+    "free_bytes_after": 15293857792,
+    "free_bytes_before": 17756213248,
+    "free_bytes_during": 14775267328,
+    "qualified_bun_store_after": {
+      "bytes": 169910840,
+      "excluded_host_metadata": [
+        {
+          "bytes": 6148,
+          "path": ".DS_Store",
+          "sha256": "2d8f894b09ed4e6538866fbf4a00f4fe333cb40279973ff3694cee19000c590b"
+        }
+      ],
+      "file_count": 8320,
+      "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+      "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
+    },
+    "qualified_bun_store_before": {
+      "bytes": 169910840,
+      "excluded_host_metadata": [
+        {
+          "bytes": 6148,
+          "path": ".DS_Store",
+          "sha256": "2d8f894b09ed4e6538866fbf4a00f4fe333cb40279973ff3694cee19000c590b"
+        }
+      ],
+      "file_count": 8320,
+      "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+      "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
+    },
+    "resumed_from_commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f",
+    "rows": [],
+    "stores": {
+      "bun": {
+        "bytes": 169910840,
+        "excluded_host_metadata": [
+          {
+            "bytes": 6148,
+            "path": ".DS_Store",
+            "sha256": "2d8f894b09ed4e6538866fbf4a00f4fe333cb40279973ff3694cee19000c590b"
+          }
+        ],
+        "file_count": 8320,
+        "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+        "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
+      },
+      "yarn": {
+        "bytes": 761320693,
+        "excluded_host_metadata": [
+          {
+            "bytes": 10244,
+            "path": "v6/.DS_Store",
+            "sha256": "f17b5c1b1db4c844bc84a128d75f753269ce18e7429cee9a8455fca05ed12298"
+          },
+          {
+            "bytes": 6148,
+            "path": "v6/npm-lucide-static-1.23.0-ba2ff1ff7ee3cedc3b1f61b76f08b512e1f4a0d3-integrity/node_modules/lucide-static/.DS_Store",
+            "sha256": "dc895e2a8dd9e53d0e82786cf0eee7f33e05fdbaa2c16c0c85d4203e4f41ce56"
+          }
+        ],
+        "file_count": 30393,
+        "identity_sha256": "bd274a4d589e7209eb6cdbdb25fa5072546a281e0ad7647e63e697e672b881e7",
+        "path": "runtime/vcm_evaluator/dependency_store/shared/yarn"
+      }
+    },
+    "task_36_extraction": {
+      "member_receipts_sha256": "28c66094b72bc56122ef3fed019009823749c0ea8709fe8afdc0cb48ff0cbe47",
+      "regular_file_bytes": 2109386,
+      "regular_file_count": 851
+    },
+    "task_4_extraction": {
+      "member_receipts_sha256": "c21478fab3c6d205e7f223aa3378c80ccb923db8834792004128abadc2521bea",
+      "regular_file_bytes": 1885590,
+      "regular_file_count": 303
+    },
+    "task_61_extraction": {
+      "member_receipts_sha256": "ec5b03e97c750851bb22229bfd6ac37abd342c4fe20bec10f56838c407fa518b",
+      "regular_file_bytes": 48663631,
+      "regular_file_count": 1102
+    },
+    "typescript_transpilation": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--project",
+        "tsconfig.json"
+      ],
+      "duration_ms": 35201.089,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+      "maximum_process_group_rss_mib": 415.781,
+      "network_denied": true,
+      "returncode": 2,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 135,
+      "stdout_sha256": "8697a2800161680641f751dd0d717d36df45fdbdcd87a2238fd4dcfcaf7bb8bb"
+    },
+    "yarn_offline": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--non-interactive",
+        "--cache-folder",
+        "/private/tmp/theseus-vcm-generic-risks-1x4rwljz/yarn-cache",
+        "--offline"
+      ],
+      "duration_ms": 18758.301,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 192.5,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 1050,
+      "stderr_head": "warning \" > @tiptap/extension-text-align@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \" > @tiptap/extension-text-style@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \" > @tiptap/vue-3@3.27.1\" has unmet peer dependency \"@floating-ui/dom@^1.0.0\".\nwarning \" > @tiptap/vue-3@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \" > @tiptap/vue-3@3.27.1\" has unmet peer dependency \"@tiptap/pm@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-bubble-menu@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-bubble-menu@3.27.1\" has unmet peer dependency \"@tiptap/pm@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-floating-menu@3.27.1\" has unmet peer dependency \"@floating-ui/dom@^1.0.0\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-floating-menu@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-floating-menu@3.27.1\" has unmet peer dependency \"@tiptap/pm@3.27.1\".\nwarning Ignored scripts due to flag.\n",
+      "stderr_sha256": "0f7d5f87d53264238bb1982fc9f38e7caf309f68374d20ae5be4f5ca0212606f",
+      "stdout_bytes": 156,
+      "stdout_sha256": "87daa891ffeed63442d884417e74bb02d3b9f8e1782cdda404f42e6342a7e345"
+    },
+    "yarn_online": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64/bin/node",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--non-interactive",
+        "--cache-folder",
+        "/private/tmp/theseus-vcm-generic-risks-1x4rwljz/yarn-cache"
+      ],
+      "duration_ms": 85667.407,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 186.266,
+      "network_denied": false,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 1050,
+      "stderr_head": "warning \" > @tiptap/extension-text-align@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \" > @tiptap/extension-text-style@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \" > @tiptap/vue-3@3.27.1\" has unmet peer dependency \"@floating-ui/dom@^1.0.0\".\nwarning \" > @tiptap/vue-3@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \" > @tiptap/vue-3@3.27.1\" has unmet peer dependency \"@tiptap/pm@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-bubble-menu@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-bubble-menu@3.27.1\" has unmet peer dependency \"@tiptap/pm@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-floating-menu@3.27.1\" has unmet peer dependency \"@floating-ui/dom@^1.0.0\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-floating-menu@3.27.1\" has unmet peer dependency \"@tiptap/core@3.27.1\".\nwarning \"@tiptap/vue-3 > @tiptap/extension-floating-menu@3.27.1\" has unmet peer dependency \"@tiptap/pm@3.27.1\".\nwarning Ignored scripts due to flag.\n",
+      "stderr_sha256": "0f7d5f87d53264238bb1982fc9f38e7caf309f68374d20ae5be4f5ca0212606f",
+      "stdout_bytes": 156,
+      "stdout_sha256": "9600959de60bda4e07938ce1eed4dd57e0166b0cbc59b74c237682cf4ed3cd3b"
+    },
+    "yarn_source_after": {
+      "bytes": 1420751,
+      "file_count": 236,
+      "identity_sha256": "e5e4be352993f248d21886e4fb15c3e43011755c704d2e44ce192c1e7e3775ff"
+    },
+    "yarn_source_before": {
+      "bytes": 1420751,
+      "file_count": 236,
+      "identity_sha256": "e5e4be352993f248d21886e4fb15c3e43011755c704d2e44ce192c1e7e3775ff"
+    }
   },
   "risk_resume": {
     "bun_original_cache_root": "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache",
@@ -417,7 +634,7 @@
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
   },
-  "state": "GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
+  "state": "K2_03_RISK_CANARIES_FAILED",
   "static_evidence_replay_only": true,
   "store_contract": {
     "historical_task_specific_stores": "retained evidence only; never forward topology",
@@ -433,5 +650,5 @@
     },
     "per_task_duplicate_package_cache_authorized": false
   },
-  "trigger_state": "GREEN"
+  "trigger_state": "RED"
 }

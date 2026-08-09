@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V5_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V5_BUN_YARN_GREEN_TYPESCRIPT_UNRESOLVED` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v5` |
-| Current wall | `yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited` |
+| Current wall | `typescript_nonzero_stdout_diagnostic_not_retained_and_rust_not_executed` |
 | Last closed task | 26 |
-| Next legal action | `execute_v5_disposable_bun_rebase_then_yarn_typescript_rust_and_role_separately_audit` |
+| Next legal action | `seal_v6_zero_network_typescript_diagnostic_and_independent_rust_continuation` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -377,6 +377,14 @@ derive a disposable cache by preserving files and rebasing only links that are
 proven to target an existing object inside that retained package payload. It
 must leave retained evidence untouched and report every transformed link. V5
 is now sealed with those exact checks and a unit-tested disposable-copy path.
+
+V5 qualified that disposable Bun replay and exact Yarn online/offline replay,
+retaining one shared Yarn store. The Task 61 TypeScript command returned 2
+without a safety boundary, but the recorder preserved only its stdout hash, not
+the 135-byte diagnostic, so its cause is unresolved. Rust did not run. V6 must
+use only retained stores with zero network, retain the TypeScript stdout
+diagnostic, and continue to the independent Rust canary even if TypeScript is a
+non-safety failure.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

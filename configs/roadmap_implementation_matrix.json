@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_03_RISK_EXECUTOR_V5_PROSPECTIVELY_SEALED",
+      "state": "VCM_V3_K2_03_V5_BUN_YARN_GREEN_TYPESCRIPT_UNRESOLVED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
       "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v5",
-      "current_blocker": "yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited",
+      "current_blocker": "typescript_nonzero_stdout_diagnostic_not_retained_and_rust_not_executed",
       "last_closed_task_index": 26,
-      "next_legal_action": "execute_v5_disposable_bun_rebase_then_yarn_typescript_rust_and_role_separately_audit",
+      "next_legal_action": "seal_v6_zero_network_typescript_diagnostic_and_independent_rust_continuation",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V2 qualified Bun online acquisition and network-denied replay in its original temporary cache, then retained the 8,320-file regular package payload. V3 exposed host-metadata receipt pollution. V4 exposed 216 absolute internal links to the deleted V2 temporary root before any external command. V5 is prospectively sealed to preserve the retained evidence, copy regular content and links into a disposable cache, reject any link outside the exact historical root or without an existing retained target, rebase the 216 validated internal links, and emit a transformation digest before offline Bun replay and remaining risk canaries. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V5 qualified a disposable 216-link Bun rebase, network-denied Bun replay with unchanged source, and exact Yarn online acquisition plus network-denied replay with unchanged source and a retained shared Yarn store. Task 61 TypeScript returned 2 after 35.2 seconds at 415.8 MiB RSS without a safety boundary, but only its stdout hash was retained, so repository baseline versus instrument cause is unresolved. Rust was not executed. V6 may use only retained stores and zero network to capture the TypeScript diagnostic and continue independently to Rust. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -197,6 +197,19 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_03_v5_observation": {
+            "report": "reports/theseus_vcm_instrument_builder.json",
+            "report_sha256": "3385166806c12a93e633feb1031a227151099d59aec5326a41dcb628e24d102a",
+            "bun_disposable_rebase_and_offline_replay": "GREEN",
+            "yarn_online_and_network_denied_replay": "GREEN",
+            "retained_yarn_store_identity_sha256": "bd274a4d589e7209eb6cdbdb25fa5072546a281e0ad7647e63e697e672b881e7",
+            "typescript": "INCONCLUSIVE_INSTRUMENT_DIAGNOSTIC_NOT_RETAINED",
+            "typescript_returncode": 2,
+            "typescript_boundary_hit": false,
+            "rust_executed": false,
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -252,7 +265,7 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V2 qualified Bun online/offline in its temporary cache and retained the regular payload. V3 exposed host-metadata receipt pollution. V4 started zero external commands because 216 retained absolute cache symlinks point to the deleted V2 temporary root. V5 is sealed to rebase validated internal links only in a disposable derived cache without mutating or reacquiring retained Bun evidence."
+            "latest_observation": "V5 qualified disposable Bun rebase/offline replay and Yarn online/offline replay, retaining one shared Yarn store. TypeScript returned 2 without a host boundary but its stdout diagnostic was not retained; Rust did not execute. V6 must be zero-network, retain the diagnostic, and continue independently to Rust."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",
