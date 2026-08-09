@@ -12,14 +12,14 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
+      "state": "VCM_V3_K2_03_RISK_EXECUTOR_PROSPECTIVELY_SEALED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
       "active_attempt_id": "generic_vcm_resource_and_risk_canaries_v1",
-      "current_blocker": "shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified",
+      "current_blocker": "four_ecosystem_risk_canaries_not_executed_or_role_separated_audited",
       "last_closed_task_index": 26,
-      "next_legal_action": "preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes",
+      "next_legal_action": "execute_and_role_separately_audit_generic_bun_yarn_typescript_untrusted_rust_canaries",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -1537,8 +1537,8 @@
       },
       "vcm_instrument_builder": {
         "config":"configs/theseus_vcm_instrument_builder.json","owner":"scripts/theseus_vcm_instrument_builder.py","test":"tests/test_theseus_vcm_instrument_builder.py","report":"reports/theseus_vcm_instrument_builder.json",
-        "owner_sha256":"360ca4399e8ed45d958cbf3026b169e49f505e25bb5d2b9af2429544f1ba79fd","config_sha256":"87483e26527f5862191d917887b457eeaa782c345cf55e176de6f4e350c22c61","test_sha256":"17ab8d079f6198d78ab2fb77fe2d9d83bd2d02e7168a6dcc0452630a167da262","report_sha256":"a26e7209c745dd927cc33e4ed72c5a273d221ebe8fa520bd350bf6d68a30de61",
-        "state":"GREEN_GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED_AND_K2_03_RISK_PREFLIGHT_BOUND","replayed_closure_count":6,"replayed_managers":["cargo","npm","pnpm","uv"],"shared_content_addressed_manager_stores_required":true,"installed_environments_are_disposable":true,"per_task_duplicate_package_cache_authorized":false,"resource_projection_state":"FOUR_SERIAL_RISK_CANARY_SELECTIONS_AND_RESOURCE_CEILINGS_BOUND_ZERO_EXECUTION","risk_canary_task_indices":[61,4,61,36],"risk_classes":["bun_real_lock_install","yarn_real_lock_install","typescript_parent_repository_transpilation","rust_parent_repository_untrusted_compilation"],"risk_canary_execution_authorized":false,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "owner_sha256":"268bbdbdd8adfb9bdf3ac333fc40377f7c06bc68efa24b8c66ddcb6439437650","config_sha256":"440ff2ab09a5c372f071cf79c2cbc3a5377bcd38190938f77cbfed198d223f4a","test_sha256":"cc8713ef1872d92ec408f0fba8ec775c5a2265fa48d2a27ab4487395557e9def","report_sha256":"ee0f35066bbae44f03ea287724da95372a3dd00f808b95e759e026113dedec7a",
+        "state":"GREEN_GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED_AND_K2_03_RISK_EXECUTOR_SEALED","replayed_closure_count":6,"replayed_managers":["cargo","npm","pnpm","uv"],"shared_content_addressed_manager_stores_required":true,"installed_environments_are_disposable":true,"per_task_duplicate_package_cache_authorized":false,"resource_projection_state":"FOUR_SERIAL_RISK_CANARY_EXECUTOR_PROSPECTIVELY_SEALED_ZERO_EXECUTION","risk_canary_task_indices":[61,4,61,36],"risk_classes":["bun_real_lock_install","yarn_real_lock_install","typescript_parent_repository_transpilation","rust_parent_repository_untrusted_compilation"],"risk_canary_execution_authorized":true,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"six already qualified closures replay through one content-bound row schema and a prospective shared-store/disposable-environment topology; no forward dependency, build, evaluator, VCM, model, or claim execution is qualified","next_boundary":"preflight real shared-store resource projections and qualify only Bun Yarn TypeScript transpilation and untrusted Rust risk classes"
       },
       "vcm_task7_dependency_canary": {

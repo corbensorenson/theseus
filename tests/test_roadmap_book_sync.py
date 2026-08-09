@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
+            "VCM_V3_K2_03_RISK_EXECUTOR_PROSPECTIVELY_SEALED",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])

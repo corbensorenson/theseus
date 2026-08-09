@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED` |
+| State | `VCM_V3_K2_03_RISK_EXECUTOR_PROSPECTIVELY_SEALED` |
 | Selected task | 26 |
 | Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
-| Current wall | `shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified` |
+| Current wall | `four_ecosystem_risk_canaries_not_executed_or_role_separated_audited` |
 | Last closed task | 26 |
-| Next legal action | `preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes` |
+| Next legal action | `execute_and_role_separately_audit_generic_bun_yarn_typescript_untrusted_rust_canaries` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -348,8 +348,8 @@ representatives and order: Task 61 Bun install, Task 4 Yarn install,
 Task 61 TypeScript `tsc --noEmit`, and Task 36 Rust 1.97.1 `cargo test --no-run`.
 The rows execute serially under a 10 GiB reserve; their conservative temporary,
 time, and RSS ceilings are host-safety boundaries rather than capability limits.
-The mutating generic-owner implementation and its exact execution seal remain
-the next boundary.
+The mutating generic-owner implementation is now source-bound and its exact
+execution is prospectively sealed; execution and role-separated audit are next.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

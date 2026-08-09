@@ -44,12 +44,12 @@ def test_builder_executes_nothing_and_grants_no_downstream_authority() -> None:
 
 def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
     plan = REPORT["risk_canary_plan"]
-    assert plan["state"] == "PROSPECTIVE_SELECTION_AND_RESOURCE_PREFLIGHT_ZERO_EXECUTION"
+    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_ZERO_EXECUTION"
     assert [row["risk_class"] for row in plan["rows"]] == [
         "bun_real_lock_install",
         "yarn_real_lock_install",
         "typescript_parent_repository_transpilation",
         "rust_parent_repository_untrusted_compilation",
     ]
-    assert all(row["execution_authorized"] is False for row in plan["rows"])
+    assert all(row["execution_authorized"] is True for row in plan["rows"])
     assert plan["host_free_bytes"] - max(row["resource_projection"]["projected_peak_temporary_bytes"] for row in plan["rows"]) >= plan["host_reserve_bytes"]

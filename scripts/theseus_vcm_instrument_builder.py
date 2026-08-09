@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import sys
+import tempfile
 from pathlib import Path
 from typing import Any
 
@@ -13,6 +15,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_dependency_prefetch_canary as base  # noqa: E402
+import theseus_vcm_dependency_prefetch_canary_v2 as bounded  # noqa: E402
 
 POLICY = "project_theseus_vcm_instrument_builder_v1"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_instrument_builder.json"
@@ -32,9 +35,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--config", default=p2a.rel(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
+    parser.add_argument("--execute-risks", action="store_true")
     args = parser.parse_args()
     path = p2a.resolve(args.config)
-    result = build(path)
+    result = execute_risks(path) if args.execute_risks else build(path)
     p2a.write_json(p2a.resolve(args.out or p2a.read_json(path)["report"]), result)
     print(json.dumps(summary(result), indent=2, sort_keys=True))
     return 0 if result["trigger_state"] == "GREEN" else 2
@@ -52,7 +56,15 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         or p2a.sha256_file(owner) != cfg.get("owner_sha256")
     ):
         faults.append("owner_binding_invalid")
-    allowed = {"static_evidence_replay_authorized"}
+    allowed = {
+        "static_evidence_replay_authorized",
+        "four_risk_canary_executions_authorized",
+        "two_network_dependency_acquisitions_authorized",
+        "network_denied_replays_authorized",
+        "untrusted_parent_typescript_transpilation_authorized",
+        "untrusted_parent_rust_compilation_authorized",
+        "shared_store_retention_authorized",
+    }
     for key, value in p2a.mapping(cfg.get("authority")).items():
         if value is not (key in allowed):
             faults.append(f"authority_invalid:{key}")
@@ -239,6 +251,10 @@ def validate_risk_plan(
         tool_path = p2a.resolve(str(tool.get("path") or ""))
         if not tool_path.is_file() or p2a.sha256_file(tool_path) != tool.get("sha256"):
             faults.append(f"risk_tool_binding_invalid:{risk_id}")
+        if row.get("support_tool"):
+            support = p2a.mapping(row.get("support_tool")); support_path = p2a.resolve(str(support.get("path") or ""))
+            if not support_path.is_file() or p2a.sha256_file(support_path) != support.get("sha256"):
+                faults.append(f"risk_support_tool_binding_invalid:{risk_id}")
         limits = p2a.mapping(row.get("resource_projection"))
         for key in ("projected_download_bytes", "projected_installed_bytes", "projected_peak_temporary_bytes", "projected_wall_time_seconds", "maximum_process_group_rss_mib"):
             if not isinstance(limits.get(key), int) or int(limits.get(key) or 0) < 0:
@@ -256,19 +272,113 @@ def validate_risk_plan(
             "tool": base.identity(tool_path) if tool_path.is_file() else {},
             "command": p2a.strings(row.get("command")),
             "resource_projection": limits,
-            "execution_authorized": False,
+            "execution_authorized": True,
         })
     if plan.get("execution_order") != "serialized_exact_list_order":
         faults.append("risk_execution_order_invalid")
     return {
-        "state": "PROSPECTIVE_SELECTION_AND_RESOURCE_PREFLIGHT_ZERO_EXECUTION",
+        "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_ZERO_EXECUTION",
         "row_count": len(observed),
         "rows": observed,
         "host_free_bytes": host_free,
         "host_reserve_bytes": int(p2a.mapping(cfg.get("resource_contract")).get("host_reserve_bytes") or 0),
         "execution_order": plan.get("execution_order"),
-        "execution_authorized": False,
+        "execution_authorized": True,
     }
+
+
+def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
+    before = build(path)
+    if before["trigger_state"] != "GREEN":
+        return before
+    cfg = p2a.read_json(path)
+    rows = p2a.dicts(p2a.mapping(cfg["risk_canary_plan"]).get("rows"))
+    reserve = int(p2a.mapping(cfg["resource_contract"])["host_reserve_bytes"])
+    stores = {name: p2a.resolve(f"runtime/vcm_evaluator/dependency_store/shared/{name}") for name in ("bun", "yarn")}
+    collisions = [p2a.rel(store) for store in stores.values() if store.exists()]
+    if collisions:
+        return finish_risks(before, [f"retained_store_already_exists:{x}" for x in collisions], {}, False)
+    free_before = shutil.disk_usage(ROOT).free
+    if free_before < reserve + max(int(p2a.mapping(row["resource_projection"])["projected_peak_temporary_bytes"]) for row in rows):
+        return finish_risks(before, ["host_reserve_preflight_boundary_hit"], {"free_bytes_before": free_before}, False)
+    faults: list[str] = []
+    receipts: dict[str, Any] = {"free_bytes_before": free_before, "rows": []}
+    with tempfile.TemporaryDirectory(prefix="theseus-vcm-generic-risks-", dir="/private/tmp") as raw:
+        work = Path(raw).resolve()
+        repos: dict[int, Path] = {}
+        for task_index in (61, 4, 36):
+            row = next(row for row in rows if row["task_index"] == task_index)
+            repo = work / f"task-{task_index}" / "repository"
+            repo.parent.mkdir(parents=True)
+            archive = p2a.mapping(row["parent_archive"])
+            extraction, errs = base.safe_extract_repository(p2a.resolve(str(archive["path"])), repo, str(row["archive_root"]))
+            faults.extend(f"task-{task_index}:{err}" for err in errs)
+            receipts[f"task_{task_index}_extraction"] = extraction
+            repos[task_index] = repo
+        if not faults:
+            bun_row = rows[0]
+            bun_cache = work / "bun-cache"; bun_home = work / "bun-home"; bun_tmp = work / "bun-tmp"
+            bun_cache.mkdir(); bun_home.mkdir(); bun_tmp.mkdir()
+            bun_path = str(p2a.resolve(str(p2a.mapping(bun_row["tool"])["path"])))
+            bun_env = minimal_env(bun_home, bun_tmp, f"{Path(bun_path).parent}:/usr/bin:/bin")
+            bun_cmd = [bun_path, *p2a.strings(bun_row["command"])[:-1], str(bun_cache)]
+            faults.extend(run_install_pair("bun", bun_cmd, [*bun_cmd, "--offline"], repos[61], work, bun_env, cfg, receipts))
+            if not faults:
+                stores["bun"].parent.mkdir(parents=True, exist_ok=True); os.replace(bun_cache, stores["bun"])
+        if not faults:
+            yarn_row = rows[1]
+            yarn_cache = work / "yarn-cache"; yarn_home = work / "yarn-home"; yarn_tmp = work / "yarn-tmp"
+            yarn_cache.mkdir(); yarn_home.mkdir(); yarn_tmp.mkdir()
+            yarn_env = minimal_env(yarn_home, yarn_tmp, "/usr/bin:/bin")
+            node = str(p2a.resolve(str(p2a.mapping(yarn_row["tool"])["path"])))
+            args = p2a.strings(yarn_row["command"]); yarn_js = str(p2a.resolve(args[0])); base_args = [node, yarn_js, *args[1:-1], str(yarn_cache)]
+            cwd = repos[4] / str(yarn_row.get("working_directory") or ".")
+            faults.extend(run_install_pair("yarn", base_args, [*base_args, "--offline"], cwd, work, yarn_env, cfg, receipts))
+            if not faults:
+                stores["yarn"].parent.mkdir(parents=True, exist_ok=True); os.replace(yarn_cache, stores["yarn"])
+        if not faults:
+            ts_row = rows[2]; bun = str(p2a.resolve(str(p2a.mapping(ts_row["tool"])["path"])))
+            receipt = bounded.run_sandboxed([bun, *p2a.strings(ts_row["command"])], repos[61], work, bun_env, cfg, network_denied=True)
+            receipts["typescript_transpilation"] = receipt
+            if base.command_failed(receipt): faults.append("typescript_transpilation_failed")
+        if not faults:
+            rust_row = rows[3]; cargo = str(p2a.resolve(str(p2a.mapping(rust_row["tool"])["path"])))
+            cargo_home = work / "cargo-home"; shutil.copytree(p2a.resolve("runtime/vcm_evaluator/dependency_store/cargo/task-36"), cargo_home)
+            rust_home = work / "rust-home"; rust_tmp = work / "rust-tmp"; rust_home.mkdir(); rust_tmp.mkdir()
+            rust_env = minimal_env(rust_home, rust_tmp, f"{Path(cargo).parent}:/usr/bin:/bin"); rust_env["CARGO_HOME"] = str(cargo_home)
+            receipt = bounded.run_sandboxed([cargo, *p2a.strings(rust_row["command"])], repos[36], work, rust_env, cfg, network_denied=True)
+            receipts["rust_compilation"] = receipt
+            if base.command_failed(receipt): faults.append("rust_compilation_failed")
+        receipts["free_bytes_during"] = shutil.disk_usage(ROOT).free
+        if receipts["free_bytes_during"] < reserve: faults.append("host_reserve_postflight_boundary_hit")
+    receipts["stores"] = {name: tree_receipt(store) for name, store in stores.items() if store.exists()}
+    receipts["free_bytes_after"] = shutil.disk_usage(ROOT).free
+    return finish_risks(before, faults, receipts, True)
+
+
+def run_install_pair(name: str, online: list[str], offline: list[str], cwd: Path, work: Path, env: dict[str, str], cfg: dict[str, Any], receipts: dict[str, Any]) -> list[str]:
+    faults=[]; before=base.tree_identity(cwd, excluded_roots={"node_modules"})
+    on=bounded.run_sandboxed(online,cwd,work,env,cfg,network_denied=False);receipts[f"{name}_online"]=on
+    if base.command_failed(on): return [f"{name}_online_install_failed"]
+    if (cwd/"node_modules").exists(): shutil.rmtree(cwd/"node_modules")
+    off=bounded.run_sandboxed(offline,cwd,work,env,cfg,network_denied=True);receipts[f"{name}_offline"]=off
+    if base.command_failed(off): faults.append(f"{name}_offline_replay_failed")
+    after=base.tree_identity(cwd, excluded_roots={"node_modules"});receipts[f"{name}_source_before"]=before;receipts[f"{name}_source_after"]=after
+    if before!=after:faults.append(f"{name}_source_mutated_outside_node_modules")
+    return faults
+
+
+def minimal_env(home: Path, tmp: Path, path: str) -> dict[str,str]:
+    return {"HOME":str(home),"TMPDIR":str(tmp),"PATH":path,"CI":"1","NO_COLOR":"1"}
+
+
+def tree_receipt(root: Path) -> dict[str,Any]:
+    files=[p for p in sorted(root.rglob("*")) if p.is_file() and not p.is_symlink()] if root.exists() else []
+    return {"path":p2a.rel(root),"file_count":len(files),"bytes":sum(p.stat().st_size for p in files),"identity_sha256":base.digest_json([{"path":p.relative_to(root).as_posix(),"bytes":p.stat().st_size,"sha256":p2a.sha256_file(p)} for p in files])}
+
+
+def finish_risks(before: dict[str,Any], faults: list[str], receipts: dict[str,Any], executed: bool) -> dict[str,Any]:
+    return {**before,"created_utc":p2a.now(),"trigger_state":"GREEN" if executed and not faults else "RED","state":"K2_03_FOUR_ECOSYSTEM_RISK_CANARIES_QUALIFIED" if executed and not faults else "K2_03_RISK_CANARIES_FAILED","faults":sorted(set(faults)),"risk_execution_performed":executed,"risk_receipts":receipts,"network_or_dependency_execution_performed":executed,"candidate_or_control_calls":0,"external_reference_calls":0}
 
 
 def project(document: dict[str, Any], raw_path: Any) -> Any:

@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED` |
+| State | `VCM_V3_K2_03_RISK_EXECUTOR_PROSPECTIVELY_SEALED` |
 | Selected task | 26 |
 | Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
-| Current wall | `shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified` |
+| Current wall | `four_ecosystem_risk_canaries_not_executed_or_role_separated_audited` |
 | Last closed task | 26 |
-| Next legal action | `preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes` |
+| Next legal action | `execute_and_role_separately_audit_generic_bun_yarn_typescript_untrusted_rust_canaries` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -148,8 +148,8 @@ The K2.03 representative selection and resource preflight are now bound at zero
 execution inside that same owner: parent-only Task 61 for Bun and TypeScript,
 Task 4 for Yarn, and Task 36 for exact Rust 1.97.1 compilation. The eventual
 execution must be serialized, each row must preserve a 10 GiB host reserve, and
-no evaluator or model authority is open. Exact mutating execution remains to be
-implemented and prospectively sealed.
+no evaluator or model authority is open. The generic sandboxed executor is now
+source-bound and prospectively sealed at zero execution.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

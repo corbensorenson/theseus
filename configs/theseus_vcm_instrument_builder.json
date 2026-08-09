@@ -2,7 +2,7 @@
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "state": "GENERIC_MANIFEST_OWNER_STATIC_REPLAY_BEFORE_FORWARD_EXECUTION",
   "owner": "scripts/theseus_vcm_instrument_builder.py",
-  "owner_sha256": "360ca4399e8ed45d958cbf3026b169e49f505e25bb5d2b9af2429544f1ba79fd",
+  "owner_sha256": "268bbdbdd8adfb9bdf3ac333fc40377f7c06bc68efa24b8c66ddcb6439437650",
   "schedule": {
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
@@ -148,8 +148,9 @@
     "required_fields": ["projected_download_bytes", "projected_installed_bytes", "projected_peak_temporary_bytes", "shared_store_deduplicated_bytes", "host_free_bytes", "host_reserve_bytes", "projected_wall_time", "untrusted_build_risk_class"],
     "K2_03_must_replace_static_replay_zeros_or_nulls_before_mutating_execution": true
   },
+  "limits": {"minimum_free_bytes_after_execution":10737418240,"maximum_single_written_file_mib":4096,"wall_seconds_per_command":600,"cpu_seconds_per_command":300,"output_mib":8,"open_files":512,"user_processes":384,"max_process_group_rss_mib":4096,"terminate_grace_seconds":5},
   "risk_canary_plan": {
-    "state": "PROSPECTIVE_SELECTION_AND_RESOURCE_PREFLIGHT_ZERO_EXECUTION",
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_ZERO_EXECUTION",
     "selection_rule": "earliest frozen compatible parent row per missing manager; reuse earliest Bun row for TypeScript and earliest exact-Rust row for compilation",
     "execution_order": "serialized_exact_list_order",
     "rows": [
@@ -208,6 +209,12 @@
   "report": "reports/theseus_vcm_instrument_builder.json",
   "authority": {
     "static_evidence_replay_authorized": true,
+    "four_risk_canary_executions_authorized": true,
+    "two_network_dependency_acquisitions_authorized": true,
+    "network_denied_replays_authorized": true,
+    "untrusted_parent_typescript_transpilation_authorized": true,
+    "untrusted_parent_rust_compilation_authorized": true,
+    "shared_store_retention_authorized": true,
     "network_calls_authorized": false,
     "dependency_fetch_or_install_authorized": false,
     "source_build_authorized": false,

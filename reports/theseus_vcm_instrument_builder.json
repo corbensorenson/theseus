@@ -2,9 +2,9 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_instrument_builder.json",
-    "sha256": "87483e26527f5862191d917887b457eeaa782c345cf55e176de6f4e350c22c61"
+    "sha256": "440ff2ab09a5c372f071cf79c2cbc3a5377bcd38190938f77cbfed198d223f4a"
   },
-  "created_utc": "2026-08-09T00:36:20.958891Z",
+  "created_utc": "2026-08-09T00:40:04.855778Z",
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN report proves only that six already qualified npm, pnpm, Cargo, and uv dependency closures replay through one content-bound row schema and that the prospective forward topology uses manager-shared package stores with disposable installed environments and no per-task duplicate cache authority. It executes no dependency operation and does not yet qualify Bun, Yarn, TypeScript transpilation, untrusted Rust compilation, remaining closures, repository runners, evaluators, VCM packets, models, D1, D2, or book claims.",
@@ -20,7 +20,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 20993425408,
+    "host_free_bytes": 20996702208,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -31,9 +31,9 @@
     "untrusted_build_risk_class": "none_static_replay"
   },
   "risk_canary_plan": {
-    "execution_authorized": false,
+    "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 20993425408,
+    "host_free_bytes": 20996702208,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -45,7 +45,7 @@
           "--cache-dir",
           "runtime/vcm_evaluator/dependency_store/shared/bun"
         ],
-        "execution_authorized": false,
+        "execution_authorized": true,
         "manager": "bun",
         "parent_archive": {
           "path": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz",
@@ -77,7 +77,7 @@
           "--cache-folder",
           "runtime/vcm_evaluator/dependency_store/shared/yarn"
         ],
-        "execution_authorized": false,
+        "execution_authorized": true,
         "manager": "yarn",
         "parent_archive": {
           "path": "runtime/vcm_evaluator/source_archives/04_frappe-draw_parent.tar.gz",
@@ -106,7 +106,7 @@
           "--project",
           "tsconfig.json"
         ],
-        "execution_authorized": false,
+        "execution_authorized": true,
         "manager": "bun",
         "parent_archive": {
           "path": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz",
@@ -135,7 +135,7 @@
           "--offline",
           "--no-run"
         ],
-        "execution_authorized": false,
+        "execution_authorized": true,
         "manager": "cargo",
         "parent_archive": {
           "path": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_parent.tar.gz",
@@ -158,7 +158,7 @@
         }
       }
     ],
-    "state": "PROSPECTIVE_SELECTION_AND_RESOURCE_PREFLIGHT_ZERO_EXECUTION"
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_ZERO_EXECUTION"
   },
   "rows": [
     {
