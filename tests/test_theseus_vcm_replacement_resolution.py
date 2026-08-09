@@ -11,5 +11,5 @@ def test_live_resolution_and_audit_are_all_or_none():
  if not path.is_file():return
  p=json.loads(path.read_text())
  if p.get("trigger_state")!="GREEN":return
- assert p["qualified_task_count"]==3;assert [r["index"] for r in p["rows"]]==[12,13,35];assert p["package_installations"]==0;assert p["parent_target_or_evaluator_executions"]==0
- a=auditor.audit(CONFIG);assert a["trigger_state"]=="GREEN";assert a["qualified_task_count"]==3;assert a["network_resolution_task_count"]==2;assert a["static_lock_task_count"]==1
+ assert p["qualified_task_count"]==3;assert [r["index"] for r in p["rows"]]==[12,13,35];assert p["network_resolution_task_count"]==1;assert p["sealed_receipt_reuse_task_count"]==1;assert p["static_lock_task_count"]==1;assert p["package_installations"]==0;assert p["parent_target_or_evaluator_executions"]==0
+ a=auditor.audit(CONFIG);assert a["trigger_state"]=="GREEN";assert a["qualified_task_count"]==3;assert a["network_resolution_task_count"]==1;assert a["sealed_receipt_reuse_task_count"]==1;assert a["static_lock_task_count"]==1
