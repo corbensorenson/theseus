@@ -1,0 +1,36 @@
+{
+  "archive_receipt_count": 4,
+  "audit_kind": "role-separated_rederivation",
+  "config": {
+    "path": "configs/theseus_vcm_host_adequacy_replacements_audit.json",
+    "sha256": "08611010e338f41cf2198ceb50edda189b3c08252f1c6b819cda833175d4d4ea"
+  },
+  "created_utc": "2026-08-09T05:39:05.096966Z",
+  "explicit_unsupported_host": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "frozen_qualified_indices": [
+    16,
+    25,
+    56
+  ],
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN report role-separately proves only that one source-disjoint Task 13 replacement preserves panel and language, has English title and selected content, complete changed source/verifier archives, no explicit configured Darwin-incompatible manifest/import signal, and zero downstream calls. It does not prove dependency resolution, evaluator adequacy, model utility, or a VCM claim.",
+  "member_receipt_count": 19,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_host_adequacy_replacements_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_host_adequacy_replacements.json",
+    "sha256": "5cc16a2faa0ea905b882d1e210cdbfaff3d829b0e89e054a78ae7efce018d5ed"
+  },
+  "qualified_rows_rerun": false,
+  "replacement_index": 13,
+  "replacement_set_admitted": true,
+  "repository": "paulomtts/pyjinhx",
+  "source_changed": true,
+  "source_disjoint_from_current_panel": true,
+  "state": "HOST_ADEQUATE_REPLACEMENT_ROLE_SEPARATELY_REDERIVED",
+  "total_member_bytes": 133711,
+  "trigger_state": "GREEN",
+  "verifier_changed": true
+}

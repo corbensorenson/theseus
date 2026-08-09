@@ -1,0 +1,18 @@
+{
+  "policy":"project_theseus_vcm_host_adequacy_replacements_audit_v1",
+  "state":"PROSPECTIVE_ROLE_SEPARATED_HOST_ADEQUACY_REPLACEMENT_AUDIT",
+  "source_panel":"reports/theseus_vcm_source_panel_audit_v4.json",
+  "producer_report":"reports/theseus_vcm_host_adequacy_replacements.json",
+  "bindings":[
+    {"id":"audit_owner","path":"scripts/theseus_vcm_host_adequacy_replacements_audit.py","sha256":"bf0443f2e25dcb3decea8f2bcbbeb915b88f3cd21c1bd625fa70f7af4156333d"},
+    {"id":"audit_test","path":"tests/test_theseus_vcm_host_adequacy_replacements_audit.py","sha256":"136c825452292e801d18b34e47e61af0aef3cae9ff4a37fd36b5ec841dbdf45d"},
+    {"id":"source_panel","path":"reports/theseus_vcm_source_panel_audit_v4.json","sha256":"6d6a2270298b5022455b37376c2763855280e7e94c73bba1662857faab5d8886"},
+    {"id":"producer_report","path":"reports/theseus_vcm_host_adequacy_replacements.json","sha256":"5cc16a2faa0ea905b882d1e210cdbfaff3d829b0e89e054a78ae7efce018d5ed"},
+    {"id":"producer_owner","path":"scripts/theseus_vcm_host_adequacy_replacements.py","sha256":"b8dbe6f48eace038a0181e1715f459625234bda01f7851ff04877c87c7e96e2e"}
+  ],
+  "forbidden_unicode_scripts":[{"name":"Cyrillic","start":"0400","end":"052F"},{"name":"Hebrew","start":"0590","end":"05FF"},{"name":"Arabic","start":"0600","end":"06FF"},{"name":"Devanagari","start":"0900","end":"097F"},{"name":"Thai","start":"0E00","end":"0E7F"},{"name":"Hiragana","start":"3040","end":"309F"},{"name":"Katakana","start":"30A0","end":"30FF"},{"name":"CJK","start":"3400","end":"9FFF"},{"name":"Hangul","start":"AC00","end":"D7AF"}],
+  "binary_extensions":[".png",".jpg",".jpeg",".gif",".webp",".ico",".pdf",".zip",".gz",".wasm",".bin",".xlsx"],
+  "authority":{"network_calls_authorized":false,"archive_mutation_authorized":false,"untrusted_repository_execution_authorized":false,"dependency_installation_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
+  "report":"reports/theseus_vcm_host_adequacy_replacements_audit.json",
+  "maximum_inference":"A GREEN report role-separately proves only that one source-disjoint Task 13 replacement preserves panel and language, has English title and selected content, complete changed source/verifier archives, no explicit configured Darwin-incompatible manifest/import signal, and zero downstream calls. It does not prove dependency resolution, evaluator adequacy, model utility, or a VCM claim."
+}

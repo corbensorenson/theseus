@@ -1,0 +1,903 @@
+{
+  "candidate_packet_materialization_opened": false,
+  "checkpoint": {
+    "path": "reports/theseus_vcm_host_adequacy_replacements_checkpoint.json",
+    "sha256": "161f04890634e6b61b3648af5ebdd868674f92a0c51a170ebd2042ad0673b159"
+  },
+  "checkpoint_artifact_hash_verified_final": true,
+  "config": {
+    "path": "configs/theseus_vcm_host_adequacy_replacements.json",
+    "sha256": "a534d543a528d9ee4ff2897ad806cb3c096f79b7b9ef70750a6bd95d6034f663"
+  },
+  "content_language_receipts": [
+    {
+      "index": 13,
+      "repository": "paulomtts/pyjinhx",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    }
+  ],
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_language_scope_classification_calls": 5,
+    "local_model_calls": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "public_metadata_selection_requests": 31,
+    "public_metadata_title_requests": 9,
+    "public_source_content_requests": 69,
+    "source_archives_materialized": 4,
+    "source_bytes_materialized": 133711,
+    "static_host_manifest_scan_calls": 3,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-09T05:37:30.266286Z",
+  "faults": [],
+  "frozen_qualified_indices": [
+    16,
+    25,
+    56
+  ],
+  "hidden_evaluation_opened": false,
+  "host_compatibility_receipts": [
+    {
+      "explicit_unsupported_host": false,
+      "hits": [],
+      "host_platform": "darwin",
+      "repository": "paulomtts/pyjinhx",
+      "scanned_file_count": 10,
+      "scanned_files": [
+        {
+          "bytes": 1641,
+          "path": ".github/workflows/tests.yml",
+          "sha256": "3e0d7c59135d66f89df5c644c84ee7141954256581c03ef344f4f3e6d944542b"
+        },
+        {
+          "bytes": 7240,
+          "path": "pyjinhx/config.py",
+          "sha256": "c2a93072b66d318d27884ef04ea6d2a735699b7c670275fce1f8afd2268c841f"
+        },
+        {
+          "bytes": 4103,
+          "path": "pyjinhx/integrations/base.py",
+          "sha256": "9a63f9c49a990e754ea50b39a740ff5e89f149a9f28bcaec3401d84a35f38de9"
+        },
+        {
+          "bytes": 9470,
+          "path": "pyjinhx/integrations/fastapi.py",
+          "sha256": "bdc11e7b9732b2a5c8ca6a713d2a9b2eca25028df26f93e4749e62200909e972"
+        },
+        {
+          "bytes": 1585,
+          "path": "pyproject.toml",
+          "sha256": "5e93d6bd257b0a48da30f25e13aa887a3553d8815c488d79236088c9788a99cd"
+        },
+        {
+          "bytes": 1034,
+          "path": "tests/minimal/test_bare_install.py",
+          "sha256": "5c1f83ca893578a70c3d3f4a52264c60e47cd4ae86fd1baffe5dbc58c372dc4e"
+        },
+        {
+          "bytes": 9448,
+          "path": "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+          "sha256": "afd17c96c3d360aecf6f6aff7284c3921d5f8cf855fbe98e77cfb7cbbb427f93"
+        },
+        {
+          "bytes": 1698,
+          "path": "tests/pyjinhx/integrations/test_registry.py",
+          "sha256": "1d731151abec55da0d61fa4696c4521530de8e579ddd786741ce2fcc2e122fc3"
+        },
+        {
+          "bytes": 34182,
+          "path": "tests/pyjinhx/test_import_graph.py",
+          "sha256": "d10dc679c13d9f2fd7481ed9ecdd0436f8005a391e79bf4b2576dbec07d0334a"
+        },
+        {
+          "bytes": 1277,
+          "path": "tests/pyjinhx/test_setup_backend_dispatch.py",
+          "sha256": "8daed9956a71e1e1593932e7940152fc7c776c476f0fffdd4cc9e30cf63137d1"
+        }
+      ]
+    }
+  ],
+  "host_invalidation_receipts": [
+    {
+      "explicit_unsupported_host": true,
+      "hits": [
+        {
+          "path": "pyproject.toml",
+          "pattern": "(?i)Operating System :: Microsoft :: Windows"
+        },
+        {
+          "path": "pyproject.toml",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "requirements.txt",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/blackformula.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/bonds.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/calendars.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/calibratedmodel.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/calibrationhelpers.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/capfloor.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/cashflows.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/credit.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/creditdefaultswap.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/currencies.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/date.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/daycounters.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/defaultprobability.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/dividends.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/exercise.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/extras/quantlib_xloil_version.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/gaussian1dmodel.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/grid.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/indexes.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/instruments.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/interpolatedyieldcurves.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/localvolatilities.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/optimizers.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/options.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/parameter.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/payoffs.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/piecewiseyieldcurve.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/quantlib_.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/ratehelpers.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/rounding.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/scheduler.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/settings.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/stochasticprocess.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/swap.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/swaption.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/termstructures.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "src/quantlib_xloil/volatilities.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        },
+        {
+          "path": "tests/workbooktests/test_workbooks.py",
+          "pattern": "(?i)\\b(?:xloil|pywin32|win32api|win32com)\\b"
+        }
+      ],
+      "host_platform": "darwin",
+      "index": 13,
+      "repository": "frame-consulting/QuantLibXlOil",
+      "scanned_file_count": 79,
+      "scanned_files": [
+        {
+          "bytes": 865,
+          "path": "pyproject.toml",
+          "sha256": "72c4061aceca7dd04fb1bdbfe97aa09f98445302646fc1c77d8f9d91dece5951"
+        },
+        {
+          "bytes": 267,
+          "path": "requirements.txt",
+          "sha256": "96541f22be9cf4c12cd61d89592c4378aa2b1f991ed138bc80bb518a67ebb375"
+        },
+        {
+          "bytes": 207,
+          "path": "src/quantlib_xloil/__about__.py",
+          "sha256": "b6e8d6b50e94a5bc311fcef1f47f58bc280e2ed12d2e86bb57ae9c1388565745"
+        },
+        {
+          "bytes": 1578,
+          "path": "src/quantlib_xloil/__init__.py",
+          "sha256": "5a7670e00fd1797c7b13d5a52e50408b7cdef6743ec957e3c2bb786dcb48d92b"
+        },
+        {
+          "bytes": 8788,
+          "path": "src/quantlib_xloil/blackformula.py",
+          "sha256": "f73f3cdc6bb0be4e884f4d3696a6be5ce32f7a62972ca2c54fb4693aae9346a3"
+        },
+        {
+          "bytes": 41403,
+          "path": "src/quantlib_xloil/bonds.py",
+          "sha256": "c5ee1e3ec6bab22f93dba9b411515fe3b0238c64f1de56e30911d5162d128ac4"
+        },
+        {
+          "bytes": 13861,
+          "path": "src/quantlib_xloil/calendars.py",
+          "sha256": "63348293e193a1aeb0fb20f57aa31f07649b857556899afc51b4da9e999b9de5"
+        },
+        {
+          "bytes": 4674,
+          "path": "src/quantlib_xloil/calibratedmodel.py",
+          "sha256": "d5f3e993dceab1686060af2758c2696bb1e4dfef3f93d148760790a2a490d688"
+        },
+        {
+          "bytes": 10260,
+          "path": "src/quantlib_xloil/calibrationhelpers.py",
+          "sha256": "d49370d93bae264937f2a92d140b0656b30ffcf3cd25a6f190b2d612b1bd475f"
+        },
+        {
+          "bytes": 11630,
+          "path": "src/quantlib_xloil/capfloor.py",
+          "sha256": "efdd833ab79fa7dcc344772b8dd95adba97db2c77a47a05d8855eef907dd88f2"
+        },
+        {
+          "bytes": 67585,
+          "path": "src/quantlib_xloil/cashflows.py",
+          "sha256": "3fb86f5de3694849126fe5d71ae193f9b152c25297d32767466d6074afe8f688"
+        },
+        {
+          "bytes": 35,
+          "path": "src/quantlib_xloil/config.py",
+          "sha256": "967aafcf7065e4eccfa3375e16d0925d7284485ed92b9ca2da445f4f5b3c68f1"
+        },
+        {
+          "bytes": 517,
+          "path": "src/quantlib_xloil/credit.py",
+          "sha256": "4ce85523e10d238e18e80e8cafcc2c7f7a760b43afd11d50e91bd3bb18104755"
+        },
+        {
+          "bytes": 23519,
+          "path": "src/quantlib_xloil/creditdefaultswap.py",
+          "sha256": "b623dbbcb0a7315bd14b433b252af844cd3b2af9cb4b57bf3fa20da3b7b6f164"
+        },
+        {
+          "bytes": 6738,
+          "path": "src/quantlib_xloil/currencies.py",
+          "sha256": "84a1e6e4ad18bddd587e09c0a769d37b4d9db92fedd606a4186dc158a7b8d0c9"
+        },
+        {
+          "bytes": 8606,
+          "path": "src/quantlib_xloil/date.py",
+          "sha256": "2059e92b4f0a236221fa7c8a4d33d3961bbbbc50493d7525cefb608d03c10127"
+        },
+        {
+          "bytes": 4308,
+          "path": "src/quantlib_xloil/daycounters.py",
+          "sha256": "0ba40dafdba2ed44fb198569cbed5bb701afc34c7ecbadb6c568ff02b1ccdf1d"
+        },
+        {
+          "bytes": 20247,
+          "path": "src/quantlib_xloil/defaultprobability.py",
+          "sha256": "07aeb3fc50ca07625d044f98a2559bb7a811a27cef58ca780ffcd4b40e044cd3"
+        },
+        {
+          "bytes": 1197,
+          "path": "src/quantlib_xloil/dividends.py",
+          "sha256": "fd5712b782e6a3d9c0a793bf41322d1ef5d10c4928144bd543b6cce1451ede5a"
+        },
+        {
+          "bytes": 3877,
+          "path": "src/quantlib_xloil/exercise.py",
+          "sha256": "b2287755cb2f33a17c6b8b311cb3d6bb1df4625742eef933e52633043c924069"
+        },
+        {
+          "bytes": 0,
+          "path": "src/quantlib_xloil/extras/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 252,
+          "path": "src/quantlib_xloil/extras/quantlib_xloil_version.py",
+          "sha256": "cdfdc6b2c2e43c7205a626681d0ad17c2db4b444a6bb943d5bd34d5736f9fcb4"
+        },
+        {
+          "bytes": 19280,
+          "path": "src/quantlib_xloil/gaussian1dmodel.py",
+          "sha256": "fc2dbb1a88a2b2b5ad42ba852844cfbd086a234e479848967cb4443002db43fc"
+        },
+        {
+          "bytes": 1421,
+          "path": "src/quantlib_xloil/grid.py",
+          "sha256": "c19995112464181b22d848a971f7ed7fb465331c49c3b175a3b0db203efc97ff"
+        },
+        {
+          "bytes": 40087,
+          "path": "src/quantlib_xloil/indexes.py",
+          "sha256": "b616e7bcba2b3b7fe369bc3cf3234b50ac21725d4bed2b7837b6856e55f286c6"
+        },
+        {
+          "bytes": 2565,
+          "path": "src/quantlib_xloil/instruments.py",
+          "sha256": "152e5f8ae073cc0efcd85fa4756a259682fe097b458ac94209f0afb02fca1242"
+        },
+        {
+          "bytes": 5725,
+          "path": "src/quantlib_xloil/interpolatedyieldcurves.py",
+          "sha256": "896b9bcf6e71a69453c7c0cf30149e8d433c909c994f682babe566d17a9ad820"
+        },
+        {
+          "bytes": 4955,
+          "path": "src/quantlib_xloil/localvolatilities.py",
+          "sha256": "fe3aa4f507be049396e8984f93589d817cbd01ad70b7579fd7c69be8a5860f3c"
+        },
+        {
+          "bytes": 4441,
+          "path": "src/quantlib_xloil/optimizers.py",
+          "sha256": "57fb4965db09fb33fed6f2434a823fb572956620d913808f03301d9cce53533a"
+        },
+        {
+          "bytes": 99758,
+          "path": "src/quantlib_xloil/options.py",
+          "sha256": "8898ffc0049a7e25ae7a673fb3431c40a4e0880b3be85417a3b3f6a68af28740"
+        },
+        {
+          "bytes": 3966,
+          "path": "src/quantlib_xloil/parameter.py",
+          "sha256": "f44cd881ebf754b94e37e6372f8b5288818a189127be52ac67a84963d69fe10d"
+        },
+        {
+          "bytes": 4372,
+          "path": "src/quantlib_xloil/payoffs.py",
+          "sha256": "a1852a0adb0bfd0762fa340ac5ab06970008a788cc23aa7ee0ad366ce7022b6d"
+        },
+        {
+          "bytes": 12720,
+          "path": "src/quantlib_xloil/piecewiseyieldcurve.py",
+          "sha256": "4ab8567a611bd50017a774516791684115b2629fd10abb699f2055018a6fc43f"
+        },
+        {
+          "bytes": 482,
+          "path": "src/quantlib_xloil/quantlib_.py",
+          "sha256": "354df53bee33da1a746759e556cea00ead8d0aca0c084e014cc39d1ddd664b53"
+        },
+        {
+          "bytes": 51356,
+          "path": "src/quantlib_xloil/ratehelpers.py",
+          "sha256": "0770346b792e000e842090b3751da198e60c6e76cf1a1a622c54e9410d031ba8"
+        },
+        {
+          "bytes": 1669,
+          "path": "src/quantlib_xloil/rounding.py",
+          "sha256": "8402ef7ec746ae9d5a49eaa43c7cd679c65ac5309179dbcf2e2932cc10f6920d"
+        },
+        {
+          "bytes": 12501,
+          "path": "src/quantlib_xloil/scheduler.py",
+          "sha256": "10737d865a0a0f9ec468a266888fdabd3b7089095a1ea32ea4138cc4a48ffbe1"
+        },
+        {
+          "bytes": 3244,
+          "path": "src/quantlib_xloil/settings.py",
+          "sha256": "8397a579224798cb14a8ef27ef1e970489602b096f15a1e89e4138ee8b6bb04c"
+        },
+        {
+          "bytes": 31933,
+          "path": "src/quantlib_xloil/stochasticprocess.py",
+          "sha256": "ca1ccfa6635e2d3823cfafcc531dc4ab312faeba396a309ac565993887785479"
+        },
+        {
+          "bytes": 71627,
+          "path": "src/quantlib_xloil/swap.py",
+          "sha256": "136fdd024bbf056b89edf151abed750bc4bdc53d63305f32273c6f85c5f210f6"
+        },
+        {
+          "bytes": 14080,
+          "path": "src/quantlib_xloil/swaption.py",
+          "sha256": "c436b1c339ee04a67119735685659a7d63d60d59b681f3d765a41d1f84b75b0a"
+        },
+        {
+          "bytes": 12549,
+          "path": "src/quantlib_xloil/termstructures.py",
+          "sha256": "d8f5fbeb49b367ad4556756f26d0a0167e8483a12e462b39a3c93c31c8ad7821"
+        },
+        {
+          "bytes": 3058,
+          "path": "src/quantlib_xloil/utilities.py",
+          "sha256": "0c52d47a47555771ea8582ee7d94311a09201da1944a708d54e312833767b45b"
+        },
+        {
+          "bytes": 29861,
+          "path": "src/quantlib_xloil/volatilities.py",
+          "sha256": "fe3798b89d67d401f7c3df57d8d3fdf1784ce5d71eeced4ddb4f51f4870d1b54"
+        },
+        {
+          "bytes": 3474,
+          "path": "tests/unittests/test_blackformula.py",
+          "sha256": "0d527a9b2a7424a60d61c25a06e12a82285ba46c7d270d782f3948ddd885dea9"
+        },
+        {
+          "bytes": 11410,
+          "path": "tests/unittests/test_bonds.py",
+          "sha256": "8cfd0544ddf87f0d1a8961bb5de187c701b343210db8b85640addec61c870b42"
+        },
+        {
+          "bytes": 10701,
+          "path": "tests/unittests/test_calendars.py",
+          "sha256": "74c97772f0c411909124430b1180977eaa4d8e1747f6438d00e689b641c63185"
+        },
+        {
+          "bytes": 5659,
+          "path": "tests/unittests/test_calibrationhelpers.py",
+          "sha256": "c69c4a64e111658a9222af7bdfc0ddf59c6c42fb2526c030a42057f59f4bd95b"
+        },
+        {
+          "bytes": 17032,
+          "path": "tests/unittests/test_capfloor.py",
+          "sha256": "2821fe0058da63e3f984b1979b6db76ece93aadee79f53a7c4e7b28ad3789730"
+        },
+        {
+          "bytes": 18863,
+          "path": "tests/unittests/test_cashflows.py",
+          "sha256": "d284fa1928d654e47ebfd421ee9b613dd51ed918b8e00a30740ec04d5a3047cb"
+        },
+        {
+          "bytes": 7751,
+          "path": "tests/unittests/test_creditdefaultswap.py",
+          "sha256": "095b52b078e89ca40a00c5509f4f1db61f4d028f8cb31ab2866af2b001363c6b"
+        },
+        {
+          "bytes": 1973,
+          "path": "tests/unittests/test_currencies.py",
+          "sha256": "596cacc3d7d6d867f64009ad860739b7bc93ace6c83eb599776fb8ad2dffb77a"
+        },
+        {
+          "bytes": 4950,
+          "path": "tests/unittests/test_date.py",
+          "sha256": "aa05123252c21ab193d0389eef1f17277c3fa378a85b06e215af841f99ac39a9"
+        },
+        {
+          "bytes": 9401,
+          "path": "tests/unittests/test_daycounters.py",
+          "sha256": "74e3280797a73b8470ebccb86b530f1af755ebec4cda018a9405ff060377e882"
+        },
+        {
+          "bytes": 7967,
+          "path": "tests/unittests/test_defaultprobability.py",
+          "sha256": "580272d436a8a84b2cece85a3fe8eecdeb98be2ae22ba35c2914b184e815f6bc"
+        },
+        {
+          "bytes": 2189,
+          "path": "tests/unittests/test_dividends.py",
+          "sha256": "143ad0eb5d1550149ebca3761e47d7be22edb3229b8f79ffed9730a1dec0257b"
+        },
+        {
+          "bytes": 3170,
+          "path": "tests/unittests/test_exercise.py",
+          "sha256": "42dfe81fd04af8a8b8499680b1afb324c86df0bb24f775b4661f8ddc424165d0"
+        },
+        {
+          "bytes": 5896,
+          "path": "tests/unittests/test_gaussian1dmodel.py",
+          "sha256": "284458d3180be35ae2b797b5d1e1123ec9f1cc8f1284e74d04e480641a9d1c8d"
+        },
+        {
+          "bytes": 1433,
+          "path": "tests/unittests/test_grid.py",
+          "sha256": "900c5c28d906e47daacc723841ea8d41463a26f1ec3f85e8676a5912fdb922a3"
+        },
+        {
+          "bytes": 5435,
+          "path": "tests/unittests/test_indexes.py",
+          "sha256": "e8b98721f8efc7d880086aedb747cf2527f13a71ceb7940962d9afea3a4cffd1"
+        },
+        {
+          "bytes": 2074,
+          "path": "tests/unittests/test_instruments.py",
+          "sha256": "c17432a0c833a220abc82cbc6216ebf6f59348532599198727a6b1262d9fa4c6"
+        },
+        {
+          "bytes": 4786,
+          "path": "tests/unittests/test_interpolatedyieldcurves.py",
+          "sha256": "49b83807acf8ea3bba8cd5328001dd3a95d2dbe8b01eecc0c5604ff0e39bc71d"
+        },
+        {
+          "bytes": 3782,
+          "path": "tests/unittests/test_localvolatilities.py",
+          "sha256": "ba4d8efe16703eb6ab3d5bd4adaf0a05c17dc6495bb52a9236e561cc22074673"
+        },
+        {
+          "bytes": 2304,
+          "path": "tests/unittests/test_optimizers.py",
+          "sha256": "3b6408b79df67dd32f6b61d881f4900720d12c8e021e7d372d510e0c96711193"
+        },
+        {
+          "bytes": 30942,
+          "path": "tests/unittests/test_options.py",
+          "sha256": "ef4789fff2c591fa85257abbf1d10ad19cdf701d847c6e498e2f04fe09d8f5c0"
+        },
+        {
+          "bytes": 2841,
+          "path": "tests/unittests/test_parameter.py",
+          "sha256": "6612a13e2177c4b60d13dddbefe46717a505fe98396b0bc982fa9fcbce0df8f1"
+        },
+        {
+          "bytes": 1677,
+          "path": "tests/unittests/test_payoffs.py",
+          "sha256": "f55aa6877e3ebfbb6a696be4bcfac1949f896d115b2c8e08a5211345597b5cba"
+        },
+        {
+          "bytes": 6790,
+          "path": "tests/unittests/test_piecewiseyieldcurve.py",
+          "sha256": "06b6707d7236d0fac3139057ec1430c58e52fab9994ecaf453119ce60a26dfa7"
+        },
+        {
+          "bytes": 1097,
+          "path": "tests/unittests/test_quantlib.py",
+          "sha256": "194f4ae08b421c6a76fb91a566150f73b7d60108cf1d293d1db6e3a02fe9eb69"
+        },
+        {
+          "bytes": 9247,
+          "path": "tests/unittests/test_ratehelpers.py",
+          "sha256": "3eed28b0cf3ec0a7c71776816a00281865ca8ef59f17a9a60521cd92e4792f06"
+        },
+        {
+          "bytes": 1475,
+          "path": "tests/unittests/test_rounding.py",
+          "sha256": "e285d9e680bc0e15e7302c9804c56a7bc8c3125ad494a1050c3c7f9bf0a074ed"
+        },
+        {
+          "bytes": 4964,
+          "path": "tests/unittests/test_scheduler.py",
+          "sha256": "654a33bcf1be554320b34565ae8e303942d1440faba0faf832f17388a00dea05"
+        },
+        {
+          "bytes": 2740,
+          "path": "tests/unittests/test_settings.py",
+          "sha256": "c1937a76508b0c687b2e92dfca455d1643efc6bae12c5089e950794c6b193c90"
+        },
+        {
+          "bytes": 9366,
+          "path": "tests/unittests/test_stochasticprocess.py",
+          "sha256": "87ae5cb6158896a3cac3c6ec670f7ba361e315e759609d826709a4b692f45349"
+        },
+        {
+          "bytes": 20687,
+          "path": "tests/unittests/test_swap.py",
+          "sha256": "e705cd04617706eeba37cf7c24310e5da6c7482e832ac5c5220d61d25267039b"
+        },
+        {
+          "bytes": 9454,
+          "path": "tests/unittests/test_swaption.py",
+          "sha256": "2776017f192d0fee9c4ef3243004d60cc1add2cc04ebe97055495efba5bf2421"
+        },
+        {
+          "bytes": 5510,
+          "path": "tests/unittests/test_termstructures.py",
+          "sha256": "ead12b1541e5958d60a6f10bbcce5c9ff15888f9ef21d7282cb0ec7c01a26296"
+        },
+        {
+          "bytes": 12673,
+          "path": "tests/unittests/test_volatilities.py",
+          "sha256": "86eb6c1480775707f7ff9cfdc3c7626991dee1c0c75fa26bb5bd104caa459c3f"
+        },
+        {
+          "bytes": 4918,
+          "path": "tests/workbooktests/test_workbooks.py",
+          "sha256": "cf6ace0a4eacbee0dac0ed2bf97850693da3b6d5449b3efe3ad375ad224f9114"
+        }
+      ]
+    }
+  ],
+  "language_classification_receipts": [
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "614ef5abc3e69afcc7ad44c0c8818d4cf2187539bb3dd1380b72095b4ff552c1",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 13,
+      "repository": "paulomtts/pyjinhx",
+      "title_sha256": "ccca63d8f256bb43f25afd57c8f6520da809bdc1204cf385616c5c1e32cb694c"
+    }
+  ],
+  "maximum_inference": "A GREEN report proves only that the exact currently invalidated Task 13 closure explicitly requires an unsupported Windows/xloil stack and that one source-disjoint same-panel same-language replacement was selected under the original frozen rank after English-title, English-selected-content, source/verifier-change, license, and static Darwin-host compatibility checks. It executes no repository, dependency, evaluator, candidate, model, Luna, D1, or D2 surface and does not qualify the replacement evaluator or a VCM claim.",
+  "policy": "project_theseus_vcm_host_adequacy_replacements_v1",
+  "qualified_rows_rerun": false,
+  "rejection_counts": {
+    "bot_author": 17,
+    "candidate_source_or_license_unavailable": 1,
+    "changed_file_count": 356,
+    "changed_line_count": 193,
+    "chronology": 6,
+    "deleted_only_source": 1,
+    "generated_vendor_lock_only": 9,
+    "head_commit_metadata_unavailable": 1,
+    "license_not_allowlisted": 457,
+    "natural_language_out_of_scope": 1,
+    "no_machine_verifier_change": 525,
+    "no_non_test_source_change": 415,
+    "not_merged_closed_nondraft": 4,
+    "primary_language_mismatch": 9,
+    "prior_or_duplicate_repository": 54,
+    "repository_below_star_floor": 517,
+    "repository_state": 155,
+    "selected_content_natural_language_out_of_scope": 2
+  },
+  "replacement_rows": [
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1068,
+              "path": "LICENSE.txt",
+              "sha256": "0fe9f58721e938846947c38f10838f356fcfaf29e63e390d5629701a8d89d74e"
+            },
+            {
+              "bytes": 6621,
+              "path": "pyjinhx/config.py",
+              "sha256": "3365bea62c3302504371588a4e69fb69b85fd64b3ef2b04b5fbf88997617d342"
+            },
+            {
+              "bytes": 3519,
+              "path": "pyjinhx/integrations/base.py",
+              "sha256": "e439ce83df57b5a9f85d6f76022ac93d2bf29059935f75f43a181304f7285448"
+            },
+            {
+              "bytes": 7258,
+              "path": "pyjinhx/integrations/fastapi.py",
+              "sha256": "27d59e289b64c9dd1132d8ebff000f4111ac1813eac0ba58602bb5d239880b6f"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_host_adequacy_replacements_v1/vcm-claim-13-parent_source.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "5496f3e1c319447cd86f961ae03dbf7713edf462223feeb9ebebe045599ed6fa"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 736,
+              "path": ".github/workflows/tests.yml",
+              "sha256": "e5b4d9d582f4ea5c0e796ffc626ab15939a981910c6d20a38d254c70848e5b34"
+            },
+            {
+              "bytes": 1068,
+              "path": "LICENSE.txt",
+              "sha256": "0fe9f58721e938846947c38f10838f356fcfaf29e63e390d5629701a8d89d74e"
+            },
+            {
+              "bytes": 7216,
+              "path": "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+              "sha256": "1f9a6ab67aa2480b2de0cd829b20e487109040e435ba7dcdf9321a04d067dc0b"
+            },
+            {
+              "bytes": 33996,
+              "path": "tests/pyjinhx/test_import_graph.py",
+              "sha256": "26959563fd250903ddf5b88ce8b6471ce6df6806d03de4255e5bd1406e260398"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_host_adequacy_replacements_v1/vcm-claim-13-parent_verifier.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "571b28eceaba66162944c682e8eeedb6b96233f3a2e33aae3683ca1c5676c729"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1068,
+              "path": "LICENSE.txt",
+              "sha256": "0fe9f58721e938846947c38f10838f356fcfaf29e63e390d5629701a8d89d74e"
+            },
+            {
+              "bytes": 7240,
+              "path": "pyjinhx/config.py",
+              "sha256": "c2a93072b66d318d27884ef04ea6d2a735699b7c670275fce1f8afd2268c841f"
+            },
+            {
+              "bytes": 4103,
+              "path": "pyjinhx/integrations/base.py",
+              "sha256": "9a63f9c49a990e754ea50b39a740ff5e89f149a9f28bcaec3401d84a35f38de9"
+            },
+            {
+              "bytes": 9470,
+              "path": "pyjinhx/integrations/fastapi.py",
+              "sha256": "bdc11e7b9732b2a5c8ca6a713d2a9b2eca25028df26f93e4749e62200909e972"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_host_adequacy_replacements_v1/vcm-claim-13-target_source.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "9ce01ae3b1210d44cafbed0d593708d1c0bc744efc2a4de81d50bd04c3d23d3f"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1641,
+              "path": ".github/workflows/tests.yml",
+              "sha256": "3e0d7c59135d66f89df5c644c84ee7141954256581c03ef344f4f3e6d944542b"
+            },
+            {
+              "bytes": 1068,
+              "path": "LICENSE.txt",
+              "sha256": "0fe9f58721e938846947c38f10838f356fcfaf29e63e390d5629701a8d89d74e"
+            },
+            {
+              "bytes": 1034,
+              "path": "tests/minimal/test_bare_install.py",
+              "sha256": "5c1f83ca893578a70c3d3f4a52264c60e47cd4ae86fd1baffe5dbc58c372dc4e"
+            },
+            {
+              "bytes": 9448,
+              "path": "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+              "sha256": "afd17c96c3d360aecf6f6aff7284c3921d5f8cf855fbe98e77cfb7cbbb427f93"
+            },
+            {
+              "bytes": 1698,
+              "path": "tests/pyjinhx/integrations/test_registry.py",
+              "sha256": "1d731151abec55da0d61fa4696c4521530de8e579ddd786741ce2fcc2e122fc3"
+            },
+            {
+              "bytes": 34182,
+              "path": "tests/pyjinhx/test_import_graph.py",
+              "sha256": "d10dc679c13d9f2fd7481ed9ecdd0436f8005a391e79bf4b2576dbec07d0334a"
+            },
+            {
+              "bytes": 1277,
+              "path": "tests/pyjinhx/test_setup_backend_dispatch.py",
+              "sha256": "8daed9956a71e1e1593932e7940152fc7c776c476f0fffdd4cc9e30cf63137d1"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_host_adequacy_replacements_v1/vcm-claim-13-target_verifier.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "f8b3c733f1d992e92b100d575dae6fbb4e8b4162a33899aad3bef1681aa40abb"
+        }
+      },
+      "base_revision": "768dc81ab9dde07e09a0b0e564ff1953c9457c7a",
+      "faults": [],
+      "head_revision": "a0e4eaa2181a074fda694250677a4a09d4f5abeb",
+      "index": 13,
+      "license_spdx": "MIT",
+      "natural_language_request": "feat: gate fastapi behind a pyjinhx[fastapi] extra",
+      "natural_language_request_sha256": "ccca63d8f256bb43f25afd57c8f6520da809bdc1204cf385616c5c1e32cb694c",
+      "opaque_source_id": "80619b63457cb290211e3fdd5b7f616d7d2b3948e96583cf520adfefe1143f4e",
+      "panel": "claim",
+      "parent_license_path": "LICENSE.txt",
+      "pull_request": 664,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "24832301a502f2b96786d85ce383cb107e2e82044b6f7a3c296a32c8316791ea",
+      "repository": "paulomtts/pyjinhx",
+      "selected_source_paths": [
+        "pyjinhx/config.py",
+        "pyjinhx/integrations/base.py",
+        "pyjinhx/integrations/fastapi.py"
+      ],
+      "selected_verifier_paths": [
+        ".github/workflows/tests.yml",
+        "tests/minimal/test_bare_install.py",
+        "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+        "tests/pyjinhx/integrations/test_registry.py",
+        "tests/pyjinhx/test_import_graph.py",
+        "tests/pyjinhx/test_setup_backend_dispatch.py"
+      ],
+      "target_license_path": "LICENSE.txt"
+    }
+  ],
+  "replacement_set_admitted": true,
+  "selected_repository_count": 1,
+  "source_content_retrieval_opened": true,
+  "source_panel": {
+    "path": "reports/theseus_vcm_source_panel_audit_v4.json",
+    "sha256": "6d6a2270298b5022455b37376c2763855280e7e94c73bba1662857faab5d8886"
+  },
+  "state": "HOST_ADEQUATE_ENGLISH_SOURCE_REPLACEMENTS_BOUND",
+  "transport": {
+    "credentials_retained": false,
+    "logical_request_count": 110,
+    "physical_attempt_count": 110,
+    "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "retry_attempt_count": 0,
+    "source_content_requests": 69,
+    "title_requests": 9
+  },
+  "transport_retry_accounting": {
+    "attempt_endpoint_hash_chain_sha256": "c9ea3e3a09217cebd33a5bb2eb318f922ea1a6f503acde42407886daed6751e4",
+    "logical_request_count": 110,
+    "permanent_candidate_failure_count": 24,
+    "physical_attempt_count": 110,
+    "response_digest_chain_sha256": "dc6a62862a5c05939cf7eb9ea24da6cb2b70364eeb35668e17ec4edd41c7f253",
+    "retry_attempt_count": 0,
+    "state": "HOST_ADEQUATE_ENGLISH_SOURCE_REPLACEMENTS_BOUND",
+    "status_counts": {
+      "200": 86,
+      "404": 24
+    },
+    "successful_request_count": 86,
+    "transport_failure_count": 0
+  },
+  "trigger_state": "GREEN"
+}
