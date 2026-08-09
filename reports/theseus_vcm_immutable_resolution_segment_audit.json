@@ -1,0 +1,81 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_task_count": 6,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "f60555c9f2fd31a3e526722e54fc11631c0c7abf838d4196a8ec749f17673e47"
+  },
+  "created_utc": "2026-08-09T02:48:28.407121Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 5,
+  "maximum_inference": "The audit is role-separated rederivation inside this repository. It checks the six-row denominator, target/archive/tool identities, full diagnostics, lock hashes and syntax, scoped dispositions, zero execution/model counters, and no partial-panel admission. It is not producer-independent replay or external reproduction and cannot support a VCM or ASI Stack capability claim.",
+  "network_or_dependency_execution_performed": false,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_immutable_resolution_segment_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "ce1b5cd97427359386e5caf37260a075932d067134890d87fff7ef7500daa9ad"
+  },
+  "qualified_task_count": 1,
+  "rows": [
+    {
+      "boundary_hit": false,
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "index": 12,
+      "lock_sha256": null,
+      "manager": "uv",
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "returncode": 2
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "index": 13,
+      "lock_sha256": null,
+      "manager": "uv",
+      "repository": "dknowles2/ha-pitboss",
+      "returncode": 2
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "index": 16,
+      "lock_sha256": null,
+      "manager": "uv",
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "returncode": 2
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "index": 25,
+      "lock_sha256": null,
+      "manager": "uv",
+      "repository": "fibsem-os/fibsem-os",
+      "returncode": 2
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK",
+      "index": 35,
+      "lock_sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6",
+      "manager": "cargo",
+      "repository": "Stranger6667/jsonschema",
+      "returncode": 0
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "index": 56,
+      "lock_sha256": null,
+      "manager": "uv",
+      "repository": "AbsoluteMode/session-recall",
+      "returncode": 2
+    }
+  ],
+  "state": "K2_05_IMMUTABLE_RESOLUTION_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}
