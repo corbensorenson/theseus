@@ -1,0 +1,29 @@
+{
+  "cache": {},
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "982d0af00c3b16e42a49d8ba54794c5d111361ce3eae17f9c84166350dc3bdb3"
+  },
+  "created_utc": "2026-08-09T02:50:15.346438Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 16656736256,
+  "free_bytes_before": 16656736256,
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were offered to the pinned uv/Python or Cargo resolver under the sealed registry, no-build, host-reserve, and output contracts; the previously qualified Rust lock is reused byte-for-byte and only the five Python rows rejected before resolution by the V1 CLI flag conflict are retried under the repaired command. Each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
+  "qualified_task_count": 0,
+  "repository_runner_executions": 0,
+  "rows": [],
+  "source_build_executions": 0,
+  "state": "READY_FOR_SIX_IMMUTABLE_RESOLUTION_CLOSURES",
+  "task_count": 0,
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}

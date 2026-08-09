@@ -31,9 +31,14 @@ def test_resolution_contract_has_no_execution_or_model_authority() -> None:
     assert owner.p2a.resolve(cfg["audit_owner"]) == Path(audit_owner.__file__).resolve()
 
 
-def test_resolution_outputs_are_one_generic_manifest_driven_family() -> None:
+def test_resolution_outputs_are_one_generic_manifest_driven_family(tmp_path: Path) -> None:
     cfg = owner.p2a.read_json(CONFIG)
     assert cfg["expected_task_count"] == 6
     assert len({row["output_name"] for row in cfg["rows"]}) == 6
     assert all("task-" in row["output_name"] for row in cfg["rows"])
     assert "do not guess" in cfg["declared_dependency_gap_policy"]
+    _, bound, faults = owner.preflight(CONFIG)
+    assert faults == []
+    command, _, _ = owner.resolution_command(cfg, bound, cfg["rows"][0], tmp_path, tmp_path / "cache", tmp_path)
+    assert "--no-build" in command
+    assert "--only-binary" not in command

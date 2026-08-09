@@ -58,12 +58,18 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
         if receipt.get("project_selected_output_cap") is not None:
             faults.append(f"output_cap_invalid:{index}")
         disposition = str(actual.get("disposition") or "")
-        if disposition == "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK":
+        if disposition.startswith("RESOLUTION_QUALIFIED_IMMUTABLE_LOCK"):
             lock = p2a.mapping(receipt.get("lock"))
             lock_path = p2a.resolve(str(lock.get("path") or ""))
             independently_parsed, parse_faults = producer.validate_lock(str(expected.get("manager") or ""), lock_path)
             if not lock_path.is_file() or p2a.sha256_file(lock_path) != lock.get("sha256") or lock_path.stat().st_size != lock.get("bytes") or parse_faults or independently_parsed.get("package_count") != lock.get("package_count"):
                 faults.append(f"qualified_lock_receipt_invalid:{index}")
+            if disposition.endswith("REUSED_FROM_SEALED_PREDECESSOR"):
+                previous = p2a.mapping(p2a.mapping(bound.get("predecessor")).get("producer_report"))
+                previous_row = next((row for row in p2a.dicts(previous.get("rows")) if int(row.get("index") or 0) == index), {})
+                previous_lock = p2a.mapping(p2a.mapping(previous_row.get("receipt")).get("lock"))
+                if receipt.get("predecessor_reuse") is not True or previous_row.get("disposition") != "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK" or previous_lock != lock:
+                    faults.append(f"predecessor_lock_reuse_invalid:{index}")
         elif disposition == "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION":
             if receipt.get("returncode") in (None, 0) or receipt.get("boundary_hit") is not False:
                 faults.append(f"resolution_disposition_invalid:{index}")
@@ -75,7 +81,7 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
         audited.append({"index": index, "repository": actual.get("repository"), "manager": actual.get("manager"), "returncode": receipt.get("returncode"), "boundary_hit": receipt.get("boundary_hit"), "disposition": disposition, "lock_sha256": p2a.mapping(receipt.get("lock")).get("sha256")})
     if [row["index"] for row in audited] != producer.EXPECTED_INDICES or set(configured) != {row["index"] for row in audited}:
         faults.append("audited_denominator_invalid")
-    qualified = sum(row["disposition"] == "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK" for row in audited)
+    qualified = sum(str(row["disposition"]).startswith("RESOLUTION_QUALIFIED_IMMUTABLE_LOCK") for row in audited)
     if report.get("qualified_task_count") != qualified or report.get("inconclusive_task_count") != len(audited) - qualified:
         faults.append("producer_counts_invalid")
     for key in ("package_installations", "source_build_executions", "repository_runner_executions", "parent_target_or_evaluator_executions", "candidate_or_control_calls", "external_reference_calls", "teacher_calls"):

@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 
 POLICY = "project_theseus_vcm_immutable_resolution_segment_v1"
-STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_V1"
+STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_CLI_REPAIR_V2"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_immutable_resolution_segment.json"
 EXPECTED_INDICES = [12, 13, 16, 25, 35, 56]
 
@@ -65,6 +65,22 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
             sources[source_id] = {}
         else:
             sources[source_id] = p2a.read_json(source)
+
+    predecessor: dict[str, dict[str, Any]] = {}
+    for name, raw in p2a.mapping(cfg.get("predecessor")).items():
+        binding = p2a.mapping(raw)
+        predecessor_path = p2a.resolve(str(binding.get("path") or ""))
+        if not predecessor_path.is_file() or p2a.sha256_file(predecessor_path) != binding.get("sha256"):
+            faults.append(f"predecessor_binding_invalid:{name}")
+            predecessor[name] = {}
+        else:
+            predecessor[name] = p2a.read_json(predecessor_path)
+    previous_report = predecessor.get("producer_report", {})
+    previous_audit = predecessor.get("audit_report", {})
+    if previous_report.get("trigger_state") != "GREEN" or previous_report.get("qualified_task_count") != 1 or previous_report.get("inconclusive_task_count") != 5:
+        faults.append("predecessor_producer_state_invalid")
+    if previous_audit.get("trigger_state") != "GREEN" or previous_audit.get("qualified_task_count") != 1 or previous_audit.get("inconclusive_task_count") != 5:
+        faults.append("predecessor_audit_state_invalid")
 
     tools: dict[str, str] = {}
     for name, raw in p2a.mapping(cfg.get("tools")).items():
@@ -123,7 +139,7 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
         faults.append("output_directory_invalid")
     if cache_root != (ROOT / "runtime/vcm_evaluator/dependency_store/immutable-resolution").resolve():
         faults.append("shared_cache_root_invalid")
-    return cfg, {"sources": sources, "tools": tools, "rows": bound_rows}, sorted(set(faults))
+    return cfg, {"sources": sources, "tools": tools, "rows": bound_rows, "predecessor": predecessor}, sorted(set(faults))
 
 
 def preflight_report(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
@@ -157,6 +173,10 @@ def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
                 results.append(scoped_failure(row, item, "INCONCLUSIVE_IMPLEMENTATION_ARCHIVE_EXTRACTION", extract_faults))
                 continue
             output = output_dir / str(row.get("output_name") or "")
+            reused = reusable_predecessor_lock(bound, index, output)
+            if reused:
+                results.append({"index": index, "repository": row.get("repository"), "manager": row.get("manager"), "target_archive": p2a.rel(item["archive"]), "target_archive_sha256": p2a.sha256_file(item["archive"]), "command": [], "receipt": {"lock": reused, "predecessor_reuse": True, "predecessor_producer_report_sha256": p2a.mapping(cfg.get("predecessor")).get("producer_report", {}).get("sha256")}, "faults": [], "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR"})
+                continue
             if output.exists():
                 results.append(scoped_failure(row, item, "INCONCLUSIVE_EXPERIMENT_IMMUTABLE_OUTPUT_ALREADY_EXISTS", ["immutable_output_already_exists"]))
                 continue
@@ -206,7 +226,7 @@ def resolution_command(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str
         command = [tools["uv"], "pip", "compile", *[str(root / value) for value in p2a.strings(row.get("inputs"))]]
         for extra in p2a.strings(row.get("extras")):
             command.extend(["--extra", extra])
-        command.extend(["--python", tools["python"], "--python-platform", "aarch64-apple-darwin", "--generate-hashes", "--no-build", "--only-binary", ":all:", "--index-strategy", "first-index", "--default-index", "https://pypi.org/simple", "--cache-dir", str(cache_root / "uv"), "--output-file", str(generated), "--color", "never", "--no-progress"])
+        command.extend(["--python", tools["python"], "--python-platform", "aarch64-apple-darwin", "--generate-hashes", "--no-build", "--index-strategy", "first-index", "--default-index", "https://pypi.org/simple", "--cache-dir", str(cache_root / "uv"), "--output-file", str(generated), "--color", "never", "--no-progress"])
         env.update({"UV_PYTHON": tools["python"], "UV_PYTHON_DOWNLOADS": "never", "UV_NO_CONFIG": "1"})
     else:
         generated = root / "Cargo.lock"
@@ -345,6 +365,18 @@ def validate_lock(manager: str, path: Path) -> tuple[dict[str, Any], list[str]]:
     return {"manager": manager, "package_count": package_count}, faults
 
 
+def reusable_predecessor_lock(bound: dict[str, Any], index: int, output: Path) -> dict[str, Any]:
+    previous = p2a.mapping(p2a.mapping(bound.get("predecessor")).get("producer_report"))
+    row = next((item for item in p2a.dicts(previous.get("rows")) if int(item.get("index") or 0) == index), {})
+    if row.get("disposition") != "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK":
+        return {}
+    lock = p2a.mapping(p2a.mapping(row.get("receipt")).get("lock"))
+    lock_path = p2a.resolve(str(lock.get("path") or ""))
+    if lock_path != output or not lock_path.is_file() or p2a.sha256_file(lock_path) != lock.get("sha256") or lock_path.stat().st_size != lock.get("bytes"):
+        return {}
+    return dict(lock)
+
+
 def tree_identity(root: Path, *, excluded: set[str] | None = None) -> dict[str, Any]:
     excluded = excluded or set()
     rows = []
@@ -360,7 +392,7 @@ def scoped_failure(row: dict[str, Any], item: dict[str, Any], disposition: str, 
 
 
 def finish(cfg: dict[str, Any], path: Path, rows: list[dict[str, Any]], faults: list[str], *, execution_performed: bool, cache_root: Path | None, free_before: int) -> dict[str, Any]:
-    qualified = sum(row.get("disposition") == "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK" for row in rows)
+    qualified = sum(str(row.get("disposition") or "").startswith("RESOLUTION_QUALIFIED_IMMUTABLE_LOCK") for row in rows)
     return {"policy": POLICY, "created_utc": p2a.now(), "trigger_state": "RED" if faults else ("GREEN" if execution_performed else "PAUSED"), "state": "K2_05_IMMUTABLE_RESOLUTION_SEGMENT_EXECUTED_WITH_SCOPED_DISPOSITIONS" if execution_performed and not faults else ("READY_FOR_SIX_IMMUTABLE_RESOLUTION_CLOSURES" if not faults else "K2_05_IMMUTABLE_RESOLUTION_SEGMENT_INVALID"), "faults": sorted(set(faults)), "config": {"path": p2a.rel(path), "sha256": p2a.sha256_file(path)}, "execution_performed": execution_performed, "task_count": len(rows), "qualified_task_count": qualified, "inconclusive_task_count": len(rows) - qualified, "rows": rows, "cache": tree_identity(cache_root) if cache_root else {}, "free_bytes_before": free_before, "free_bytes_after": shutil.disk_usage(ROOT).free, "panel_admitted": False, "partial_panel_admission_forbidden": True, "package_installations": 0, "source_build_executions": 0, "repository_runner_executions": 0, "parent_target_or_evaluator_executions": 0, "candidate_or_control_calls": 0, "external_reference_calls": 0, "teacher_calls": 0, "maximum_inference": cfg.get("maximum_inference")}
 
 
