@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_parent_only_materializer as parent_only  # noqa: E402
 
-POLICY = "project_theseus_vcm_k3_route_preflight_v3"
-CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v3"
+POLICY = "project_theseus_vcm_k3_route_preflight_v4"
+CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v4"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_k3_route_preflight.json"
 ROUTES = (
     "no_added_context_floor",
@@ -361,18 +361,22 @@ def exact_token_counter(cfg: dict[str, Any]) -> Callable[[str, str], Any]:
             add_generation_prompt=True,
             **kwargs,
         )
-        if len(rendered.encode("utf-8")) <= 2_000_000:
+        if len(rendered.encode("utf-8")) <= 500_000:
             exact = len(tokenizer.backend_tokenizer.encode(rendered, add_special_tokens=False).ids)
             return {"kind": "exact_monolithic", "exact_tokens": exact, "lower_bound_tokens": exact}
-        chunks = [rendered[index : index + 65_536] for index in range(0, len(rendered), 65_536)]
+        chunk_count = (len(rendered) + 65_535) // 65_536
         token_sum = 0
-        for chunk in chunks:
+        for index in range(0, len(rendered), 65_536):
+            chunk = rendered[index : index + 65_536]
             token_sum += len(tokenizer.backend_tokenizer.encode(chunk, add_special_tokens=False).ids)
+            conservative_lower = max(0, token_sum - 128 * max(0, chunk_count - 1))
+            if conservative_lower > 262_144:
+                return {"kind": "conservative_chunked_lower_bound", "exact_tokens": None, "lower_bound_tokens": conservative_lower}
         # Chunking can only overcount relative to the canonical monolithic BPE.
         # Subtract a deliberately loose 128-token allowance per join. This is
         # used only to prove physical ineligibility, never as an exact count.
-        conservative_lower = max(0, token_sum - 128 * max(0, len(chunks) - 1))
-        return {"kind": "conservative_chunked_lower_bound", "exact_tokens": None, "lower_bound_tokens": conservative_lower}
+        exact = len(tokenizer.backend_tokenizer.encode(rendered, add_special_tokens=False).ids)
+        return {"kind": "exact_monolithic_after_chunked_feasibility", "exact_tokens": exact, "lower_bound_tokens": exact}
     return count
 
 

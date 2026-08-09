@@ -13,7 +13,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_k3_route_preflight as producer  # noqa: E402
 
-POLICY = "project_theseus_vcm_k3_route_preflight_audit_v3"
+POLICY = "project_theseus_vcm_k3_route_preflight_audit_v4"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_k3_route_preflight.json"
 FORBIDDEN = {"repository", "source_task_id", "target", "target_patch", "tests", "hidden_tests", "selected_source_paths", "selected_verifier_paths", "expected", "answer", "solution"}
 

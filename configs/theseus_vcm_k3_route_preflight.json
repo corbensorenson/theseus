@@ -1,7 +1,7 @@
 {
-  "policy": "project_theseus_vcm_k3_route_preflight_config_v3",
-  "audit_policy": "project_theseus_vcm_k3_route_preflight_audit_v3",
-  "state": "PROSPECTIVE_K3_CALL_FREE_SIX_ROW_ROUTE_PREFLIGHT_V3_WITH_HONEST_OVERSIZED_PROMPT_PROOF",
+  "policy": "project_theseus_vcm_k3_route_preflight_config_v4",
+  "audit_policy": "project_theseus_vcm_k3_route_preflight_audit_v4",
+  "state": "PROSPECTIVE_K3_CALL_FREE_SIX_ROW_ROUTE_PREFLIGHT_V4_WITH_EARLY_CONSERVATIVE_INELIGIBILITY_PROOF",
   "predecessor_invalidated_attempt": {
     "seal_commit": "e9b46943",
     "producer_report": "reports/theseus_vcm_k3_route_preflight_v1_producer_green_audit_wall.json",
@@ -26,10 +26,20 @@
     "external_reference_calls": 0,
     "disposition": "INCONCLUSIVE_EXPERIMENT"
   },
+  "third_invalidated_attempt": {
+    "seal_commit": "ad1dfb4a",
+    "invalidation_class": "OVERSIZED_LOWER_BOUND_OWNER_FAILED_TO_STOP_AFTER_INELIGIBILITY_WAS_PROVED",
+    "producer_report_published": false,
+    "audit_report_published": false,
+    "local_model_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "external_reference_calls": 0,
+    "disposition": "INCONCLUSIVE_IMPLEMENTATION"
+  },
   "owner": "scripts/theseus_vcm_k3_route_preflight.py",
-  "owner_sha256": "b0cb4f481efb833db5f3daf59f0738ddb6515188163ef8ed4fcecd62231ac2f6",
+  "owner_sha256": "2e947a30fd3032d91bfdb3d7db4e6ff187f95fbf1d54c0b7632485043a883edf",
   "audit_owner": "scripts/theseus_vcm_k3_route_preflight_audit.py",
-  "audit_owner_sha256": "8793f6ed5b345c80076065f27808cf3835aa85e58fcfdedeec798e5b695fe9fa",
+  "audit_owner_sha256": "fd25b76720bea13617fd7ff73ab39e26c3197fad45e1752f6fdefc6c61e0ef56",
   "test_owner": "tests/test_theseus_vcm_k3_route_preflight.py",
   "test_owner_sha256": "26eb2e71f6a09248e8b11954e422a7304bd1c869a998ae3b46109edf6b3fe7b2",
   "k2_store": "runtime/vcm_evaluator/contiguous_six_row_store_v1.json",
@@ -57,7 +67,7 @@
   "chat_template_kwargs": {"enable_thinking": false},
   "oversized_prompt_token_measurement": {
     "canonical_eligible_prompt_encoding": "exact_monolithic_pinned_tokenizer",
-    "monolithic_host_safety_threshold_utf8_bytes": 2000000,
+    "monolithic_host_safety_threshold_utf8_bytes": 500000,
     "oversized_only_proof": "chunked_token_sum_minus_128_tokens_per_join",
     "oversized_measurement_is_exact": false,
     "oversized_measurement_use": "physical_ineligibility_proof_only_never_model_or_mechanism_evidence"
@@ -135,9 +145,9 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "packets_out": "runtime/vcm_evaluator/k3_six_row_route_packets_v3.json",
-  "report": "reports/theseus_vcm_k3_route_preflight_v3.json",
-  "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v3.json",
+  "packets_out": "runtime/vcm_evaluator/k3_six_row_route_packets_v4.json",
+  "report": "reports/theseus_vcm_k3_route_preflight_v4.json",
+  "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v4.json",
   "maximum_inference": "A GREEN call-free preflight proves only that six required local K3 routes can be deterministically materialized from exact parent-only stores, counterbalanced, counted by the pinned tokenizer, and bounded by frozen analysis, custody, cost, completion, and host-canary rules. It authorizes no candidate, evaluator, Luna, teacher, training, serving, D1, D2, or book action and is not VCM utility evidence.",
   "audit_maximum_inference": "A GREEN role-separated audit rederives the 36 candidate packet receipts, six route identities, parent-information matching, exact tokenizer residuals, counterbalancing, forbidden-field absence, zero-call custody, and frozen decision boundaries. It is not external reproduction and does not establish model competence, VCM utility, economics, transfer, or ASI Stack support."
 }
