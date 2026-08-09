@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_parent_only_materializer as parent_only  # noqa: E402
 
-POLICY = "project_theseus_vcm_k3_route_preflight_v1"
-CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v1"
+POLICY = "project_theseus_vcm_k3_route_preflight_v2"
+CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v2"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_k3_route_preflight.json"
 ROUTES = (
     "no_added_context_floor",
@@ -351,10 +351,13 @@ def exact_token_counter(cfg: dict[str, Any]) -> Callable[[str, str], int]:
     tokenizer = AutoTokenizer.from_pretrained(snapshot, local_files_only=True)
     kwargs = p2a.mapping(cfg.get("chat_template_kwargs"))
     def count(system: str, prompt: str) -> int:
-        encoded = tokenizer.apply_chat_template([{"role": "system", "content": system}, {"role": "user", "content": prompt}], tokenize=True, add_generation_prompt=True, **kwargs)
-        if isinstance(encoded, dict):
-            encoded = encoded.get("input_ids", [])
-        return len(encoded)
+        rendered = tokenizer.apply_chat_template(
+            [{"role": "system", "content": system}, {"role": "user", "content": prompt}],
+            tokenize=False,
+            add_generation_prompt=True,
+            **kwargs,
+        )
+        return len(tokenizer.backend_tokenizer.encode(rendered, add_special_tokens=False).ids)
     return count
 
 
