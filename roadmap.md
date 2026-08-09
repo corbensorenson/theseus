@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_ENVIRONMENT_MATERIALIZATION_ACTIVE` |
+| State | `VCM_V3_K2_05_MATCHED_VERIFIER_EXECUTION_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_six_row_environment_materialization_v1` |
-| Current wall | `six_immutable_locks_green_common_evaluator_environments_not_yet_materialized` |
+| Active attempt | `k2_05_six_row_matched_verifier_execution_v1` |
+| Current wall | `six_common_environments_green_matched_parent_target_verifier_receipts_not_yet_executed` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_seal_and_materialize_common_evaluator_environments_then_run_matched_parent_target_verifiers_without_partial_panel_admission` |
+| Next legal action | `prospectively_seal_and_execute_six_matched_parent_target_verifiers_without_partial_panel_admission` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -461,10 +461,12 @@ the separate role audit is GREEN. The six immutable-resolution closures are now
 reused byte-for-byte; Task 13 resolved under Python 3.14.2 after exact static
 sdist qualification and network-denied wheel builds for its sdist frontier.
 The resolution phase installed no packages and ran no repository evaluator or
-model. K2.05 now advances to one generic, serial, reserve-safe materializer for
-the six common evaluator environments, followed by exact matched parent/target
-verifier execution. The full locked batch remains closed by the existing
-storage wall and may not be smuggled through partial panel admission.
+model. One generic, serial, reserve-safe owner has now materialized and
+role-separately rederived all six common evaluator environments through a
+1.75 GB shared uv/Cargo store with network-denied replay. K2.05 now advances to
+exact matched parent/target verifier execution. The full locked batch remains
+closed by the existing storage wall and may not be smuggled through partial
+panel admission.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -778,9 +780,9 @@ retention through governed custody rather than ad hoc cleanup.
 4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. **CURRENT — COMMON EVALUATOR ENVIRONMENTS:** Preserve the GREEN eight-row
-   static segment and six immutable locks; prospectively seal one serial,
-   reserve-safe materializer and matched parent/target verifier path. Preserve
+5. **CURRENT — MATCHED VERIFIER EXECUTION:** Preserve the GREEN eight-row
+   static segment, six immutable locks, and six common environments;
+   prospectively seal one matched parent/target verifier path. Preserve
    the 62-row denominator and do not admit a partial panel. The 48-row locked
    segment remains separately closed by the 40.6 GiB reserve-safe storage
    deficit until a bounded acquisition plan fits.

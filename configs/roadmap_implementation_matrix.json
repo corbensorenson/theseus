@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_05_ENVIRONMENT_MATERIALIZATION_ACTIVE",
+      "state": "VCM_V3_K2_05_MATCHED_VERIFIER_EXECUTION_ACTIVE",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_05_six_row_environment_materialization_v1",
-      "current_blocker": "six_immutable_locks_green_common_evaluator_environments_not_yet_materialized",
+      "active_attempt_id": "k2_05_six_row_matched_verifier_execution_v1",
+      "current_blocker": "six_common_environments_green_matched_parent_target_verifier_receipts_not_yet_executed",
       "last_closed_task_index": 26,
-      "next_legal_action": "prospectively_seal_and_materialize_common_evaluator_environments_then_run_matched_parent_target_verifiers_without_partial_panel_admission",
+      "next_legal_action": "prospectively_seal_and_execute_six_matched_parent_target_verifiers_without_partial_panel_admission",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.05 has role-separately GREEN target-free segmentation, all-62 parent stores, all eight static parent-fail/target-pass evaluator constructs, and all six immutable dependency locks. The immutable segment reuses five sealed locks and adds one Python 3.14 Task 13 lock after exact static sdist qualification and network-denied wheel builds; it installs no packages and runs no evaluator or model. This is evaluator-instrument evidence only, not model or VCM utility. Common evaluator environments, matched verifier receipts, 48 locked closures, model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.05 has role-separately GREEN target-free segmentation, all-62 parent stores, all eight static parent-fail/target-pass evaluator constructs, all six immutable dependency locks, and all six shared-store/disposable evaluator environments. The environment segment retains one 1,754,707,286-byte uv/Cargo store across 95,673 files, demonstrates network-denied replay, and runs no repository verifier or model. This is evaluator-instrument evidence only, not model or VCM utility. Six matched parent/target verifier receipts, 48 locked closures, model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -405,7 +405,7 @@
             ],
             "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
             "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden.",
-            "latest_observation": "The target-free 8/6/48 plan, all-62 parent stores, all eight static evaluator constructs, and all six immutable dependency locks are role-separately GREEN. Five locks were reused byte-for-byte and Task 13 resolved on Python 3.14.2 after exact static sdist qualification and network-denied wheel builds. Resolution installed no packages and ran no evaluator or model. Common evaluator-environment materialization and matched parent/target verifier execution are next; panel admission remains withheld and locked work remains closed by the storage wall."
+            "latest_observation": "The target-free 8/6/48 plan, all-62 parent stores, all eight static evaluator constructs, all six immutable dependency locks, and all six shared-store/disposable environments are role-separately GREEN. The environment owner retained one 1.75 GB uv/Cargo store, demonstrated network-denied replay, preserved the 10 GiB reserve, and ran no repository verifier or model. Six matched parent/target verifier pairs are next; panel admission remains withheld and locked work remains closed by the storage wall."
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
@@ -1741,7 +1741,13 @@
         "config":"configs/theseus_vcm_immutable_resolution_segment.json","owner":"scripts/theseus_vcm_immutable_resolution_segment.py","test":"tests/test_theseus_vcm_immutable_resolution_segment.py","report":"reports/theseus_vcm_immutable_resolution_segment_v5.json","audit_owner":"scripts/theseus_vcm_immutable_resolution_segment_audit.py","audit_report":"reports/theseus_vcm_immutable_resolution_segment_audit_v5.json",
         "owner_sha256":"8cd7a55cf58a8daf294469f05cb3c1158eaf8fa65aa59dca5a50c5b1e47acf70","config_sha256":"506277fc20da7d00099e696e0286e8796e0a4e8cc98fb8fb0365d001e1025c08","test_sha256":"3e499ea7feecee2df07e0ed327da9f22003a90ddddeb6d442d181ca151816ccb","report_sha256":"2a96925e2d2604faea3ddcfe9d7b706e300446c9ee6ee94e72813d479e838275","audit_owner_sha256":"74f4cf6466bb90b06eb87a2e0c17f32b3eac53b504fbbd927137b08fb489afee","audit_report_sha256":"ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066",
         "state":"K2_05_IMMUTABLE_RESOLUTION_ROLE_SEPARATELY_REDERIVED","task_count":6,"qualified_task_count":6,"qualified_task_indices":[12,13,16,25,35,56],"inconclusive_task_count":0,"reused_lock_count":5,"new_lock_count":1,"task13_python_version":"3.14.2","task13_package_count":158,"package_installations":0,"source_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,"panel_admitted":false,
-        "maximum_inference":"all six exact immutable dependency declarations have audited hashed locks; this is resolution-instrument evidence only and cannot support task, evaluator, model, VCM, or book conclusions","next_boundary":"prospectively seal and materialize common evaluator environments, then run matched parent/target verifiers without partial panel admission"
+        "maximum_inference":"all six exact immutable dependency declarations have audited hashed locks; this is resolution-instrument evidence only and cannot support task, evaluator, model, VCM, or book conclusions","next_boundary":"preserve the now-GREEN six-row common environments and run matched parent/target verifiers without partial panel admission"
+      },
+      "vcm_six_row_environment_materializer": {
+        "config":"configs/theseus_vcm_six_row_environment_materializer.json","owner":"scripts/theseus_vcm_six_row_environment_materializer.py","test":"tests/test_theseus_vcm_six_row_environment_materializer.py","report":"reports/theseus_vcm_six_row_environment_materializer_v3.json","audit_owner":"scripts/theseus_vcm_six_row_environment_materializer_audit.py","audit_report":"reports/theseus_vcm_six_row_environment_materializer_audit_v3.json",
+        "owner_sha256":"8d3ba44f89f3c7b5b3f415ea4def74efc45217fe38d22e35c8d0f315108acd6e","config_sha256":"da083212194d6b3e1c95611f36fc72c76c475d8cb3f87da99b194b602c0fb365","test_sha256":"b6483a2013dfa3045291f6e09284826c7a3edbd8307203f4390deb2c3dbb8fa0","report_sha256":"05ca4abb1b5f399b067233a16a7cceaab10b9dda7c582b3b80a64011d8b3c4e2","audit_owner_sha256":"4efc6b1354d51339517f8b8d0737a4fe5d4578208b57827fe5ad2def68e40bbf","audit_report_sha256":"a085713689bd052e8b2ad5c80cf05313c22a7531575278e5ae1a299c5478a155",
+        "state":"K2_05_SIX_ROW_ENVIRONMENT_MATERIALIZATION_ROLE_SEPARATELY_REDERIVED","task_count":6,"qualified_task_count":6,"qualified_task_indices":[12,13,16,25,35,56],"inconclusive_task_count":0,"reused_row_count":4,"executed_row_count":2,"retained_store_bytes":1754707286,"retained_store_file_count":95673,"retained_store_identity_sha256":"bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9","network_denied_replays":2,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,"panel_admitted":false,
+        "maximum_inference":"all six exact immutable dependency environments materialize through one shared uv/Cargo store and network-denied replay; this is environment-instrument evidence only and cannot support task, evaluator, model, VCM, or book conclusions","next_boundary":"prospectively seal and execute six matched parent/target verifier pairs without partial panel admission"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",
