@@ -1,0 +1,92 @@
+{
+  "policy": "project_theseus_vcm_sdist_batch_build_v1",
+  "state": "PROSPECTIVE_TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_V1",
+  "owner": "scripts/theseus_vcm_sdist_batch_build.py",
+  "owner_sha256": "bd364894fc13cda476ebd279046ffb6bb64cc1f88f755810065c510cd891c857",
+  "audit_policy": "project_theseus_vcm_sdist_batch_build_audit_v1",
+  "audit_owner": "scripts/theseus_vcm_sdist_batch_build_audit.py",
+  "audit_owner_sha256": "94ed2c72965dda2572ac8206fe5ef60baf83be2cabbd683e829e0608bfe51597",
+  "sources": {
+    "sdist_batch": {
+      "path": "reports/theseus_vcm_sdist_batch_preflight_v2.json",
+      "sha256": "7d84efbf8d3386dca9dd4cdcae11a2ee156d59d7dcaa06dad2d91ff70f7e672a"
+    },
+    "sdist_batch_audit": {
+      "path": "reports/theseus_vcm_sdist_batch_preflight_audit_v2.json",
+      "sha256": "e07cfb0819d8cc1c6e26397a813ef044877e2fa11f469f73bfa7e8f81f79cd83"
+    }
+  },
+  "tools": {
+    "uv": {
+      "path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+      "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf"
+    },
+    "python": {
+      "path": "runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+      "sha256": "3d6400b63b150164e89a690d9813af8b0eb420af9f336ef1f6c5102c6da60eae"
+    },
+    "sandbox_exec": {
+      "path": "/usr/bin/sandbox-exec",
+      "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"
+    }
+  },
+  "rows": [
+    {
+      "name": "habluetooth",
+      "version": "6.26.5",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "Cython==3.1.3",
+        "poetry-core==2.2.1"
+      ]
+    },
+    {
+      "name": "bluetooth-data-tools",
+      "version": "1.29.21",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "Cython==3.1.3",
+        "poetry-core==2.2.1"
+      ]
+    },
+    {
+      "name": "PyRIC",
+      "version": "0.1.6.3",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "wheel==0.45.1"
+      ]
+    }
+  ],
+  "wheel_store": "runtime/vcm_evaluator/dependency_store/wheels",
+  "limits": {
+    "minimum_free_bytes_after_execution": 10737418240,
+    "maximum_temporary_bytes": 4294967296,
+    "wall_seconds_per_command": 900
+  },
+  "authority": {
+    "disposable_pinned_build_environment_authorized": true,
+    "network_build_tool_wheel_sync_authorized": true,
+    "exact_prequalified_sdist_build_authorized": true,
+    "network_denied_sandbox_build_authorized": true,
+    "built_wheel_retention_authorized": true,
+    "evaluator_package_installation_authorized": false,
+    "project_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "report": "reports/theseus_vcm_sdist_batch_build.json",
+  "audit_report": "reports/theseus_vcm_sdist_batch_build_audit.json",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists statically qualified by the sealed V2 batch were built one at a time from those retained archives under a network-denied macOS sandbox, using prospectively pinned disposable build environments, and that the resulting wheels have safe paths and exact package identities. It does not prove installability, evaluator adequacy, target behavior, subsystem benefit, general dependency safety, cross-platform reproducibility, model capability, or any ASI Stack claim. Build-tool wheels may be fetched only before the source build and only for the pinned disposable build environment; no target/evaluator dependency is fetched or installed here. No partial batch is admitted.",
+  "audit_maximum_inference": "This role-separated audit rederives the retained wheel identities, members, metadata, diagnostic integrity, and network-denied build-command receipts without executing a build, evaluator, repository runner, or model. It is not producer-independent replay or external reproduction."
+}
