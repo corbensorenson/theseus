@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_03_V6_RUST_GREEN_TYPESCRIPT_PARENT_PREREQUISITE_GAP` | Both retained stores replay offline and Rust compilation is GREEN. Task 61 full-project TypeScript is inconclusive because its parent snapshot omits imported `styles.generated.ts` |
+| Active VCM claim | `VCM_V3_K2_03_TYPESCRIPT_MECHANICS_V7_PROSPECTIVELY_SEALED` | V7 binds strict no-emit compilation of exact real parent file `framework/src/styles.ts` after zero-network Bun replay; this is mechanics-only and does not qualify the full repository |
 | VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
 | VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -67,10 +67,10 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`k2_03_generic_ecosystem_risk_canaries_v6`, last closed task 26, and the wall
-`task61_full_project_typecheck_requires_missing_generated_parent_source`.
+`k2_03_generic_ecosystem_risk_canaries_v7`, last closed task 26, and the wall
+`narrow_real_parent_typescript_mechanics_not_executed_or_role_separated_audited`.
 The next legal action is
-`seal_narrow_real_parent_typescript_mechanics_canary_then_role_separately_audit_k2_03`.
+`execute_narrow_real_parent_typescript_mechanics_then_role_separately_audit_k2_03`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -105,6 +105,10 @@ V6 completed: Rust is GREEN, and the exact TypeScript diagnostic proves the
 full-project parent snapshot lacks an imported generated source. This is not a
 TypeScript mechanics negative. One narrow real-parent TypeScript compilation
 may be sealed before the role-separated K2.03 audit.
+
+V7 is sealed for strict no-emit compilation of exact real parent file
+`framework/src/styles.ts`; it grants no full-project inference. The K2.03 audit
+must follow the execution receipt.
 
 ## Active Claim And Residual
 

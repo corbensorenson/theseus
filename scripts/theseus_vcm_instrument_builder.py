@@ -37,9 +37,10 @@ def main() -> int:
     parser.add_argument("--config", default=p2a.rel(DEFAULT_CONFIG))
     parser.add_argument("--out", default="")
     parser.add_argument("--execute-risks", action="store_true")
+    parser.add_argument("--execute-typescript-repair", action="store_true")
     args = parser.parse_args()
     path = p2a.resolve(args.config)
-    result = execute_risks(path) if args.execute_risks else build(path)
+    result = execute_typescript_repair(path) if args.execute_typescript_repair else execute_risks(path) if args.execute_risks else build(path)
     p2a.write_json(p2a.resolve(args.out or p2a.read_json(path)["report"]), result)
     print(json.dumps(summary(result), indent=2, sort_keys=True))
     return 0 if result["trigger_state"] == "GREEN" else 2
@@ -238,7 +239,7 @@ def validate_risk_plan(
     cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
 ) -> dict[str, Any]:
     plan = p2a.mapping(cfg.get("risk_canary_plan"))
-    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V6_ZERO_NETWORK_DIAGNOSTIC" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v6":
+    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V7_NARROW_TYPESCRIPT_MECHANICS" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v7":
         faults.append("risk_campaign_identity_invalid")
     rows = p2a.dicts(plan.get("rows"))
     if [row.get("risk_class") for row in rows] != [
@@ -403,6 +404,85 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         faults.append("qualified_yarn_store_mutated_during_resume")
     receipts["free_bytes_after"] = shutil.disk_usage(ROOT).free
     return finish_risks(before, faults, receipts, True)
+
+
+def execute_typescript_repair(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
+    before = build(path)
+    if before["trigger_state"] != "GREEN":
+        return before
+    cfg = p2a.read_json(path)
+    rows = p2a.dicts(p2a.mapping(cfg["risk_canary_plan"]).get("rows"))
+    reserve = int(p2a.mapping(cfg["resource_contract"])["host_reserve_bytes"])
+    store = p2a.resolve("runtime/vcm_evaluator/dependency_store/shared/bun")
+    resume = p2a.mapping(cfg.get("risk_resume"))
+    expected = p2a.mapping(resume.get("qualified_bun_store"))
+    observed = tree_receipt(store)
+    faults: list[str] = []
+    if (
+        not store.is_dir()
+        or observed.get("identity_sha256") != expected.get("identity_sha256")
+        or observed.get("file_count") != expected.get("file_count")
+        or observed.get("bytes") != expected.get("bytes")
+    ):
+        return finish_typescript_repair(before, ["qualified_bun_resume_store_identity_invalid"], {"observed_bun_store": observed}, False)
+    free_before = shutil.disk_usage(ROOT).free
+    if free_before < reserve + 4294967296:
+        return finish_typescript_repair(before, ["host_reserve_preflight_boundary_hit"], {"free_bytes_before": free_before}, False)
+    receipts: dict[str, Any] = {"free_bytes_before": free_before, "qualified_bun_store_before": observed}
+    with tempfile.TemporaryDirectory(prefix="theseus-vcm-typescript-repair-", dir="/private/tmp") as raw:
+        work = Path(raw).resolve()
+        ts_row = rows[2]
+        repo = work / "task-61" / "repository"
+        repo.parent.mkdir(parents=True)
+        archive = p2a.mapping(ts_row["parent_archive"])
+        extraction, errs = base.safe_extract_repository(p2a.resolve(str(archive["path"])), repo, str(ts_row["archive_root"]))
+        faults.extend(errs)
+        receipts["task_61_extraction"] = extraction
+        bun_cache = work / "bun-cache"
+        rebased, rebase_faults = copy_bun_store_for_replay(store, bun_cache, Path(str(resume.get("bun_original_cache_root") or "")))
+        receipts["bun_disposable_symlink_rebase"] = rebased
+        faults.extend(rebase_faults)
+        bun_home = work / "bun-home"; bun_tmp = work / "bun-tmp"; bun_home.mkdir(); bun_tmp.mkdir()
+        bun = str(p2a.resolve(str(p2a.mapping(ts_row["tool"])["path"])))
+        bun_env = minimal_env(bun_home, bun_tmp, f"{Path(bun).parent}:/usr/bin:/bin")
+        install = [bun, "install", "--frozen-lockfile", "--ignore-scripts", "--cache-dir", str(bun_cache), "--offline"]
+        if not faults:
+            faults.extend(run_offline_replay("bun_resume", install, repo, work, bun_env, cfg, receipts))
+        source_before = base.tree_identity(repo, excluded_roots={"node_modules"})
+        if not faults:
+            receipt = bounded.run_sandboxed([bun, *p2a.strings(ts_row["command"])], repo, work, bun_env, cfg, network_denied=True)
+            stdout_path = work / "offline.stdout"
+            receipt["stdout_head"] = stdout_path.read_text(encoding="utf-8", errors="replace")[:2000] if stdout_path.is_file() else ""
+            receipts["typescript_narrow_mechanics"] = receipt
+            if base.command_failed(receipt):
+                faults.append("typescript_narrow_mechanics_failed")
+        receipts["source_before"] = source_before
+        receipts["source_after"] = base.tree_identity(repo, excluded_roots={"node_modules"})
+        if receipts["source_before"] != receipts["source_after"]:
+            faults.append("typescript_narrow_mechanics_source_mutated")
+        receipts["free_bytes_during"] = shutil.disk_usage(ROOT).free
+        if receipts["free_bytes_during"] < reserve:
+            faults.append("host_reserve_postflight_boundary_hit")
+    receipts["qualified_bun_store_after"] = tree_receipt(store)
+    if receipts["qualified_bun_store_after"] != observed:
+        faults.append("qualified_bun_store_mutated_during_resume")
+    receipts["free_bytes_after"] = shutil.disk_usage(ROOT).free
+    return finish_typescript_repair(before, faults, receipts, True)
+
+
+def finish_typescript_repair(before: dict[str, Any], faults: list[str], receipts: dict[str, Any], executed: bool) -> dict[str, Any]:
+    return {
+        **before,
+        "created_utc": p2a.now(),
+        "trigger_state": "GREEN" if executed and not faults else "RED",
+        "state": "K2_03_NARROW_REAL_PARENT_TYPESCRIPT_MECHANICS_QUALIFIED" if executed and not faults else "K2_03_TYPESCRIPT_MECHANICS_REPAIR_FAILED",
+        "faults": sorted(set(faults)),
+        "typescript_repair_execution_performed": executed,
+        "typescript_repair_receipts": receipts,
+        "network_or_dependency_execution_performed": executed,
+        "candidate_or_control_calls": 0,
+        "external_reference_calls": 0,
+    }
 
 
 def run_install_pair(name: str, online: list[str], offline: list[str], cwd: Path, work: Path, env: dict[str, str], cfg: dict[str, Any], receipts: dict[str, Any]) -> list[str]:

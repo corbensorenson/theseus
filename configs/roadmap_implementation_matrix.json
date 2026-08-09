@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_03_V6_RUST_GREEN_TYPESCRIPT_PARENT_PREREQUISITE_GAP",
+      "state": "VCM_V3_K2_03_TYPESCRIPT_MECHANICS_V7_PROSPECTIVELY_SEALED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v6",
-      "current_blocker": "task61_full_project_typecheck_requires_missing_generated_parent_source",
+      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v7",
+      "current_blocker": "narrow_real_parent_typescript_mechanics_not_executed_or_role_separated_audited",
       "last_closed_task_index": 26,
-      "next_legal_action": "seal_narrow_real_parent_typescript_mechanics_canary_then_role_separately_audit_k2_03",
+      "next_legal_action": "execute_narrow_real_parent_typescript_mechanics_then_role_separately_audit_k2_03",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V6 requalified zero-network Bun and Yarn retained-store replay, identified the exact Task 61 full-project TypeScript prerequisite gap as missing parent file framework/src/styles.generated.ts, and qualified Task 36 offline Rust compilation in 41.6 seconds at 1.67 GiB RSS. This does not qualify Task 61 full-project typecheck or falsify TypeScript mechanics. A new seal may compile one exact real parent TypeScript source without the generated-source dependency for mechanics-only coverage, then role-separately audit all K2.03 receipts. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V6 requalified zero-network Bun and Yarn retained-store replay, identified the Task 61 full-project prerequisite gap as missing parent file framework/src/styles.generated.ts, and qualified Task 36 offline Rust compilation. V7 is prospectively sealed to compile exact real parent file framework/src/styles.ts under strict no-emit TypeScript after zero-network Bun replay. A GREEN result can establish only narrow TypeScript mechanics, never Task 61 full-project typecheck. K2.03 remains open until role-separated audit. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -277,7 +277,7 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V6 requalified both retained stores offline, exposed Task 61's missing generated parent source as the sole full-project TypeScript failure, and qualified exact offline Rust compilation. Seal one narrow real-parent TypeScript mechanics canary, then role-separately audit K2.03."
+            "latest_observation": "V6 requalified both retained stores offline, exposed Task 61's missing generated parent source as the sole full-project TypeScript failure, and qualified exact offline Rust compilation. V7 is sealed for strict no-emit compilation of real parent file framework/src/styles.ts, after which K2.03 requires role-separated audit."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",

@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_V6_RUST_GREEN_TYPESCRIPT_PARENT_PREREQUISITE_GAP` |
+| State | `VCM_V3_K2_03_TYPESCRIPT_MECHANICS_V7_PROSPECTIVELY_SEALED` |
 | Selected task | 26 |
-| Active attempt | `k2_03_generic_ecosystem_risk_canaries_v6` |
-| Current wall | `task61_full_project_typecheck_requires_missing_generated_parent_source` |
+| Active attempt | `k2_03_generic_ecosystem_risk_canaries_v7` |
+| Current wall | `narrow_real_parent_typescript_mechanics_not_executed_or_role_separated_audited` |
 | Last closed task | 26 |
-| Next legal action | `seal_narrow_real_parent_typescript_mechanics_canary_then_role_separately_audit_k2_03` |
+| Next legal action | `execute_narrow_real_parent_typescript_mechanics_then_role_separately_audit_k2_03` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -396,6 +396,11 @@ parent prerequisite gap: `framework/src/index-octane.ts` imports absent
 `framework/src/styles.generated.ts`. A new seal may compile one real parent
 TypeScript source that does not require generated content for mechanics-only
 coverage, then K2.03 must undergo role-separated audit.
+
+V7 is sealed to compile exact real parent file `framework/src/styles.ts` with
+strict, no-emit TypeScript after zero-network Bun replay. It cannot qualify the
+full repository. K2.03 remains open until this receipt and all prior risk
+receipts are role-separately rederived.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
