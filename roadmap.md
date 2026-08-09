@@ -57,9 +57,9 @@ that record and may not independently redefine it.
 | State | `VCM_V3_K2_05_REPLACEMENT_EVALUATOR_QUALIFICATION_ACTIVE` |
 | Selected task | 26 |
 | Active attempt | `k2_05_three_row_replacement_evaluator_qualification_v1` |
-| Current wall | `replacement_sources_admitted_but_tasks_12_13_35_dependency_and_common_evaluator_receipts_not_yet_qualified` |
+| Current wall | `host_adequate_replacement_sources_and_full_closures_green_but_tasks_12_13_35_dependency_locks_environments_and_common_evaluators_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `materialize_and_role_audit_exact_dependency_and_parent_fail_target_pass_common_evaluator_receipts_for_replacement_tasks_12_13_35_then_reuse_qualified_16_25_56_without_rerun` |
+| Next legal action | `prospectively_bind_one_generic_three_row_resolution_transaction_for_tasks_12_13_35_then_materialize_environments_and_common_evaluators_before_reusing_qualified_16_25_56_without_rerun` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -469,13 +469,16 @@ matched-verifier campaign qualified Tasks 16, 25, and 56 and scoped Tasks 12,
 all-or-none replacement transaction then selected `plwp/chief-wiggum`,
 `frame-consulting/QuantLibXlOil`, and `knoguchi/marsdb` for exactly those slots
 under the original rank while preserving panel, programming language, and
-source disjointness. Its audit-only counter repair is GREEN, and source-panel
-v4 rederives 62 unique repositories, 248 archives, 672 members, all 62 changed
-source/verifier pairs, unchanged quotas, and zero selected-content violations.
-No repository, evaluator, model, Luna, teacher, or reference call occurred.
-Replacement source adequacy is repaired, but dependency and common-evaluator
-receipts remain open. Tasks 16, 25, and 56 may not rerun, and the full locked
-batch remains closed by the existing storage wall.
+source disjointness. Full manifests then exposed that the first Task 13
+replacement was explicitly Windows/xloil-bound, so it was invalidated before
+dependency execution. A sealed generic host-feasibility successor replaced
+only that slot with `paulomtts/pyjinhx`. Source-panel v5 and all 124 exact full
+parent/head closures are role-audited GREEN, with 61 closure pairs replayed
+unchanged. No repository, dependency, evaluator, model, Luna, teacher, or
+reference call occurred. Replacement source and host-static adequacy are
+repaired, but locks, environments, and common-evaluator receipts remain open.
+Tasks 16, 25, and 56 may not rerun, and the full locked batch remains closed by
+the existing storage wall.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

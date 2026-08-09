@@ -123,9 +123,9 @@ The machine-readable active state is:
 | State | `VCM_V3_K2_05_REPLACEMENT_EVALUATOR_QUALIFICATION_ACTIVE` |
 | Selected task | 26 |
 | Active attempt | `k2_05_three_row_replacement_evaluator_qualification_v1` |
-| Current wall | `replacement_sources_admitted_but_tasks_12_13_35_dependency_and_common_evaluator_receipts_not_yet_qualified` |
+| Current wall | `host_adequate_replacement_sources_and_full_closures_green_but_tasks_12_13_35_dependency_locks_environments_and_common_evaluators_not_yet_qualified` |
 | Last closed task | 26 |
-| Next legal action | `materialize_and_role_audit_exact_dependency_and_parent_fail_target_pass_common_evaluator_receipts_for_replacement_tasks_12_13_35_then_reuse_qualified_16_25_56_without_rerun` |
+| Next legal action | `prospectively_bind_one_generic_three_row_resolution_transaction_for_tasks_12_13_35_then_materialize_environments_and_common_evaluators_before_reusing_qualified_16_25_56_without_rerun` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -155,11 +155,13 @@ The predecessor matched-verifier campaign qualified Tasks 16, 25, and 56 and
 scoped Tasks 12, 13, and 35 to host or toolchain walls. One sealed all-or-none
 replacement campaign has now selected source-disjoint same-panel,
 same-language successors for exactly those three rows under the original rank
-rule. Its role-separated audit and the revised 62-row source-panel audit are
-GREEN: all 248 archives, 672 member receipts, language quotas, source/verifier
-changes, and content-scope checks pass. This repairs source adequacy only. The
-three new dependency closures and common evaluators still need qualification;
-Tasks 16, 25, and 56 remain frozen and may not rerun.
+rule. Full manifests then correctly invalidated the first Task 13 replacement
+as explicitly Windows/xloil-bound before dependency execution. A sealed generic
+host-feasibility successor replaced only that slot with `paulomtts/pyjinhx`.
+The authoritative v5 panel and all 124 exact full parent/head closures are now
+role-audited GREEN. This repairs source and host-static adequacy only. The three
+new dependency locks, environments, and common evaluators still need
+qualification; Tasks 16, 25, and 56 remain frozen and may not rerun.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

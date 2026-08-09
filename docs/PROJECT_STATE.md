@@ -68,9 +68,9 @@ change.
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
 `k2_05_three_row_replacement_evaluator_qualification_v1`, last closed task 26, and the wall
-`replacement_sources_admitted_but_tasks_12_13_35_dependency_and_common_evaluator_receipts_not_yet_qualified`.
+`host_adequate_replacement_sources_and_full_closures_green_but_tasks_12_13_35_dependency_locks_environments_and_common_evaluators_not_yet_qualified`.
 The next legal action is
-`materialize_and_role_audit_exact_dependency_and_parent_fail_target_pass_common_evaluator_receipts_for_replacement_tasks_12_13_35_then_reuse_qualified_16_25_56_without_rerun`.
+`prospectively_bind_one_generic_three_row_resolution_transaction_for_tasks_12_13_35_then_materialize_environments_and_common_evaluators_before_reusing_qualified_16_25_56_without_rerun`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -147,13 +147,15 @@ owner then qualified all six disposable environments with offline replay.
 The predecessor matched-verifier campaign qualified Tasks 16, 25, and 56.
 Tasks 12, 13, and 35 were invalidated only for scoped host/toolchain adequacy
 walls and have now been replaced all-or-none by source-disjoint, same-panel,
-same-language tasks under the original frozen rank. Their producer and
-role-separated audit are GREEN, as is a revised 62-row panel audit covering
-248 archives and 672 members. No evaluator or model call occurred in this
-repair. K2.05 is now active on exact dependency and common-evaluator
-qualification for the three replacements; qualified Tasks 16, 25, and 56 may
-not rerun. The locked segment retains the storage wall, with no evidence
-deletion or partial panel.
+same-language tasks under the original frozen rank. Full manifests invalidated
+the first Task 13 replacement as explicitly Windows/xloil-bound before any
+dependency execution. A generic host-feasibility successor replaced only that
+slot with `paulomtts/pyjinhx`; the authoritative v5 panel and all 124 exact
+full closures now pass role-separated audit. No evaluator or model call
+occurred in this repair. K2.05 is active on exact locks, environments, and
+common-evaluator qualification for the three replacements; qualified Tasks
+16, 25, and 56 may not rerun. The locked segment retains the storage wall,
+with no evidence deletion or partial panel.
 
 ## Active Claim And Residual
 
