@@ -24,7 +24,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 
 POLICY = "project_theseus_vcm_immutable_resolution_segment_v1"
-STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PREQUALIFIED_WHEEL_V4"
+STATE = "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PREQUALIFIED_WHEELS_V5"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_immutable_resolution_segment.json"
 EXPECTED_INDICES = [12, 13, 16, 25, 35, 56]
 
@@ -88,11 +88,43 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
         faults.append("python314_acquisition_binding_invalid")
     build = sources.get("sandbox_wheel_build", {})
     build_audit = sources.get("sandbox_wheel_build_audit", {})
+    transitive_build = sources.get("transitive_wheel_build", {})
+    transitive_build_audit = sources.get("transitive_wheel_build_audit", {})
+    expected_wheels: dict[str, str] = {}
     retained_wheel = p2a.mapping(p2a.mapping(build.get("receipt")).get("retained_wheel"))
-    local_wheel = p2a.mapping(cfg.get("local_wheel"))
-    local_wheel_path = p2a.resolve(str(local_wheel.get("path") or ""))
-    if build.get("trigger_state") != "GREEN" or build_audit.get("trigger_state") != "GREEN" or retained_wheel.get("path") != local_wheel.get("path") or retained_wheel.get("sha256") != local_wheel.get("sha256") or not local_wheel_path.is_file() or p2a.sha256_file(local_wheel_path) != local_wheel.get("sha256"):
-        faults.append("prequalified_local_wheel_binding_invalid")
+    if build.get("trigger_state") != "GREEN" or build_audit.get("trigger_state") != "GREEN":
+        faults.append("mock_open_wheel_evidence_invalid")
+    elif retained_wheel.get("path") and retained_wheel.get("sha256"):
+        expected_wheels[str(retained_wheel["path"])] = str(retained_wheel["sha256"])
+    else:
+        faults.append("mock_open_wheel_receipt_invalid")
+    if (
+        transitive_build.get("trigger_state") != "GREEN"
+        or transitive_build.get("qualified_row_count") != 3
+        or transitive_build.get("inconclusive_row_count") != 0
+        or transitive_build_audit.get("trigger_state") != "GREEN"
+        or transitive_build_audit.get("qualified_row_count") != 3
+        or transitive_build_audit.get("inconclusive_row_count") != 0
+    ):
+        faults.append("transitive_wheel_evidence_invalid")
+    for row in p2a.dicts(transitive_build.get("rows")):
+        retained = p2a.mapping(p2a.mapping(row.get("receipts")).get("retained_wheel"))
+        if row.get("disposition") != "QUALIFIED_NETWORK_DENIED_SDIST_WHEEL_BUILD" or not retained.get("path") or not retained.get("sha256"):
+            faults.append(f"transitive_wheel_receipt_invalid:{row.get('name')}")
+        else:
+            expected_wheels[str(retained["path"])] = str(retained["sha256"])
+    local_wheels = p2a.dicts(cfg.get("local_wheels"))
+    configured_wheels = {str(row.get("path") or ""): str(row.get("sha256") or "") for row in local_wheels}
+    if len(local_wheels) != 4 or len(configured_wheels) != 4 or configured_wheels != expected_wheels:
+        faults.append("prequalified_local_wheel_denominator_invalid")
+    for wheel_path, wheel_sha256 in configured_wheels.items():
+        local_wheel_path = p2a.resolve(wheel_path)
+        if not local_wheel_path.is_file() or p2a.sha256_file(local_wheel_path) != wheel_sha256:
+            faults.append(f"prequalified_local_wheel_binding_invalid:{wheel_path}")
+    wheel_store = (ROOT / "runtime/vcm_evaluator/dependency_store/wheels").resolve()
+    observed_wheels = {p2a.rel(path) for path in wheel_store.glob("*.whl") if path.is_file()}
+    if observed_wheels != set(configured_wheels):
+        faults.append("local_wheel_store_contains_unbound_artifacts")
 
     tools: dict[str, str] = {}
     for name, raw in p2a.mapping(cfg.get("tools")).items():

@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
-  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PREQUALIFIED_WHEEL_V4",
+  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_PREQUALIFIED_WHEELS_V5",
   "owner": "scripts/theseus_vcm_immutable_resolution_segment.py",
-  "owner_sha256": "64694efe0b771fa645702d0649f352163d35c6700cf54ba63bb921654710ce5a",
+  "owner_sha256": "8cd7a55cf58a8daf294469f05cb3c1158eaf8fa65aa59dca5a50c5b1e47acf70",
   "audit_policy": "project_theseus_vcm_immutable_resolution_segment_audit_v1",
   "audit_owner": "scripts/theseus_vcm_immutable_resolution_segment_audit.py",
   "audit_owner_sha256": "74f4cf6466bb90b06eb87a2e0c17f32b3eac53b504fbbd927137b08fb489afee",
@@ -36,16 +36,26 @@
       "id": "sandbox_wheel_build_audit",
       "path": "reports/theseus_vcm_sandbox_wheel_build_canary_audit.json",
       "sha256": "47db84ae6d95a21bddc48ec073b37eb724e91db8c81534f964081e06091b8cc7"
+    },
+    {
+      "id": "transitive_wheel_build",
+      "path": "reports/theseus_vcm_sdist_batch_build_v2.json",
+      "sha256": "eeeb029a1d741414d54779cf2c641f95011717ccb44975e268117736c1a4c41e"
+    },
+    {
+      "id": "transitive_wheel_build_audit",
+      "path": "reports/theseus_vcm_sdist_batch_build_audit_v2.json",
+      "sha256": "6a3346da993525800f2388e7a7665239ff10719dc2cb876385b7b4476f3d8846"
     }
   ],
   "predecessor": {
     "producer_report": {
-      "path": "reports/theseus_vcm_immutable_resolution_segment_v3.json",
-      "sha256": "e605b1bc57432c55e69e93342e99b4dc22672053d4a0b86837d59f5e50701643"
+      "path": "reports/theseus_vcm_immutable_resolution_segment_v4.json",
+      "sha256": "22f208f69181cc13717f7cf4e37a03b4d7347dc9385737a06233e1ba9e3ca9ed"
     },
     "audit_report": {
-      "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v3.json",
-      "sha256": "075d83291dfd6c52c7ef0ded2a6592079005c1d07a06844aa833edf5d0690fdc"
+      "path": "reports/theseus_vcm_immutable_resolution_segment_audit_v4.json",
+      "sha256": "f80416c4308408ba00e107fad4be1c3f094b4d2dd8f2e5bcd09db8c81810df0c"
     }
   },
   "tools": {
@@ -163,14 +173,28 @@
     }
   ],
   "expected_task_count": 6,
-  "local_wheel": {
-    "path": "runtime/vcm_evaluator/dependency_store/wheels/mock_open-1.4.0-py3-none-any.whl",
-    "sha256": "8499185fed7121f699eabaa472fe5741d6561053bd85fc419328bb0b8976c98b"
-  },
+  "local_wheels": [
+    {
+      "path": "runtime/vcm_evaluator/dependency_store/wheels/mock_open-1.4.0-py3-none-any.whl",
+      "sha256": "8499185fed7121f699eabaa472fe5741d6561053bd85fc419328bb0b8976c98b"
+    },
+    {
+      "path": "runtime/vcm_evaluator/dependency_store/wheels/habluetooth-6.26.5-cp314-cp314-macosx_15_0_arm64.whl",
+      "sha256": "62b2631c1d2d8f289a8f8fe40f8ab92276bd9865c7a1240335f0a05730d40409"
+    },
+    {
+      "path": "runtime/vcm_evaluator/dependency_store/wheels/bluetooth_data_tools-1.29.21-cp314-cp314-macosx_15_0_arm64.whl",
+      "sha256": "489be53f06991a1311d9d81a12ab3a76a611c822f7419c6109ed199f1a7d633e"
+    },
+    {
+      "path": "runtime/vcm_evaluator/dependency_store/wheels/pyric-0.1.6.3-py2.py3-none-any.whl",
+      "sha256": "b485d1ba2028b5952db0427dca02e1fc55b069d042ad867c4abc1dd7aaf3584c"
+    }
+  ],
   "shared_cache_root": "runtime/vcm_evaluator/dependency_store/immutable-resolution",
   "output_directory": "reports/theseus_vcm_immutable_resolution_locks",
-  "report": "reports/theseus_vcm_immutable_resolution_segment_v4.json",
-  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit_v4.json",
+  "report": "reports/theseus_vcm_immutable_resolution_segment_v5.json",
+  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit_v5.json",
   "partial_panel_admission_forbidden": true,
   "declared_dependency_gap_policy": "Use only exact target-declared dependency inputs and do not guess, stub, or hand-author undeclared imports; preserve any resulting evaluator wall as scoped instrument evidence.",
   "limits": {
@@ -205,6 +229,6 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that all six exact target dependency declarations have immutable hashed locks under the pinned uv/Python or Cargo resolver, registry, host-reserve, and output contracts. Five V3-qualified locks are reused byte-for-byte; Task 13 alone is resolved with Python 3.14.2 and the exact separately prequalified network-denied mock-open 1.4.0 wheel while source builds remain disabled in this phase. No package or project was installed, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that all six exact target dependency declarations have immutable hashed locks under the pinned uv/Python or Cargo resolver, registry, host-reserve, and output contracts. Five V4-qualified locks are reused byte-for-byte; Task 13 alone is resolved with Python 3.14.2 and exactly four separately prequalified network-denied local wheels while source builds remain disabled in this phase. The local find-links directory must contain exactly those four bound wheels. No package or project was installed, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
   "audit_maximum_inference": "The audit is role-separated rederivation inside this repository. It checks the six-row denominator, target/archive/tool identities, full diagnostics, lock hashes and syntax, scoped dispositions, zero execution/model counters, and no partial-panel admission. It is not producer-independent replay or external reproduction and cannot support a VCM or ASI Stack capability claim."
 }

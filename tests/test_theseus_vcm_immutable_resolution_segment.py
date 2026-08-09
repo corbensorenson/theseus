@@ -17,6 +17,7 @@ def test_preflight_binds_exact_six_immutable_resolution_rows() -> None:
     assert [row["index"] for row in cfg["rows"]] == [12, 13, 16, 25, 35, 56]
     assert {row["manager"] for row in cfg["rows"]} == {"uv", "cargo"}
     assert set(bound["tools"]) == {"uv", "python", "python_3_14", "cargo"}
+    assert len(cfg["local_wheels"]) == 4
 
 
 def test_resolution_contract_has_no_execution_or_model_authority() -> None:
