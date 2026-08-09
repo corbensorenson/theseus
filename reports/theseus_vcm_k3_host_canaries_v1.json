@@ -1,0 +1,150 @@
+{
+  "calls": [
+    {
+      "actual_context_residual_tokens": 261996,
+      "actual_prompt_tokens": 148,
+      "call_ordinal": 1,
+      "capability_or_mechanism_evidence": false,
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 261996,
+      "expected_prompt_tokens": 148,
+      "external_reference_calls": 0,
+      "faults": [],
+      "generated_tokens": 122,
+      "generation_tokens_per_second": 3.9,
+      "generation_wall_ms": 58996.253,
+      "hidden_evaluator_calls": 0,
+      "load_wall_ms": 14757.653,
+      "mlx_peak_memory_gib": 9.796,
+      "prompt_sha256": "dd1c9b2e6f1b322fd9a9fd9f88c4ec61a7b8b0a6e3ee362ce002b843fffba774",
+      "prompt_tokens_per_second": 49.244,
+      "raw_response_stored": false,
+      "request_id": "25cfe65597486a0f23731b1436aacca587e46238feb4f7049db0b657a48de283",
+      "response_chars": 516,
+      "response_sha256": "14b29cd12cb5a314501551a4a42360cbdc59458197c2fc8bba0974227b42bc92",
+      "route": "no_added_context_floor",
+      "route_context_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "runtime_ms": 75502,
+      "termination_reason": "model_eos",
+      "trigger_state": "GREEN"
+    },
+    {
+      "actual_context_residual_tokens": 138909,
+      "actual_prompt_tokens": 123235,
+      "call_ordinal": 2,
+      "capability_or_mechanism_evidence": false,
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 138909,
+      "expected_prompt_tokens": 123235,
+      "external_reference_calls": 0,
+      "faults": [
+        "backend_not_green",
+        "empty_local_model_response",
+        "host_or_physical_safety_interlock_activated",
+        "invalid_host_operability_termination"
+      ],
+      "generated_tokens": 0,
+      "generation_tokens_per_second": null,
+      "generation_wall_ms": 609018.408,
+      "hidden_evaluator_calls": 0,
+      "load_wall_ms": 14757.653,
+      "mlx_peak_memory_gib": 0.0,
+      "prompt_sha256": "93fee3db587cbfb1b7cc2a3a9642109639214680e89779c37e183e530f35fde8",
+      "prompt_tokens_per_second": null,
+      "raw_response_stored": false,
+      "request_id": "731d55165aba7c8ae399703eb6bac4b329cc026883ff4067fe5a321a66a913dc",
+      "response_chars": 0,
+      "response_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "route": "ordinary_direct_retrieval_same_parent_store_query_and_context_opportunity",
+      "route_context_digest": "8fc2f912df9146a2eb3434d31ac93cc94335b37b54217cbd976d568c3dcebee7",
+      "runtime_ms": 615627,
+      "termination_reason": "host_safety_wall_time",
+      "trigger_state": "RED"
+    }
+  ],
+  "candidate_screen_calls_authorized": 0,
+  "capability_or_mechanism_evidence": false,
+  "completed_call_count": 2,
+  "config": {
+    "bytes": 3691,
+    "path": "configs/theseus_vcm_k3_host_canaries.json",
+    "sha256": "ddc711db86f3910d89261970e6b9ce8baac806c845c5e2ca87dd5fe6f89ac27e"
+  },
+  "created_utc": "2026-08-09T07:25:36.828162Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "hidden_evaluator_calls": 0,
+  "local_model_calls": 2,
+  "maximum_inference": "A complete host-canary campaign can establish only whether the exact largest physically addressable prompt for each frozen route reaches CANARY_OK or model EOS through the fixed local TMax stack without a host or physical interlock. It is non-scoring, invokes no evaluator, and cannot support model competence, VCM utility, economics, transfer, or ASI Stack support.",
+  "nine_task_screen_authorized": false,
+  "planned_call_count": 6,
+  "policy": "project_theseus_vcm_k3_non_scoring_host_canaries_v1",
+  "project_selected_quality_token_cap": null,
+  "route_execution_order": [
+    "no_added_context_floor",
+    "ordinary_direct_retrieval_same_parent_store_query_and_context_opportunity",
+    "maximal_full_parent_context_when_physically_addressable_and_host_operable",
+    "information_matched_flat_direct_context",
+    "governed_vcm",
+    "hierarchical_summary_or_prompt_compression_same_parent_store_and_context_opportunity"
+  ],
+  "selected_receipts": [
+    {
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 261996,
+      "expected_prompt_tokens": 148,
+      "prompt_sha256": "dd1c9b2e6f1b322fd9a9fd9f88c4ec61a7b8b0a6e3ee362ce002b843fffba774",
+      "request_id": "25cfe65597486a0f23731b1436aacca587e46238feb4f7049db0b657a48de283",
+      "route": "no_added_context_floor",
+      "route_context_digest": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    },
+    {
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 138909,
+      "expected_prompt_tokens": 123235,
+      "prompt_sha256": "93fee3db587cbfb1b7cc2a3a9642109639214680e89779c37e183e530f35fde8",
+      "request_id": "731d55165aba7c8ae399703eb6bac4b329cc026883ff4067fe5a321a66a913dc",
+      "route": "ordinary_direct_retrieval_same_parent_store_query_and_context_opportunity",
+      "route_context_digest": "8fc2f912df9146a2eb3434d31ac93cc94335b37b54217cbd976d568c3dcebee7"
+    },
+    {
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 106657,
+      "expected_prompt_tokens": 155487,
+      "prompt_sha256": "dd816bff1c1962dcaa9f6877836967302fab4b9e03ad5ac0b886bb23aebdd865",
+      "request_id": "731d55165aba7c8ae399703eb6bac4b329cc026883ff4067fe5a321a66a913dc",
+      "route": "maximal_full_parent_context_when_physically_addressable_and_host_operable",
+      "route_context_digest": "b6d7e96157e7e74d86a18a6b3236dd18c64aaf487c654503318e723987463f85"
+    },
+    {
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 54564,
+      "expected_prompt_tokens": 207580,
+      "prompt_sha256": "0c5c6a4b3d0bf8c45cfc3303c3dedee11bfaec90631b81b4c3fa23b9f123dc47",
+      "request_id": "980cfc29198e248bd0ddee0706df3eae3ac863d86460d2c0a4f71989b5a1429c",
+      "route": "information_matched_flat_direct_context",
+      "route_context_digest": "3eddbf64dd363c1114feb44fa927a197bc3d9574952f0864246ca2452928c86b"
+    },
+    {
+      "execution_mode": "integrated_local_model",
+      "expected_context_residual_tokens": 54491,
+      "expected_prompt_tokens": 207653,
+      "prompt_sha256": "9bd1183b95c7936b1583a713f1765e6b721905c4def16345508ec0564ca99845",
+      "request_id": "980cfc29198e248bd0ddee0706df3eae3ac863d86460d2c0a4f71989b5a1429c",
+      "route": "governed_vcm",
+      "route_context_digest": "3eddbf64dd363c1114feb44fa927a197bc3d9574952f0864246ca2452928c86b"
+    },
+    {
+      "execution_mode": "direct_local_model",
+      "expected_context_residual_tokens": 19962,
+      "expected_prompt_tokens": 242182,
+      "prompt_sha256": "87ef60246b346ebe3b52de2456e62117f65d03cc7451aa0c871fc79f344e4c48",
+      "request_id": "3e78338c233fdc9d523d47f233ce10dac40249401cbccadeeb8a44992108c54a",
+      "route": "hierarchical_summary_or_prompt_compression_same_parent_store_and_context_opportunity",
+      "route_context_digest": "7a59eafb48f7c32319dd2012b401330d4b87a8e250509423677def3475b7ac8c"
+    }
+  ],
+  "state": "INCONCLUSIVE_EXPERIMENT_HOST_OPERABILITY",
+  "trigger_state": "RED",
+  "unexecuted_route_count": 4
+}

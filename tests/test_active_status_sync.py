@@ -136,7 +136,7 @@ def test_active_work_packages_form_one_forward_dependency_graph() -> None:
 
     assert len(package_ids) == len(set(package_ids))
     assert [package["id"] for package in packages if package["status"].startswith("ACTIVE")] == [
-        "K3_01_CALL_FREE_CAMPAIGN_FREEZE"
+        "K3_01R_PARENT_PAGE_AND_MATCHED_HOST_ADEQUACY_REPAIR"
     ]
 
     seen: set[str] = set()

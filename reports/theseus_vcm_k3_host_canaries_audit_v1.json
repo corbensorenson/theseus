@@ -1,0 +1,20 @@
+{
+  "audited_call_count": 2,
+  "audited_green_call_count": 1,
+  "capability_or_mechanism_evidence": false,
+  "created_utc": "2026-08-09T07:37:34.164320Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "hidden_evaluator_calls": 0,
+  "maximum_inference": "A GREEN audit proves only the custody and physical-host disposition of the exact non-scoring calls. It does not establish model competence, VCM utility, economics, transfer, or ASI Stack support.",
+  "nine_task_screen_authorized": false,
+  "policy": "project_theseus_vcm_k3_non_scoring_host_canaries_audit_v1",
+  "producer_report": {
+    "bytes": 7155,
+    "path": "reports/theseus_vcm_k3_host_canaries_v1.json",
+    "sha256": "54c26a0883cf2f55b6d89ae566feeae74f7a4c7721672d881d3dac3793fb353d"
+  },
+  "producer_terminal_state": "INCONCLUSIVE_EXPERIMENT_HOST_OPERABILITY",
+  "state": "K3_NONSCORING_HOST_CANARIES_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}
