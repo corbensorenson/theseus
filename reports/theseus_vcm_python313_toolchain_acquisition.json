@@ -1,0 +1,106 @@
+{
+  "cache": {
+    "bytes": 44,
+    "file_count": 5,
+    "identity_sha256": "44e3eda2c884a3f021145047928c54270ff869f59900527c703bfb45c53230c2"
+  },
+  "candidate_or_control_calls": 0,
+  "combined_acquisition_and_cache_bytes": 64181858,
+  "command": [
+    "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+    "python",
+    "install",
+    "3.13.14",
+    "--install-dir",
+    "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python",
+    "--cache-dir",
+    "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/python313-acquisition-v1",
+    "--no-bin",
+    "--no-config",
+    "--no-progress",
+    "--color",
+    "never"
+  ],
+  "config": {
+    "path": "configs/theseus_vcm_python313_toolchain_acquisition.json",
+    "sha256": "4d60dbc24ab9770a891e7fe944b80ee79254d9afe2ce68744fc8c4cbc78c0a41"
+  },
+  "created_utc": "2026-08-09T06:05:55.608108Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 12968796160,
+  "free_bytes_before": 13038317568,
+  "global_bin_registration_performed": false,
+  "installed_tree": {
+    "bytes": 64181814,
+    "file_count": 1637,
+    "identity_sha256": "fa14e54207010885492bbd2b7fb3945f14e814b45f9e2352a8e90a3be096cfb8"
+  },
+  "interpreter": {
+    "path": "runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+    "sha256": "091704d2238fa5d3d95299894a24d02fa0cf0f874d7b1cd019f9a19b767628ab",
+    "version": "3.13.14"
+  },
+  "maximum_inference": "A GREEN receipt proves only that the pinned uv installer acquired and version-probed the exact project-local CPython 3.13.14 macOS arm64 toolchain within the declared host bounds and without global bin registration. It does not prove dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, or ASI Stack book support.",
+  "network_downloads": 1,
+  "package_installations": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_python_toolchain_acquisition_v1",
+  "project_installations": 0,
+  "project_selected_output_cap": null,
+  "receipt": {
+    "boundary_hit": false,
+    "boundary_reason": "",
+    "command": [
+      "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+      "python",
+      "install",
+      "3.13.14",
+      "--install-dir",
+      "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python",
+      "--cache-dir",
+      "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/python313-acquisition-v1",
+      "--no-bin",
+      "--no-config",
+      "--no-progress",
+      "--color",
+      "never"
+    ],
+    "duration_ms": 1494.312,
+    "project_selected_output_cap": null,
+    "returncode": 0,
+    "stderr": "Downloading cpython-3.13.14-macos-aarch64-none (download) (24.0MiB)\n Downloaded cpython-3.13.14-macos-aarch64-none (download)\nInstalled Python 3.13.14 in 1.47s\n + cpython-3.13.14-macos-aarch64-none\n",
+    "stderr_bytes": 198,
+    "stderr_complete": true,
+    "stderr_sha256": "9120dbe1dfb06f0b099275f5e7000c37dab8701322e315b044ebf3ee4ac8e045",
+    "stdout": "",
+    "stdout_bytes": 0,
+    "stdout_complete": true,
+    "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "repository_executions": 0,
+  "state": "EXACT_PROJECT_LOCAL_PYTHON_TOOLCHAIN_QUALIFIED",
+  "teacher_calls": 0,
+  "trigger_state": "GREEN",
+  "version_probe": {
+    "boundary_hit": false,
+    "boundary_reason": "",
+    "command": [
+      "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+      "--version"
+    ],
+    "duration_ms": 501.445,
+    "project_selected_output_cap": null,
+    "returncode": 0,
+    "stderr": "",
+    "stderr_bytes": 0,
+    "stderr_complete": true,
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout": "Python 3.13.14\n",
+    "stdout_bytes": 15,
+    "stdout_complete": true,
+    "stdout_sha256": "c4a684e859efa868ffdfb4967e90ffd847a0fc1f293e16ed50ea18af8e3b95f6"
+  },
+  "version_probe_executions": 1
+}
