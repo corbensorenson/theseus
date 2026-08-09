@@ -38,9 +38,10 @@ def main() -> int:
     parser.add_argument("--out", default="")
     parser.add_argument("--execute-risks", action="store_true")
     parser.add_argument("--execute-typescript-repair", action="store_true")
+    parser.add_argument("--preflight-batch", action="store_true")
     args = parser.parse_args()
     path = p2a.resolve(args.config)
-    result = execute_typescript_repair(path) if args.execute_typescript_repair else execute_risks(path) if args.execute_risks else build(path)
+    result = preflight_batch(path) if args.preflight_batch else execute_typescript_repair(path) if args.execute_typescript_repair else execute_risks(path) if args.execute_risks else build(path)
     p2a.write_json(p2a.resolve(args.out or p2a.read_json(path)["report"]), result)
     print(json.dumps(summary(result), indent=2, sort_keys=True))
     return 0 if result["trigger_state"] == "GREEN" else 2
@@ -65,6 +66,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "untrusted_parent_typescript_transpilation_authorized",
         "untrusted_parent_rust_compilation_authorized",
         "shared_store_retention_authorized",
+        "batch_resource_preflight_authorized",
     }
     for key, value in p2a.mapping(cfg.get("authority")).items():
         if value is not (key in allowed):
@@ -233,6 +235,134 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "external_reference_calls": 0,
         "maximum_inference": cfg.get("maximum_inference"),
     }
+
+
+def preflight_batch(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
+    """Project the full K2.05 batch without fetching, installing, or executing."""
+    before = build(path)
+    cfg = p2a.read_json(path)
+    plan = p2a.mapping(cfg.get("batch_preflight"))
+    faults = list(p2a.strings(before.get("faults")))
+    if plan.get("state") != "PROSPECTIVE_K2_05_BATCH_RESOURCE_PREFLIGHT_ZERO_EXECUTION":
+        faults.append("batch_preflight_identity_invalid")
+    bindings: dict[str, dict[str, Any]] = {}
+    payloads: dict[str, dict[str, Any]] = {}
+    for raw in p2a.dicts(plan.get("inputs")):
+        name = str(raw.get("id") or "")
+        source = p2a.resolve(str(raw.get("path") or ""))
+        if not name or name in bindings:
+            faults.append(f"batch_input_id_invalid:{name}")
+            continue
+        bindings[name] = raw
+        if not source.is_file() or p2a.sha256_file(source) != raw.get("sha256"):
+            faults.append(f"batch_input_binding_invalid:{name}")
+            payloads[name] = {}
+        else:
+            payloads[name] = p2a.read_json(source)
+
+    schedule_rows = p2a.dicts(payloads.get("dependency_plan", {}).get("rows"))
+    runner_rows = p2a.dicts(payloads.get("runner_inventory", {}).get("rows"))
+    closure_rows = p2a.dicts(payloads.get("repository_closures", {}).get("tasks"))
+    materializer_audit = payloads.get("parent_materializer_audit", {})
+    expected = int(plan.get("expected_task_count") or 0)
+    if [len(schedule_rows), len(runner_rows), len(closure_rows)] != [expected, expected, expected]:
+        faults.append("batch_task_denominator_invalid")
+    if materializer_audit.get("trigger_state") != "GREEN":
+        faults.append("representative_parent_materializer_not_green")
+
+    coefficients = p2a.mapping(plan.get("observed_manager_bytes_per_locked_entry"))
+    manager_counts: dict[str, int] = {}
+    manager_entries: dict[str, int] = {}
+    manager_projection: dict[str, dict[str, Any]] = {}
+    for row in schedule_rows:
+        manager = str(row.get("manager") or "")
+        manager_counts[manager] = manager_counts.get(manager, 0) + 1
+        manager_entries[manager] = manager_entries.get(manager, 0) + int(row.get("estimated_locked_package_count") or 0)
+    projected_store_upper = 0
+    largest_row_store_upper = 0
+    for manager in ("npm", "pnpm", "cargo", "uv", "bun", "yarn"):
+        per_entry = int(coefficients.get(manager) or 0)
+        if per_entry <= 0:
+            faults.append(f"manager_projection_basis_invalid:{manager}")
+        entries = manager_entries.get(manager, 0)
+        store_upper = entries * per_entry
+        projected_store_upper += store_upper
+        manager_row_max = max(
+            (int(row.get("estimated_locked_package_count") or 0) for row in schedule_rows if row.get("manager") == manager),
+            default=0,
+        ) * per_entry
+        largest_row_store_upper = max(largest_row_store_upper, manager_row_max)
+        manager_projection[manager] = {
+            "task_count": manager_counts.get(manager, 0),
+            "locked_entry_count": entries,
+            "observed_upper_bytes_per_entry": per_entry,
+            "shared_store_upper_without_cross_lock_deduplication_bytes": store_upper,
+            "largest_single_row_store_upper_bytes": manager_row_max,
+        }
+    retained_roots = p2a.mapping(p2a.mapping(cfg.get("store_contract")).get("manager_roots"))
+    retained_shared_bytes = sum(directory_bytes(p2a.resolve(value)) for value in retained_roots.values())
+    projected_new_download_upper = max(0, projected_store_upper - retained_shared_bytes)
+    install_multiplier = float(plan.get("serial_disposable_install_multiplier") or 0.0)
+    projected_peak_install = int(largest_row_store_upper * install_multiplier)
+    projected_peak_temp = int(plan.get("maximum_serial_temporary_bytes") or 0)
+    host_free = shutil.disk_usage(ROOT).free
+    reserve = int(p2a.mapping(cfg.get("resource_contract")).get("host_reserve_bytes") or 0)
+    safe_headroom = max(0, host_free - reserve)
+    required_incremental_peak = projected_new_download_upper + projected_peak_install + projected_peak_temp
+    deficit = max(0, required_incremental_peak - safe_headroom)
+    execution_ready = not faults and deficit == 0
+    resource = {
+        "projected_download_bytes": projected_new_download_upper,
+        "projected_installed_bytes": projected_peak_install,
+        "projected_peak_temporary_bytes": projected_peak_temp,
+        "shared_store_deduplicated_bytes": {
+            "observed_retained_lower_bound": retained_shared_bytes,
+            "upper_bound_without_cross_lock_deduplication": projected_store_upper,
+            "exact_future_deduplication_unknown_before_acquisition": True,
+        },
+        "host_free_bytes": host_free,
+        "host_reserve_bytes": reserve,
+        "projected_wall_time": int(plan.get("maximum_batch_wall_seconds") or 0),
+        "untrusted_build_risk_class": "serialized_prequalified_ecosystem_classes_only",
+    }
+    if set(resource) != set(RESOURCE_FIELDS):
+        faults.append("batch_resource_schema_invalid")
+    return {
+        **before,
+        "created_utc": p2a.now(),
+        "trigger_state": "GREEN" if not faults else "RED",
+        "state": "K2_05_BATCH_PREFLIGHT_GREEN_EXECUTION_READY" if execution_ready else "K2_05_BATCH_PREFLIGHT_GREEN_EXECUTION_BLOCKED_HOST_STORAGE" if not faults else "K2_05_BATCH_PREFLIGHT_INVALID",
+        "faults": sorted(set(faults)),
+        "batch_preflight": {
+            "task_count": expected,
+            "locked_task_count": sum(manager_counts.get(manager, 0) for manager in ("npm", "pnpm", "cargo", "uv", "bun", "yarn")),
+            "static_task_count": manager_counts.get("trusted_runtime_or_harness", 0),
+            "immutable_resolution_task_count": manager_counts.get("resolver_required", 0),
+            "locked_entry_count": sum(manager_entries.values()),
+            "manager_projection": manager_projection,
+            "resource_projection": resource,
+            "safe_incremental_headroom_bytes": safe_headroom,
+            "required_incremental_peak_bytes": required_incremental_peak,
+            "host_storage_deficit_bytes": deficit,
+            "execution_ready": execution_ready,
+            "execution_gate": "OPEN" if execution_ready else "CLOSED_HOST_STORAGE",
+            "disposition": "READY_FOR_SERIAL_BATCH" if execution_ready else "INCONCLUSIVE_EXPERIMENT_HOST_STORAGE_PREFLIGHT",
+            "no_dedupe_upper_bound_is_safety_projection_not_expected_spend": True,
+        },
+        "static_evidence_replay_only": True,
+        "network_or_dependency_execution_performed": False,
+        "repository_runner_executions": 0,
+        "parent_target_or_evaluator_executions": 0,
+        "candidate_or_control_calls": 0,
+        "external_reference_calls": 0,
+        "maximum_inference": plan.get("maximum_inference"),
+    }
+
+
+def directory_bytes(path: Path) -> int:
+    if not path.is_dir():
+        return 0
+    return sum(item.stat().st_size for item in path.rglob("*") if item.is_file() and item.name not in HOST_METADATA_NAMES)
 
 
 def validate_risk_plan(
@@ -587,6 +717,7 @@ def summary(result: dict[str, Any]) -> dict[str, Any]:
         "replayed_closure_count",
         "replayed_managers",
         "resource_preflight",
+        "batch_preflight",
         "static_evidence_replay_only",
         "network_or_dependency_execution_performed",
         "repository_runner_executions",
