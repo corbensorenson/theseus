@@ -1,0 +1,1190 @@
+{
+  "candidate_or_control_calls": 0,
+  "candidate_visible_field_count": 24,
+  "config": {
+    "bytes": 13503,
+    "path": "configs/theseus_vcm_contiguous_six_row_freeze.json",
+    "sha256": "ec53cad38b3f53aed1e367c107d7478efc238f6936fc3e2f590fa88635743889"
+  },
+  "created_utc": "2026-08-09T06:43:18.614098Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "frozen_contract": {
+    "authority": {
+      "D1_authorized": false,
+      "D2_authorized": false,
+      "book_support_promotion_authorized": false,
+      "external_reference_calls_authorized": 0,
+      "local_model_calls_authorized": 0,
+      "serving_authorized": false,
+      "teacher_calls_authorized": false,
+      "training_rows_authorized": false,
+      "user_or_operator_gate": false
+    },
+    "broad_parent_effect_root": "repository",
+    "candidate_visible_fields": [
+      "natural_language_request",
+      "callable_signature_when_present",
+      "broad_parent_effect_root",
+      "arm_specific_model_visible_context"
+    ],
+    "claim_id": "virtual-context-abi.core",
+    "completion_policy": {
+      "context_materialization_budget_is_causal_resource": true,
+      "explicit_caller_short_response_constraint_is_not_capability_failure": true,
+      "host_safety_activation_is_not_capability_failure": true,
+      "normal_completion": [
+        "complete_artifact",
+        "model_eos"
+      ],
+      "physical_context_boundary_hit_invalidates_observation": true,
+      "project_selected_quality_token_cap": null
+    },
+    "context_resource_policy": {
+      "actual_context_tokens_retrieval_work_wall_time_memory_and_cost_recorded": true,
+      "host_operability_canary": "prospective non-scoring prefill/decode canary on packet sizes implied by admitted tasks before denominator execution",
+      "host_operability_canary_is_capability_evidence": false,
+      "information_matched_plain_context_budget": "exact same information, bytes, and tokenizer count as the correct VCM arm",
+      "maximal_context_budget": "all candidate-authorized parent context up to the exact physical model boundary; any host or physical activation is an invalid observation",
+      "vcm_selection_budget": "minimum source-bound packet that independently covers every declared context obligation and passes adequacy; no fixed convenience size"
+    },
+    "control_arms": [
+      {
+        "context": "natural request only",
+        "id": "local_no_added_context",
+        "model": "frozen_local"
+      },
+      {
+        "context": "source-bound policy-admitted VCM packet",
+        "id": "local_vcm_correct",
+        "model": "frozen_local"
+      },
+      {
+        "context": "the exact same model-visible source information and byte/token content without VCM selection, certificate, or governance structure",
+        "id": "local_information_matched_plain_context",
+        "model": "frozen_local"
+      },
+      {
+        "context": "all candidate-authorized parent context without VCM selection",
+        "id": "local_maximal_ungoverned_context",
+        "model": "frozen_local"
+      },
+      {
+        "context": "the correct VCM packet with source-bound pages in prospectively shuffled order",
+        "id": "local_vcm_shuffled",
+        "model": "frozen_local"
+      }
+    ],
+    "cost_custody": {
+      "codex_subscription_reference_marginal_api_spend_authorized_usd": 0,
+      "local_cost_denominator": "all_local_inference_retrieval_materialization_verification_repair_and_host_work",
+      "openai_api_spend_authorized_usd": 0,
+      "record_actual_tokens_time_verifier_work_and_total_system_cost": true,
+      "reference_cost_denominator": "separate_never_mixed_with_local",
+      "reference_omission_is_not_local_campaign_failure": true,
+      "unexpected_billable_route_action": "fail_closed_before_call_and_record_instrument_wall"
+    },
+    "hidden_fields": [
+      "source_task_id",
+      "repository_identity",
+      "target_patch",
+      "tests",
+      "hidden_tests",
+      "expected_answer",
+      "answer_family",
+      "task_stratum",
+      "target_derived_decoder_metadata"
+    ],
+    "instrument_role": "unpowered_six_row_real_work_canary_not_claim_denominator",
+    "invalidation_classes": [
+      {
+        "action": "invalidate_campaign",
+        "id": "candidate_visible_target_or_answer_leakage"
+      },
+      {
+        "action": "invalidate_campaign",
+        "id": "task_evaluator_or_source_identity_drift"
+      },
+      {
+        "action": "invalidate_campaign",
+        "id": "frozen_local_model_tokenizer_decoder_or_wrapper_drift"
+      },
+      {
+        "action": "invalidate_observation_not_capability_failure",
+        "id": "physical_context_boundary_or_host_safety_activation"
+      },
+      {
+        "action": "invalidate_observation_and_stop",
+        "id": "candidate_write_escape_or_effect_root_mismatch"
+      },
+      {
+        "action": "invalidate_campaign",
+        "id": "information_matching_or_arm_packet_identity_failure"
+      },
+      {
+        "action": "invalidate_campaign",
+        "id": "blind_evaluator_or_candidate_integrity_rederivation_failure"
+      },
+      {
+        "action": "omit_reference_or_stop_before_call",
+        "id": "openai_subscription_provenance_absent_or_billable_api_route_detected"
+      },
+      {
+        "action": "new_campaign_identity_required",
+        "id": "unsealed_instrument_or policy_mutation"
+      },
+      {
+        "action": "invalidate_campaign",
+        "id": "post_outcome_task_context_control_or_evaluator_adaptation"
+      }
+    ],
+    "k3_stop_rules": [
+      "Do not issue any local or reference model call under this K2 authority; a separate prospectively sealed K3 owner is required.",
+      "Stop before the first K3 call unless this producer and role-separated audit are both GREEN and byte-bound.",
+      "Stop on any candidate-visible field outside the four-field allowlist or any target-derived path, metadata, evaluator, test, answer, or decoder hint.",
+      "Stop on any source, task, evaluator, model, tokenizer, decoder, wrapper, route, arm, or policy identity drift; repair only under a new campaign identity.",
+      "Stop and invalidate the observation if the physical context boundary or host-safety interlock activates; never score it as model or subsystem failure.",
+      "Stop on write escape, broad-effect-root mismatch, failed independent candidate-integrity rederivation, or failed blind-evaluator custody.",
+      "Run every local arm to a complete artifact or model EOS with no project-selected generated-token quality cap; record actual prompt and generated tokens.",
+      "Keep tasks, arm packets, ordering policy, outcomes, and evaluator semantics frozen after the first call; never adapt them to observed results.",
+      "Omit Luna without blocking the local canary unless a prospective receipt proves the route is Codex-subscription-backed with zero API billing and no API credential path.",
+      "If a Luna route becomes eligible, seal it before the first local arm, use identical candidate-visible packets and hidden evaluators, and keep its outputs and costs in a separate denominator.",
+      "Treat the six-row K3 result only as an instrument and residual-exposure canary; it cannot support or falsify the VCM claim, select book support, or replace the powered source-disjoint campaign.",
+      "Stop after one complete matched pass across the frozen six rows; any rerun requires a predeclared invalidation class and a new campaign identity."
+    ],
+    "maximum_inference": "The frozen contract establishes a call-free six-row K3 canary instrument boundary only. It does not establish model competence, VCM utility, subsystem causality, economics, transfer, D1 or D2 evidence, training or serving value, or ASI Stack support or falsification.",
+    "openai_measurement_reference": {
+      "api_credentials_or_api_billing_route_allowed": false,
+      "billable_api_spend_authorized": false,
+      "measurement_only": true,
+      "model": "gpt-5.6-luna",
+      "omit_if_not_prospectively_sealed_before_first_local_arm": true,
+      "omit_if_subscription_provenance_cannot_be_proved": true,
+      "outputs_may_enter_training_or_serving": false,
+      "outputs_may_select_tasks_or_tune_local_arms": false,
+      "provider": "OpenAI",
+      "reasoning_effort": "xhigh",
+      "same_candidate_visible_task_packet_required": true,
+      "same_independent_hidden_evaluator_required": true,
+      "separate_denominator_and_cost_reporting_required": true,
+      "subscription_provenance_receipt_required_before_authorization": true,
+      "transport": "demonstrably_codex_subscription_backed_only"
+    },
+    "pre_inference_interventions": [
+      "omitted",
+      "stale",
+      "shuffled",
+      "wrong_scope",
+      "tainted",
+      "revoked"
+    ],
+    "primary_canary_outcome": "blind independent hidden-evaluator useful completion, reported descriptively per arm and task; the six-row canary is not a powered claim denominator",
+    "secondary_outcomes": [
+      "requirement preservation",
+      "unsafe release",
+      "false block",
+      "model-visible context use",
+      "latency",
+      "exact prompt and generated tokens",
+      "retrieval and materialization work",
+      "verifier and repair work",
+      "total local and reference cost",
+      "weak-tail residuals"
+    ]
+  },
+  "information_flow": {
+    "broad_parent_effect_root": "repository",
+    "packet_inputs": [
+      "natural_language_request_utf8",
+      "exact_parent_archive_regular_file_paths_and_bytes",
+      "fixed_parent_only_selector_policy",
+      "prospectively_frozen_arm_contract"
+    ],
+    "producer_parsed_hidden_qualification_evidence": false,
+    "producer_read_answer_identifying_metadata": false,
+    "producer_read_hidden_evaluator": false,
+    "producer_read_target_archive": false,
+    "producer_read_target_diff": false,
+    "target_derived_effect_paths_present": false
+  },
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN producer establishes only that six exact parent-only candidate packet stores and their controls, outcomes, cost custody, invalidation classes, and K3 stop rules are frozen contiguously without parsing hidden qualification evidence or making any model, evaluator, network, Luna, teacher, training, serving, D1, D2, or book action.",
+  "network_calls": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_contiguous_six_row_freeze_v1",
+  "project_selected_quality_token_cap": null,
+  "regular_file_count": 3182,
+  "row_count": 6,
+  "rows": [
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "5dcf868e4f05e6202da25693",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/25cfe65597486a0f23731b1436aacca587e46238feb4f7049db0b657a48de283/29f07bbb181a8f24779dbaed2f988e63d80147bf716bd7bac1f4685e03b1639f"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "fix(sidecar): honour the resolved meta location in epic inventory, tracker, and the skills (#286, #266, #267)"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "bf6b458bfb9dc8c2afca94dc0442e69acccc0693913a792eb84edd41200cd383",
+          "utf8_bytes": 111
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "b8bae48d2bab84eb4f5a98dadea9637e5b9e7ebf4224d4c455b8cd6eb9296d69",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "279cfeef8a505b6277b7307045a889e0a2e73e0c2a8cef191e5a9dd5fafac2f2",
+      "faults": [],
+      "inventory_sha256": "29f07bbb181a8f24779dbaed2f988e63d80147bf716bd7bac1f4685e03b1639f",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_bytes": 9648944,
+          "parent_text_frontier_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_page_count": 554,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_bytes": 9648944,
+          "parent_text_frontier_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_page_count": 554,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 9648944,
+          "parent_text_frontier_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_page_count": 554,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_bytes": 9648944,
+          "parent_text_frontier_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+          "parent_text_page_count": 554,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "8a416d5e3ebb45e13a6cb0db7681dad2f31f4f619661c5f97e3ae0cdc7f33381",
+      "parent_revision_sha256": "0647726f18e8ecdeeef2f5af83d7ae8f730cb4afcae1e9b1dab1af269444e24a",
+      "regular_file_bytes": 9648944,
+      "regular_file_count": 554,
+      "request_id": "25cfe65597486a0f23731b1436aacca587e46238feb4f7049db0b657a48de283",
+      "selector_frontier_sha256": "e1c3615c8f115c6078123747b0bedbaf7e95770d4868036a875bd0120d439304",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 9648944,
+      "text_page_count": 554,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/5dcf868e4f05e6202da25693",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:25cfe65597486a0f23731b1436aacca587e46238feb4f7049db0b657a48de283",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "d43101751f9883309a294568",
+        "lease_expires_utc": "2026-08-09T06:58:17.595936Z",
+        "lease_id": "e09d5f2bef716a39eb8768ab",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "5dcf868e4f05e6202da25693",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "f986a024a0d79ce4d0a6546b",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "2e86cddde53027adf7af2e18",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "d8cf0d655931bce0e38f8366",
+        "source_ref_count": 2,
+        "source_ref_digest": "f383ed28932a7dc63322dbc6",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "6f3b8adf8017ddba2aa72225",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/d94a36da6bef583f3f7d31d29904f739dbf1c7d06faa2e811e4c102335cddfb8/5dd2388c1781e89293a73fd74230ef799751a710a511a9d9664b098d3016ed64"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "feat: gate fastapi behind a pyjinhx[fastapi] extra"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "24329624a96ea441d05858ca09d38b828b278b6fc238a71ede3568cb699c0a64",
+          "utf8_bytes": 52
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "f8d4844e3fcd9bd814f867358e0189850956333b19aae015a571304640e3d78a",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "2d4b76b652e301b8e301c96dc61bbc10dce019e8be754c7050e7a7edfe8cfa0b",
+      "faults": [],
+      "inventory_sha256": "5dd2388c1781e89293a73fd74230ef799751a710a511a9d9664b098d3016ed64",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_bytes": 2379860,
+          "parent_text_frontier_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_page_count": 652,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_bytes": 2379860,
+          "parent_text_frontier_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_page_count": 652,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 2379860,
+          "parent_text_frontier_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_page_count": 652,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_bytes": 2379860,
+          "parent_text_frontier_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+          "parent_text_page_count": 652,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "59776e3da5f4e81372131e96224bab4c14ca51c8dbe47ce23ee908ad57040f27",
+      "parent_revision_sha256": "b248b1c391d93866cd30e019241abf8fb638b84d28ad6de99b45a0c486d6136a",
+      "regular_file_bytes": 2379860,
+      "regular_file_count": 652,
+      "request_id": "d94a36da6bef583f3f7d31d29904f739dbf1c7d06faa2e811e4c102335cddfb8",
+      "selector_frontier_sha256": "4e84b721e8f60e9ee91ff6299da468a418a140d679fb00dac0123374e0ea6cac",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 2379860,
+      "text_page_count": 652,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/6f3b8adf8017ddba2aa72225",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:d94a36da6bef583f3f7d31d29904f739dbf1c7d06faa2e811e4c102335cddfb8",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "98e2392a9d0a01638a8d8eff",
+        "lease_expires_utc": "2026-08-09T06:58:17.749998Z",
+        "lease_id": "7de3d7c812cb2859004b82f2",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "6f3b8adf8017ddba2aa72225",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "bb4d36d13f46eb626a48cb84",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "f83b953e9cb236555a667c50",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "a2af92f71c3806807b2380ca",
+        "source_ref_count": 2,
+        "source_ref_digest": "9933822290911e83aae60449",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "cb4093d05e2f5ea988f1471d",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/3e78338c233fdc9d523d47f233ce10dac40249401cbccadeeb8a44992108c54a/0f54f178248d352475a11bdb20d1bb25a53a2206fee45d1117884dec74c68ec5"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "Arena endpoint auth with a compatibility window"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "f709eed38cc88612edc86de2c21442232edc74fc7cc68fc948bb37c4face7b26",
+          "utf8_bytes": 49
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "be09a80945a511b78e1e6af75cc2d397ac1082c5d7ac381fd4b1c898f147c833",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "1c685f8566609f5ee7d5f776a9ad3600fbcf1241d3517c32866a409c150b3a98",
+      "faults": [],
+      "inventory_sha256": "0f54f178248d352475a11bdb20d1bb25a53a2206fee45d1117884dec74c68ec5",
+      "license_spdx": "Apache-2.0",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_bytes": 5346704,
+          "parent_text_frontier_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_page_count": 1116,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_bytes": 5346704,
+          "parent_text_frontier_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_page_count": 1116,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 5346704,
+          "parent_text_frontier_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_page_count": 1116,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_bytes": 5346704,
+          "parent_text_frontier_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+          "parent_text_page_count": 1116,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "46e74b1a28265f06454de0dd488e501eb0c763c20ed983ca1b48db393324892f",
+      "parent_revision_sha256": "c4c53501380dc4608f44be41db2a75d2060748850b48a400e3bfda8206d31999",
+      "regular_file_bytes": 18788650,
+      "regular_file_count": 1164,
+      "request_id": "3e78338c233fdc9d523d47f233ce10dac40249401cbccadeeb8a44992108c54a",
+      "selector_frontier_sha256": "263f3e52dd52b51cff648ee34d3114461b0672bfc407ef9e4ba8acd29bf58c3a",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 5346704,
+      "text_page_count": 1116,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/cb4093d05e2f5ea988f1471d",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:3e78338c233fdc9d523d47f233ce10dac40249401cbccadeeb8a44992108c54a",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "5329b79866d321ebbff9e95a",
+        "lease_expires_utc": "2026-08-09T06:58:18.100208Z",
+        "lease_id": "e8b39cb83bc3686242fe6302",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "cb4093d05e2f5ea988f1471d",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "70e228106c92fb5e2db9c7cb",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "62493ab1bad8ba772399aa9b",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "d2a1e36f370fe4d71fa5d793",
+        "source_ref_count": 2,
+        "source_ref_digest": "8bd00386d0f109e5293f0d83",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "30006a7f644c5d6897c9af70",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/980cfc29198e248bd0ddee0706df3eae3ac863d86460d2c0a4f71989b5a1429c/e2605aff5d28fa26572ed7adb3d8c5f3e930117758296fc28410453e0300aeea"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "[autolamella] Align the status dict's item vocabulary with HookContext (FIB-464)"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "31ed746e20df0da538144ffe9cf2675242fe008c0e615f0494c915f247613c83",
+          "utf8_bytes": 82
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "e89704cb2131a930d901e39af79a3a2b8d5a7864f7305994fd8b4170f5f2676d",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "2841a17ae15f817c0935bc2dcb2ef73dfdb442a6ec6bdc8d751ea8e81908a1b7",
+      "faults": [],
+      "inventory_sha256": "e2605aff5d28fa26572ed7adb3d8c5f3e930117758296fc28410453e0300aeea",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_bytes": 7670397,
+          "parent_text_frontier_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_page_count": 636,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_bytes": 7670397,
+          "parent_text_frontier_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_page_count": 636,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 7670397,
+          "parent_text_frontier_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_page_count": 636,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_bytes": 7670397,
+          "parent_text_frontier_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+          "parent_text_page_count": 636,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "6181909b18c8ac3062c1611bbe4d3cc273478ebbda8b9070f1d65bc77211ac7e",
+      "parent_revision_sha256": "929ec520da38a7088567792f5126a163068df79f96587ad61eebe257566f10ec",
+      "regular_file_bytes": 20152248,
+      "regular_file_count": 655,
+      "request_id": "980cfc29198e248bd0ddee0706df3eae3ac863d86460d2c0a4f71989b5a1429c",
+      "selector_frontier_sha256": "c6634d9c2670b8a7c53e61b35ad7f926df5fde55ee84fcb02f9132c2de8d99e7",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 7670397,
+      "text_page_count": 636,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/30006a7f644c5d6897c9af70",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:980cfc29198e248bd0ddee0706df3eae3ac863d86460d2c0a4f71989b5a1429c",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "46dce757924a7e9a9b2f9d30",
+        "lease_expires_utc": "2026-08-09T06:58:18.559708Z",
+        "lease_id": "69110ce856f52693387c7fcb",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "30006a7f644c5d6897c9af70",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "0796f2071d316c3c5a94ede4",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "03ce7553219174ec8b50c31b",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "de06c11ab9e48fb9afe17f4a",
+        "source_ref_count": 2,
+        "source_ref_digest": "2c80c3f17480ab8cd0b31446",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "98bd12c89ccd8da3b3fffe23",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/8362ea72c33c051bcf67b526fea58dc63be3a95c95ae4bc25ce945292920b0c1/d36f3ff21b053cf6a8fb240d90c5ba0a4eb8ee97ed73bd1d1853d8c606c0f015"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "Add semicolon-separated batch execution"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "e67860c5db6879228e9d6093b44126784cab556b6345bd2e30d63d955c8f92cb",
+          "utf8_bytes": 41
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "68a2582361a821235a4805a3498d4e4050495e5a4800179c4197741b964c21ac",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "c13be34e29e83439acbf8322a4b5f14372fd09cc3b47ae003673da7d013ac5e8",
+      "faults": [],
+      "inventory_sha256": "d36f3ff21b053cf6a8fb240d90c5ba0a4eb8ee97ed73bd1d1853d8c606c0f015",
+      "license_spdx": "Apache-2.0",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_bytes": 260755,
+          "parent_text_frontier_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_page_count": 53,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_bytes": 260755,
+          "parent_text_frontier_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_page_count": 53,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 260755,
+          "parent_text_frontier_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_page_count": 53,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_bytes": 260755,
+          "parent_text_frontier_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+          "parent_text_page_count": 53,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "fb9f478eccb18c7192419fb73cc5d4790b833e493968d4f0b703034642124481",
+      "parent_revision_sha256": "e23935eeac5c3b9222a73e8b03c82bc49b21f863d13ce7b49ed42ac3d73a555c",
+      "regular_file_bytes": 260755,
+      "regular_file_count": 53,
+      "request_id": "8362ea72c33c051bcf67b526fea58dc63be3a95c95ae4bc25ce945292920b0c1",
+      "selector_frontier_sha256": "5508c7d4f92633f4014d35e1b87ca5e0d6e5f0f5adfd0ed1a9c5926d9e60ae97",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 260755,
+      "text_page_count": 53,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/98bd12c89ccd8da3b3fffe23",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:8362ea72c33c051bcf67b526fea58dc63be3a95c95ae4bc25ce945292920b0c1",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "4e836d18f06a52a60080d83f",
+        "lease_expires_utc": "2026-08-09T06:58:18.577599Z",
+        "lease_id": "35e8f10ee85d9881ec4a9c17",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "98bd12c89ccd8da3b3fffe23",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "71fa8dde1a08dd9f289e08e3",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "a85411cfe1ec825104a71271",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "33d9fb2b312d9a842af1645b",
+        "source_ref_count": 2,
+        "source_ref_digest": "3fc4ee7b445c4a5e3b695ed1",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    },
+    {
+      "allowed_effect_paths_present": false,
+      "broad_effect_root_is_common_and_not_target_derived": true,
+      "candidate_surface": {
+        "arm_specific_model_visible_context": {
+          "governed_packet_id": "a0f606acd7ebae4c447d8f51",
+          "materialization_state": "deferred_until_obligation_and_physical_addressability_freeze",
+          "materialized_parent_pages": [],
+          "vcm_store_handle": "vcm://parent/731d55165aba7c8ae399703eb6bac4b329cc026883ff4067fe5a321a66a913dc/db466fc40f0a3b9934f74706ab1e90e2f0f0914b725076abc703dd8db878fd68"
+        },
+        "broad_parent_effect_root": "repository",
+        "callable_signature_when_present": null,
+        "natural_language_request": "feat(share): no baked-in relay \u2014 transport is the peers' explicit choice"
+      },
+      "candidate_visible_byte_receipts": [
+        {
+          "field": "natural_language_request",
+          "sha256": "e50f32ab64c99a37f9771020e0ec912b4a4d32f17ea12e3f6f393525b251292c",
+          "utf8_bytes": 76
+        },
+        {
+          "field": "callable_signature_when_present",
+          "sha256": "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",
+          "utf8_bytes": 4
+        },
+        {
+          "field": "broad_parent_effect_root",
+          "sha256": "6827cb9deb1969887de760b235ea8ca5825f0640c11968208a3619d3257851a9",
+          "utf8_bytes": 12
+        },
+        {
+          "field": "arm_specific_model_visible_context",
+          "sha256": "152409b258d3c0596a29029aa5d22ffbee1828b0d076d945d12e47bdc3841700",
+          "utf8_bytes": 331
+        }
+      ],
+      "candidate_visible_projection_sha256": "94b57c079dc157fe165d7d688c5448beb83186fc8e3f073e50d16ec5e65fa5a7",
+      "faults": [],
+      "inventory_sha256": "db466fc40f0a3b9934f74706ab1e90e2f0f0914b725076abc703dd8db878fd68",
+      "license_spdx": "MIT",
+      "matched_context_information_identity_preserved": true,
+      "matched_context_materialization_receipts": {
+        "governed_vcm": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": "production_vcm_consumer_abi",
+          "information_set_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_bytes": 595197,
+          "parent_text_frontier_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_page_count": 104,
+          "project_selected_page_or_byte_cap": null
+        },
+        "information_matched_plain_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "governance_envelope": null,
+          "information_set_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_bytes": 595197,
+          "parent_text_frontier_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_page_count": 104,
+          "project_selected_page_or_byte_cap": null
+        },
+        "maximal_full_parent_context": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "ordering": "stable_request_derived_complete_frontier",
+          "parent_text_bytes": 595197,
+          "parent_text_frontier_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_page_count": 104,
+          "project_selected_page_or_byte_cap": null
+        },
+        "no_added_context": {
+          "information_set_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+          "parent_text_bytes": 0,
+          "parent_text_page_count": 0
+        },
+        "ordinary_direct_retrieval": {
+          "context_addressability_boundary": "deferred_to_exact_frozen_tokenizer_and_host_preflight",
+          "information_set_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_bytes": 595197,
+          "parent_text_frontier_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+          "parent_text_page_count": 104,
+          "project_selected_page_or_byte_cap": null,
+          "retrieval_frontier": "same_complete_parent_text_frontier"
+        }
+      },
+      "parent_archive_sha256": "970326306f6c83d7f23c7dcf0ba79b820c1a400ed1358a6cda1d7ab68e32d55f",
+      "parent_revision_sha256": "37f9a520bf902e3e106d031bab327d65eaf323884730e8b535d7a5d463537771",
+      "regular_file_bytes": 595197,
+      "regular_file_count": 104,
+      "request_id": "731d55165aba7c8ae399703eb6bac4b329cc026883ff4067fe5a321a66a913dc",
+      "selector_frontier_sha256": "91762354982c5a82ff822de623e7b31a91682b9c197f7341d7aa917b9083425d",
+      "selector_has_no_page_or_byte_cap": true,
+      "selector_input_classes": [
+        "request_utf8",
+        "parent_relative_path_utf8",
+        "parent_content_bytes",
+        "fixed_policy"
+      ],
+      "text_page_bytes": 595197,
+      "text_page_count": 104,
+      "vcm_consumer_abi": {
+        "adequacy_state": "governed_sufficient_for_parent_only_repository_context_materialization",
+        "authority_ceiling": [
+          "licensed_parent_snapshot_read",
+          "governed_vcm_packet_materialization"
+        ],
+        "branch_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435/branch/a0f606acd7ebae4c447d8f51",
+        "closure_state": "closed",
+        "consumer_id": "theseus_vcm_parent_only_materializer:731d55165aba7c8ae399703eb6bac4b329cc026883ff4067fe5a321a66a913dc",
+        "deletion_obligations": [
+          "invalidate_packet_if_parent_snapshot_or_license_is_revoked"
+        ],
+        "external_inference_calls": 0,
+        "fallback_return_count": 0,
+        "full_packet_evidence_required": true,
+        "governor_content_hash": "8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "governor_receipt_id": "aa503da49ad526eb0f1ea031",
+        "lease_expires_utc": "2026-08-09T06:58:18.610909Z",
+        "lease_id": "9be311483bc178e11e969408",
+        "lease_state": "active",
+        "omissions": [
+          "raw_payload_text_not_embedded",
+          "raw_prompt_not_embedded",
+          "context_packet_contains_refs_hashes_and_policy_only"
+        ],
+        "packet_id": "a0f606acd7ebae4c447d8f51",
+        "parent_snapshot_id": "snapshot://theseus/vcm/8473be357f022756dd1f56495b0a1c2aec74374fbab879f4af3c4f05bfa7a435",
+        "permitted_uses": [
+          "measurement_candidate_context",
+          "blind_retrieval",
+          "audit_replay"
+        ],
+        "policy": "project_theseus_vcm_consumer_abi_v1",
+        "public_training_rows_written": 0,
+        "purpose": "parent_only_repository_context_materialization",
+        "raw_private_text_stored": false,
+        "raw_prompt_stored": false,
+        "read_write_set_digest": "fddbb16268d94d1f4cc4158c",
+        "ready": true,
+        "record_types": [
+          "authority_use_receipt",
+          "context_abi_record",
+          "context_adequacy",
+          "context_lease_receipt",
+          "context_transaction",
+          "failure_boundary"
+        ],
+        "representation_certificate_id": "e256f52f42c2b26c34baf624",
+        "semantic_index_content_hash": "73190f79497abdd52f1a95e3b79e7cc960418083998d1cab1fceedb0a65b76a2",
+        "semantic_index_path": "reports/virtual_context_memory_index.json",
+        "snapshot_branch_id": "f3b72678f2468d41f03772a0",
+        "source_ref_count": 2,
+        "source_ref_digest": "2ee2018209a56a675479aa5c",
+        "taint_labels": [],
+        "typed_faults": [],
+        "validation": {
+          "faults": [],
+          "passed": true
+        }
+      }
+    }
+  ],
+  "state": "K2_05_CONTIGUOUS_SIX_ROW_INSTRUMENT_FROZEN",
+  "store_artifact": {
+    "bytes": 2497149,
+    "path": "runtime/vcm_evaluator/contiguous_six_row_store_v1.json",
+    "sha256": "c7d2f5d4c744273eaa4091e06b8245af3736ed753d11cb3936ee51efe67c0348"
+  },
+  "teacher_calls": 0,
+  "text_page_count": 3115,
+  "trigger_state": "GREEN"
+}

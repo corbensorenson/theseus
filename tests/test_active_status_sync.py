@@ -38,7 +38,7 @@ def test_human_state_surfaces_match_machine_active_claim() -> None:
 def test_active_status_is_specific_and_single_claim() -> None:
     active = active_claim()
     assert active["claim_id"] == "virtual-context-abi.core"
-    assert active["phase"] == "K2_EVALUATOR_INSTRUMENT_QUALIFICATION"
+    assert active["phase"] == "K3_REAL_WORK_MATCHED_CANARY"
     assert active["selected_task_index"] == 26
     assert active["last_closed_task_index"] == 26
 

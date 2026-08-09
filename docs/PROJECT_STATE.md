@@ -56,9 +56,9 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_05_REPLACEMENT_EVALUATOR_QUALIFICATION_ACTIVE` | Tasks 16, 25, and 56 remain qualified and frozen. Source-disjoint replacements for Tasks 12, 13, and 35 now pass role-separated source and revised-panel audits; their exact dependency and common-evaluator qualification remains open, so the evaluator panel is still unadmitted and the locked batch remains closed by the 40.6 GiB deficit |
+| Active VCM claim | `VCM_V3_K3_SIX_ROW_MATCHED_LOCAL_CANARY_PREFLIGHT_REQUIRED` | K2 is GREEN for one contiguous six-row parent-only instrument: Tasks 12, 13, 16, 25, 35, and 56 all have role-audited parent-fail/target-pass receipts, exact candidate packets, frozen controls and stop rules, and zero model or reference calls. K3 remains closed until a separate prospective local-canary owner and call-free preflight are GREEN |
 | VCM information flow | `BROAD_PARENT_ROOT_AND_SELECTOR_AUDIT_GREEN` | The prospective claim contract no longer exposes target-derived `allowed_effect_paths`; every arm uses broad root `repository`, and the K2.04 audit rederived all candidate-visible bytes and request/parent-only selector inputs |
-| VCM natural-task route | `REPRESENTATIVE_PARENT_ONLY_MATERIALIZER_GREEN` | Four exact parent archives produced complete uncapped text frontiers, matched governed/plain/maximal/retrieval information identities, production VCM ABI receipts, and zero downstream calls; all-62 coverage remains K2.05 work |
+| VCM natural-task route | `CONTIGUOUS_SIX_ROW_PARENT_ONLY_INSTRUMENT_GREEN` | Six exact parent archives produced complete uncapped text frontiers across 3,182 files and 3,115 UTF-8 pages, matched governed/plain/maximal/retrieval information identities, production VCM ABI receipts, 24 independently rederived candidate-visible fields, and zero downstream calls |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
 | Luna reference | `ZERO_CALLS_CODEX_SUBSCRIPTION_ROUTE_REQUIRED_OR_OMIT` | The retained `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort is offline qualification evidence only and remains disabled. VCM may use Luna only through a demonstrably Codex-subscription-backed path with zero billable API inference; otherwise the arm is prospectively omitted |
@@ -66,11 +66,11 @@ change.
 | Repository state | `SOURCE_BOUND_REGISTRY_GREEN` | The recenter and registry repairs are committed. The last complete registry gate reported zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities, with 11 eligible routes source-bound |
 
 The authoritative active record additionally binds phase
-`K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`k2_05_three_row_replacement_evaluator_qualification_v1`, last closed task 26, and the wall
-`host_adequate_replacement_sources_and_full_closures_green_but_tasks_12_13_35_dependency_locks_environments_and_common_evaluators_not_yet_qualified`.
+`K3_REAL_WORK_MATCHED_CANARY`, selected task 26, attempt
+`k3_six_row_matched_local_canary_preflight_v1`, last closed task 26, and the wall
+`the_contiguous_six_row_K2_instrument_is_green_and_role_audited_but_no_separate_prospective_K3_owner_yet_binds_the_exact_local_model_route_arm_materializations_blind_evaluator_custody_run_ordering_physical_host_preflight_and_call_authority`.
 The next legal action is
-`prospectively_bind_one_generic_three_row_resolution_transaction_for_tasks_12_13_35_then_materialize_environments_and_common_evaluators_before_reusing_qualified_16_25_56_without_rerun`.
+`build_and_role_audit_one_call_free_prospective_K3_owner_that_consumes_the_frozen_six_row_store_binds_the_exact_TMax_model_tokenizer_decoder_and_route_materializes_each_local_control_packet_without_hidden_metadata_proves_blind_evaluator_and_cost_custody_runs_physical_host_operability_canaries_that_cannot_count_as_capability_evidence_and_authorizes_only_one_complete_matched_local_pass_after_GREEN;_omit_Luna_unless_a_separately_sealed_receipt_proves_Codex_subscription_transport_and_zero_API_billing`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -151,11 +151,17 @@ same-language tasks under the original frozen rank. Full manifests invalidated
 the first Task 13 replacement as explicitly Windows/xloil-bound before any
 dependency execution. A generic host-feasibility successor replaced only that
 slot with `paulomtts/pyjinhx`; the authoritative v5 panel and all 124 exact
-full closures now pass role-separated audit. No evaluator or model call
-occurred in this repair. K2.05 is active on exact locks, environments, and
-common-evaluator qualification for the three replacements; qualified Tasks
-16, 25, and 56 may not rerun. The locked segment retains the storage wall,
-with no evidence deletion or partial panel.
+full closures now pass role-separated audit. Replacement Tasks 12, 13, and 35
+now also have exact locks, offline-replayable environments, and common
+parent-fail/target-pass evaluators. Together with unchanged Tasks 16, 25, and
+56, one contiguous six-row K2 freeze is GREEN and role-audited without an
+evaluator rerun. Its parent-only store freezes all four candidate-visible
+fields per row, five local control arms, descriptive canary outcomes, cost
+custody, ten invalidation classes, and twelve K3 stop rules. It authorizes zero
+calls and cannot support or falsify VCM. K3 now requires a separate prospective
+local-canary owner and call-free preflight; Luna is omitted unless
+Codex-subscription provenance and zero API billing can be proved before the
+first local arm.
 
 ## Active Claim And Residual
 

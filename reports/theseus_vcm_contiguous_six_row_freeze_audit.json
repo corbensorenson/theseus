@@ -1,0 +1,67 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_candidate_visible_field_count": 24,
+  "audited_row_count": 6,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "bytes": 13503,
+    "path": "configs/theseus_vcm_contiguous_six_row_freeze.json",
+    "sha256": "ec53cad38b3f53aed1e367c107d7478efc238f6936fc3e2f590fa88635743889"
+  },
+  "created_utc": "2026-08-09T06:43:20.432454Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "frozen_contract_sha256": "8ddc64cf73dfba1bdc9922827a5e918c51d1da0d7b6711cdfd23595e4c964f02",
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN role-separated audit establishes only that the six frozen rows correspond to three predecessor and three replacement parent-fail/target-pass evaluator qualifications, exact v5 source and v4 closure identities, independently rederived parent-only candidate bytes, and the frozen no-cap, zero-current-call, subscription-only-reference K3 contract. It is not external reproduction and cannot establish or falsify VCM utility, model competence, transfer, economics, training value, serving value, or ASI Stack support.",
+  "network_calls": 0,
+  "panel_admitted": false,
+  "parent_only_rederivation_conclusions": {
+    "candidate_visible_bytes_individually_rederived": true,
+    "complete_parent_text_frontier_no_convenience_cap": true,
+    "exact_parent_archives_only": true,
+    "matched_non_vcm_context_information_identity": true,
+    "production_vcm_consumer_abi_ready": true,
+    "selector_inputs_request_and_parent_only": true,
+    "single_broad_parent_effect_root": true,
+    "target_derived_effect_paths_absent": true
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_contiguous_six_row_freeze_audit_v1",
+  "producer_report": {
+    "bytes": 58050,
+    "path": "reports/theseus_vcm_contiguous_six_row_freeze.json",
+    "sha256": "4833ba8438509490fea1a7b61a263cc89d91291c274a1ded8b11633a29c8e644"
+  },
+  "qualification": {
+    "exact_evaluator_reruns_performed": 0,
+    "predecessor_qualified_task_indices": [
+      16,
+      25,
+      56
+    ],
+    "qualification_evidence_reused_by_receipt": true,
+    "qualified_task_count": 6,
+    "qualified_task_indices": [
+      12,
+      13,
+      16,
+      25,
+      35,
+      56
+    ],
+    "replacement_qualified_task_indices": [
+      12,
+      13,
+      35
+    ]
+  },
+  "state": "K2_05_CONTIGUOUS_SIX_ROW_INSTRUMENT_ROLE_SEPARATELY_REDERIVED",
+  "store_artifact": {
+    "bytes": 2497149,
+    "path": "runtime/vcm_evaluator/contiguous_six_row_store_v1.json",
+    "sha256": "c7d2f5d4c744273eaa4091e06b8245af3736ed753d11cb3936ee51efe67c0348"
+  },
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

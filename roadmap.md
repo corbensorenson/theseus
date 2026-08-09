@@ -53,13 +53,13 @@ that record and may not independently redefine it.
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
-| Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_REPLACEMENT_EVALUATOR_QUALIFICATION_ACTIVE` |
+| Phase | `K3_REAL_WORK_MATCHED_CANARY` |
+| State | `VCM_V3_K3_SIX_ROW_MATCHED_LOCAL_CANARY_PREFLIGHT_REQUIRED` |
 | Selected task | 26 |
-| Active attempt | `k2_05_three_row_replacement_evaluator_qualification_v1` |
-| Current wall | `host_adequate_replacement_sources_and_full_closures_green_but_tasks_12_13_35_dependency_locks_environments_and_common_evaluators_not_yet_qualified` |
+| Active attempt | `k3_six_row_matched_local_canary_preflight_v1` |
+| Current wall | `the_contiguous_six_row_K2_instrument_is_green_and_role_audited_but_no_separate_prospective_K3_owner_yet_binds_the_exact_local_model_route_arm_materializations_blind_evaluator_custody_run_ordering_physical_host_preflight_and_call_authority` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_bind_one_generic_three_row_resolution_transaction_for_tasks_12_13_35_then_materialize_environments_and_common_evaluators_before_reusing_qualified_16_25_56_without_rerun` |
+| Next legal action | `build_and_role_audit_one_call_free_prospective_K3_owner_that_consumes_the_frozen_six_row_store_binds_the_exact_TMax_model_tokenizer_decoder_and_route_materializes_each_local_control_packet_without_hidden_metadata_proves_blind_evaluator_and_cost_custody_runs_physical_host_operability_canaries_that_cannot_count_as_capability_evidence_and_authorizes_only_one_complete_matched_local_pass_after_GREEN;_omit_Luna_unless_a_separately_sealed_receipt_proves_Codex_subscription_transport_and_zero_API_billing` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
