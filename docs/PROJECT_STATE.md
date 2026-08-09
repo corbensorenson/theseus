@@ -56,21 +56,21 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` | Required closures 1-6 and their role-separated audits are GREEN. Task 26's one identical 58-package UV closure is prospectively sealed at zero execution and is the final bespoke per-task owner |
+| Active VCM claim | `VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED` | Required closures 1-6 and their role-separated audits are GREEN. Task 26's exact wheel-only UV canary failed on locked sdist-only `proxy-tools==0.1.0`; a separate audit rederived the scoped instrument-policy wall, ending bespoke per-task ownership without creating task or VCM evidence |
 | VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
 | VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
 | D1 | `CLOSED_PENDING_ADEQUACY_AND_SURVIVOR` | No fresh qualification surface may open until independent adequacy passes and a new claim-development campaign produces a survivor |
-| Luna reference | `TRANSPORT_SOURCE_BOUND_OFFLINE_QUALIFIED_ZERO_CALLS` | The exact `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort passes offline positive and negative controls; it remains disabled and is not a serving model, teacher row source, task selector, or local denominator |
+| Luna reference | `ZERO_CALLS_CODEX_SUBSCRIPTION_ROUTE_REQUIRED_OR_OMIT` | The retained `gpt-5.6-luna` Responses API adapter at fixed `xhigh` effort is offline qualification evidence only and remains disabled. VCM may use Luna only through a demonstrably Codex-subscription-backed path with zero billable API inference; otherwise the arm is prospectively omitted |
 | Neural seed | `HELD_STEP_11992_NOT_EVALUATED` | Checkpoint lineage is preserved; pretraining and both dense controls are incomplete, D2 is sealed, and no capability claim exists |
 | Repository state | `SOURCE_BOUND_REGISTRY_GREEN` | The recenter and registry repairs are committed. The last complete registry gate reported zero abstraction gaps, route blockers, hard governance failures, or missing AIBOM identities, with 11 eligible routes source-bound |
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`task26_uv_dependency_canary_v1_prospective`, last closed task 30, and the wall
-`task26_exact_uv_closure_not_executed_or_role_separated_audited`. The next legal
-action is
-`execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion`.
+`generic_vcm_instrument_builder_v1`, last closed task 26, and the wall
+`generic_manifest_owner_not_implemented_or_existing_closures_replayed`. The
+next legal action is
+`implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -538,8 +538,16 @@ rederived every checksum, retained file, source member, command phase, and
 storage bound without execution. Required closure 6 is qualified. Frozen
 schedule ordinal 6 is task 26's one identical parent/target uv lock. Its exact
 58-package identity, UV/Python tools, wheel-only commands, project/dev-group
-exclusions, bounded store, and deny-network replay are prospectively sealed at
-zero execution.
+exclusions, bounded store, and deny-network replay were prospectively sealed.
+The exact canary then failed closed before offline replay because locked
+`proxy-tools==0.1.0` has an sdist and no wheel while source builds are forbidden.
+Source identity stayed unchanged; no store was promoted and no repository,
+evaluator, model, or reference call occurred. A separate static owner rederived
+the lock facts, exact command, failure receipt, source identity, and zero
+downstream authority. Its GREEN audit assigns
+`INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS`, not a negative result for
+task 26, uv generally, VCM, TMax, or the book claim. Task 26 therefore ends
+bespoke per-task closure ownership and activates the generic owner.
 
 If the exact implementation passes an independent adequacy audit, one fresh
 claim-development denominator may open. If it fails, preserve
@@ -586,17 +594,19 @@ Luna treatment - Luna direct control
 ```
 
 Cross-model ranking is descriptive because wrappers, tokenizers, training,
-reasoning tokens, latency, and monetary cost differ. The transport, exact model
-receipt, wrapper, effort, completion telemetry, price basis, evaluator
-interface, and cost authority must be sealed before any arm in that future
-claim pool opens. If Luna is unavailable at seal time, omit it and record the
-missing reference; never backfill it after local outcomes are visible.
+reasoning tokens, and latency differ. The transport, exact model receipt,
+wrapper, effort, completion telemetry, evaluator interface, and a demonstrably
+Codex-subscription-backed zero-API-spend access receipt must be sealed before
+any arm in that future claim pool opens. Billable API inference and API-price
+fallback are forbidden. If the subscription route is unavailable or cannot be
+proven at seal time, omit Luna and record the missing reference; never backfill
+it after local outcomes are visible.
 
 No Luna call has been made. The current contract is
 `configs/theseus_external_reference_control.json`, and it still names the prior
-Semantic-IR claim. It must be rebound to exact VCM tasks, routes, evaluator,
-custody, call count, and spend before any local claim outcome or Luna must be
-omitted for VCM.
+Semantic-IR claim and API adapter. It must be replaced or rebound to exact VCM
+tasks, routes, evaluator, custody, cell count, and a proven Codex-subscription
+access path before any local claim outcome, or Luna must be omitted for VCM.
 
 ### Completion and cost
 
@@ -708,8 +718,10 @@ authorize regenerating historical reports or reopening neural work.
 
 ## Immediate Execution Order
 
-1. Execute and role-separately audit the sealed Task 26 UV dependency canary.
-2. End bespoke per-task ownership; build one manifest-driven generic owner with
+1. Preserve Task 26's completed scoped instrument wall: the sealed wheel-only
+   canary failed on sdist-only `proxy-tools==0.1.0`, the separate static audit is
+   GREEN, and no policy weakening or task/VCM negative is authorized.
+2. **CURRENT:** End bespoke per-task ownership; build one manifest-driven generic owner with
    shared package stores, then replay existing npm/pnpm/Cargo/uv evidence.
 3. Preflight host reserve and qualify only Bun, Yarn, TypeScript-transpilation,
    and untrusted-Rust risk classes. Stop if the instrument is not feasible.
@@ -723,8 +735,9 @@ authorize regenerating historical reports or reopening neural work.
    Freeze the optional VCM reference envelope.
 7. Run the nine-task local adequacy/control screen; proceed only if model, task,
    evaluator, intervention, power, and host requirements pass. Then bind Luna
-   to the exact selected VCM/control campaign or prospectively omit it before
-   the first claim-panel call.
+   through a proven Codex-subscription-backed zero-API-spend route to the exact
+   selected VCM/control campaign or prospectively omit it before the first
+   claim-panel call.
 8. Run the 53-task local VCM/strongest-control/flat-ablation campaign, seal every
    candidate before scoring, and optionally execute the already sealed Luna
    reference under a separate denominator.

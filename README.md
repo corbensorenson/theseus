@@ -56,14 +56,17 @@ availability alone cannot resume neural training.
   terminal residual is model-visible context materialization and prompt-ingest
   burden. The frozen source panel binds nine local instrument/control tasks plus
   a fresh 53-task powered claim panel. Its deterministic mechanics are useful,
-  but the natural-task instrument is not campaign-ready: Task 26 is still
-  prospective, no parent-only external-task VCM materializer exists, and the v1
+  but the natural-task instrument is not campaign-ready: Task 26's exact
+  wheel-only uv canary failed closed on sdist-only `proxy-tools==0.1.0` and its
+  role-separated audit scoped that to the instrument policy; no parent-only
+  external-task VCM materializer exists, and the v1
   candidate protocol must remove target-derived `allowed_effect_paths`. No local
   or Luna claim call is authorized.
 - `gpt-5.6-luna` at fixed `xhigh` effort is prospectively defined as a
-  separately denominated OpenAI measurement-only reference. Its exact
-  Responses API adapter is source-bound and offline-qualified; calls remain
-  disabled and it has made zero project calls.
+  separately denominated OpenAI measurement-only reference. The retained
+  Responses API adapter is offline qualification evidence only and authorizes
+  no VCM calls. Future Luna use requires a demonstrably Codex-subscription-backed
+  route with zero billable API inference; otherwise the arm is omitted.
 - The 57.3M neural shared trunk is preserved at optimizer step 11,992 with
   append-only checkpoint, optimizer, RNG, and cursor custody. D2 remains
   unconsumed and capability remains `NOT_EVALUATED`.
@@ -88,8 +91,10 @@ The complete operating charter is [AGENTS.md](AGENTS.md). The core rules are:
 6. Public benchmarks are calibration-only. Fresh claim-bearing work comes from
    governed, licensed, source-disjoint repositories.
 7. OpenAI inference is allowed only as a governed teacher or a prospectively
-   sealed measurement-only reference. Reference outputs never serve users,
-   train the local model, select tasks, or enter local denominators.
+   sealed measurement-only reference. Luna references must use a demonstrably
+   Codex-subscription-backed route; billable API inference is forbidden.
+   Reference outputs never serve users, train the local model, select tasks, or
+   enter local denominators.
 8. Book support never moves automatically from a Theseus report.
 9. Routine execution must not depend on Corben supplying tasks, labels,
    approvals, or timing decisions.
@@ -115,16 +120,18 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED` |
 | Selected task | 26 |
-| Active attempt | `task26_uv_dependency_canary_v1_prospective` |
-| Current wall | `task26_exact_uv_closure_not_executed_or_role_separated_audited` |
-| Last closed task | 30 |
-| Next legal action | `execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion` |
+| Active attempt | `generic_vcm_instrument_builder_v1` |
+| Current wall | `generic_manifest_owner_not_implemented_or_existing_closures_replayed` |
+| Last closed task | 26 |
+| Next legal action | `implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
-control qualification and 53 for the powered claim campaign. Task 26 is the
-last bespoke per-task dependency canary. Remaining closures must use one
+control qualification and 53 for the powered claim campaign. Task 26 was the
+last bespoke per-task dependency canary; it ended with a role-separated,
+scoped wheel-only instrument wall rather than a false task or VCM negative.
+Remaining closures must use one
 generic manifest-driven owner with shared content-addressed package stores and
 disposable installed environments. Special handling is limited to Bun, Yarn,
 TypeScript transpilation, and untrusted Rust risk classes; a storage/host-reserve
@@ -139,7 +146,8 @@ The 53-task stage compares VCM, that frozen control, and mandatory
 information-matched flat context. Results are reported separately as L0
 conformance, L1 integrity, L2 model use/utility, L3 economics, and later L4
 transfer. Luna remains a separate reference denominator and must be rebound to
-VCM before local outcomes or omitted. Evidence volume is not mechanism progress.
+VCM through a proven Codex-subscription-backed, zero-API-spend route before local
+outcomes or omitted. Evidence volume is not mechanism progress.
 
 ## Repository Map
 
@@ -226,9 +234,11 @@ and autonomous resource and rollback readiness. D2 remains sealed until then.
   sealed natural-work causal campaign showing that governed context helps the
   frozen model beyond strong parent-only controls at visible total cost. The v1
   candidate protocol's target-derived effect paths must be removed before use.
-- The Luna transport is bound to the prior Semantic-IR claim, not VCM. No VCM
-  task/evaluator/arm/custody/spend contract is prospectively sealed, so no
-  hosted reference call is authorized and later backfill is forbidden.
+- The retained Luna transport is bound to the prior Semantic-IR claim and an API
+  adapter, not VCM or the required Codex-subscription route. No VCM
+  task/evaluator/arm/custody/access contract is prospectively sealed, so no
+  reference call is authorized and later backfill or billable API fallback is
+  forbidden.
 - The neural checkpoint has no capability result, both matched dense controls
   are incomplete, and D2 is unconsumed.
 - Large generated surfaces, a 97%-used host volume at the review boundary, and

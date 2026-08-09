@@ -1,0 +1,71 @@
+{
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_task26_dependency_canary.json",
+      "sha256": "341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_task26_dependency_canary.json",
+      "sha256": "50c2c0e50b1637fce4820bcf431c2d6c98db83018c1b255fba473c9535520dd1"
+    }
+  },
+  "boundary_checks": {
+    "offline_replay_not_claimed": true,
+    "project_install_remained_forbidden": true,
+    "retained_store_not_promoted": true,
+    "source_builds_remained_forbidden": true
+  },
+  "candidate_or_control_calls": 0,
+  "command_checks": {
+    "failure_names_exact_locked_distribution": true,
+    "failure_names_missing_binary_distribution": true,
+    "failure_names_wheel_only_policy": true,
+    "host_boundary_not_hit": true,
+    "network_phase_was_enabled": true,
+    "online_command_exact": true,
+    "online_returncode_is_uv_resolution_failure": true,
+    "stderr_receipt_matches": true
+  },
+  "config": {
+    "path": "configs/theseus_vcm_task26_dependency_closure_audit.json",
+    "sha256": "47fcaae1f0c7c13af77db4fed10f68dd0c566eb2acb69f7e098579e610ac6575"
+  },
+  "created_utc": "2026-08-09T00:14:57.674728Z",
+  "disposition": "INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS",
+  "external_reference_calls": 0,
+  "faults": [],
+  "lock_checks": {
+    "lock_identity_exact": true,
+    "lock_package_count_exact": true,
+    "proxy_tools_0_1_0_present": true,
+    "proxy_tools_has_no_wheel": true,
+    "proxy_tools_has_sdist": true
+  },
+  "maximum_inference": "A GREEN audit proves only that the exact sealed Task 26 uv canary failed because its locked proxy-tools 0.1.0 distribution has an sdist and no wheel while source builds were forbidden, that source identity was preserved, and that no retained store, offline replay, repository runner, evaluator, model, Luna, training, D1, D2, serving, or book authority was produced. This is a role-separated rederivation of an instrument dependency-policy risk class, not evidence against task 26, VCM, uv generally, or the ASI Stack claim.",
+  "network_or_dependency_execution_performed": false,
+  "observations": {
+    "blocking_distribution": "proxy-tools==0.1.0",
+    "blocking_distribution_has_sdist": true,
+    "blocking_distribution_wheel_count": 0,
+    "canary_duration_ms": 496.669,
+    "canary_returncode": 2,
+    "lock_package_count": 58,
+    "source_bytes": 11963370,
+    "source_file_count": 2234,
+    "source_identity_sha256": "ad8e116aa512785d3962d634d328e19bc8dc3588e634f30971699e41b620ed48",
+    "task_index": 26
+  },
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_task26_dependency_closure_audit_v1",
+  "project_installations": 0,
+  "repository_runner_executions": 0,
+  "source_build_executions": 0,
+  "source_checks": {
+    "archive_matches_source_after": true,
+    "archive_matches_source_before": true,
+    "source_before_after_identical": true
+  },
+  "state": "TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_INDEPENDENTLY_REDERIVED",
+  "static_audit_only": true,
+  "trigger_state": "GREEN"
+}

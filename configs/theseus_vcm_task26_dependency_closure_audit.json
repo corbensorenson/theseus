@@ -1,0 +1,38 @@
+{
+  "policy": "project_theseus_vcm_task26_dependency_closure_audit_v1",
+  "state": "INDEPENDENT_STATIC_AUDIT_OF_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL",
+  "owner": "scripts/theseus_vcm_task26_dependency_closure_audit.py",
+  "owner_sha256": "6560c88cbd4e3a48d460979a488209b8dc52ad22c2a1435a3b32760cc9101e1e",
+  "artifacts": {
+    "canary_config": {
+      "path": "configs/theseus_vcm_task26_dependency_canary.json",
+      "sha256": "341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1"
+    },
+    "canary_report": {
+      "path": "reports/theseus_vcm_task26_dependency_canary.json",
+      "sha256": "50c2c0e50b1637fce4820bcf431c2d6c98db83018c1b255fba473c9535520dd1"
+    }
+  },
+  "report": "reports/theseus_vcm_task26_dependency_closure_audit.json",
+  "authority": {
+    "static_audit_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_fetch_authorized": false,
+    "source_build_authorized": false,
+    "build_backend_execution_authorized": false,
+    "project_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN audit proves only that the exact sealed Task 26 uv canary failed because its locked proxy-tools 0.1.0 distribution has an sdist and no wheel while source builds were forbidden, that source identity was preserved, and that no retained store, offline replay, repository runner, evaluator, model, Luna, training, D1, D2, serving, or book authority was produced. This is a role-separated rederivation of an instrument dependency-policy risk class, not evidence against task 26, VCM, uv generally, or the ASI Stack claim."
+}

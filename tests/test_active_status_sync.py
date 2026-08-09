@@ -40,7 +40,7 @@ def test_active_status_is_specific_and_single_claim() -> None:
     assert active["claim_id"] == "virtual-context-abi.core"
     assert active["phase"] == "K2_EVALUATOR_INSTRUMENT_QUALIFICATION"
     assert active["selected_task_index"] == 26
-    assert active["last_closed_task_index"] == 30
+    assert active["last_closed_task_index"] == 26
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     assert readme.count("active claim is") == 1
@@ -85,6 +85,11 @@ def test_decision_acceleration_contract_freezes_scope_and_evidence_growth() -> N
     assert k2["remaining_dependency_closures_use_one_manifest_driven_generic_owner"]
     assert k2["distinct_parent_target_dependency_closure_count"] == 58
     assert k2["closures_green_before_task26"] == 6
+    assert k2["closures_green_after_task26"] == 6
+    assert (
+        k2["task26_terminal_disposition"]
+        == "INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS"
+    )
     assert k2["locked_closures_remaining_after_task26"] == 51
     assert k2["shared_content_addressed_manager_stores_required"] is True
     assert k2["per_task_duplicate_package_cache_authorized"] is False
@@ -129,7 +134,7 @@ def test_active_work_packages_form_one_forward_dependency_graph() -> None:
 
     assert len(package_ids) == len(set(package_ids))
     assert [package["id"] for package in packages if package["status"] == "ACTIVE"] == [
-        "K2_01_TASK26_FINAL_BESPOKE_CANARY"
+        "K2_02_GENERIC_INSTRUMENT_BUILDER"
     ]
 
     seen: set[str] = set()
@@ -144,6 +149,12 @@ def test_active_work_packages_form_one_forward_dependency_graph() -> None:
 
 
 def test_mismatched_reference_claim_cannot_open_calls() -> None:
+    matrix = json.loads(MATRIX_PATH.read_text(encoding="utf-8"))
+    governed_reference = matrix["research_program_recenter"]["openai_reference_control"]
+    assert governed_reference["billable_api_inference_authorized"] is False
+    assert "Codex-subscription" in governed_reference["required_access_path"]
+    assert governed_reference["unverifiable_access_path_disposition"] == "PROSPECTIVE_OMISSION"
+
     reference = json.loads(
         (ROOT / "configs" / "theseus_external_reference_control.json").read_text(
             encoding="utf-8"

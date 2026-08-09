@@ -1,6 +1,6 @@
 # Project Theseus Roadmap
 
-Last deeply reviewed and recentered: 2026-08-03 UTC.
+Last deeply reviewed and recentered: 2026-08-08 UTC.
 
 This is the canonical forward execution map. Current facts belong in
 `docs/PROJECT_STATE.md`; durable rules belong in `AGENTS.md`; exact machine
@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED` |
 | Selected task | 26 |
-| Active attempt | `task26_uv_dependency_canary_v1_prospective` |
-| Current wall | `task26_exact_uv_closure_not_executed_or_role_separated_audited` |
-| Last closed task | 30 |
-| Next legal action | `execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion` |
+| Active attempt | `generic_vcm_instrument_builder_v1` |
+| Current wall | `generic_manifest_owner_not_implemented_or_existing_closures_replayed` |
+| Last closed task | 26 |
+| Next legal action | `implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -89,7 +89,7 @@ evidence while changing how all forward work is organized.
 | Existing baseline names are not implementations | Ordinary retrieval, summary/compression, full-context, graph, persistent-memory, and human-curated comparators are not all production-qualified campaign routes | Implement only the minimum causal screen now; treat missing mature book comparators as a cap on inference, then qualify extended routes only for a survivor |
 | A target-derived oracle would violate blindness | A “source-bound single-memory oracle” selected from the hidden target would reveal answer location | Forbid target-derived oracle controls. Use parent-only no-context, flat, ordinary-retrieval, summary/compression, full-parent, and VCM routes |
 | The nine-task panel cannot establish the claim | It was sized for control qualification, not a VCM treatment estimate | Use it only to test model/task/evaluator/host adequacy and freeze the strongest eligible control; reserve causal inference for the powered 53-task panel |
-| The reference-control contract is bound to the wrong claim | `configs/theseus_external_reference_control.json` still names `cognitive-compilation-and-semantic-ir.core` and authorizes zero calls | Rebind it prospectively to the exact VCM task/evaluator/arm/spend contract before local claim outcomes, or omit Luna permanently for this campaign |
+| The reference-control contract is bound to the wrong claim and transport | `configs/theseus_external_reference_control.json` still names `cognitive-compilation-and-semantic-ir.core`, describes an API adapter, and authorizes zero calls | Rebind it prospectively to the exact VCM task/evaluator/arm contract through a demonstrably Codex-subscription-backed route with zero billable API inference, or omit Luna permanently for this campaign |
 | “Accuracy gain or retire” is too coarse | The book claim includes typed governance, lineage, omission, authority, freshness, revocation, fault, cost, and residual custody—not just retrieval usefulness | Issue separate conformance, integrity, model-use, economics, and transfer findings; allow a narrow governed-transport survivor when governance value is real but retrieval superiority is not |
 
 These observations are an audit snapshot, not a standing resource allowance.
@@ -159,11 +159,13 @@ be pooled.
 
 `gpt-5.6-luna` at fixed `xhigh` effort is a separately denominated,
 measurement-only OpenAI reference. The existing transport contract is still
-bound to Semantic IR, so it grants VCM zero-call authority. A VCM-specific
-reference must bind the exact tasks, routes, candidate-visible packet,
-independent evaluator, call count, custody, and maximum spend before any local
-claim outcome exists, or be omitted permanently for this campaign. Execution
-may occur only after the corresponding local candidate cells are sealed. Luna
+bound to Semantic IR and describes an API adapter, so it grants VCM zero-call
+authority. A VCM-specific reference must bind the exact tasks, routes,
+candidate-visible packet, independent evaluator, call count, custody, and a
+demonstrably Codex-subscription-backed access receipt before any local claim
+outcome exists, or be omitted permanently for this campaign. Billable API
+inference is forbidden; an unverifiable subscription route means omission.
+Execution may occur only after the corresponding local candidate cells are sealed. Luna
 outputs may not select tasks or controls, tune the local system, train the
 local model, serve a user, or enter the local denominator. Public-task
 contamination remains unknown and is reported as a model non-equivalence.
@@ -298,8 +300,12 @@ inference is authorized.
 Finish the frozen 62-task VCM instrument without turning every task into a new
 code family.
 
-Task 26 is the final bespoke per-task dependency canary. After its execution
-and role-separated audit, all remaining dependency closures use one generic,
+Task 26 was the final bespoke per-task dependency canary. Its exact sealed run
+failed closed because locked `proxy-tools==0.1.0` has an sdist and no wheel
+while source builds are forbidden. A separate static audit rederived the lock,
+command, source identity, zero downstream authority, and scoped
+`INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS` disposition. This is not
+task or VCM evidence. All remaining dependency closures now use one generic,
 manifest-driven batch owner. Only four risk-class canaries remain eligible for
 special handling: Bun, Yarn, TypeScript transpilation, and untrusted Rust
 compilation. They extend the generic owner; they do not create per-task
@@ -311,7 +317,7 @@ The exact forward denominator is:
 | --- | ---: | --- |
 | Tasks with project locks | 48 | 58 distinct parent/target closures because ten parent and target locks diverge |
 | Closures GREEN before Task 26 | 6 | npm, pnpm, Cargo, and uv mechanics are represented |
-| Task 26 uv closure | 1 | Final prospectively sealed bespoke canary; execution and role-separated audit are next |
+| Task 26 uv closure | 1 | Terminal scoped instrument wall: sdist-only `proxy-tools==0.1.0` cannot satisfy the frozen wheel-only policy; role-separated audit GREEN |
 | Locked closures after Task 26 | 51 | Must use the generic owner |
 | Immutable-resolution tasks | 6 | Must receive a source-bound static/immutable execution classification |
 | No-project-lock static tasks | 8 | Must receive an explicit static evaluator path; no fabricated dependency lock |
@@ -417,13 +423,13 @@ The prospective core call shape is explicit:
 | Model-use interventions | Prospectively frozen before outcomes | Additional denominator must state whether it is powered or descriptive |
 
 If Luna is desired, this stage freezes a VCM reference envelope: common packet,
-evaluator, custody, two-cell shape, maximum-call rule, pricing method, and the
-requirement to bind or omit immediately after the local screen selects its
-control. Two reference cells across 53 tasks would authorize 106 calls. At the
-current physical worst-case price bound of $0.6504 per call, the preflight
-ceiling would be about $68.94; expected cost should be lower, but the exact
-prospective spend authority—not an output-token quality cap—must govern whether
-the cells open.
+evaluator, custody, two-cell shape, maximum-cell rule, and the requirement to
+bind or omit immediately after the local screen selects its control. Two
+reference cells across 53 tasks define 106 sealed observations. The route must
+prove that inference is covered by Corben's existing Codex subscription and
+that billable API spend is zero. If that provenance cannot be established, the
+reference is prospectively omitted. This is an access and information-flow
+boundary, not an answer-length or quality cap.
 
 #### K3.2 — Nine-task local adequacy and control screen
 
@@ -450,8 +456,9 @@ target structure, and implementation preference never enter the selection.
 
 Immediately after the control is frozen—and before the first 53-task candidate
 call—the OpenAI contract must either bind the exact VCM claim, task and evaluator
-hashes, VCM and selected-control routes, 106-call maximum, custody, and spend,
-or record `MISSING_PROSPECTIVE_REFERENCE`. This checkpoint exists after the
+hashes, VCM and selected-control routes, 106-cell maximum, custody, and a
+Codex-subscription-backed zero-API-spend receipt, or record
+`MISSING_PROSPECTIVE_REFERENCE`. This checkpoint exists after the
 screen because the control identity was previously unknown, and before the
 claim panel because outcome-dependent backfill is forbidden.
 
@@ -490,8 +497,10 @@ and total cost.
 If and only if its VCM-specific contract was sealed before local claim outcomes,
 run the corresponding VCM and frozen-control cells after the local candidates
 are immutable. Use the same candidate-visible packet and independent evaluator.
-Report provider/model/effort, wrapper, tokenization and reasoning differences,
-public-task contamination uncertainty, actual usage, latency, and money.
+The route must be demonstrably covered by Corben's Codex subscription; billable
+API inference and API-price fallback are forbidden. Report provider/model/effort,
+access provenance, wrapper, tokenization and reasoning differences, public-task
+contamination uncertainty, actual usage, latency, and zero API spend.
 
 Luna is neither a local denominator nor an oracle. Its outputs cannot select or
 tune tasks, controls, prompts, packets, routes, evaluators, or the local model;
@@ -627,9 +636,10 @@ retention through governed custody rather than ad hoc cleanup.
 
 ## Immediate Execution Order
 
-1. Execute and role-separately audit the prospectively sealed Task 26 UV
-   dependency canary. This is the final bespoke per-task closure owner.
-2. Build one manifest-driven generic instrument owner and replay the completed
+1. Preserve the completed Task 26 result: its exact wheel-only canary failed on
+   sdist-only `proxy-tools==0.1.0`, and the role-separated audit scoped it to
+   `INCONCLUSIVE_INSTRUMENT`. Do not weaken the policy or add another per-task owner.
+2. **CURRENT:** Build one manifest-driven generic instrument owner and replay the completed
    npm, pnpm, Cargo, and uv closure evidence through its common row schema.
 3. Preflight storage, memory, wall time, host reserve, and untrusted-build risk;
    then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust as
@@ -649,11 +659,13 @@ retention through governed custody rather than ad hoc cleanup.
 8. Run the nine-task local-only adequacy/control screen. Stop as scoped
    inconclusive if the model, tasks, evaluator, interventions, or host cannot
    expose the useful effect; otherwise freeze the strongest eligible control,
-   then bind Luna to that exact VCM/control campaign or prospectively omit it.
+   then bind Luna through a demonstrably Codex-subscription-backed zero-API-spend
+   route to that exact VCM/control campaign or prospectively omit it.
 9. Run the 53-task local VCM, strongest-control, and information-matched-flat
    campaign, deduplicating the flat arm if it is already the selected control.
    Seal candidates before hidden scoring and never rerun a consumed surface.
-10. If prospectively authorized, run the separately denominated Luna VCM and
+10. If prospectively authorized through the sealed Codex-subscription route,
+    run the separately denominated Luna VCM and
     control cells. Then issue separate L0, L1, L2, and L3 findings and one K3
     terminal disposition.
 11. Let one survivor consume fresh D1 once, qualify alternate-backend and

@@ -4,13 +4,15 @@
     "path": "configs/theseus_vcm_task26_dependency_canary.json",
     "sha256": "341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1"
   },
-  "created_utc": "2026-08-03T19:47:26.693475Z",
-  "execution_performed": false,
+  "created_utc": "2026-08-09T00:12:06.909246Z",
+  "execution_performed": true,
   "external_reference_calls": 0,
-  "faults": [],
+  "faults": [
+    "online_sync_failed"
+  ],
   "maximum_inference": "A GREEN canary proves only that task 26's identical parent/target uv lock can materialize one wheel-only dependency environment, replay with network denied, preserve source identity, and retain the bounded cache with lock-compatible distributions and no project install. It does not execute build backends, repository runners, evaluators, tasks, VCM, models, D1, D2, or book claims.",
   "network_denied_offline_replays": 0,
-  "network_enabled_dependency_syncs": 0,
+  "network_enabled_dependency_syncs": 1,
   "observed_parent_target_dependency_identities": {
     "parent": {
       "artifact_identity_sha256": "e88c16392301e7ea1dad05d9bb342b85ff76f3817954434b24fde94ac97ac784",
@@ -48,8 +50,72 @@
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_task26_dependency_canary_v1",
   "project_installations": 0,
+  "receipts": {
+    "cache": {
+      "bytes": 1883,
+      "file_count": 6,
+      "identity_sha256": "ff0fdc87d8cfab12b3a030ace28e53aeb22b5d1eb3585d277429543662b059e0",
+      "path": "/private/tmp/theseus-vcm-task26-deps-wwzuhm4v/cache"
+    },
+    "free_bytes_after": 21193224192,
+    "free_bytes_before": 21191725056,
+    "offline_environment": {},
+    "online_environment": {},
+    "online_sync": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+        "sync",
+        "--frozen",
+        "--no-build",
+        "--no-install-project",
+        "--no-install-workspace",
+        "--no-default-groups",
+        "--no-python-downloads",
+        "--link-mode",
+        "copy",
+        "--color",
+        "never",
+        "--no-progress",
+        "--python",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+        "--cache-dir",
+        "/private/tmp/theseus-vcm-task26-deps-wwzuhm4v/cache"
+      ],
+      "duration_ms": 496.669,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+      "maximum_process_group_rss_mib": 3.906,
+      "network_denied": false,
+      "returncode": 2,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 340,
+      "stderr_head": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: .venv\nerror: Distribution `proxy-tools==0.1.0 @ registry+https://pypi.org/simple`\n       can't be installed because it is marked as `--no-build` but has no binary\n       distribution\n",
+      "stderr_sha256": "1ec8e95ddbdb0b5d28dc8ca61c4b3c056c581c66e889717c3eb606863ab08956",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "repository_extraction": {
+      "member_receipts_sha256": "713c632ba5e5c15004769d0aff7f0ed8f6bdf35b8195a458db7f87e85b352a11",
+      "regular_file_bytes": 11963370,
+      "regular_file_count": 2234
+    },
+    "repository_source_after": {
+      "bytes": 11963370,
+      "file_count": 2234,
+      "identity_sha256": "ad8e116aa512785d3962d634d328e19bc8dc3588e634f30971699e41b620ed48"
+    },
+    "repository_source_before": {
+      "bytes": 11963370,
+      "file_count": 2234,
+      "identity_sha256": "ad8e116aa512785d3962d634d328e19bc8dc3588e634f30971699e41b620ed48"
+    },
+    "retained_store": {}
+  },
   "repository_runner_executions": 0,
   "source_build_executions": 0,
-  "state": "READY_FOR_TASK_26_EXACT_UV_DEPENDENCY_CANARY",
-  "trigger_state": "PAUSED"
+  "state": "TASK_26_DEPENDENCY_CANARY_FAILED",
+  "trigger_state": "RED"
 }

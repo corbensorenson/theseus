@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_26_UV_CLOSURE_PROSPECTIVELY_SEALED",
+      "state": "VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "task26_uv_dependency_canary_v1_prospective",
-      "current_blocker": "task26_exact_uv_closure_not_executed_or_role_separated_audited",
-      "last_closed_task_index": 30,
-      "next_legal_action": "execute_and_role_separated_audit_task26_then_end_bespoke_per_task_closure_expansion",
+      "active_attempt_id": "generic_vcm_instrument_builder_v1",
+      "current_blocker": "generic_manifest_owner_not_implemented_or_existing_closures_replayed",
+      "last_closed_task_index": 26,
+      "next_legal_action": "implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their role-separated audits are GREEN. Frozen schedule ordinal 6, task 26, has one identical 58-package uv lock; its wheel-only sync and offline-replay boundary is prospectively sealed at zero execution. The v1 candidate protocol still exposes target-derived allowed effect paths and no external-task parent-only production VCM materializer exists, so both require repair and independent audit before packet materialization. Repository runners, parent-fail/target-pass canaries, natural-task packets, scorers, local calls, and Luna calls remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired source panel, source-bound runner candidates, compatibility classifications, trusted offline mechanics, and corrected 58-closure parent/target dependency denominator are GREEN. Required dependency closures 1 through 6 and their role-separated audits are GREEN. Frozen schedule ordinal 6, task 26, independently exposed a scoped wheel-only instrument wall: locked proxy-tools 0.1.0 has an sdist and no wheel while source builds are forbidden. This is INCONCLUSIVE_INSTRUMENT for the exact dependency policy, not task or VCM evidence, and it ends bespoke per-task owner expansion. The v1 candidate protocol still exposes target-derived allowed effect paths and no external-task parent-only production VCM materializer exists, so both require repair and independent audit before packet materialization. Repository runners, parent-fail/target-pass canaries, natural-task packets, scorers, local calls, and Luna calls remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -149,6 +149,9 @@
           "distinct_parent_target_dependency_closure_count": 58,
           "closures_green_before_task26": 6,
           "task26_closure_count": 1,
+          "closures_green_after_task26": 6,
+          "task26_terminal_disposition": "INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS",
+          "task26_blocking_distribution": "proxy-tools==0.1.0_sdist_only_no_wheel",
           "locked_closures_remaining_after_task26": 51,
           "immutable_resolution_task_count": 6,
           "no_project_lock_static_task_count": 8,
@@ -187,14 +190,14 @@
         "execution_work_packages": [
           {
             "id": "K2_01_TASK26_FINAL_BESPOKE_CANARY",
-            "status": "ACTIVE",
+            "status": "COMPLETE_WITH_SCOPED_INSTRUMENT_WALL",
             "depends_on": [],
             "action": "Execute the exact prospectively sealed Task 26 uv wheel-only parent-target closure and complete role-separated audit without changing its lock, runtime, network, or authority contract.",
             "exit": "Closure seven is content-bound and GREEN, or the exact canary fails closed with a scoped implementation or host wall; no model or hidden-evaluator call occurs."
           },
           {
             "id": "K2_02_GENERIC_INSTRUMENT_BUILDER",
-            "status": "PENDING",
+            "status": "ACTIVE",
             "depends_on": [
               "K2_01_TASK26_FINAL_BESPOKE_CANARY"
             ],
@@ -262,7 +265,7 @@
             "depends_on": [
               "K3_02_NINE_TASK_ADEQUACY_AND_CONTROL_SCREEN"
             ],
-            "action": "With the strongest control now frozen but before any 53-task claim candidate call, bind the optional OpenAI reference to the exact VCM claim, 53 tasks, VCM and selected-control routes, candidate-visible protocol, evaluator, custody, 106-call maximum, and spend authority, or record immutable prospective omission.",
+            "action": "With the strongest control now frozen but before any 53-task claim candidate call, bind the optional OpenAI reference to the exact VCM claim, 53 tasks, VCM and selected-control routes, candidate-visible protocol, evaluator, custody, 106-cell maximum, and demonstrably Codex-subscription-backed zero-API-spend access path, or record immutable prospective omission.",
             "exit": "The VCM reference is exact and disabled pending sealed local candidates, or MISSING_PROSPECTIVE_REFERENCE is final for this campaign; no future outcome-dependent backfill is possible."
           },
           {
@@ -280,8 +283,8 @@
             "depends_on": [
               "K3_04_POWERED_LOCAL_CLAIM_CAMPAIGN"
             ],
-            "action": "If and only if the VCM-specific reference contract and spend authority were sealed before local claim outcomes, execute the same candidate-visible packet and independent evaluator as separately denominated Luna reference cells.",
-            "exit": "Reference outputs remain quarantined from local selection, tuning, training, serving, and denominators; provider/model/effort, information differences, contamination uncertainty, tokens, latency, and cost are reported. Otherwise record the reference as prospectively omitted."
+            "action": "If and only if the VCM-specific reference contract and demonstrably Codex-subscription-backed route were sealed before local claim outcomes, execute the same candidate-visible packet and independent evaluator as separately denominated Luna reference cells. Billable API inference is forbidden.",
+            "exit": "Reference outputs remain quarantined from local selection, tuning, training, serving, and denominators; provider/model/effort, access provenance, information differences, contamination uncertainty, tokens, latency, and zero API spend are reported. Otherwise record the reference as prospectively omitted."
           },
           {
             "id": "K3_06_LAYERED_DISPOSITION",
@@ -1519,9 +1522,15 @@
       },
       "vcm_task26_dependency_canary": {
         "config":"configs/theseus_vcm_task26_dependency_canary.json","owner":"scripts/theseus_vcm_task26_dependency_canary.py","test":"tests/test_theseus_vcm_task26_dependency_canary.py","report":"reports/theseus_vcm_task26_dependency_canary.json",
-        "owner_sha256":"646cdaaf60ef6f97dd6281476be0180543ac5b03d509ba89c18c72ad71b9594b","config_sha256":"341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1","test_sha256":"109f296797de9e7f4b68db0797d16ee793c6c41472cf9e924a633e4cb624293a","report_sha256":"d10f9781c010b97e91cf33e71a53000505306651335b3b06fa7967b50b9e5214",
-        "state":"PROSPECTIVELY_SEALED_TASK_26_EXACT_UV_DEPENDENCY_CLOSURE","task_index":26,"schedule_ordinal":6,"required_distinct_closure_count":1,"lock_package_count":58,"lock_artifact_identity_sha256":"e88c16392301e7ea1dad05d9bb342b85ff76f3817954434b24fde94ac97ac784","network_enabled_dependency_syncs":0,"network_denied_offline_replays":0,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
-        "maximum_inference":"prospective task-26 uv dependency boundary only; the identical lock, 58-package denominator, exact uv/Python tools, build-free commands, store, limits, and zero downstream authority are bound, but no dependency repository evaluator task VCM or model result is established","next_boundary":"execute exactly one wheel-only uv sync and one deny-network offline replay for task 26 without project, build-backend, or repository-runner execution"
+        "owner_sha256":"646cdaaf60ef6f97dd6281476be0180543ac5b03d509ba89c18c72ad71b9594b","config_sha256":"341225076ba2bde1ad8c2ccd7b9d387bc55b27eb21912f05c5c86c5c083e3fd1","test_sha256":"109f296797de9e7f4b68db0797d16ee793c6c41472cf9e924a633e4cb624293a","report_sha256":"50c2c0e50b1637fce4820bcf431c2d6c98db83018c1b255fba473c9535520dd1",
+        "state":"RED_TASK_26_WHEEL_ONLY_UV_DEPENDENCY_CANARY_FAILED_CLOSED","task_index":26,"schedule_ordinal":6,"required_distinct_closure_count":1,"lock_package_count":58,"lock_artifact_identity_sha256":"e88c16392301e7ea1dad05d9bb342b85ff76f3817954434b24fde94ac97ac784","blocking_distribution":"proxy-tools==0.1.0","blocking_distribution_has_sdist":true,"blocking_distribution_wheel_count":0,"network_enabled_dependency_syncs":1,"network_denied_offline_replays":0,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"the exact task-26 wheel-only uv dependency boundary failed because locked proxy-tools 0.1.0 has no wheel while source builds are forbidden; this is an instrument-policy wall, not task, evaluator, VCM, model, or ASI Stack evidence","next_boundary":"role-separated static rederivation then end bespoke per-task closure expansion"
+      },
+      "vcm_task26_dependency_closure_audit": {
+        "config":"configs/theseus_vcm_task26_dependency_closure_audit.json","owner":"scripts/theseus_vcm_task26_dependency_closure_audit.py","test":"tests/test_theseus_vcm_task26_dependency_closure_audit.py","report":"reports/theseus_vcm_task26_dependency_closure_audit.json",
+        "owner_sha256":"6560c88cbd4e3a48d460979a488209b8dc52ad22c2a1435a3b32760cc9101e1e","config_sha256":"47fcaae1f0c7c13af77db4fed10f68dd0c566eb2acb69f7e098579e610ac6575","test_sha256":"50336bcea51b2f00f02af48c0b2b8288678bafb802fbe1f020ab403a92c245c3","report_sha256":"36a9357a2e9cbd6004681ecd426656a0d7bbea785a269d301b64729f61714222",
+        "state":"GREEN_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_INDEPENDENTLY_REDERIVED","disposition":"INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS","task_index":26,"lock_package_count":58,"blocking_distribution":"proxy-tools==0.1.0","blocking_distribution_has_sdist":true,"blocking_distribution_wheel_count":0,"source_file_count":2234,"source_bytes":11963370,"source_identity_sha256":"ad8e116aa512785d3962d634d328e19bc8dc3588e634f30971699e41b620ed48","network_or_dependency_execution_performed":false,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"role-separated rederivation of the exact task-26 sdist-only wheel-policy wall; no negative inference about the task, uv generally, VCM, TMax, or the ASI Stack claim","next_boundary":"implement one generic manifest-driven instrument owner and replay existing closure evidence without new per-task families"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",
@@ -1658,7 +1667,10 @@
       "contract": "configs/theseus_external_reference_control.json",
       "adapter": "scripts/theseus_openai_reference_adapter.py",
       "qualification_receipt": "reports/theseus_openai_reference_adapter_qualification.json",
-      "rule": "Keep calls disabled until every four-cell future claim arm, task hash, evaluator interface, custody path, call count, and spend authority is prospectively sealed; omit rather than backfill after local outcomes; never serve, train, select tasks, write source, or enter the local denominator."
+      "required_access_path": "demonstrably Codex-subscription-backed inference",
+      "billable_api_inference_authorized": false,
+      "unverifiable_access_path_disposition": "PROSPECTIVE_OMISSION",
+      "rule": "Keep calls disabled until every future claim arm, task hash, evaluator interface, custody path, call count, and demonstrably Codex-subscription-backed zero-API-spend access path is prospectively sealed; omit rather than use billable API inference or backfill after local outcomes; never serve, train, select tasks, write source, or enter the local denominator."
     },
     "neural_hold": {
       "state": "HOLD_SUBSYSTEM_PROOF_FIRST",

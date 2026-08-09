@@ -16,6 +16,10 @@ experimental substrate, not the primary product goal.
    They must use the same candidate-visible task packet and independent hidden
    evaluator as the corresponding local arms, with provider/model/effort,
    wrapper, budgets, cost, and information-flow differences reported.
+   Luna is authorized only through a demonstrably Codex-subscription-backed
+   path. Metered or billable API inference is forbidden for Luna; if the access
+   path or zero-API-spend provenance cannot be established before sealing, omit
+   the Luna arm rather than substituting an API call.
 2. Public benchmarks are calibration only. Never train on public benchmark
    prompts, tests, hidden tests, solutions, traces, or answer templates.
 3. Public benchmarks stay calibration-only, but fresh frozen measurement
