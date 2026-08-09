@@ -68,6 +68,10 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     for key, value in p2a.mapping(cfg.get("authority")).items():
         if value is not (key in allowed):
             faults.append(f"authority_invalid:{key}")
+    sandbox = p2a.mapping(p2a.mapping(cfg.get("tools")).get("sandbox_exec"))
+    sandbox_path = p2a.resolve(str(sandbox.get("path") or ""))
+    if not sandbox_path.is_file() or p2a.sha256_file(sandbox_path) != sandbox.get("sha256"):
+        faults.append("sandbox_tool_binding_invalid")
 
     schedule_binding = p2a.mapping(cfg.get("schedule"))
     schedule_path = p2a.resolve(str(schedule_binding.get("path") or ""))
@@ -214,6 +218,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "store_contract": store,
         "resource_preflight": resource,
         "risk_canary_plan": risk_plan,
+        "prior_risk_attempts": cfg.get("prior_risk_attempts", []),
         "static_evidence_replay_only": True,
         "network_or_dependency_execution_performed": False,
         "repository_runner_executions": 0,
@@ -228,6 +233,8 @@ def validate_risk_plan(
     cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
 ) -> dict[str, Any]:
     plan = p2a.mapping(cfg.get("risk_canary_plan"))
+    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V2_AFTER_SANDBOX_BINDING_REPAIR" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v2":
+        faults.append("risk_campaign_identity_invalid")
     rows = p2a.dicts(plan.get("rows"))
     if [row.get("risk_class") for row in rows] != [
         "bun_real_lock_install",
@@ -277,7 +284,8 @@ def validate_risk_plan(
     if plan.get("execution_order") != "serialized_exact_list_order":
         faults.append("risk_execution_order_invalid")
     return {
-        "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_ZERO_EXECUTION",
+        "state": plan.get("state"),
+        "campaign_id": plan.get("campaign_id"),
         "row_count": len(observed),
         "rows": observed,
         "host_free_bytes": host_free,

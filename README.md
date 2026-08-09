@@ -120,7 +120,7 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_RISK_EXECUTOR_V2_PROSPECTIVELY_SEALED` |
 | Selected task | 26 |
 | Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
 | Current wall | `four_ecosystem_risk_canaries_not_executed_or_role_separated_audited` |
@@ -150,6 +150,10 @@ Task 4 for Yarn, and Task 36 for exact Rust 1.97.1 compilation. The eventual
 execution must be serialized, each row must preserve a 10 GiB host reserve, and
 no evaluator or model authority is open. The generic sandboxed executor is now
 source-bound and prospectively sealed at zero execution.
+The v1 launch failed before its first external command because the generic
+config lacked the sandbox-executable binding. That attempt is retained as
+`INCONCLUSIVE_IMPLEMENTATION`; v2 adds the exact binding and is sealed at zero
+commands, network calls, and store writes.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

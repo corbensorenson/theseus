@@ -2,15 +2,29 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_instrument_builder.json",
-    "sha256": "440ff2ab09a5c372f071cf79c2cbc3a5377bcd38190938f77cbfed198d223f4a"
+    "sha256": "093b89f7dbe82b2648ecb46def450a463607327f752d8681167a189545049bdc"
   },
-  "created_utc": "2026-08-09T00:40:04.855778Z",
+  "created_utc": "2026-08-09T00:42:11.988964Z",
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN report proves only that six already qualified npm, pnpm, Cargo, and uv dependency closures replay through one content-bound row schema and that the prospective forward topology uses manager-shared package stores with disposable installed environments and no per-task duplicate cache authority. It executes no dependency operation and does not yet qualify Bun, Yarn, TypeScript transpilation, untrusted Rust compilation, remaining closures, repository runners, evaluators, VCM packets, models, D1, D2, or book claims.",
   "network_or_dependency_execution_performed": false,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
+  "prior_risk_attempts": [
+    {
+      "attempt_id": "k2_03_generic_ecosystem_risk_canaries_v1",
+      "candidate_or_control_calls": 0,
+      "exception": "KeyError:tools",
+      "external_commands_started": 0,
+      "external_reference_calls": 0,
+      "fault": "generic_config_missing_required_sandbox_exec_binding",
+      "network_calls": 0,
+      "repository_executions": 0,
+      "retained_store_writes": 0,
+      "state": "INCONCLUSIVE_IMPLEMENTATION"
+    }
+  ],
   "replayed_closure_count": 6,
   "replayed_managers": [
     "cargo",
@@ -20,7 +34,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 20996702208,
+    "host_free_bytes": 20993802240,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -31,9 +45,10 @@
     "untrusted_build_risk_class": "none_static_replay"
   },
   "risk_canary_plan": {
+    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v2",
     "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 20996702208,
+    "host_free_bytes": 20993802240,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -158,7 +173,7 @@
         }
       }
     ],
-    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_ZERO_EXECUTION"
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V2_AFTER_SANDBOX_BINDING_REPAIR"
   },
   "rows": [
     {

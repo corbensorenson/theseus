@@ -54,7 +54,7 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_RISK_EXECUTOR_V2_PROSPECTIVELY_SEALED` |
 | Selected task | 26 |
 | Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
 | Current wall | `four_ecosystem_risk_canaries_not_executed_or_role_separated_audited` |
@@ -350,6 +350,10 @@ The rows execute serially under a 10 GiB reserve; their conservative temporary,
 time, and RSS ceilings are host-safety boundaries rather than capability limits.
 The mutating generic-owner implementation is now source-bound and its exact
 execution is prospectively sealed; execution and role-separated audit are next.
+The v1 launch exposed a missing generic sandbox binding before any external
+command. It is retained as `INCONCLUSIVE_IMPLEMENTATION`. V2 binds the exact
+sandbox executable and resets execution counters to zero under a new campaign
+identity; this repair does not alter rows, commands, limits, or inference.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
