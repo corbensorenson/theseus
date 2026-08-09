@@ -1,0 +1,30 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sandbox_wheel_build_canary.json",
+    "sha256": "a4a9fd2ec621ac6ddc4179e9921d9e9fa6cc54073389a037f8072cf573cf7d9e"
+  },
+  "created_utc": "2026-08-09T03:07:36.379680Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "This role-separated audit rederives the retained wheel identity, archive safety, pure-Python status, metadata, and network-denied command receipt. It does not rerun the build and is not producer-independent replay or external reproduction.",
+  "network_or_build_execution_performed": false,
+  "policy": "project_theseus_vcm_sandbox_wheel_build_canary_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_sandbox_wheel_build_canary.json",
+    "sha256": "8bcf2e91d136588534813074aee6e4601c5abd605b78fe76458173eb312bc338"
+  },
+  "state": "NETWORK_DENIED_WHEEL_BUILD_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN",
+  "wheel": {
+    "bytes": 14643,
+    "filename": "mock_open-1.4.0-py3-none-any.whl",
+    "member_count": 12,
+    "member_receipts_sha256": "1a17860261b63b6cb3dd708710de82fce589a7718173b2a24260a7b8b905073b",
+    "metadata_name": "mock-open",
+    "metadata_version": "1.4.0",
+    "pure_python": true,
+    "sha256": "8499185fed7121f699eabaa472fe5741d6561053bd85fc419328bb0b8976c98b"
+  }
+}
