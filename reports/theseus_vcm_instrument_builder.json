@@ -2,15 +2,13 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_instrument_builder.json",
-    "sha256": "093b89f7dbe82b2648ecb46def450a463607327f752d8681167a189545049bdc"
+    "sha256": "37b34a9029b3492cab4b05a9deb60d887e14b88a6d4063497d4b1c3d5943703f"
   },
-  "created_utc": "2026-08-09T00:43:49.874973Z",
+  "created_utc": "2026-08-09T00:53:08.916423Z",
   "external_reference_calls": 0,
-  "faults": [
-    "yarn_online_install_failed"
-  ],
-  "maximum_inference": "This RED V2 report qualifies only the exact Task 61 Bun online acquisition, network-denied replay, unchanged parent source, and retained content-bound shared Bun store under the stated sandbox and host reserve. Task 4 Yarn failed before installation because transitive jsdom 30.0.1 rejected sealed Node 22.15.0; TypeScript and Rust did not execute. This is an instrument toolchain-coverage gap, not task, model, VCM, or book evidence. Repository runners, evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
-  "network_or_dependency_execution_performed": true,
+  "faults": [],
+  "maximum_inference": "A GREEN V3 execution report may prove only that the qualified Bun store was reused without reacquisition or mutation and that the exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
+  "network_or_dependency_execution_performed": false,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "prior_risk_attempts": [
@@ -25,6 +23,21 @@
       "repository_executions": 0,
       "retained_store_writes": 0,
       "state": "INCONCLUSIVE_IMPLEMENTATION"
+    },
+    {
+      "attempt_id": "k2_03_generic_ecosystem_risk_canaries_v2",
+      "candidate_or_control_calls": 0,
+      "external_reference_calls": 0,
+      "fault": "yarn_transitive_node_engine_requirement_not_source_bound",
+      "qualified_risk_classes": [
+        "bun_real_lock_install"
+      ],
+      "retained_bun_store_identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+      "rust_executed": false,
+      "source_commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f",
+      "source_report_sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e",
+      "state": "INCONCLUSIVE_IMPLEMENTATION",
+      "typescript_executed": false
     }
   ],
   "replayed_closure_count": 6,
@@ -36,7 +49,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 20992299008,
+    "host_free_bytes": 20377489408,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -47,10 +60,10 @@
     "untrusted_build_risk_class": "none_static_replay"
   },
   "risk_canary_plan": {
-    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v2",
+    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v3",
     "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 20992299008,
+    "host_free_bytes": 20377489408,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -112,8 +125,8 @@
         "risk_id": "yarn-task04-parent",
         "task_index": 4,
         "tool": {
-          "path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
-          "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951"
+          "path": "runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64/bin/node",
+          "sha256": "5c899797c4eb8f1db5563eea56538342ddb3e9276ee1b04a5a1f0f1023d2b011"
         }
       },
       {
@@ -175,125 +188,28 @@
         }
       }
     ],
-    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V2_AFTER_SANDBOX_BINDING_REPAIR"
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME"
   },
-  "risk_execution_performed": true,
-  "risk_receipts": {
-    "bun_offline": {
-      "boundary_hit": false,
-      "boundary_reason": "",
-      "captured_output_mib_limit": 8,
-      "command": [
-        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
-        "install",
-        "--frozen-lockfile",
-        "--ignore-scripts",
-        "--cache-dir",
-        "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache",
-        "--offline"
-      ],
-      "duration_ms": 237.667,
-      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
-      "maximum_process_group_rss_mib": 18.984,
-      "network_denied": true,
-      "returncode": 0,
-      "rss_telemetry_fault": "",
-      "single_written_file_mib_limit": 4096,
-      "stderr_bytes": 0,
-      "stderr_head": "",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_bytes": 710,
-      "stdout_sha256": "58af0886037529076ee8cb9593d4b73993405b67f33dfefa2b245b3e79816f44"
+  "risk_resume": {
+    "node_repair": {
+      "archive_sha256": "db4b275b83736df67533529a18cc55de2549a8329ace6c7bcc68f8d22d3c9000",
+      "network_requests": 1,
+      "node_sha256": "5c899797c4eb8f1db5563eea56538342ddb3e9276ee1b04a5a1f0f1023d2b011",
+      "npm_version": "10.9.7",
+      "source": "official Node.js release archive",
+      "target": "runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64",
+      "url": "https://nodejs.org/dist/v22.22.2/node-v22.22.2-darwin-arm64.tar.gz",
+      "version": "22.22.2"
     },
-    "bun_online": {
-      "boundary_hit": false,
-      "boundary_reason": "",
-      "captured_output_mib_limit": 8,
-      "command": [
-        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
-        "install",
-        "--frozen-lockfile",
-        "--ignore-scripts",
-        "--cache-dir",
-        "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache"
-      ],
-      "duration_ms": 7246.22,
-      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
-      "maximum_process_group_rss_mib": 166.953,
-      "network_denied": false,
-      "returncode": 0,
-      "rss_telemetry_fault": "",
-      "single_written_file_mib_limit": 4096,
-      "stderr_bytes": 0,
-      "stderr_head": "",
-      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-      "stdout_bytes": 707,
-      "stdout_sha256": "fdee0e48c4cfafbc9bd6275edec44676da7f952ce803662ffb21938b123cd6d2"
+    "qualified_bun_store": {
+      "bytes": 169910840,
+      "file_count": 8320,
+      "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+      "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
     },
-    "bun_source_after": {
-      "bytes": 48663631,
-      "file_count": 1102,
-      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
-    },
-    "bun_source_before": {
-      "bytes": 48663631,
-      "file_count": 1102,
-      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
-    },
-    "free_bytes_after": 20778672128,
-    "free_bytes_before": 20992167936,
-    "free_bytes_during": 19844456448,
-    "rows": [],
-    "stores": {
-      "bun": {
-        "bytes": 169910840,
-        "file_count": 8320,
-        "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
-        "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
-      }
-    },
-    "task_36_extraction": {
-      "member_receipts_sha256": "28c66094b72bc56122ef3fed019009823749c0ea8709fe8afdc0cb48ff0cbe47",
-      "regular_file_bytes": 2109386,
-      "regular_file_count": 851
-    },
-    "task_4_extraction": {
-      "member_receipts_sha256": "c21478fab3c6d205e7f223aa3378c80ccb923db8834792004128abadc2521bea",
-      "regular_file_bytes": 1885590,
-      "regular_file_count": 303
-    },
-    "task_61_extraction": {
-      "member_receipts_sha256": "ec5b03e97c750851bb22229bfd6ac37abd342c4fe20bec10f56838c407fa518b",
-      "regular_file_bytes": 48663631,
-      "regular_file_count": 1102
-    },
-    "yarn_online": {
-      "boundary_hit": false,
-      "boundary_reason": "",
-      "captured_output_mib_limit": 8,
-      "command": [
-        "/opt/homebrew/Cellar/node@22/22.15.0/bin/node",
-        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js",
-        "install",
-        "--frozen-lockfile",
-        "--ignore-scripts",
-        "--non-interactive",
-        "--cache-folder",
-        "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/yarn-cache"
-      ],
-      "duration_ms": 20468.906,
-      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
-      "maximum_process_group_rss_mib": 227.609,
-      "network_denied": false,
-      "returncode": 1,
-      "rss_telemetry_fault": "",
-      "single_written_file_mib_limit": 4096,
-      "stderr_bytes": 172,
-      "stderr_head": "error jsdom@30.0.1: The engine \"node\" is incompatible with this module. Expected version \"^22.22.2 || ^24.15.0 || >=26.0.0\". Got \"22.15.0\"\nerror Found incompatible module.\n",
-      "stderr_sha256": "06b367e56e12a758150bdd923931980582b44603e8a2b976a1301cc3f75e6dd5",
-      "stdout_bytes": 166,
-      "stdout_sha256": "5b38c653128d8255bef7ea1369a899b9863196feb6f4ed26b5f94496307dbf76"
-    }
+    "source_commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f",
+    "source_report": "reports/theseus_vcm_instrument_builder.json",
+    "source_report_sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e"
   },
   "rows": [
     {
@@ -475,19 +391,21 @@
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
   },
-  "state": "K2_03_RISK_CANARIES_FAILED",
+  "state": "GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
   "static_evidence_replay_only": true,
   "store_contract": {
     "historical_task_specific_stores": "retained evidence only; never forward topology",
     "installed_environment_root": "runtime/vcm_evaluator/installed_environments/disposable",
     "installed_environments_are_disposable": true,
     "manager_roots": {
+      "bun": "runtime/vcm_evaluator/dependency_store/shared/bun",
       "cargo": "runtime/vcm_evaluator/dependency_store/shared/cargo",
       "npm": "runtime/vcm_evaluator/dependency_store/shared/npm",
       "pnpm": "runtime/vcm_evaluator/dependency_store/shared/pnpm",
-      "uv": "runtime/vcm_evaluator/dependency_store/shared/uv"
+      "uv": "runtime/vcm_evaluator/dependency_store/shared/uv",
+      "yarn": "runtime/vcm_evaluator/dependency_store/shared/yarn"
     },
     "per_task_duplicate_package_cache_authorized": false
   },
-  "trigger_state": "RED"
+  "trigger_state": "GREEN"
 }

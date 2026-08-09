@@ -24,7 +24,7 @@ def test_forward_store_and_resource_contract_is_generic_and_bounded() -> None:
     store = REPORT["store_contract"]
     assert store["per_task_duplicate_package_cache_authorized"] is False
     assert store["installed_environments_are_disposable"] is True
-    assert set(store["manager_roots"]) == {"npm", "pnpm", "cargo", "uv"}
+    assert set(store["manager_roots"]) == {"npm", "pnpm", "cargo", "uv", "bun", "yarn"}
     assert all("/shared/" in path for path in store["manager_roots"].values())
     assert set(REPORT["resource_preflight"]) == {"state", *owner.RESOURCE_FIELDS}
     assert REPORT["resource_preflight"]["state"] == "STATIC_REPLAY_ONLY_K2_03_PROJECTION_PENDING"
@@ -44,8 +44,8 @@ def test_builder_executes_nothing_and_grants_no_downstream_authority() -> None:
 
 def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
     plan = REPORT["risk_canary_plan"]
-    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V2_AFTER_SANDBOX_BINDING_REPAIR"
-    assert plan["campaign_id"] == "k2_03_generic_ecosystem_risk_canaries_v2"
+    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME"
+    assert plan["campaign_id"] == "k2_03_generic_ecosystem_risk_canaries_v3"
     assert [row["risk_class"] for row in plan["rows"]] == [
         "bun_real_lock_install",
         "yarn_real_lock_install",
@@ -54,4 +54,8 @@ def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
     ]
     assert all(row["execution_authorized"] is True for row in plan["rows"])
     assert plan["host_free_bytes"] - max(row["resource_projection"]["projected_peak_temporary_bytes"] for row in plan["rows"]) >= plan["host_reserve_bytes"]
-    assert REPORT["prior_risk_attempts"] == [{"attempt_id":"k2_03_generic_ecosystem_risk_canaries_v1","state":"INCONCLUSIVE_IMPLEMENTATION","fault":"generic_config_missing_required_sandbox_exec_binding","exception":"KeyError:tools","external_commands_started":0,"network_calls":0,"retained_store_writes":0,"repository_executions":0,"candidate_or_control_calls":0,"external_reference_calls":0}]
+    assert [row["attempt_id"] for row in REPORT["prior_risk_attempts"]] == [
+        "k2_03_generic_ecosystem_risk_canaries_v1",
+        "k2_03_generic_ecosystem_risk_canaries_v2",
+    ]
+    assert REPORT["prior_risk_attempts"][1]["retained_bun_store_identity_sha256"] == "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d"

@@ -59,7 +59,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     allowed = {
         "static_evidence_replay_authorized",
         "four_risk_canary_executions_authorized",
-        "two_network_dependency_acquisitions_authorized",
+        "one_network_dependency_acquisition_authorized",
         "network_denied_replays_authorized",
         "untrusted_parent_typescript_transpilation_authorized",
         "untrusted_parent_rust_compilation_authorized",
@@ -90,7 +90,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     store = p2a.mapping(cfg.get("store_contract"))
     expected_roots = {
         manager: f"runtime/vcm_evaluator/dependency_store/shared/{manager}"
-        for manager in ("npm", "pnpm", "cargo", "uv")
+        for manager in ("npm", "pnpm", "cargo", "uv", "bun", "yarn")
     }
     if p2a.mapping(store.get("manager_roots")) != expected_roots:
         faults.append("shared_manager_roots_invalid")
@@ -218,6 +218,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "store_contract": store,
         "resource_preflight": resource,
         "risk_canary_plan": risk_plan,
+        "risk_resume": cfg.get("risk_resume", {}),
         "prior_risk_attempts": cfg.get("prior_risk_attempts", []),
         "static_evidence_replay_only": True,
         "network_or_dependency_execution_performed": False,
@@ -233,7 +234,7 @@ def validate_risk_plan(
     cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
 ) -> dict[str, Any]:
     plan = p2a.mapping(cfg.get("risk_canary_plan"))
-    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V2_AFTER_SANDBOX_BINDING_REPAIR" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v2":
+    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v3":
         faults.append("risk_campaign_identity_invalid")
     rows = p2a.dicts(plan.get("rows"))
     if [row.get("risk_class") for row in rows] != [
@@ -303,14 +304,29 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     rows = p2a.dicts(p2a.mapping(cfg["risk_canary_plan"]).get("rows"))
     reserve = int(p2a.mapping(cfg["resource_contract"])["host_reserve_bytes"])
     stores = {name: p2a.resolve(f"runtime/vcm_evaluator/dependency_store/shared/{name}") for name in ("bun", "yarn")}
-    collisions = [p2a.rel(store) for store in stores.values() if store.exists()]
-    if collisions:
-        return finish_risks(before, [f"retained_store_already_exists:{x}" for x in collisions], {}, False)
+    resume = p2a.mapping(cfg.get("risk_resume"))
+    expected_bun = p2a.mapping(resume.get("qualified_bun_store"))
+    observed_bun = tree_receipt(stores["bun"])
+    if (
+        not stores["bun"].is_dir()
+        or observed_bun.get("identity_sha256") != expected_bun.get("identity_sha256")
+        or observed_bun.get("file_count") != expected_bun.get("file_count")
+        or observed_bun.get("bytes") != expected_bun.get("bytes")
+    ):
+        return finish_risks(before, ["qualified_bun_resume_store_identity_invalid"], {"observed_bun_store": observed_bun}, False)
+    if stores["yarn"].exists():
+        return finish_risks(before, [f"retained_store_already_exists:{p2a.rel(stores['yarn'])}"], {}, False)
     free_before = shutil.disk_usage(ROOT).free
     if free_before < reserve + max(int(p2a.mapping(row["resource_projection"])["projected_peak_temporary_bytes"]) for row in rows):
         return finish_risks(before, ["host_reserve_preflight_boundary_hit"], {"free_bytes_before": free_before}, False)
     faults: list[str] = []
-    receipts: dict[str, Any] = {"free_bytes_before": free_before, "rows": []}
+    receipts: dict[str, Any] = {
+        "free_bytes_before": free_before,
+        "rows": [],
+        "resumed_from_commit": resume.get("source_commit"),
+        "qualified_bun_store_before": observed_bun,
+        "bun_network_acquisition_repeated": False,
+    }
     with tempfile.TemporaryDirectory(prefix="theseus-vcm-generic-risks-", dir="/private/tmp") as raw:
         work = Path(raw).resolve()
         repos: dict[int, Path] = {}
@@ -326,13 +342,11 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         if not faults:
             bun_row = rows[0]
             bun_cache = work / "bun-cache"; bun_home = work / "bun-home"; bun_tmp = work / "bun-tmp"
-            bun_cache.mkdir(); bun_home.mkdir(); bun_tmp.mkdir()
+            shutil.copytree(stores["bun"], bun_cache); bun_home.mkdir(); bun_tmp.mkdir()
             bun_path = str(p2a.resolve(str(p2a.mapping(bun_row["tool"])["path"])))
             bun_env = minimal_env(bun_home, bun_tmp, f"{Path(bun_path).parent}:/usr/bin:/bin")
             bun_cmd = [bun_path, *p2a.strings(bun_row["command"])[:-1], str(bun_cache)]
-            faults.extend(run_install_pair("bun", bun_cmd, [*bun_cmd, "--offline"], repos[61], work, bun_env, cfg, receipts))
-            if not faults:
-                stores["bun"].parent.mkdir(parents=True, exist_ok=True); os.replace(bun_cache, stores["bun"])
+            faults.extend(run_offline_replay("bun_resume", [*bun_cmd, "--offline"], repos[61], work, bun_env, cfg, receipts))
         if not faults:
             yarn_row = rows[1]
             yarn_cache = work / "yarn-cache"; yarn_home = work / "yarn-home"; yarn_tmp = work / "yarn-tmp"
@@ -360,6 +374,9 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         receipts["free_bytes_during"] = shutil.disk_usage(ROOT).free
         if receipts["free_bytes_during"] < reserve: faults.append("host_reserve_postflight_boundary_hit")
     receipts["stores"] = {name: tree_receipt(store) for name, store in stores.items() if store.exists()}
+    receipts["qualified_bun_store_after"] = tree_receipt(stores["bun"])
+    if receipts["qualified_bun_store_after"] != observed_bun:
+        faults.append("qualified_bun_store_mutated_during_resume")
     receipts["free_bytes_after"] = shutil.disk_usage(ROOT).free
     return finish_risks(before, faults, receipts, True)
 
@@ -373,6 +390,19 @@ def run_install_pair(name: str, online: list[str], offline: list[str], cwd: Path
     if base.command_failed(off): faults.append(f"{name}_offline_replay_failed")
     after=base.tree_identity(cwd, excluded_roots={"node_modules"});receipts[f"{name}_source_before"]=before;receipts[f"{name}_source_after"]=after
     if before!=after:faults.append(f"{name}_source_mutated_outside_node_modules")
+    return faults
+
+
+def run_offline_replay(name: str, command: list[str], cwd: Path, work: Path, env: dict[str, str], cfg: dict[str, Any], receipts: dict[str, Any]) -> list[str]:
+    before = base.tree_identity(cwd, excluded_roots={"node_modules"})
+    receipt = bounded.run_sandboxed(command, cwd, work, env, cfg, network_denied=True)
+    receipts[f"{name}_offline"] = receipt
+    faults = [f"{name}_offline_replay_failed"] if base.command_failed(receipt) else []
+    after = base.tree_identity(cwd, excluded_roots={"node_modules"})
+    receipts[f"{name}_source_before"] = before
+    receipts[f"{name}_source_after"] = after
+    if before != after:
+        faults.append(f"{name}_source_mutated_outside_node_modules")
     return faults
 
 

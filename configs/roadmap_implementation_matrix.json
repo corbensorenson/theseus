@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_03_V2_BUN_QUALIFIED_YARN_NODE_GAP",
+      "state": "VCM_V3_K2_03_RISK_EXECUTOR_V3_PROSPECTIVELY_SEALED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v2",
-      "current_blocker": "yarn_transitive_node_engine_requirement_not_source_bound",
+      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v3",
+      "current_blocker": "yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited",
       "last_closed_task_index": 26,
-      "next_legal_action": "source_bind_compatible_project_local_node_and_resume_without_reacquiring_qualified_bun_store",
+      "next_legal_action": "execute_v3_idempotent_bun_replay_then_yarn_typescript_rust_and_role_separately_audit",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired 62-task source panel and six prior dependency closures remain GREEN. Task 26 exposed a scoped wheel-only dependency-policy wall. The generic K2.03 V2 risk run qualified Task 61 Bun online acquisition and network-denied replay, retained one content-bound shared Bun store, and preserved the 10 GiB host reserve. Task 4 Yarn then failed before installation because transitive jsdom 30.0.1 requires Node ^22.22.2, ^24.15.0, or >=26 while the sealed runtime was 22.15.0. TypeScript and Rust were not executed. This is a scoped instrument toolchain-coverage gap, not task, model, VCM, or book evidence. The repair may source-bind a compatible project-local Node and resume idempotently, but may not reacquire the qualified Bun store or open repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, or book promotion.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. The directly activated residual is governed model-visible context materialization, so virtual-context-abi.core is the only active claim. Its repaired 62-task source panel and six prior dependency closures remain GREEN. Task 26 exposed a scoped wheel-only dependency-policy wall. K2.03 V2 qualified Task 61 Bun online acquisition and network-denied replay, retained one content-bound shared Bun store, and then failed closed before Yarn installation on an unmodeled transitive Node-engine requirement. Official project-local Node 22.22.2 is now archive-checksum-verified, installed, version-probed, and binary-bound. V3 is prospectively sealed to verify and replay Bun offline without reacquisition, then execute exact Yarn, TypeScript, and Rust risk canaries serially under the same reserve. This is instrument work only; repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -228,7 +228,7 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V2 qualified Bun online/offline and its shared store, then failed closed on Yarn because the sealed Node 22.15.0 does not satisfy a transitive jsdom 30.0.1 engine requirement. Resume under a new campaign identity with a source-bound compatible project-local Node; do not reacquire Bun."
+            "latest_observation": "V2 qualified Bun online/offline and its shared store, then failed closed on Yarn because sealed Node 22.15.0 did not satisfy transitive jsdom 30.0.1. Official project-local Node 22.22.2 is now checksum-verified and binary-bound. V3 is prospectively sealed to replay Bun offline without reacquisition, then execute Yarn, TypeScript, and Rust."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",

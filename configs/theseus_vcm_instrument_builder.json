@@ -2,7 +2,7 @@
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "state": "GENERIC_MANIFEST_OWNER_STATIC_REPLAY_BEFORE_FORWARD_EXECUTION",
   "owner": "scripts/theseus_vcm_instrument_builder.py",
-  "owner_sha256": "ad30595d876c5049f7b58b46f4a7900cc06e4b19e027cc1868f9110e34b5a760",
+  "owner_sha256": "b4fe16edcd3592f2c3a8d37fab641fdc82fbd05f2960fd3e86a672c0fbb1346b",
   "schedule": {
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
@@ -136,7 +136,9 @@
       "npm": "runtime/vcm_evaluator/dependency_store/shared/npm",
       "pnpm": "runtime/vcm_evaluator/dependency_store/shared/pnpm",
       "cargo": "runtime/vcm_evaluator/dependency_store/shared/cargo",
-      "uv": "runtime/vcm_evaluator/dependency_store/shared/uv"
+      "uv": "runtime/vcm_evaluator/dependency_store/shared/uv",
+      "bun": "runtime/vcm_evaluator/dependency_store/shared/bun",
+      "yarn": "runtime/vcm_evaluator/dependency_store/shared/yarn"
     },
     "installed_environment_root": "runtime/vcm_evaluator/installed_environments/disposable",
     "installed_environments_are_disposable": true,
@@ -150,8 +152,8 @@
   },
   "limits": {"minimum_free_bytes_after_execution":10737418240,"maximum_single_written_file_mib":4096,"wall_seconds_per_command":600,"cpu_seconds_per_command":300,"output_mib":8,"open_files":512,"user_processes":384,"max_process_group_rss_mib":4096,"terminate_grace_seconds":5},
   "risk_canary_plan": {
-    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V2_AFTER_SANDBOX_BINDING_REPAIR",
-    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v2",
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V3_IDEMPOTENT_RESUME",
+    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v3",
     "selection_rule": "earliest frozen compatible parent row per missing manager; reuse earliest Bun row for TypeScript and earliest exact-Rust row for compilation",
     "execution_order": "serialized_exact_list_order",
     "rows": [
@@ -176,7 +178,7 @@
         "parent_archive": {"path": "runtime/vcm_evaluator/source_archives/04_frappe-draw_parent.tar.gz", "sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79"},
         "archive_root": "draw-8aa6784b6dc2e570ff9679a52236d89d07d650fa",
         "working_directory": "frontend",
-        "tool": {"path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951"},
+        "tool": {"path": "runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64/bin/node", "sha256": "5c899797c4eb8f1db5563eea56538342ddb3e9276ee1b04a5a1f0f1023d2b011"},
         "support_tool": {"path": "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js", "sha256": "148e19db309ec9eaf7720b28df811337906eea8a1758deaa54afee60a6305e04"},
         "command": ["runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js", "install", "--frozen-lockfile", "--ignore-scripts", "--non-interactive", "--cache-folder", "runtime/vcm_evaluator/dependency_store/shared/yarn"],
         "resource_projection": {"basis": "479 locked entries at conservative 4 MiB per entry; observed canary replaces estimate", "projected_download_bytes": 2009071616, "projected_installed_bytes": 4018143232, "projected_peak_temporary_bytes": 4294967296, "projected_wall_time_seconds": 600, "maximum_process_group_rss_mib": 4096}
@@ -208,12 +210,36 @@
     ]
   },
   "tools": {"sandbox_exec": {"path": "/usr/bin/sandbox-exec", "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"}},
-  "prior_risk_attempts": [{"attempt_id":"k2_03_generic_ecosystem_risk_canaries_v1","state":"INCONCLUSIVE_IMPLEMENTATION","fault":"generic_config_missing_required_sandbox_exec_binding","exception":"KeyError:tools","external_commands_started":0,"network_calls":0,"retained_store_writes":0,"repository_executions":0,"candidate_or_control_calls":0,"external_reference_calls":0}],
+  "risk_resume": {
+    "source_commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f",
+    "source_report": "reports/theseus_vcm_instrument_builder.json",
+    "source_report_sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e",
+    "qualified_bun_store": {
+      "path": "runtime/vcm_evaluator/dependency_store/shared/bun",
+      "file_count": 8320,
+      "bytes": 169910840,
+      "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d"
+    },
+    "node_repair": {
+      "source": "official Node.js release archive",
+      "url": "https://nodejs.org/dist/v22.22.2/node-v22.22.2-darwin-arm64.tar.gz",
+      "archive_sha256": "db4b275b83736df67533529a18cc55de2549a8329ace6c7bcc68f8d22d3c9000",
+      "version": "22.22.2",
+      "npm_version": "10.9.7",
+      "target": "runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64",
+      "node_sha256": "5c899797c4eb8f1db5563eea56538342ddb3e9276ee1b04a5a1f0f1023d2b011",
+      "network_requests": 1
+    }
+  },
+  "prior_risk_attempts": [
+    {"attempt_id":"k2_03_generic_ecosystem_risk_canaries_v1","state":"INCONCLUSIVE_IMPLEMENTATION","fault":"generic_config_missing_required_sandbox_exec_binding","exception":"KeyError:tools","external_commands_started":0,"network_calls":0,"retained_store_writes":0,"repository_executions":0,"candidate_or_control_calls":0,"external_reference_calls":0},
+    {"attempt_id":"k2_03_generic_ecosystem_risk_canaries_v2","state":"INCONCLUSIVE_IMPLEMENTATION","qualified_risk_classes":["bun_real_lock_install"],"fault":"yarn_transitive_node_engine_requirement_not_source_bound","source_commit":"01e3e1ebf5e6c387c4b71577cdd73e33014a110f","source_report_sha256":"7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e","retained_bun_store_identity_sha256":"9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d","typescript_executed":false,"rust_executed":false,"candidate_or_control_calls":0,"external_reference_calls":0}
+  ],
   "report": "reports/theseus_vcm_instrument_builder.json",
   "authority": {
     "static_evidence_replay_authorized": true,
     "four_risk_canary_executions_authorized": true,
-    "two_network_dependency_acquisitions_authorized": true,
+    "one_network_dependency_acquisition_authorized": true,
     "network_denied_replays_authorized": true,
     "untrusted_parent_typescript_transpilation_authorized": true,
     "untrusted_parent_rust_compilation_authorized": true,
@@ -235,5 +261,5 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "maximum_inference": "A GREEN report proves only that six already qualified npm, pnpm, Cargo, and uv dependency closures replay through one content-bound row schema and that the prospective forward topology uses manager-shared package stores with disposable installed environments and no per-task duplicate cache authority. It executes no dependency operation and does not yet qualify Bun, Yarn, TypeScript transpilation, untrusted Rust compilation, remaining closures, repository runners, evaluators, VCM packets, models, D1, D2, or book claims."
+  "maximum_inference": "A GREEN V3 execution report may prove only that the qualified Bun store was reused without reacquisition or mutation and that the exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support."
 }

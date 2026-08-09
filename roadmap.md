@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_V2_BUN_QUALIFIED_YARN_NODE_GAP` |
+| State | `VCM_V3_K2_03_RISK_EXECUTOR_V3_PROSPECTIVELY_SEALED` |
 | Selected task | 26 |
-| Active attempt | `k2_03_generic_ecosystem_risk_canaries_v2` |
-| Current wall | `yarn_transitive_node_engine_requirement_not_source_bound` |
+| Active attempt | `k2_03_generic_ecosystem_risk_canaries_v3` |
+| Current wall | `yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited` |
 | Last closed task | 26 |
-| Next legal action | `source_bind_compatible_project_local_node_and_resume_without_reacquiring_qualified_bun_store` |
+| Next legal action | `execute_v3_idempotent_bun_replay_then_yarn_typescript_rust_and_role_separately_audit` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -355,9 +355,11 @@ shared Bun store was retained, and the 10 GiB reserve held. Task 4 Yarn then
 failed before installation because transitive `jsdom@30.0.1` requires Node
 `^22.22.2 || ^24.15.0 || >=26.0.0`, while the sealed runtime was 22.15.0.
 TypeScript and Rust did not execute. This is a scoped toolchain-coverage gap,
-not task or VCM evidence. A new campaign may source-bind a compatible
-project-local Node and resume idempotently, but must verify and reuse the
-qualified Bun store rather than reacquire it.
+not task or VCM evidence. Official Node 22.22.2 for Darwin ARM64 is now
+project-local, verified against the published archive SHA-256, version-probed,
+and bound by its extracted binary hash. V3 is prospectively sealed to verify
+and replay the qualified Bun store offline without reacquisition, then run
+Yarn, TypeScript, and Rust serially under the same reserve.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
