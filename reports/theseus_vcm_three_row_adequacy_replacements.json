@@ -1,0 +1,504 @@
+{
+  "candidate_packet_materialization_opened": false,
+  "checkpoint": {
+    "path": "reports/theseus_vcm_three_row_adequacy_replacements_checkpoint.json",
+    "sha256": "dc375527b7aca7c2b56cb7c86645670372689863406161d00402f1d8da4a0e6c"
+  },
+  "checkpoint_artifact_hash_verified_final": true,
+  "config": {
+    "path": "configs/theseus_vcm_three_row_adequacy_replacements.json",
+    "sha256": "88e60bb1cd020c2ed20dec88022ad62dadb9724906c8702b541f37ea9bf0c350"
+  },
+  "content_language_receipts": [
+    {
+      "index": 12,
+      "repository": "plwp/chief-wiggum",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 13,
+      "repository": "frame-consulting/QuantLibXlOil",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    },
+    {
+      "index": 35,
+      "repository": "knoguchi/marsdb",
+      "selected_content_english_scope_passed": true,
+      "violations": []
+    }
+  ],
+  "counters": {
+    "D1_cases_consumed": 0,
+    "D2_cases_consumed": 0,
+    "candidate_or_control_calls": 0,
+    "external_inference_calls": 0,
+    "local_language_scope_classification_calls": 8,
+    "local_model_calls": 0,
+    "parent_target_or_evaluator_executions": 0,
+    "public_metadata_selection_requests": 42,
+    "public_metadata_title_requests": 15,
+    "public_source_content_requests": 46,
+    "source_archives_materialized": 12,
+    "source_bytes_materialized": 354481,
+    "teacher_calls": 0,
+    "training_rows_written": 0
+  },
+  "created_utc": "2026-08-09T05:10:49.773956Z",
+  "faults": [],
+  "frozen_qualified_indices": [
+    16,
+    25,
+    56
+  ],
+  "hidden_evaluation_opened": false,
+  "language_classification_receipts": [
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "87ba55a3fa93bd0703c8284d4c7f9415cba954b0e4e748a679656d81356837b8",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 12,
+      "repository": "plwp/chief-wiggum",
+      "title_sha256": "64110be6cc6d49d812348577e0ae9fafc2830398ab4390f3e6578ef22c39e50c"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "636842c49aa7a546c161e6bfb9f50c7499a30685212776fc40011d772bb8bd52",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 13,
+      "repository": "frame-consulting/QuantLibXlOil",
+      "title_sha256": "24832301a502f2b96786d85ce383cb107e2e82044b6f7a3c296a32c8316791ea"
+    },
+    {
+      "accepted_english": true,
+      "classifier_output_sha256": "fd1c465375b337e613532d895f443a6f940e7208b114690f3831f2eab833a3e0",
+      "dominant_language": "en",
+      "forbidden_unicode_scripts": [],
+      "index": 35,
+      "repository": "knoguchi/marsdb",
+      "title_sha256": "b7051c5c6f4610cf06730a52532bcda221494bd28ed604dbd71e95570e74cccc"
+    }
+  ],
+  "matched_verifier_audit": {
+    "path": "reports/theseus_vcm_six_row_matched_verifier_audit_v4.json",
+    "sha256": "c30582b58e7ee38954447df1abeb4e8a5e37a044af72f4879a42e462be080ca2"
+  },
+  "matched_verifier_report": {
+    "path": "reports/theseus_vcm_six_row_matched_verifier_v4.json",
+    "sha256": "5840f0e2e2c783466b012be68071e3f8b28da7c547b75873f8c21fb0c028b9bd"
+  },
+  "maximum_inference": "A GREEN producer report proves only that three source-disjoint same-panel same-language replacements were selected under the original frozen rank rules, have English titles and selected text, and were materialized all-or-none without executing candidate code or rerunning qualified Tasks 16, 25, or 56. It does not admit a revised 62-row panel until role-separated audit, qualify replacement evaluators, authorize model or Luna calls, establish a VCM effect, or support D1, D2, training, serving, or an ASI Stack claim.",
+  "policy": "project_theseus_vcm_three_row_adequacy_replacements_v1",
+  "qualified_rows_rerun": false,
+  "rejection_counts": {
+    "bot_author": 20,
+    "candidate_source_or_license_unavailable": 2,
+    "changed_file_count": 357,
+    "changed_line_count": 190,
+    "chronology": 5,
+    "deleted_only_source": 1,
+    "generated_vendor_lock_only": 8,
+    "head_commit_metadata_unavailable": 1,
+    "license_not_allowlisted": 435,
+    "natural_language_out_of_scope": 1,
+    "no_machine_verifier_change": 536,
+    "no_non_test_source_change": 407,
+    "not_merged_closed_nondraft": 3,
+    "primary_language_mismatch": 9,
+    "prior_or_duplicate_repository": 64,
+    "repository_below_star_floor": 510,
+    "repository_state": 158,
+    "selected_content_natural_language_out_of_scope": 2
+  },
+  "replacement_rows": [
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1061,
+              "path": "LICENSE",
+              "sha256": "135dbd2a23e02050f4146a716b0388a65c7dcb352cd539be403df9bf4744276d"
+            },
+            {
+              "bytes": 7763,
+              "path": "scripts/chief_wiggum/artifacts.py",
+              "sha256": "b1a759d89dab3aa6d13e1c15c9a6921b20688e52212b544f94f6e2b68a6a1d49"
+            },
+            {
+              "bytes": 1829,
+              "path": "scripts/epic_inventory.py",
+              "sha256": "bc6718221c8e5bb09f8bcba00f6f3e6122bba972656ce951e4857a16bf81ba02"
+            },
+            {
+              "bytes": 25350,
+              "path": "scripts/tracker.py",
+              "sha256": "0e228159060884164dc5c113f4650d226e0c9a85b5311bb5e6ea8bd4253fb56a"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-12-parent_source.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "21012604659131a8cd70163e92e5fa4084d31bd040003e055e51407113f73586"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1061,
+              "path": "LICENSE",
+              "sha256": "135dbd2a23e02050f4146a716b0388a65c7dcb352cd539be403df9bf4744276d"
+            },
+            {
+              "bytes": 6412,
+              "path": "tests/test_epic_inventory.py",
+              "sha256": "5a030d66744abf349938fe22d89eedd2d6f5851046698d4d42a7aee1a478d4ce"
+            },
+            {
+              "bytes": 26328,
+              "path": "tests/test_tracker.py",
+              "sha256": "0cd214cf01a5d8d1fcb214c46cf9b4b529f24a41cdc4b7a77335dd30c1b893f1"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-12-parent_verifier.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "7e09e9c447ca90ef68d6dbff2dd5c75c52a02f99a471cb084c2f9a80c9faa986"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1061,
+              "path": "LICENSE",
+              "sha256": "135dbd2a23e02050f4146a716b0388a65c7dcb352cd539be403df9bf4744276d"
+            },
+            {
+              "bytes": 9516,
+              "path": "scripts/chief_wiggum/artifacts.py",
+              "sha256": "41ad5c5afedcb300b6f4545bcb6ab84d174de37795ab8059edf6c74b46d3887a"
+            },
+            {
+              "bytes": 2159,
+              "path": "scripts/epic_inventory.py",
+              "sha256": "ca5b5457ba95e2013c7ebac2da4d89e6e6c4115868153d82964fe28f3b098477"
+            },
+            {
+              "bytes": 26809,
+              "path": "scripts/tracker.py",
+              "sha256": "f4a7778c4d0a966e8316f2a3637a648aa5fb6d6c2471c8b48a0906c08cea66a8"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-12-target_source.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "1b468916910f02ad6d7a96fb9ee582842a961ff693ae63d9c2f442e3c6c8d7fa"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1061,
+              "path": "LICENSE",
+              "sha256": "135dbd2a23e02050f4146a716b0388a65c7dcb352cd539be403df9bf4744276d"
+            },
+            {
+              "bytes": 13595,
+              "path": "tests/test_epic_inventory.py",
+              "sha256": "23d82fd34832be6bf9d6cc526989e5f1273aa33146ef20390aeea690db6a529b"
+            },
+            {
+              "bytes": 37605,
+              "path": "tests/test_tracker.py",
+              "sha256": "41a6457dc0bc7a6a91a6518740ae8e88b08a74290a22eb9f2a197a7e8e06bf36"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-12-target_verifier.tar.gz",
+          "root": "vcm-claim-12",
+          "sha256": "576dce3a22f793965dd1f088076e70d8fd0c9a8a89f2f1df49e90c8f1ff7af0d"
+        }
+      },
+      "base_revision": "d7daae9eaca9159b26fd62b45b8274c649b83fb0",
+      "faults": [],
+      "head_revision": "8c610550ac292b6bfcbf7b7853bee8910d9b60fb",
+      "index": 12,
+      "license_spdx": "MIT",
+      "natural_language_request": "fix(sidecar): honour the resolved meta location in epic inventory, tracker, and the skills (#286, #266, #267)",
+      "natural_language_request_sha256": "64110be6cc6d49d812348577e0ae9fafc2830398ab4390f3e6578ef22c39e50c",
+      "opaque_source_id": "7fc3fbd92f1846bfea8117f39f4bf6e4ed15bb5839de64782e60f7fab0d18ebb",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 300,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "05c31f3b1fdf5fd47c89a8d9b76841c2eddaeb29549521b051eea10af1617958",
+      "repository": "plwp/chief-wiggum",
+      "selected_source_paths": [
+        "scripts/chief_wiggum/artifacts.py",
+        "scripts/epic_inventory.py",
+        "scripts/tracker.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/test_epic_inventory.py",
+        "tests/test_tracker.py"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 1078,
+              "path": "LICENSE",
+              "sha256": "491c634a211aa0ea56f133d9b8d6113a792f79b6d26f9658e95e4b93eece4d64"
+            },
+            {
+              "bytes": 11616,
+              "path": "src/quantlib_xloil/capfloor.py",
+              "sha256": "6f99ce4c40128cb557a0e42eba99a0ada282183ef3e899ac325461d7bb6d9de9"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-13-parent_source.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "5c6dac1eac6baa392a9ddd4f71b92c3c64f61fd5b86a71334b2d21770cff5a76"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 1078,
+              "path": "LICENSE",
+              "sha256": "491c634a211aa0ea56f133d9b8d6113a792f79b6d26f9658e95e4b93eece4d64"
+            },
+            {
+              "bytes": 25830,
+              "path": "tests/workbooktests/workbooks/test_capfloor.xlsx",
+              "sha256": "1931da720e930139e30c53ce9ecf46767e94bffd34a010ff2bf03d1946bcbdd0"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-13-parent_verifier.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "3715b9304134b833f3fda43a8c6d2ecba37e4e5660a04770ed5f27be2367d827"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 1078,
+              "path": "LICENSE",
+              "sha256": "491c634a211aa0ea56f133d9b8d6113a792f79b6d26f9658e95e4b93eece4d64"
+            },
+            {
+              "bytes": 11630,
+              "path": "src/quantlib_xloil/capfloor.py",
+              "sha256": "efdd833ab79fa7dcc344772b8dd95adba97db2c77a47a05d8855eef907dd88f2"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-13-target_source.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "3ac14814b63f3fbb1fddb5eebe2136a658435a05bcd75748bdfe8a570ed40b9e"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 1078,
+              "path": "LICENSE",
+              "sha256": "491c634a211aa0ea56f133d9b8d6113a792f79b6d26f9658e95e4b93eece4d64"
+            },
+            {
+              "bytes": 17032,
+              "path": "tests/unittests/test_capfloor.py",
+              "sha256": "2821fe0058da63e3f984b1979b6db76ece93aadee79f53a7c4e7b28ad3789730"
+            },
+            {
+              "bytes": 24694,
+              "path": "tests/workbooktests/workbooks/test_capfloor.xlsx",
+              "sha256": "12bec5766f2b35dbd14e318a0cd6c744b1d209373f4f800e1f870ee7a0eb5e02"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-13-target_verifier.tar.gz",
+          "root": "vcm-claim-13",
+          "sha256": "2e5e21db49581244c860936f98f20c452e4817796dcfa5ba13c519caeb8a9233"
+        }
+      },
+      "base_revision": "16941e68f52d96ee0b2f2d2a4bcf1374e0bc089d",
+      "faults": [],
+      "head_revision": "93807b3e703f5c21482f8e5fba002e2272750d73",
+      "index": 13,
+      "license_spdx": "MIT",
+      "natural_language_request": "Amend caps/floors",
+      "natural_language_request_sha256": "24832301a502f2b96786d85ce383cb107e2e82044b6f7a3c296a32c8316791ea",
+      "opaque_source_id": "b636aa3d125cea55bf4588a83a679ca98f978e01d2697598a161460d8c51a526",
+      "panel": "claim",
+      "parent_license_path": "LICENSE",
+      "pull_request": 59,
+      "query_language": "Python",
+      "replacement_for_title_sha256": "d00994787fad868ffcd35ceeae70b85dbf1648a65ccab4cb8bf31c0122e3fe9d",
+      "repository": "frame-consulting/QuantLibXlOil",
+      "selected_source_paths": [
+        "src/quantlib_xloil/capfloor.py"
+      ],
+      "selected_verifier_paths": [
+        "tests/unittests/test_capfloor.py",
+        "tests/workbooktests/workbooks/test_capfloor.xlsx"
+      ],
+      "target_license_path": "LICENSE"
+    },
+    {
+      "archives": {
+        "parent_source": {
+          "members": [
+            {
+              "bytes": 11346,
+              "path": "LICENSE-APACHE",
+              "sha256": "09e4908b9f9fa95591d9f63f851620ef1f3c0d3128dbb40abd0f71cbc23c1f9d"
+            },
+            {
+              "bytes": 1449,
+              "path": "marsdb-cli/src/main.rs",
+              "sha256": "da5d102e60a75e335ba9015640b6ae3a3b6c608639f64c26b28a0af2b4312e18"
+            },
+            {
+              "bytes": 302,
+              "path": "marsdb-query/src/lib.rs",
+              "sha256": "74361279eb0cef3d36edde9d3db06163c314f4b4efa8d1759dabd9689d8e0c81"
+            },
+            {
+              "bytes": 18877,
+              "path": "marsdb-query/src/parser.rs",
+              "sha256": "dec3bbe18368ddccc17114c9d313c66390e945d95e212543d1be7bdf7d1239c1"
+            },
+            {
+              "bytes": 1908,
+              "path": "marsdb/src/lib.rs",
+              "sha256": "77ebf1b6bb5192b2d2b843b1c79d61185bdd9b681c3f5174a47f59d89cc74863"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-35-parent_source.tar.gz",
+          "root": "vcm-claim-35",
+          "sha256": "1e51aaa771c3bfd9ce433756042fb5912ae0767d45714480b56ecbf1c98d3bca"
+        },
+        "parent_verifier": {
+          "members": [
+            {
+              "bytes": 11346,
+              "path": "LICENSE-APACHE",
+              "sha256": "09e4908b9f9fa95591d9f63f851620ef1f3c0d3128dbb40abd0f71cbc23c1f9d"
+            },
+            {
+              "bytes": 1886,
+              "path": "marsdb/tests/embed.rs",
+              "sha256": "dbd6403f0b5e9b95e00442e7a815efb73063f10ce70bb6630d8cdb09feb8051c"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-35-parent_verifier.tar.gz",
+          "root": "vcm-claim-35",
+          "sha256": "de88b9fca267b519157c1a96fe454c3f68ed433e21798c924566136a3728de20"
+        },
+        "target_source": {
+          "members": [
+            {
+              "bytes": 11346,
+              "path": "LICENSE-APACHE",
+              "sha256": "09e4908b9f9fa95591d9f63f851620ef1f3c0d3128dbb40abd0f71cbc23c1f9d"
+            },
+            {
+              "bytes": 1518,
+              "path": "marsdb-cli/src/main.rs",
+              "sha256": "8fd04409060ef8033e06280972be2be14f1f5c6ce41d2299bf5128932decd50b"
+            },
+            {
+              "bytes": 316,
+              "path": "marsdb-query/src/lib.rs",
+              "sha256": "1b1c7fd4a8368652f697a38854f0e3fc61a7510fb5ce18e0c59c8056457a7a57"
+            },
+            {
+              "bytes": 19506,
+              "path": "marsdb-query/src/parser.rs",
+              "sha256": "2f9ef12654b2b6268e4c11ffcf0e750a2eaca11078e33710892c500dd796541d"
+            },
+            {
+              "bytes": 2862,
+              "path": "marsdb/src/lib.rs",
+              "sha256": "265e697f21e67471faf489af222db497af70fa6ef4f6826bb354f41331962799"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-35-target_source.tar.gz",
+          "root": "vcm-claim-35",
+          "sha256": "f132219edd0ebaf56f07dac00b0c33c55bb5130df7b99e37257af7d07f3534eb"
+        },
+        "target_verifier": {
+          "members": [
+            {
+              "bytes": 11346,
+              "path": "LICENSE-APACHE",
+              "sha256": "09e4908b9f9fa95591d9f63f851620ef1f3c0d3128dbb40abd0f71cbc23c1f9d"
+            },
+            {
+              "bytes": 3749,
+              "path": "marsdb/tests/embed.rs",
+              "sha256": "d4a13e2348d1b994c8018897eccd5921df2cd36ac1f52ab12d9d9526d4c2c21a"
+            }
+          ],
+          "path": "tests/fixtures/theseus_vcm_adequacy_replacements_v1/vcm-claim-35-target_verifier.tar.gz",
+          "root": "vcm-claim-35",
+          "sha256": "fd1003426331e17bcbe92a93d6efda2026a6044f5cd80c7ed3d16d7415ce66e6"
+        }
+      },
+      "base_revision": "4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4",
+      "faults": [],
+      "head_revision": "720b3e9a43c1680ad783d0a8884167aaefb0a54e",
+      "index": 35,
+      "license_spdx": "Apache-2.0",
+      "natural_language_request": "Add semicolon-separated batch execution",
+      "natural_language_request_sha256": "b7051c5c6f4610cf06730a52532bcda221494bd28ed604dbd71e95570e74cccc",
+      "opaque_source_id": "67b671e4eb384b2248999f26ad7a174a5456ce534732275399234fe5ccf9fdaf",
+      "panel": "claim",
+      "parent_license_path": "LICENSE-APACHE",
+      "pull_request": 9,
+      "query_language": "Rust",
+      "replacement_for_title_sha256": "53b94cbb43877fe5313b3efead1f5a1966d9a25fc0b6ba8f7bebfc3238b27c62",
+      "repository": "knoguchi/marsdb",
+      "selected_source_paths": [
+        "marsdb-cli/src/main.rs",
+        "marsdb-query/src/lib.rs",
+        "marsdb-query/src/parser.rs",
+        "marsdb/src/lib.rs"
+      ],
+      "selected_verifier_paths": [
+        "marsdb/tests/embed.rs"
+      ],
+      "target_license_path": "LICENSE-APACHE"
+    }
+  ],
+  "replacement_set_admitted": true,
+  "selected_repository_count": 3,
+  "source_content_retrieval_opened": true,
+  "source_panel": {
+    "path": "reports/theseus_vcm_source_panel_audit_v3.json",
+    "sha256": "867841dd46aaa42c0ca4b95a417a54f3c0443f048a779ba56e843197b9d774ff"
+  },
+  "state": "THREE_ADEQUACY_REPLACEMENTS_ENGLISH_AND_SOURCE_BOUND",
+  "transport": {
+    "credentials_retained": false,
+    "logical_request_count": 105,
+    "physical_attempt_count": 107,
+    "provider": "GitHub_public_GraphQL_title_and_REST_contents_via_gh_cli",
+    "raw_response_bodies_retained": false,
+    "retry_attempt_count": 2,
+    "source_content_requests": 46,
+    "title_requests": 15
+  },
+  "transport_retry_accounting": {
+    "attempt_endpoint_hash_chain_sha256": "1ad2b8b030e57aa875edba2b86310b0cadfdce5cb9cd471a4bd514af9ad8dcc4",
+    "logical_request_count": 105,
+    "permanent_candidate_failure_count": 5,
+    "physical_attempt_count": 107,
+    "response_digest_chain_sha256": "3e27f34e0576aa8da7c13aa74cd681ed0f473a1de3e5c03591980910aec146b1",
+    "retry_attempt_count": 2,
+    "state": "THREE_ADEQUACY_REPLACEMENTS_ENGLISH_AND_SOURCE_BOUND",
+    "status_counts": {
+      "200": 100,
+      "404": 5,
+      "502": 2
+    },
+    "successful_request_count": 100,
+    "transport_failure_count": 0
+  },
+  "trigger_state": "GREEN"
+}

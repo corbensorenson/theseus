@@ -1,0 +1,70 @@
+{
+  "archive_receipt_count": 12,
+  "audit_kind": "role-separated_rederivation",
+  "audited_rows": [
+    {
+      "archive_count": 4,
+      "index": 12,
+      "panel": "claim",
+      "query_language": "Python",
+      "repository": "plwp/chief-wiggum",
+      "source_changed": true,
+      "verifier_changed": true
+    },
+    {
+      "archive_count": 4,
+      "index": 13,
+      "panel": "claim",
+      "query_language": "Python",
+      "repository": "frame-consulting/QuantLibXlOil",
+      "source_changed": true,
+      "verifier_changed": true
+    },
+    {
+      "archive_count": 4,
+      "index": 35,
+      "panel": "claim",
+      "query_language": "Rust",
+      "repository": "knoguchi/marsdb",
+      "source_changed": true,
+      "verifier_changed": true
+    }
+  ],
+  "config": {
+    "path": "configs/theseus_vcm_three_row_adequacy_replacements.json",
+    "sha256": "88e60bb1cd020c2ed20dec88022ad62dadb9724906c8702b541f37ea9bf0c350"
+  },
+  "created_utc": "2026-08-09T05:11:07.620901Z",
+  "external_reference_calls": 0,
+  "faults": [
+    "forbidden_execution_counter_nonzero"
+  ],
+  "frozen_qualified_indices": [
+    16,
+    25,
+    56
+  ],
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN audit role-separately rederives only the integrity, source-disjointness, language scope, archive completeness, changed source/verifier bytes, all-or-none cardinality, and zero-execution boundary of the three replacement rows. It is not external reproduction and does not qualify their evaluators, admit a revised 62-row panel by itself, authorize model or Luna calls, or support a VCM or ASI Stack claim.",
+  "member_receipt_count": 37,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_three_row_adequacy_replacements_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_three_row_adequacy_replacements.json",
+    "sha256": "a387ddaa1156b0a98a99aec546d186a09cae217853f61ae439aeb2276544a2cd"
+  },
+  "qualified_rows_rerun": false,
+  "replacement_indices": [
+    12,
+    13,
+    35
+  ],
+  "replacement_set_admitted": false,
+  "selected_source_difference_count": 3,
+  "selected_verifier_difference_count": 3,
+  "source_disjoint_from_current_panel": true,
+  "state": "THREE_ROW_ADEQUACY_REPLACEMENT_AUDIT_FAILED",
+  "total_member_bytes": 354481,
+  "trigger_state": "RED",
+  "unique_replacement_repository_count": 3
+}
