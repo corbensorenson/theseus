@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_03_V4_BUN_ABSOLUTE_SYMLINK_GAP",
+      "state": "VCM_V3_K2_03_RISK_EXECUTOR_V5_PROSPECTIVELY_SEALED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v4",
-      "current_blocker": "retained_bun_store_has_broken_absolute_temp_root_symlinks",
+      "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v5",
+      "current_blocker": "yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited",
       "last_closed_task_index": 26,
-      "next_legal_action": "seal_v5_disposable_bun_symlink_rebasing_then_resume_remaining_risk_canaries",
+      "next_legal_action": "execute_v5_disposable_bun_rebase_then_yarn_typescript_rust_and_role_separately_audit",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V2 qualified Bun online acquisition and network-denied replay in its original temporary cache, then retained the 8,320-file regular package payload. V3 exposed host-metadata receipt pollution. V4 then failed before external commands or network because the retained Bun store also contains 216 absolute symlinks to the deleted V2 temporary root and generic copytree tried to follow them. Regular package content remains identical. This is a scoped replay-topology implementation gap, not task, VCM, model, or book evidence. V5 may create a disposable derived cache that rebases only validated internal symlinks while leaving retained evidence untouched. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V2 qualified Bun online acquisition and network-denied replay in its original temporary cache, then retained the 8,320-file regular package payload. V3 exposed host-metadata receipt pollution. V4 exposed 216 absolute internal links to the deleted V2 temporary root before any external command. V5 is prospectively sealed to preserve the retained evidence, copy regular content and links into a disposable cache, reject any link outside the exact historical root or without an existing retained target, rebase the 216 validated internal links, and emit a transformation digest before offline Bun replay and remaining risk canaries. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -252,7 +252,7 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V2 qualified Bun online/offline in its temporary cache and retained the regular payload. V3 exposed host-metadata receipt pollution. V4 started zero external commands because 216 retained absolute cache symlinks point to the deleted V2 temporary root. V5 must rebase validated internal links only in a disposable derived cache; do not mutate or reacquire retained Bun evidence."
+            "latest_observation": "V2 qualified Bun online/offline in its temporary cache and retained the regular payload. V3 exposed host-metadata receipt pollution. V4 started zero external commands because 216 retained absolute cache symlinks point to the deleted V2 temporary root. V5 is sealed to rebase validated internal links only in a disposable derived cache without mutating or reacquiring retained Bun evidence."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",

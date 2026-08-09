@@ -206,6 +206,8 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     risk_plan = validate_risk_plan(cfg, schedule, host_free, faults)
     if p2a.strings(p2a.mapping(cfg.get("risk_resume")).get("content_identity_excluded_host_metadata_names")) != sorted(HOST_METADATA_NAMES):
         faults.append("host_metadata_exclusion_contract_invalid")
+    if p2a.mapping(cfg.get("risk_resume")).get("bun_original_cache_root") != "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache":
+        faults.append("bun_original_cache_root_binding_invalid")
 
     return {
         "policy": POLICY,
@@ -237,7 +239,7 @@ def validate_risk_plan(
     cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
 ) -> dict[str, Any]:
     plan = p2a.mapping(cfg.get("risk_canary_plan"))
-    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V4_HOST_METADATA_NORMALIZED" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v4":
+    if plan.get("state") != "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V5_DISPOSABLE_SYMLINK_REBASE" or plan.get("campaign_id") != "k2_03_generic_ecosystem_risk_canaries_v5":
         faults.append("risk_campaign_identity_invalid")
     rows = p2a.dicts(plan.get("rows"))
     if [row.get("risk_class") for row in rows] != [
@@ -345,11 +347,19 @@ def execute_risks(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         if not faults:
             bun_row = rows[0]
             bun_cache = work / "bun-cache"; bun_home = work / "bun-home"; bun_tmp = work / "bun-tmp"
-            shutil.copytree(stores["bun"], bun_cache); bun_home.mkdir(); bun_tmp.mkdir()
+            rebased, rebase_faults = copy_bun_store_for_replay(
+                stores["bun"],
+                bun_cache,
+                Path(str(resume.get("bun_original_cache_root") or "")),
+            )
+            receipts["bun_disposable_symlink_rebase"] = rebased
+            faults.extend(rebase_faults)
+            bun_home.mkdir(); bun_tmp.mkdir()
             bun_path = str(p2a.resolve(str(p2a.mapping(bun_row["tool"])["path"])))
             bun_env = minimal_env(bun_home, bun_tmp, f"{Path(bun_path).parent}:/usr/bin:/bin")
             bun_cmd = [bun_path, *p2a.strings(bun_row["command"])[:-1], str(bun_cache)]
-            faults.extend(run_offline_replay("bun_resume", [*bun_cmd, "--offline"], repos[61], work, bun_env, cfg, receipts))
+            if not faults:
+                faults.extend(run_offline_replay("bun_resume", [*bun_cmd, "--offline"], repos[61], work, bun_env, cfg, receipts))
         if not faults:
             yarn_row = rows[1]
             yarn_cache = work / "yarn-cache"; yarn_home = work / "yarn-home"; yarn_tmp = work / "yarn-tmp"
@@ -407,6 +417,46 @@ def run_offline_replay(name: str, command: list[str], cwd: Path, work: Path, env
     if before != after:
         faults.append(f"{name}_source_mutated_outside_node_modules")
     return faults
+
+
+def copy_bun_store_for_replay(source: Path, destination: Path, original_root: Path) -> tuple[dict[str, Any], list[str]]:
+    faults: list[str] = []
+    rows: list[dict[str, str]] = []
+    try:
+        shutil.copytree(source, destination, symlinks=True, ignore=shutil.ignore_patterns(*HOST_METADATA_NAMES))
+    except shutil.Error as exc:
+        return {"transformed_link_count": 0, "copy_error_count": len(exc.args[0]) if exc.args else 1}, ["bun_disposable_store_copy_failed"]
+    for link in sorted(path for path in destination.rglob("*") if path.is_symlink()):
+        original_target = Path(os.readlink(link))
+        try:
+            relative_target = original_target.relative_to(original_root)
+        except ValueError:
+            faults.append(f"bun_symlink_target_outside_original_cache:{link.relative_to(destination).as_posix()}")
+            continue
+        source_target = source / relative_target
+        if not source_target.exists() or source_target.is_symlink():
+            faults.append(f"bun_symlink_mapped_target_invalid:{link.relative_to(destination).as_posix()}")
+            continue
+        disposable_target = destination / relative_target
+        rebased_target = os.path.relpath(disposable_target, start=link.parent)
+        link.unlink()
+        os.symlink(rebased_target, link)
+        rows.append({
+            "path": link.relative_to(destination).as_posix(),
+            "original_target": original_target.as_posix(),
+            "rebased_target": rebased_target,
+            "mapped_target": relative_target.as_posix(),
+        })
+    broken_after = sorted(path.relative_to(destination).as_posix() for path in destination.rglob("*") if path.is_symlink() and not path.exists())
+    if broken_after:
+        faults.append("bun_disposable_store_broken_symlinks_after_rebase")
+    return {
+        "original_cache_root": original_root.as_posix(),
+        "transformed_link_count": len(rows),
+        "transformations_sha256": base.digest_json(rows),
+        "broken_link_count_after": len(broken_after),
+        "retained_source_mutated": False,
+    }, faults
 
 
 def minimal_env(home: Path, tmp: Path, path: str) -> dict[str,str]:

@@ -44,8 +44,8 @@ def test_builder_executes_nothing_and_grants_no_downstream_authority() -> None:
 
 def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
     plan = REPORT["risk_canary_plan"]
-    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V4_HOST_METADATA_NORMALIZED"
-    assert plan["campaign_id"] == "k2_03_generic_ecosystem_risk_canaries_v4"
+    assert plan["state"] == "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V5_DISPOSABLE_SYMLINK_REBASE"
+    assert plan["campaign_id"] == "k2_03_generic_ecosystem_risk_canaries_v5"
     assert [row["risk_class"] for row in plan["rows"]] == [
         "bun_real_lock_install",
         "yarn_real_lock_install",
@@ -58,5 +58,26 @@ def test_four_risk_classes_are_prospectively_bound_without_execution() -> None:
         "k2_03_generic_ecosystem_risk_canaries_v1",
         "k2_03_generic_ecosystem_risk_canaries_v2",
         "k2_03_generic_ecosystem_risk_canaries_v3",
+        "k2_03_generic_ecosystem_risk_canaries_v4",
     ]
     assert REPORT["prior_risk_attempts"][1]["retained_bun_store_identity_sha256"] == "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d"
+
+
+def test_bun_replay_copy_rebases_only_internal_links_in_disposable_copy(tmp_path: Path) -> None:
+    source = tmp_path / "retained"
+    destination = tmp_path / "disposable"
+    original_root = tmp_path / "deleted-original-cache"
+    target = source / "pkg@1.0.0@@@1"
+    target.mkdir(parents=True)
+    (target / "package.json").write_text("{}", encoding="utf-8")
+    link = source / "pkg" / "1.0.0@@@1"
+    link.parent.mkdir()
+    link.symlink_to(original_root / "pkg@1.0.0@@@1")
+
+    receipt, faults = owner.copy_bun_store_for_replay(source, destination, original_root)
+
+    assert faults == []
+    assert receipt["transformed_link_count"] == 1
+    assert receipt["broken_link_count_after"] == 0
+    assert (destination / "pkg" / "1.0.0@@@1" / "package.json").read_text() == "{}"
+    assert link.readlink().is_absolute()

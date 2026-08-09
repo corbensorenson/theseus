@@ -2,14 +2,12 @@
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_instrument_builder.json",
-    "sha256": "28c8ee6d880cf8cc07ad3c4e5adde895f1e28f10a165d1299f60f5458565816c"
+    "sha256": "38fc06ad86c050e14d5679ced0b9b20896cda51215553fc6feb9e17554ccbc29"
   },
-  "created_utc": "2026-08-09T00:58:00Z",
+  "created_utc": "2026-08-09T01:01:55.811851Z",
   "external_reference_calls": 0,
-  "faults": [
-    "bun_resume_copy_followed_broken_absolute_cache_symlinks"
-  ],
-  "maximum_inference": "This RED V4 report records an INCONCLUSIVE_IMPLEMENTATION before any external command or network call: the retained Bun payload contains 216 absolute cache symlinks whose original temporary target root no longer exists, and generic copytree followed rather than preserved them. The 8,320 regular package files remain content-identical to V2. This is not a task, VCM, model, or book result. Yarn, TypeScript, Rust, repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+  "faults": [],
+  "maximum_inference": "A GREEN V5 execution report may prove only that the qualified Bun regular-file payload was reused without reacquisition or mutation, its 216 validated internal absolute links were rebased only in a disposable derived cache, and exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
   "network_or_dependency_execution_performed": false,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
@@ -51,6 +49,17 @@
       "source_commit": "91498aec6301ea7ad708a557cf6dc3a6dce5e09d",
       "source_report_sha256": "0e20d30cb1522fc3c09d100d418bf46cc097f9703558fdb1471c3097ad92f8db",
       "state": "INCONCLUSIVE_IMPLEMENTATION"
+    },
+    {
+      "attempt_id": "k2_03_generic_ecosystem_risk_canaries_v4",
+      "candidate_or_control_calls": 0,
+      "external_commands_started": 0,
+      "external_reference_calls": 0,
+      "fault": "bun_resume_copy_followed_broken_absolute_cache_symlinks",
+      "network_calls": 0,
+      "source_commit": "98b79c036246137ae4528c3819084f48d9b55027",
+      "source_report_sha256": "0857dcde915d1902e17e9ab971b38d8c0e312a289af0c8548ba34a395ad8242f",
+      "state": "INCONCLUSIVE_IMPLEMENTATION"
     }
   ],
   "replayed_closure_count": 6,
@@ -62,7 +71,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 20378669056,
+    "host_free_bytes": 18064023552,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -73,10 +82,10 @@
     "untrusted_build_risk_class": "none_static_replay"
   },
   "risk_canary_plan": {
-    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v4",
+    "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v5",
     "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 20378669056,
+    "host_free_bytes": 18064023552,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -201,9 +210,10 @@
         }
       }
     ],
-    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V4_HOST_METADATA_NORMALIZED"
+    "state": "PROSPECTIVELY_SEALED_GENERIC_RISK_EXECUTOR_V5_DISPOSABLE_SYMLINK_REBASE"
   },
   "risk_resume": {
+    "bun_original_cache_root": "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache",
     "content_identity_excluded_host_metadata_names": [
       ".DS_Store"
     ],
@@ -226,19 +236,6 @@
     "source_commit": "01e3e1ebf5e6c387c4b71577cdd73e33014a110f",
     "source_report": "reports/theseus_vcm_instrument_builder.json",
     "source_report_sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e"
-  },
-  "risk_execution_performed": false,
-  "risk_receipts": {
-    "attempt_id": "k2_03_generic_ecosystem_risk_canaries_v4",
-    "exception_class": "shutil.Error",
-    "fault": "bun_resume_copy_followed_broken_absolute_cache_symlinks",
-    "retained_bun_regular_file_count": 8320,
-    "retained_bun_broken_absolute_symlink_count": 216,
-    "external_commands_started": 0,
-    "network_calls": 0,
-    "retained_store_writes": 0,
-    "candidate_or_control_calls": 0,
-    "external_reference_calls": 0
   },
   "rows": [
     {
@@ -420,7 +417,7 @@
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
   },
-  "state": "K2_03_RISK_CANARIES_FAILED",
+  "state": "GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
   "static_evidence_replay_only": true,
   "store_contract": {
     "historical_task_specific_stores": "retained evidence only; never forward topology",
@@ -436,5 +433,5 @@
     },
     "per_task_duplicate_package_cache_authorized": false
   },
-  "trigger_state": "RED"
+  "trigger_state": "GREEN"
 }
