@@ -17,6 +17,7 @@ def test_preflight_binds_exact_task13_sdist_wall() -> None:
     assert cfg["package"]["version"] == "1.4.0"
     assert cfg["package"]["sha256"] == "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100"
     assert bound["task13"]["disposition"] == "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION"
+    assert cfg["curl"]["path"] == "/usr/bin/curl"
 
 
 def test_preflight_has_no_build_or_evaluator_authority() -> None:

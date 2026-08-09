@@ -7,10 +7,10 @@ import ast
 import hashlib
 import json
 import shutil
+import subprocess
 import sys
 import tarfile
 import tempfile
-import urllib.request
 from pathlib import Path, PurePosixPath
 from typing import Any
 
@@ -19,7 +19,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 
 POLICY = "project_theseus_vcm_untrusted_build_preflight_v1"
-STATE = "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_V1"
+STATE = "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_CURL_REPAIR_V2"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_untrusted_build_preflight.json"
 DANGEROUS_TOKENS = {"subprocess", "popen", "system", "socket", "urlopen", "requests", "curl", "wget", "ctypes", "eval", "exec"}
 
@@ -66,6 +66,10 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
     package = p2a.mapping(cfg.get("package"))
     if package.get("name") != "mock-open" or package.get("version") != "1.4.0" or package.get("sha256") != "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100" or not str(package.get("url") or "").startswith("https://files.pythonhosted.org/"):
         faults.append("package_binding_invalid")
+    curl = p2a.mapping(cfg.get("curl"))
+    curl_path = Path(str(curl.get("path") or ""))
+    if curl_path != Path("/usr/bin/curl") or not curl_path.is_file() or p2a.sha256_file(curl_path) != curl.get("sha256"):
+        faults.append("curl_binding_invalid")
     store = p2a.resolve(str(cfg.get("retained_sdist") or ""))
     if store != (ROOT / "runtime/vcm_evaluator/dependency_store/sdist/mock-open-1.4.0.tar.gz").resolve():
         faults.append("retained_sdist_path_invalid")
@@ -95,19 +99,16 @@ def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     receipt: dict[str, Any] = {}
     with tempfile.TemporaryDirectory(prefix="theseus-vcm-sdist-preflight-", dir="/private/tmp") as raw:
         downloaded = Path(raw) / "package.tar.gz"
-        request = urllib.request.Request(str(package["url"]), headers={"User-Agent": "Project-Theseus-VCM-Instrument/1"})
-        digest = hashlib.sha256()
-        size = 0
-        with urllib.request.urlopen(request, timeout=int(limits["network_timeout_seconds"])) as response, downloaded.open("wb") as handle:
-            while chunk := response.read(65536):
-                size += len(chunk)
-                if size > int(limits["maximum_download_bytes"]):
-                    faults.append("sdist_download_size_boundary_hit")
-                    break
-                digest.update(chunk)
-                handle.write(chunk)
-        receipt["download"] = {"url": package["url"], "bytes": size, "sha256": digest.hexdigest()}
-        if digest.hexdigest() != package["sha256"]:
+        command = ["/usr/bin/curl", "--fail", "--location", "--silent", "--show-error", "--max-time", str(limits["network_timeout_seconds"]), "--max-filesize", str(limits["maximum_download_bytes"]), "--user-agent", "Project-Theseus-VCM-Instrument/1", "--output", str(downloaded), str(package["url"])]
+        completed = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False)
+        payload = downloaded.read_bytes() if downloaded.is_file() else b""
+        digest = hashlib.sha256(payload).hexdigest()
+        receipt["download"] = {"url": package["url"], "command": command, "returncode": completed.returncode, "stdout": completed.stdout.decode("utf-8", "replace"), "stderr": completed.stderr.decode("utf-8", "replace"), "stdout_sha256": hashlib.sha256(completed.stdout).hexdigest(), "stderr_sha256": hashlib.sha256(completed.stderr).hexdigest(), "bytes": len(payload), "sha256": digest}
+        if completed.returncode != 0:
+            faults.append("sdist_download_transport_failed")
+        if len(payload) > int(limits["maximum_download_bytes"]):
+            faults.append("sdist_download_size_boundary_hit")
+        if digest != package["sha256"]:
             faults.append("sdist_sha256_mismatch")
         if not faults:
             inspection, inspection_faults = inspect_sdist(downloaded, limits)

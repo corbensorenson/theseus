@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_vcm_untrusted_build_preflight_v1",
-  "state": "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_V1",
+  "state": "PROSPECTIVE_EXACT_SDIST_STATIC_RISK_CLASSIFICATION_CURL_REPAIR_V2",
   "owner": "scripts/theseus_vcm_untrusted_build_preflight.py",
-  "owner_sha256": "b0aef9bcb11354d2e5ef56ce66947317a832788bf78265f663ab5f694cde878b",
+  "owner_sha256": "974f3aec25e2df954d9cccd719a91297c8e60638b2e64985f927258004cb7d26",
   "audit_policy": "project_theseus_vcm_untrusted_build_preflight_audit_v1",
   "audit_owner": "scripts/theseus_vcm_untrusted_build_preflight_audit.py",
   "audit_owner_sha256": "3143723b181da4fb4854e25dccc39f207402a2aa6a06a6bb821248e2c08c3e1d",
@@ -34,6 +34,18 @@
     "wheel_count": 0,
     "sdist_count": 1
   },
+  "curl": {
+    "path": "/usr/bin/curl",
+    "sha256": "e5aa97456dcc9f5b1d4a0f6773647dfaf050c1cefed1b85834a3d2796aaa7d0b",
+    "version": "8.7.1",
+    "tls_backend": "SecureTransport"
+  },
+  "transport_repair": {
+    "predecessor_state": "SEALED_V1_URLLIB_TLS_INITIALIZATION_FAILED_BEFORE_PAYLOAD_RETENTION",
+    "predecessor_fault": "ssl.SSLCertVerificationError: unable to get local issuer certificate",
+    "retained_payload_bytes": 0,
+    "repair": "Use hash-bound /usr/bin/curl with SecureTransport; TLS verification remains enabled."
+  },
   "retained_sdist": "runtime/vcm_evaluator/dependency_store/sdist/mock-open-1.4.0.tar.gz",
   "limits": {
     "minimum_free_bytes_after_execution": 10737418240,
@@ -64,8 +76,8 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "report": "reports/theseus_vcm_untrusted_build_preflight.json",
-  "audit_report": "reports/theseus_vcm_untrusted_build_preflight_audit.json",
+  "report": "reports/theseus_vcm_untrusted_build_preflight_v2.json",
+  "audit_report": "reports/theseus_vcm_untrusted_build_preflight_audit_v2.json",
   "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact PyPI mock-open 1.4.0 source distribution named by Task 13's resolver wall matches its published hash, has safe bounded archive structure, carries a license file, and has a statically low-complexity legacy setup.py with no detected network/process/dynamic-execution tokens. It authorizes only a separately sealed network-denied sandbox wheel-build canary. It does not prove build safety, wheel correctness, dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, model behavior, D1, D2, or an ASI Stack claim.",
   "audit_maximum_inference": "This role-separated audit rederives the retained sdist identity, archive member receipts, setup.py AST characteristics, license presence, and low-complexity risk classification without network or build execution. It is not producer-independent replay, external reproduction, or evidence of task or VCM capability."
 }
