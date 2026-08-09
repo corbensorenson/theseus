@@ -1,0 +1,365 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sdist_batch_build.json",
+    "sha256": "a2a475dbbaedf5322d9c551bf3e6225bf6cf000b9fd32c07c60755f3424387d0"
+  },
+  "created_utc": "2026-08-09T03:23:29.637101Z",
+  "evaluator_package_installations": 0,
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_row_count": 3,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists statically qualified by the sealed V2 batch were built one at a time from those retained archives under a network-denied macOS sandbox, using prospectively pinned disposable build environments, and that the resulting wheels have safe paths and exact package identities. It does not prove installability, evaluator adequacy, target behavior, subsystem benefit, general dependency safety, cross-platform reproducibility, model capability, or any ASI Stack claim. Build-tool wheels may be fetched only before the source build and only for the pinned disposable build environment; no target/evaluator dependency is fetched or installed here. No partial batch is admitted.",
+  "network_denied_builds": 3,
+  "next_authorized_boundary": "repair_inconclusive_batch_build_rows",
+  "parent_target_or_evaluator_executions": 0,
+  "partial_batch_admitted": false,
+  "policy": "project_theseus_vcm_sdist_batch_build_v1",
+  "qualified_row_count": 0,
+  "repository_runner_executions": 0,
+  "row_count": 3,
+  "rows": [
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_SDIST_BUILD",
+      "faults": [
+        "network_denied_sandbox_build_failed"
+      ],
+      "name": "habluetooth",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "Cython==3.1.3",
+        "poetry-core==2.2.1"
+      ],
+      "receipts": {
+        "build_tool_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "install",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-01/venv/bin/python",
+            "--no-build",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "setuptools==80.9.0",
+            "Cython==3.1.3",
+            "poetry-core==2.2.1"
+          ],
+          "duration_ms": 1386.504,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 3 packages in 697ms\nDownloading setuptools (1.1MiB)\nDownloading cython (2.7MiB)\n Downloaded setuptools\n Downloaded cython\nPrepared 3 packages in 506ms\nInstalled 3 packages in 17ms\n + cython==3.1.3\n + poetry-core==2.2.1\n + setuptools==80.9.0\n",
+          "stderr_bytes": 291,
+          "stderr_complete": true,
+          "stderr_sha256": "669372f2979a361c86d700f08c5c14612d066932a25a0625ea054adf1da5accf",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "sandbox_build": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-01\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "build",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/habluetooth-6.26.5.tar.gz",
+            "--wheel",
+            "--out-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-01/out",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-01/venv/bin/python",
+            "--no-build-isolation",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 17.689,
+          "project_selected_output_cap": null,
+          "returncode": 2,
+          "stderr": "error: Failed to initialize cache at `/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache`\n  Caused by: failed to open file `/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache/sdists-v9/.git`: Operation not permitted (os error 1)\n",
+          "stderr_bytes": 257,
+          "stderr_complete": true,
+          "stderr_sha256": "ab308e31cf791140f90e38418af9d5152b4cb09f076ade966fc368fe3a157338",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-01/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 220.876,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sdist": {
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/habluetooth-6.26.5.tar.gz",
+        "sha256": "d8b1d271ac4bd43bb298bd13366b195751553ef25ddcba17771b58dc621bf90c"
+      },
+      "version": "6.26.5"
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_SDIST_BUILD",
+      "faults": [
+        "network_denied_sandbox_build_failed"
+      ],
+      "name": "bluetooth-data-tools",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "Cython==3.1.3",
+        "poetry-core==2.2.1"
+      ],
+      "receipts": {
+        "build_tool_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "install",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-02/venv/bin/python",
+            "--no-build",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "setuptools==80.9.0",
+            "Cython==3.1.3",
+            "poetry-core==2.2.1"
+          ],
+          "duration_ms": 142.877,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 3 packages in 2ms\nInstalled 3 packages in 17ms\n + cython==3.1.3\n + poetry-core==2.2.1\n + setuptools==80.9.0\n",
+          "stderr_bytes": 158,
+          "stderr_complete": true,
+          "stderr_sha256": "64071e29520b1b947c77c111624fd283e61eecb8cb257714d2d3047ac9bdbaaa",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "sandbox_build": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-02\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "build",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/bluetooth_data_tools-1.29.21.tar.gz",
+            "--wheel",
+            "--out-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-02/out",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-02/venv/bin/python",
+            "--no-build-isolation",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 22.063,
+          "project_selected_output_cap": null,
+          "returncode": 2,
+          "stderr": "error: Failed to initialize cache at `/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache`\n  Caused by: failed to open file `/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache/sdists-v9/.git`: Operation not permitted (os error 1)\n",
+          "stderr_bytes": 257,
+          "stderr_complete": true,
+          "stderr_sha256": "ab308e31cf791140f90e38418af9d5152b4cb09f076ade966fc368fe3a157338",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-02/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 103.331,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sdist": {
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/bluetooth_data_tools-1.29.21.tar.gz",
+        "sha256": "2ccf1e90212092cb6af825fd93f3f2f392c543fe2a3a894e7831cbc6f6851c15"
+      },
+      "version": "1.29.21"
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_SDIST_BUILD",
+      "faults": [
+        "network_denied_sandbox_build_failed"
+      ],
+      "name": "PyRIC",
+      "pinned_build_requirements": [
+        "setuptools==80.9.0",
+        "wheel==0.45.1"
+      ],
+      "receipts": {
+        "build_tool_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "install",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-03/venv/bin/python",
+            "--no-build",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "setuptools==80.9.0",
+            "wheel==0.45.1"
+          ],
+          "duration_ms": 559.364,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 2 packages in 312ms\nPrepared 1 package in 81ms\nInstalled 2 packages in 11ms\n + setuptools==80.9.0\n + wheel==0.45.1\n",
+          "stderr_bytes": 165,
+          "stderr_complete": true,
+          "stderr_sha256": "3651d3a5c920c2e85a7ad6f8075f8753d88a41b0ab14b29b565f33220b593b84",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "sandbox_build": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-03\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "build",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/PyRIC-0.1.6.3.tar.gz",
+            "--wheel",
+            "--out-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-03/out",
+            "--python",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-03/venv/bin/python",
+            "--no-build-isolation",
+            "--offline",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 19.399,
+          "project_selected_output_cap": null,
+          "returncode": 2,
+          "stderr": "error: Failed to initialize cache at `/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache`\n  Caused by: failed to open file `/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/shared-cache/sdists-v9/.git`: Operation not permitted (os error 1)\n",
+          "stderr_bytes": 257,
+          "stderr_complete": true,
+          "stderr_sha256": "ab308e31cf791140f90e38418af9d5152b4cb09f076ade966fc368fe3a157338",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-sdist-batch-build-x0ngglel/row-03/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 157.25,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "sdist": {
+        "path": "runtime/vcm_evaluator/dependency_store/sdist-batch/task-13/PyRIC-0.1.6.3.tar.gz",
+        "sha256": "b539b01cafebd2406c00097f94525ea0f8ecd1dd92f7731f43eac0ef16c2ccc9"
+      },
+      "version": "0.1.6.3"
+    }
+  ],
+  "source_build_executions": 3,
+  "state": "TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_COMPLETE",
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,53 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_row_count": 3,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sdist_batch_build.json",
+    "sha256": "a2a475dbbaedf5322d9c551bf3e6225bf6cf000b9fd32c07c60755f3424387d0"
+  },
+  "created_utc": "2026-08-09T03:23:50.092143Z",
+  "external_reference_calls": 0,
+  "faults": [
+    "PyRIC:retained_wheel_missing",
+    "bluetooth-data-tools:retained_wheel_missing",
+    "habluetooth:retained_wheel_missing",
+    "wheel_rederivation_invalid:PyRIC",
+    "wheel_rederivation_invalid:bluetooth-data-tools",
+    "wheel_rederivation_invalid:habluetooth"
+  ],
+  "inconclusive_row_count": 3,
+  "maximum_inference": "This role-separated audit rederives the retained wheel identities, members, metadata, diagnostic integrity, and network-denied build-command receipts without executing a build, evaluator, repository runner, or model. It is not producer-independent replay or external reproduction.",
+  "network_or_build_execution_performed": false,
+  "policy": "project_theseus_vcm_sdist_batch_build_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_sdist_batch_build.json",
+    "sha256": "254a1709200e45ac380f8284dcdf1484b901da5687a912808e33cd5b4ec2c978"
+  },
+  "qualified_row_count": 0,
+  "rows": [
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_SDIST_BUILD",
+      "name": "habluetooth",
+      "native_member_count": 0,
+      "version": "6.26.5",
+      "wheel_sha256": null
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_SDIST_BUILD",
+      "name": "bluetooth-data-tools",
+      "native_member_count": 0,
+      "version": "1.29.21",
+      "wheel_sha256": null
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_SDIST_BUILD",
+      "name": "PyRIC",
+      "native_member_count": 0,
+      "version": "0.1.6.3",
+      "wheel_sha256": null
+    }
+  ],
+  "state": "TASK13_NETWORK_DENIED_SDIST_BATCH_BUILD_AUDIT_FAILED",
+  "trigger_state": "RED"
+}

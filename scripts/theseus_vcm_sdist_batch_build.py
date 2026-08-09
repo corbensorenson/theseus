@@ -6,7 +6,7 @@ from pathlib import Path,PurePosixPath
 from typing import Any
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/"scripts"))
 import theseus_assistant_p2a as p2a  # noqa:E402
-POLICY="project_theseus_vcm_sdist_batch_build_v1";STATE="PROSPECTIVE_TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_V1";DEFAULT_CONFIG=ROOT/"configs/theseus_vcm_sdist_batch_build.json"
+POLICY="project_theseus_vcm_sdist_batch_build_v1";STATE="PROSPECTIVE_TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_V2";DEFAULT_CONFIG=ROOT/"configs/theseus_vcm_sdist_batch_build.json"
 def main()->int:
  ap=argparse.ArgumentParser();ap.add_argument("--config",default=p2a.rel(DEFAULT_CONFIG));ap.add_argument("--out",default="");ap.add_argument("--execute",action="store_true");a=ap.parse_args();path=p2a.resolve(a.config);cfg=p2a.read_json(path);r=execute(path) if a.execute else preflight_report(path);p2a.write_json(p2a.resolve(a.out or cfg["report"]),r);print(json.dumps({k:r.get(k) for k in ("trigger_state","state","faults","execution_performed","row_count","qualified_row_count","inconclusive_row_count","source_build_executions","candidate_or_control_calls","external_reference_calls")},indent=2,sort_keys=True));return 0 if r["trigger_state"] in {"GREEN","PAUSED"} else 2
 def preflight(path:Path=DEFAULT_CONFIG)->tuple[dict[str,Any],dict[str,Any],list[str]]:
@@ -64,7 +64,7 @@ def execute(path:Path=DEFAULT_CONFIG)->dict[str,Any]:
    if not row_faults:
     receipts["build_tool_sync"]=run(sync,work,env,limits)
     if receipts["build_tool_sync"]["returncode"]!=0:row_faults.append("pinned_build_tool_sync_failed")
-   profile="\n".join(["(version 1)","(allow default)","(deny network*)",f'(deny file-write* (require-not (subpath "{work}")))','(allow file-write* (literal "/dev/null"))'])
+   profile="\n".join(["(version 1)","(allow default)","(deny network*)",f'(deny file-write* (require-not (subpath "{root}")))','(allow file-write* (literal "/dev/null"))'])
    build=[sandbox,"-p",profile,uv,"build",str(item["sdist"]),"--wheel","--out-dir",str(out),"--python",str(venv/"bin/python"),"--no-build-isolation","--offline","--cache-dir",str(cache),"--no-config","--no-progress","--color","never"]
    if not row_faults:
     receipts["sandbox_build"]=run(build,work,env,limits)

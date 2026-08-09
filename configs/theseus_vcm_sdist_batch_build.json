@@ -1,8 +1,8 @@
 {
   "policy": "project_theseus_vcm_sdist_batch_build_v1",
-  "state": "PROSPECTIVE_TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_V1",
+  "state": "PROSPECTIVE_TASK13_NETWORK_DENIED_TRANSITIVE_SDIST_BATCH_BUILD_V2",
   "owner": "scripts/theseus_vcm_sdist_batch_build.py",
-  "owner_sha256": "bd364894fc13cda476ebd279046ffb6bb64cc1f88f755810065c510cd891c857",
+  "owner_sha256": "410f65ef9a71f9199ec54542d177870e1daa5f1984f670c85577fc306c284ec2",
   "audit_policy": "project_theseus_vcm_sdist_batch_build_audit_v1",
   "audit_owner": "scripts/theseus_vcm_sdist_batch_build_audit.py",
   "audit_owner_sha256": "94ed2c72965dda2572ac8206fe5ef60baf83be2cabbd683e829e0608bfe51597",
@@ -14,6 +14,14 @@
     "sdist_batch_audit": {
       "path": "reports/theseus_vcm_sdist_batch_preflight_audit_v2.json",
       "sha256": "e07cfb0819d8cc1c6e26397a813ef044877e2fa11f469f73bfa7e8f81f79cd83"
+    },
+    "build_v1": {
+      "path": "reports/theseus_vcm_sdist_batch_build.json",
+      "sha256": "254a1709200e45ac380f8284dcdf1484b901da5687a912808e33cd5b4ec2c978"
+    },
+    "build_audit_v1": {
+      "path": "reports/theseus_vcm_sdist_batch_build_audit.json",
+      "sha256": "036ef6743e47ba3481fbd65f0275ad2e1cabdac7c13f120afb9fe11442f05c80"
     }
   },
   "tools": {
@@ -85,8 +93,8 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "report": "reports/theseus_vcm_sdist_batch_build.json",
-  "audit_report": "reports/theseus_vcm_sdist_batch_build_audit.json",
-  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists statically qualified by the sealed V2 batch were built one at a time from those retained archives under a network-denied macOS sandbox, using prospectively pinned disposable build environments, and that the resulting wheels have safe paths and exact package identities. It does not prove installability, evaluator adequacy, target behavior, subsystem benefit, general dependency safety, cross-platform reproducibility, model capability, or any ASI Stack claim. Build-tool wheels may be fetched only before the source build and only for the pinned disposable build environment; no target/evaluator dependency is fetched or installed here. No partial batch is admitted.",
+  "report": "reports/theseus_vcm_sdist_batch_build_v2.json",
+  "audit_report": "reports/theseus_vcm_sdist_batch_build_audit_v2.json",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the three exact Task 13 transitive sdists statically qualified by the sealed V2 batch were built one at a time from those retained archives under a network-denied macOS sandbox, using prospectively pinned disposable build environments, and that the resulting wheels have safe paths and exact package identities. V2 repairs only the V1 sandbox write scope by permitting writes anywhere beneath the bounded disposable batch root so the declared shared uv cache is usable; network access remains denied during every source build. It does not prove installability, evaluator adequacy, target behavior, subsystem benefit, general dependency safety, cross-platform reproducibility, model capability, or any ASI Stack claim. Build-tool wheels may be fetched only before the source build and only for the pinned disposable build environment; no target/evaluator dependency is fetched or installed here. No partial batch is admitted.",
   "audit_maximum_inference": "This role-separated audit rederives the retained wheel identities, members, metadata, diagnostic integrity, and network-denied build-command receipts without executing a build, evaluator, repository runner, or model. It is not producer-independent replay or external reproduction."
 }
