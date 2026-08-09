@@ -1,0 +1,181 @@
+{
+  "policy": "project_theseus_vcm_contiguous_six_row_freeze_config_v1",
+  "audit_policy": "project_theseus_vcm_contiguous_six_row_freeze_audit_v1",
+  "state": "PROSPECTIVE_K2_05_CONTIGUOUS_SIX_ROW_INSTRUMENT_FREEZE_ZERO_CALLS",
+  "owner": "scripts/theseus_vcm_contiguous_six_row_freeze.py",
+  "owner_sha256": "b7eec626e98456419a95e8be2d250d9721a051f48f0e91f2cf7435b35dde8400",
+  "audit_owner": "scripts/theseus_vcm_contiguous_six_row_freeze_audit.py",
+  "audit_owner_sha256": "004689d89f4fd6ac7fec6a6853aaedbcfee0d2afdcb807c86967c32a15fd5c51",
+  "test_owner": "tests/test_theseus_vcm_contiguous_six_row_freeze.py",
+  "test_owner_sha256": "0ac4253ee7d477b9d17d6d6ab0404189dc85b0e4caf7d7c3efb9b9fc648f9509",
+  "parent_only_owner": "scripts/theseus_vcm_parent_only_materializer.py",
+  "parent_only_owner_sha256": "7e48b0eabf447e282d554767013f3876196a74784a83ba4f6a6cdc741d4255ac",
+  "parent_only_audit_owner": "scripts/theseus_vcm_parent_only_materializer_audit.py",
+  "parent_only_audit_owner_sha256": "5ad121982f9fefe49cd1dacd899110a513fbc98ae74efdd3cfc7fc34de9df5d8",
+  "claim_instrument": {
+    "id": "claim_instrument",
+    "path": "configs/theseus_vcm_claim_instrument.json",
+    "sha256": "6fba32243c7be581df1a84f0fb1831db27f5bbe5bd4194e9011d7d9788e10f99"
+  },
+  "opaque_prerequisite_bindings": [
+    {
+      "id": "claim_instrument_audit",
+      "path": "reports/theseus_vcm_claim_instrument_audit.json",
+      "sha256": "d772b4ed90b18159e4be410dfaf9e0e31cd7cadfb6b4252d43e8437809269c8a"
+    },
+    {
+      "id": "source_panel",
+      "path": "reports/theseus_vcm_source_panel_audit_v5.json",
+      "sha256": "a2550ddc3b7938df67adb99c67f06d7361a775ed2b42af1e860160077fe24f3f"
+    },
+    {
+      "id": "repository_closures",
+      "path": "reports/theseus_vcm_repository_closure_materialization_v4.json",
+      "sha256": "0140041884b3ac976d67bdf05200e549a7cc1e2576661ed24caf0493e676e4ee"
+    },
+    {
+      "id": "predecessor_matched_verifier",
+      "path": "reports/theseus_vcm_six_row_matched_verifier_v4.json",
+      "sha256": "5840f0e2e2c783466b012be68071e3f8b28da7c547b75873f8c21fb0c028b9bd"
+    },
+    {
+      "id": "predecessor_matched_verifier_audit",
+      "path": "reports/theseus_vcm_six_row_matched_verifier_audit_v4.json",
+      "sha256": "c30582b58e7ee38954447df1abeb4e8a5e37a044af72f4879a42e462be080ca2"
+    },
+    {
+      "id": "replacement_matched_verifier",
+      "path": "reports/theseus_vcm_replacement_matched_verifier.json",
+      "sha256": "0405d241467bf5d72af3e5165c8750ea17ae27fe32678b7afd5594fe2aed3507"
+    },
+    {
+      "id": "replacement_matched_verifier_audit",
+      "path": "reports/theseus_vcm_replacement_matched_verifier_audit.json",
+      "sha256": "2c7c30f13f9a69b198a116e1a5495cd7e5e8183107b66539d7efa54aa38199ef"
+    }
+  ],
+  "qualified_task_indices": [12, 13, 16, 25, 35, 56],
+  "expected_row_count": 6,
+  "broad_parent_effect_root": "repository",
+  "rows": [
+    {
+      "natural_language_request": "fix(sidecar): honour the resolved meta location in epic inventory, tracker, and the skills (#286, #266, #267)",
+      "natural_language_request_sha256": "64110be6cc6d49d812348577e0ae9fafc2830398ab4390f3e6578ef22c39e50c",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/12_plwp-chief-wiggum_parent.tar.gz",
+      "parent_archive_sha256": "8a416d5e3ebb45e13a6cb0db7681dad2f31f4f619661c5f97e3ae0cdc7f33381",
+      "parent_archive_root": "chief-wiggum-d7daae9eaca9159b26fd62b45b8274c649b83fb0",
+      "parent_revision": "d7daae9eaca9159b26fd62b45b8274c649b83fb0",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/12_plwp-chief-wiggum_parent.json",
+      "sanitization_report_sha256": "d70bda5c85694a9628969e234018b615c1252d583464cd8c539876f92188dba2"
+    },
+    {
+      "natural_language_request": "feat: gate fastapi behind a pyjinhx[fastapi] extra",
+      "natural_language_request_sha256": "ccca63d8f256bb43f25afd57c8f6520da809bdc1204cf385616c5c1e32cb694c",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/13_paulomtts-pyjinhx_parent.tar.gz",
+      "parent_archive_sha256": "59776e3da5f4e81372131e96224bab4c14ca51c8dbe47ce23ee908ad57040f27",
+      "parent_archive_root": "pyjinhx-768dc81ab9dde07e09a0b0e564ff1953c9457c7a",
+      "parent_revision": "768dc81ab9dde07e09a0b0e564ff1953c9457c7a",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/13_paulomtts-pyjinhx_parent.json",
+      "sanitization_report_sha256": "31ae84772164843e027ef618cf627a38d5d5bbcf37385531572800bdde885ca3"
+    },
+    {
+      "natural_language_request": "Arena endpoint auth with a compatibility window",
+      "natural_language_request_sha256": "381cf5ce35445c2c49490e728d1144f81222b39bab45f23a3a7d54a41c34ea6d",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_parent.tar.gz",
+      "parent_archive_sha256": "46e74b1a28265f06454de0dd488e501eb0c763c20ed983ca1b48db393324892f",
+      "parent_archive_root": "codespaces-framework-a8819219cb38c41a921c3ec78716942e08f39606",
+      "parent_revision": "a8819219cb38c41a921c3ec78716942e08f39606",
+      "license_spdx": "Apache-2.0",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/16_dynatrace-wwse-codespaces-framework_parent.json",
+      "sanitization_report_sha256": "2e237f425e81cc4282b68121a76b603b5c003942a72d28a248c3f441ada7aa92"
+    },
+    {
+      "natural_language_request": "[autolamella] Align the status dict's item vocabulary with HookContext (FIB-464)",
+      "natural_language_request_sha256": "27e3cb3571282ec7c1084b63412c0a337017f15973ec4545f5ad986a36eab7e0",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_parent.tar.gz",
+      "parent_archive_sha256": "6181909b18c8ac3062c1611bbe4d3cc273478ebbda8b9070f1d65bc77211ac7e",
+      "parent_archive_root": "fibsem-os-d7211ba810a3f3db75017ed34da85cb60cc5076a",
+      "parent_revision": "d7211ba810a3f3db75017ed34da85cb60cc5076a",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/25_fibsem-os-fibsem-os_parent.json",
+      "sanitization_report_sha256": "f7234cf20e92cc0d575fbc1f82a4e2dd0ad69a1cb1d94ea6b203009498c23ec5"
+    },
+    {
+      "natural_language_request": "Add semicolon-separated batch execution",
+      "natural_language_request_sha256": "b7051c5c6f4610cf06730a52532bcda221494bd28ed604dbd71e95570e74cccc",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_parent.tar.gz",
+      "parent_archive_sha256": "fb9f478eccb18c7192419fb73cc5d4790b833e493968d4f0b703034642124481",
+      "parent_archive_root": "marsdb-4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4",
+      "parent_revision": "4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4",
+      "license_spdx": "Apache-2.0",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/35_knoguchi-marsdb_parent.json",
+      "sanitization_report_sha256": "4fe508c15186d54165ecd7f2ec13be222b3126d2d05a349b5144744d589aa885"
+    },
+    {
+      "natural_language_request": "feat(share): no baked-in relay — transport is the peers' explicit choice",
+      "natural_language_request_sha256": "ff4e4272e57b673664c8319ac234d9c216c4809f303329e3f08690f713888b19",
+      "parent_archive": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_parent.tar.gz",
+      "parent_archive_sha256": "970326306f6c83d7f23c7dcf0ba79b820c1a400ed1358a6cda1d7ab68e32d55f",
+      "parent_archive_root": "session-recall-e9b86bc20db00efef894f9c23eed38fd55c9b3b4",
+      "parent_revision": "e9b86bc20db00efef894f9c23eed38fd55c9b3b4",
+      "license_spdx": "MIT",
+      "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/56_absolutemode-session-recall_parent.json",
+      "sanitization_report_sha256": "f3ad305a1af95e6972d18db6e528110d9b5b60091d917d2c3bd08d9e47f93e2d"
+    }
+  ],
+  "primary_canary_outcome": "blind independent hidden-evaluator useful completion, reported descriptively per arm and task; the six-row canary is not a powered claim denominator",
+  "cost_custody": {
+    "openai_api_spend_authorized_usd": 0,
+    "codex_subscription_reference_marginal_api_spend_authorized_usd": 0,
+    "reference_cost_denominator": "separate_never_mixed_with_local",
+    "local_cost_denominator": "all_local_inference_retrieval_materialization_verification_repair_and_host_work",
+    "record_actual_tokens_time_verifier_work_and_total_system_cost": true,
+    "reference_omission_is_not_local_campaign_failure": true,
+    "unexpected_billable_route_action": "fail_closed_before_call_and_record_instrument_wall"
+  },
+  "invalidation_classes": [
+    {"id": "candidate_visible_target_or_answer_leakage", "action": "invalidate_campaign"},
+    {"id": "task_evaluator_or_source_identity_drift", "action": "invalidate_campaign"},
+    {"id": "frozen_local_model_tokenizer_decoder_or_wrapper_drift", "action": "invalidate_campaign"},
+    {"id": "physical_context_boundary_or_host_safety_activation", "action": "invalidate_observation_not_capability_failure"},
+    {"id": "candidate_write_escape_or_effect_root_mismatch", "action": "invalidate_observation_and_stop"},
+    {"id": "information_matching_or_arm_packet_identity_failure", "action": "invalidate_campaign"},
+    {"id": "blind_evaluator_or_candidate_integrity_rederivation_failure", "action": "invalidate_campaign"},
+    {"id": "openai_subscription_provenance_absent_or_billable_api_route_detected", "action": "omit_reference_or_stop_before_call"},
+    {"id": "unsealed_instrument_or policy_mutation", "action": "new_campaign_identity_required"},
+    {"id": "post_outcome_task_context_control_or_evaluator_adaptation", "action": "invalidate_campaign"}
+  ],
+  "k3_stop_rules": [
+    "Do not issue any local or reference model call under this K2 authority; a separate prospectively sealed K3 owner is required.",
+    "Stop before the first K3 call unless this producer and role-separated audit are both GREEN and byte-bound.",
+    "Stop on any candidate-visible field outside the four-field allowlist or any target-derived path, metadata, evaluator, test, answer, or decoder hint.",
+    "Stop on any source, task, evaluator, model, tokenizer, decoder, wrapper, route, arm, or policy identity drift; repair only under a new campaign identity.",
+    "Stop and invalidate the observation if the physical context boundary or host-safety interlock activates; never score it as model or subsystem failure.",
+    "Stop on write escape, broad-effect-root mismatch, failed independent candidate-integrity rederivation, or failed blind-evaluator custody.",
+    "Run every local arm to a complete artifact or model EOS with no project-selected generated-token quality cap; record actual prompt and generated tokens.",
+    "Keep tasks, arm packets, ordering policy, outcomes, and evaluator semantics frozen after the first call; never adapt them to observed results.",
+    "Omit Luna without blocking the local canary unless a prospective receipt proves the route is Codex-subscription-backed with zero API billing and no API credential path.",
+    "If a Luna route becomes eligible, seal it before the first local arm, use identical candidate-visible packets and hidden evaluators, and keep its outputs and costs in a separate denominator.",
+    "Treat the six-row K3 result only as an instrument and residual-exposure canary; it cannot support or falsify the VCM claim, select book support, or replace the powered source-disjoint campaign.",
+    "Stop after one complete matched pass across the frozen six rows; any rerun requires a predeclared invalidation class and a new campaign identity."
+  ],
+  "authority": {
+    "local_model_calls_authorized": 0,
+    "external_reference_calls_authorized": 0,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "store_out": "runtime/vcm_evaluator/contiguous_six_row_store_v1.json",
+  "report": "reports/theseus_vcm_contiguous_six_row_freeze.json",
+  "audit_report": "reports/theseus_vcm_contiguous_six_row_freeze_audit.json",
+  "contract_maximum_inference": "The frozen contract establishes a call-free six-row K3 canary instrument boundary only. It does not establish model competence, VCM utility, subsystem causality, economics, transfer, D1 or D2 evidence, training or serving value, or ASI Stack support or falsification.",
+  "maximum_inference": "A GREEN producer establishes only that six exact parent-only candidate packet stores and their controls, outcomes, cost custody, invalidation classes, and K3 stop rules are frozen contiguously without parsing hidden qualification evidence or making any model, evaluator, network, Luna, teacher, training, serving, D1, D2, or book action.",
+  "audit_maximum_inference": "A GREEN role-separated audit establishes only that the six frozen rows correspond to three predecessor and three replacement parent-fail/target-pass evaluator qualifications, exact v5 source and v4 closure identities, independently rederived parent-only candidate bytes, and the frozen no-cap, zero-current-call, subscription-only-reference K3 contract. It is not external reproduction and cannot establish or falsify VCM utility, model competence, transfer, economics, training value, serving value, or ASI Stack support."
+}
