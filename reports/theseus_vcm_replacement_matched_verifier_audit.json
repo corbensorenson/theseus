@@ -6,37 +6,37 @@
     "path": "configs/theseus_vcm_replacement_matched_verifier.json",
     "sha256": "e479fd2ade0b22594904716109da069d3744be70da7d86aa0e41a17841c1feca"
   },
-  "created_utc": "2026-08-09T06:25:22.184666Z",
+  "created_utc": "2026-08-09T06:27:50.798679Z",
   "external_reference_calls": 0,
   "faults": [],
-  "inconclusive_task_count": 3,
+  "inconclusive_task_count": 0,
   "maximum_inference": "The role-separated audit rederives archive, evaluator, command, diagnostic, disposition, denominator, and retained-store identities. It is role-separated rederivation rather than external reproduction and cannot support a model, VCM, or ASI Stack claim.",
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_replacement_matched_verifier_audit_v1",
   "producer_report": {
     "path": "reports/theseus_vcm_replacement_matched_verifier.json",
-    "sha256": "67a32e48b1d5edec683bd92243b16833aaa165a724f4348ba2c8796e379ed278"
+    "sha256": "0405d241467bf5d72af3e5165c8750ea17ae27fe32678b7afd5594fe2aed3507"
   },
-  "qualified_task_count": 0,
+  "qualified_task_count": 3,
   "retained_store_identity_rederived": true,
   "rows": [
     {
-      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
       "index": 12,
-      "parent_returncode": null,
-      "target_returncode": null
+      "parent_returncode": 1,
+      "target_returncode": 0
     },
     {
-      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
       "index": 13,
-      "parent_returncode": null,
-      "target_returncode": null
+      "parent_returncode": 2,
+      "target_returncode": 0
     },
     {
-      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "disposition": "QUALIFIED_COMMON_EVALUATOR_PARENT_FAIL_TARGET_PASS",
       "index": 35,
-      "parent_returncode": 71,
-      "target_returncode": 71
+      "parent_returncode": 101,
+      "target_returncode": 0
     }
   ],
   "state": "THREE_REPLACEMENT_MATCHED_VERIFIERS_ROLE_SEPARATELY_REDERIVED",
