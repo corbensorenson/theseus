@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_03_TYPESCRIPT_MECHANICS_V7_PROSPECTIVELY_SEALED",
+      "state": "VCM_V3_K2_03_ALL_RISK_CLASSES_SCOPED_GREEN_AUDIT_PENDING",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
       "active_attempt_id": "k2_03_generic_ecosystem_risk_canaries_v7",
-      "current_blocker": "narrow_real_parent_typescript_mechanics_not_executed_or_role_separated_audited",
+      "current_blocker": "k2_03_risk_evidence_chain_not_role_separately_audited",
       "last_closed_task_index": 26,
-      "next_legal_action": "execute_narrow_real_parent_typescript_mechanics_then_role_separately_audit_k2_03",
+      "next_legal_action": "role_separately_rederive_v2_v5_v6_v7_risk_receipts_and_issue_k2_03_disposition",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 V6 requalified zero-network Bun and Yarn retained-store replay, identified the Task 61 full-project prerequisite gap as missing parent file framework/src/styles.generated.ts, and qualified Task 36 offline Rust compilation. V7 is prospectively sealed to compile exact real parent file framework/src/styles.ts under strict no-emit TypeScript after zero-network Bun replay. A GREEN result can establish only narrow TypeScript mechanics, never Task 61 full-project typecheck. K2.03 remains open until role-separated audit. Repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 now has scoped GREEN mechanics for Bun acquisition and retained-store replay, Yarn acquisition and retained-store replay, strict no-emit compilation of real parent TypeScript file framework/src/styles.ts, and exact Task 36 offline Rust compilation. Task 61 full-project typecheck remains INCONCLUSIVE_EXPERIMENT because the parent omits imported generated source. None of this is repository-evaluator, task, VCM, or model evidence. K2.03 remains open until a role-separated owner rederives the committed V2/V5/V6/V7 chain. Packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -222,6 +222,19 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_03_v7_observation": {
+            "report": "reports/theseus_vcm_instrument_builder.json",
+            "report_sha256": "932a76d330649f22d1b551c65c50f20bffb4e958fce08680929170fd26fa3e07",
+            "state": "K2_03_NARROW_REAL_PARENT_TYPESCRIPT_MECHANICS_QUALIFIED",
+            "source_file": "framework/src/styles.ts",
+            "strict_no_emit_returncode": 0,
+            "network_denied": true,
+            "source_unchanged": true,
+            "retained_bun_store_unchanged": true,
+            "full_project_typecheck_qualified": false,
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -277,7 +290,7 @@
             ],
             "action": "Preflight peak storage, memory, time, and host reserve, then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust compilation as generic-owner risk classes.",
             "exit": "All supported risk classes are safely executable and replayable within the prospective host reserve, or K2 stops as instrument-economics/implementation inconclusive before bulk materialization.",
-            "latest_observation": "V6 requalified both retained stores offline, exposed Task 61's missing generated parent source as the sole full-project TypeScript failure, and qualified exact offline Rust compilation. V7 is sealed for strict no-emit compilation of real parent file framework/src/styles.ts, after which K2.03 requires role-separated audit."
+            "latest_observation": "V7 qualified strict no-emit compilation of real parent file framework/src/styles.ts after zero-network Bun replay. Bun, Yarn, narrow TypeScript, and Rust now have scoped GREEN mechanics; Task 61 full-project typecheck remains inconclusive. K2.03 requires role-separated audit of the committed evidence chain."
           },
           {
             "id": "K2_04_PARENT_ONLY_STORE_AND_MATERIALIZER",

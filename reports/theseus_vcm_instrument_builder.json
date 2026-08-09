@@ -4,11 +4,11 @@
     "path": "configs/theseus_vcm_instrument_builder.json",
     "sha256": "99b77e738b6449f569ed21381f0a96d6eed71ab0fde199f2bf4518647ff81d16"
   },
-  "created_utc": "2026-08-09T01:18:09.470333Z",
+  "created_utc": "2026-08-09T01:19:09.286014Z",
   "external_reference_calls": 0,
   "faults": [],
   "maximum_inference": "A GREEN V7 report may qualify only strict no-emit compilation of exact real parent file framework/src/styles.ts using the locked TypeScript dependency after zero-network Bun replay. It does not qualify Task 61 full-project typechecking, generated-source production, remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
-  "network_or_dependency_execution_performed": false,
+  "network_or_dependency_execution_performed": true,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "prior_risk_attempts": [
@@ -100,7 +100,7 @@
   ],
   "repository_runner_executions": 0,
   "resource_preflight": {
-    "host_free_bytes": 23319400448,
+    "host_free_bytes": 23083065344,
     "host_reserve_bytes": 10737418240,
     "projected_download_bytes": 0,
     "projected_installed_bytes": 0,
@@ -114,7 +114,7 @@
     "campaign_id": "k2_03_generic_ecosystem_risk_canaries_v7",
     "execution_authorized": true,
     "execution_order": "serialized_exact_list_order",
-    "host_free_bytes": 23319400448,
+    "host_free_bytes": 23083065344,
     "host_reserve_bytes": 10737418240,
     "row_count": 4,
     "rows": [
@@ -463,7 +463,7 @@
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
   },
-  "state": "GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
+  "state": "K2_03_NARROW_REAL_PARENT_TYPESCRIPT_MECHANICS_QUALIFIED",
   "static_evidence_replay_only": true,
   "store_contract": {
     "historical_task_specific_stores": "retained evidence only; never forward topology",
@@ -479,5 +479,131 @@
     },
     "per_task_duplicate_package_cache_authorized": false
   },
-  "trigger_state": "GREEN"
+  "trigger_state": "GREEN",
+  "typescript_repair_execution_performed": true,
+  "typescript_repair_receipts": {
+    "bun_disposable_symlink_rebase": {
+      "broken_link_count_after": 0,
+      "original_cache_root": "/private/tmp/theseus-vcm-generic-risks-p3xg3b97/bun-cache",
+      "retained_source_mutated": false,
+      "transformations_sha256": "1ec1bd63d75e0fe6994e2ae006f74d76f50d207399c567b0e95f990dc730380f",
+      "transformed_link_count": 216
+    },
+    "bun_resume_offline": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts",
+        "--cache-dir",
+        "/private/tmp/theseus-vcm-typescript-repair-15dzn32q/bun-cache",
+        "--offline"
+      ],
+      "duration_ms": 838.173,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": true,
+      "maximum_process_group_rss_mib": 19.812,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 710,
+      "stdout_sha256": "51756e081e1967d0e7c2777149ae1248cf10012f62bc556201b75d816f770ddf"
+    },
+    "bun_resume_source_after": {
+      "bytes": 48663631,
+      "file_count": 1102,
+      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
+    },
+    "bun_resume_source_before": {
+      "bytes": 48663631,
+      "file_count": 1102,
+      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
+    },
+    "free_bytes_after": 22888345600,
+    "free_bytes_before": 23083130880,
+    "free_bytes_during": 22629515264,
+    "qualified_bun_store_after": {
+      "bytes": 169910840,
+      "excluded_host_metadata": [
+        {
+          "bytes": 6148,
+          "path": ".DS_Store",
+          "sha256": "2d8f894b09ed4e6538866fbf4a00f4fe333cb40279973ff3694cee19000c590b"
+        }
+      ],
+      "file_count": 8320,
+      "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+      "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
+    },
+    "qualified_bun_store_before": {
+      "bytes": 169910840,
+      "excluded_host_metadata": [
+        {
+          "bytes": 6148,
+          "path": ".DS_Store",
+          "sha256": "2d8f894b09ed4e6538866fbf4a00f4fe333cb40279973ff3694cee19000c590b"
+        }
+      ],
+      "file_count": 8320,
+      "identity_sha256": "9172d633a864e6fe380cdfd7fe6a47136225894ddf55045ff0cb74c78e08c37d",
+      "path": "runtime/vcm_evaluator/dependency_store/shared/bun"
+    },
+    "source_after": {
+      "bytes": 48663631,
+      "file_count": 1102,
+      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
+    },
+    "source_before": {
+      "bytes": 48663631,
+      "file_count": 1102,
+      "identity_sha256": "8437b77a3ff8a2fb1cedb58fabfae33e86ea6b6fa7285c62456502e6eed181b1"
+    },
+    "task_61_extraction": {
+      "member_receipts_sha256": "ec5b03e97c750851bb22229bfd6ac37abd342c4fe20bec10f56838c407fa518b",
+      "regular_file_bytes": 48663631,
+      "regular_file_count": 1102
+    },
+    "typescript_narrow_mechanics": {
+      "boundary_hit": false,
+      "boundary_reason": "",
+      "captured_output_mib_limit": 8,
+      "command": [
+        "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit",
+        "--strict",
+        "--target",
+        "ESNext",
+        "--module",
+        "ESNext",
+        "--moduleResolution",
+        "bundler",
+        "--lib",
+        "ESNext",
+        "--types",
+        "bun",
+        "--skipLibCheck",
+        "framework/src/styles.ts"
+      ],
+      "duration_ms": 2993.064,
+      "lifecycle_scripts_disabled_by_exact_cli_flag": false,
+      "maximum_process_group_rss_mib": 195.406,
+      "network_denied": true,
+      "returncode": 0,
+      "rss_telemetry_fault": "",
+      "single_written_file_mib_limit": 4096,
+      "stderr_bytes": 0,
+      "stderr_head": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 0,
+      "stdout_head": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
 }

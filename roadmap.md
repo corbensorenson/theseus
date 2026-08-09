@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_TYPESCRIPT_MECHANICS_V7_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_ALL_RISK_CLASSES_SCOPED_GREEN_AUDIT_PENDING` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v7` |
-| Current wall | `narrow_real_parent_typescript_mechanics_not_executed_or_role_separated_audited` |
+| Current wall | `k2_03_risk_evidence_chain_not_role_separately_audited` |
 | Last closed task | 26 |
-| Next legal action | `execute_narrow_real_parent_typescript_mechanics_then_role_separately_audit_k2_03` |
+| Next legal action | `role_separately_rederive_v2_v5_v6_v7_risk_receipts_and_issue_k2_03_disposition` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -401,6 +401,12 @@ V7 is sealed to compile exact real parent file `framework/src/styles.ts` with
 strict, no-emit TypeScript after zero-network Bun replay. It cannot qualify the
 full repository. K2.03 remains open until this receipt and all prior risk
 receipts are role-separately rederived.
+
+V7 passed in 3.0 seconds at 195 MiB RSS with zero output, no boundary, unchanged
+source, and unchanged retained Bun content. Bun, Yarn, narrow TypeScript, and
+Rust therefore have scoped GREEN mechanics. Task 61 full-project typecheck
+remains inconclusive. K2.03 now needs one role-separated rederivation of the
+committed V2/V5/V6/V7 chain before it can close.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
