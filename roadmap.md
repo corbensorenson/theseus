@@ -343,6 +343,14 @@ does not yet execute forward dependency work. K2.03 is current and must replace
 the replay-only zero/null projections with measured resource estimates while
 qualifying the four named ecosystem risk classes.
 
+The first K2.03 transaction binds, at zero execution, the exact parent-only
+representatives and order: Task 61 Bun install, Task 4 Yarn install,
+Task 61 TypeScript `tsc --noEmit`, and Task 36 Rust 1.97.1 `cargo test --no-run`.
+The rows execute serially under a 10 GiB reserve; their conservative temporary,
+time, and RSS ceilings are host-safety boundaries rather than capability limits.
+The mutating generic-owner implementation and its exact execution seal remain
+the next boundary.
+
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
 free space and protected reserve; memory; and untrusted-build risk. If the

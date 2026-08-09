@@ -2,7 +2,7 @@
   "policy": "project_theseus_vcm_instrument_builder_v1",
   "state": "GENERIC_MANIFEST_OWNER_STATIC_REPLAY_BEFORE_FORWARD_EXECUTION",
   "owner": "scripts/theseus_vcm_instrument_builder.py",
-  "owner_sha256": "e7df9b81b7d9f33f33712c022cf2d0e80cdaec7f6237a4b0b53dab3ef60c4e7c",
+  "owner_sha256": "360ca4399e8ed45d958cbf3026b169e49f505e25bb5d2b9af2429544f1ba79fd",
   "schedule": {
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
@@ -147,6 +147,63 @@
     "host_reserve_bytes": 10737418240,
     "required_fields": ["projected_download_bytes", "projected_installed_bytes", "projected_peak_temporary_bytes", "shared_store_deduplicated_bytes", "host_free_bytes", "host_reserve_bytes", "projected_wall_time", "untrusted_build_risk_class"],
     "K2_03_must_replace_static_replay_zeros_or_nulls_before_mutating_execution": true
+  },
+  "risk_canary_plan": {
+    "state": "PROSPECTIVE_SELECTION_AND_RESOURCE_PREFLIGHT_ZERO_EXECUTION",
+    "selection_rule": "earliest frozen compatible parent row per missing manager; reuse earliest Bun row for TypeScript and earliest exact-Rust row for compilation",
+    "execution_order": "serialized_exact_list_order",
+    "rows": [
+      {
+        "risk_id": "bun-task61-parent",
+        "risk_class": "bun_real_lock_install",
+        "task_index": 61,
+        "schedule_ordinal": 22,
+        "manager": "bun",
+        "parent_archive": {"path": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz", "sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e"},
+        "archive_root": "pocketjs-8910dac8937ba808d6e162ad18cc5d75868d309f",
+        "tool": {"path": "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun", "sha256": "ccb160515c299e9509f8735808913aec3b3055476f71eca045a140260bb3a932"},
+        "command": ["install", "--frozen-lockfile", "--ignore-scripts", "--cache-dir", "runtime/vcm_evaluator/dependency_store/shared/bun"],
+        "resource_projection": {"basis": "284 locked entries at conservative 4 MiB per entry; observed canary replaces estimate", "projected_download_bytes": 1191182336, "projected_installed_bytes": 2382364672, "projected_peak_temporary_bytes": 4294967296, "projected_wall_time_seconds": 600, "maximum_process_group_rss_mib": 4096}
+      },
+      {
+        "risk_id": "yarn-task04-parent",
+        "risk_class": "yarn_real_lock_install",
+        "task_index": 4,
+        "schedule_ordinal": 31,
+        "manager": "yarn",
+        "parent_archive": {"path": "runtime/vcm_evaluator/source_archives/04_frappe-draw_parent.tar.gz", "sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79"},
+        "archive_root": "draw-8aa6784b6dc2e570ff9679a52236d89d07d650fa",
+        "working_directory": "frontend",
+        "tool": {"path": "/opt/homebrew/Cellar/node@22/22.15.0/bin/node", "sha256": "fa30451b37e79de938f54f4a5e7240dafa9a4357b17894ce659daa1f774c6951"},
+        "support_tool": {"path": "runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js", "sha256": "148e19db309ec9eaf7720b28df811337906eea8a1758deaa54afee60a6305e04"},
+        "command": ["runtime/vcm_evaluator/toolchains/yarn-1.22.22/bin/yarn.js", "install", "--frozen-lockfile", "--ignore-scripts", "--non-interactive", "--cache-folder", "runtime/vcm_evaluator/dependency_store/shared/yarn"],
+        "resource_projection": {"basis": "479 locked entries at conservative 4 MiB per entry; observed canary replaces estimate", "projected_download_bytes": 2009071616, "projected_installed_bytes": 4018143232, "projected_peak_temporary_bytes": 4294967296, "projected_wall_time_seconds": 600, "maximum_process_group_rss_mib": 4096}
+      },
+      {
+        "risk_id": "typescript-task61-parent",
+        "risk_class": "typescript_parent_repository_transpilation",
+        "task_index": 61,
+        "schedule_ordinal": 22,
+        "manager": "bun",
+        "parent_archive": {"path": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz", "sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e"},
+        "archive_root": "pocketjs-8910dac8937ba808d6e162ad18cc5d75868d309f",
+        "tool": {"path": "/Users/corbensorenson/Library/Application Support/reflex/bun/bin/bun", "sha256": "ccb160515c299e9509f8735808913aec3b3055476f71eca045a140260bb3a932"},
+        "command": ["node_modules/typescript/bin/tsc", "--noEmit", "--project", "tsconfig.json"],
+        "resource_projection": {"basis": "reuses disposable Bun environment; 2 GiB compile-output and metadata ceiling", "projected_download_bytes": 0, "projected_installed_bytes": 0, "projected_peak_temporary_bytes": 2147483648, "projected_wall_time_seconds": 600, "maximum_process_group_rss_mib": 4096}
+      },
+      {
+        "risk_id": "rust-task36-parent",
+        "risk_class": "rust_parent_repository_untrusted_compilation",
+        "task_index": 36,
+        "schedule_ordinal": 3,
+        "manager": "cargo",
+        "parent_archive": {"path": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_parent.tar.gz", "sha256": "7bfba9fcf161ebeb08cbaca77a8746d628675b728857d0fc345699a81a694b1d"},
+        "archive_root": "godlint-2cce6eb6cd77bb18d74b1c22e75f0e85deeaf15b",
+        "tool": {"path": "runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo", "sha256": "7672ead309d505577c018fff2cafb3433601f073e38cbe87359ac1f7b944bbf5"},
+        "command": ["test", "--locked", "--offline", "--no-run"],
+        "resource_projection": {"basis": "reuses qualified 57.2 MB Cargo cache; 4 GiB build-output ceiling", "projected_download_bytes": 0, "projected_installed_bytes": 0, "projected_peak_temporary_bytes": 4294967296, "projected_wall_time_seconds": 600, "maximum_process_group_rss_mib": 4096}
+      }
+    ]
   },
   "report": "reports/theseus_vcm_instrument_builder.json",
   "authority": {

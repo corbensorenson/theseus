@@ -74,6 +74,14 @@ The next legal action is
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
+The generic owner now also binds the K2.03 representative selection and
+resource preflight at zero execution:
+parent-only Task 61 for Bun and TypeScript, Task 4 for Yarn, and exact-Rust
+Task 36 for untrusted compilation, in that serialized order. The 10 GiB reserve
+and per-row temporary/time/RSS ceilings are safety interlocks; activating one is
+an inconclusive instrument/experiment observation, never a capability failure.
+The exact mutating implementation and execution seal remain open.
+
 ## Active Claim And Residual
 
 The active claim is `virtual-context-abi.core`.

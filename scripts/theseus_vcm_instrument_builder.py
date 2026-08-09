@@ -186,6 +186,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         faults.append("resource_schema_invalid")
     if host_free < resource["host_reserve_bytes"]:
         faults.append("host_reserve_boundary_hit")
+    risk_plan = validate_risk_plan(cfg, schedule, host_free, faults)
 
     return {
         "policy": POLICY,
@@ -200,6 +201,7 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "rows": rows,
         "store_contract": store,
         "resource_preflight": resource,
+        "risk_canary_plan": risk_plan,
         "static_evidence_replay_only": True,
         "network_or_dependency_execution_performed": False,
         "repository_runner_executions": 0,
@@ -207,6 +209,65 @@ def build(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         "candidate_or_control_calls": 0,
         "external_reference_calls": 0,
         "maximum_inference": cfg.get("maximum_inference"),
+    }
+
+
+def validate_risk_plan(
+    cfg: dict[str, Any], schedule: dict[int, dict[str, Any]], host_free: int, faults: list[str]
+) -> dict[str, Any]:
+    plan = p2a.mapping(cfg.get("risk_canary_plan"))
+    rows = p2a.dicts(plan.get("rows"))
+    if [row.get("risk_class") for row in rows] != [
+        "bun_real_lock_install",
+        "yarn_real_lock_install",
+        "typescript_parent_repository_transpilation",
+        "rust_parent_repository_untrusted_compilation",
+    ]:
+        faults.append("risk_class_order_or_coverage_invalid")
+    observed = []
+    for row in rows:
+        risk_id = str(row.get("risk_id") or "")
+        ordinal = int(row.get("schedule_ordinal") or 0)
+        scheduled = p2a.mapping(schedule.get(ordinal))
+        if scheduled.get("index") != row.get("task_index") or scheduled.get("manager") != row.get("manager"):
+            faults.append(f"risk_schedule_binding_invalid:{risk_id}")
+        archive = p2a.mapping(row.get("parent_archive"))
+        archive_path = p2a.resolve(str(archive.get("path") or ""))
+        if not archive_path.is_file() or p2a.sha256_file(archive_path) != archive.get("sha256"):
+            faults.append(f"risk_archive_binding_invalid:{risk_id}")
+        tool = p2a.mapping(row.get("tool"))
+        tool_path = p2a.resolve(str(tool.get("path") or ""))
+        if not tool_path.is_file() or p2a.sha256_file(tool_path) != tool.get("sha256"):
+            faults.append(f"risk_tool_binding_invalid:{risk_id}")
+        limits = p2a.mapping(row.get("resource_projection"))
+        for key in ("projected_download_bytes", "projected_installed_bytes", "projected_peak_temporary_bytes", "projected_wall_time_seconds", "maximum_process_group_rss_mib"):
+            if not isinstance(limits.get(key), int) or int(limits.get(key) or 0) < 0:
+                faults.append(f"risk_resource_projection_invalid:{risk_id}:{key}")
+        projected_peak = int(limits.get("projected_peak_temporary_bytes") or 0)
+        reserve = int(p2a.mapping(cfg.get("resource_contract")).get("host_reserve_bytes") or 0)
+        if host_free - projected_peak < reserve:
+            faults.append(f"risk_host_reserve_projection_hit:{risk_id}")
+        observed.append({
+            "risk_id": risk_id,
+            "risk_class": row.get("risk_class"),
+            "task_index": row.get("task_index"),
+            "manager": row.get("manager"),
+            "parent_archive": base.identity(archive_path) if archive_path.is_file() else {},
+            "tool": base.identity(tool_path) if tool_path.is_file() else {},
+            "command": p2a.strings(row.get("command")),
+            "resource_projection": limits,
+            "execution_authorized": False,
+        })
+    if plan.get("execution_order") != "serialized_exact_list_order":
+        faults.append("risk_execution_order_invalid")
+    return {
+        "state": "PROSPECTIVE_SELECTION_AND_RESOURCE_PREFLIGHT_ZERO_EXECUTION",
+        "row_count": len(observed),
+        "rows": observed,
+        "host_free_bytes": host_free,
+        "host_reserve_bytes": int(p2a.mapping(cfg.get("resource_contract")).get("host_reserve_bytes") or 0),
+        "execution_order": plan.get("execution_order"),
+        "execution_authorized": False,
     }
 
 

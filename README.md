@@ -144,6 +144,13 @@ has not executed forward dependency work. K2.03 must replace its placeholder
 resource projections and qualify the four named ecosystem risk classes before
 bulk materialization.
 
+The K2.03 representative selection and resource preflight are now bound at zero
+execution inside that same owner: parent-only Task 61 for Bun and TypeScript,
+Task 4 for Yarn, and Task 36 for exact Rust 1.97.1 compilation. The eventual
+execution must be serialized, each row must preserve a 10 GiB host reserve, and
+no evaluator or model authority is open. Exact mutating execution remains to be
+implemented and prospectively sealed.
+
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under
 one campaign identity. Its nine-task stage is adequacy—not claim evidence—and
