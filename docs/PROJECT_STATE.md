@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_03_RISK_EXECUTOR_V4_PROSPECTIVELY_SEALED` | V4 excludes only declared host metadata from package-content identity while reporting it separately, reuses Bun without reacquisition, and binds the remaining Yarn, TypeScript, and Rust canaries |
+| Active VCM claim | `VCM_V3_K2_03_V4_BUN_ABSOLUTE_SYMLINK_GAP` | V4 started zero external commands because 216 Bun cache links point to the deleted V2 temporary root. Regular package content remains identical; retained topology is not replayable without a governed disposable rebase |
 | VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
 | VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -68,9 +68,9 @@ change.
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
 `k2_03_generic_ecosystem_risk_canaries_v4`, last closed task 26, and the wall
-`yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited`.
+`retained_bun_store_has_broken_absolute_temp_root_symlinks`.
 The next legal action is
-`execute_v4_normalized_bun_replay_then_yarn_typescript_rust_and_role_separately_audit`.
+`seal_v5_disposable_bun_symlink_rebasing_then_resume_remaining_risk_canaries`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -87,8 +87,11 @@ package installation; TypeScript and Rust remained unexecuted. Official Node
 binary hashes bound. V3 stopped before external execution because its generic
 tree receipt counted a later `.DS_Store` host-metadata file. V4 is sealed to
 exclude declared host metadata from content identity, still report it, verify
-and reuse the existing Bun store, resume the remaining risk classes, and then
-undergo role-separated audit.
+and reuse the existing Bun store. V4 then exposed 216 absolute symlinks to the
+deleted V2 temporary cache root before any external command. V5 must derive a
+disposable cache by rebasing only validated internal links, leave retained
+evidence untouched, resume the remaining risk classes, and then undergo
+role-separated audit.
 
 ## Active Claim And Residual
 

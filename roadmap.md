@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_03_RISK_EXECUTOR_V4_PROSPECTIVELY_SEALED` |
+| State | `VCM_V3_K2_03_V4_BUN_ABSOLUTE_SYMLINK_GAP` |
 | Selected task | 26 |
 | Active attempt | `k2_03_generic_ecosystem_risk_canaries_v4` |
-| Current wall | `yarn_typescript_rust_risk_canaries_not_executed_or_role_separated_audited` |
+| Current wall | `retained_bun_store_has_broken_absolute_temp_root_symlinks` |
 | Last closed task | 26 |
-| Next legal action | `execute_v4_normalized_bun_replay_then_yarn_typescript_rust_and_role_separately_audit` |
+| Next legal action | `seal_v5_disposable_bun_symlink_rebasing_then_resume_remaining_risk_canaries` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -368,6 +368,14 @@ V3 as `INCONCLUSIVE_IMPLEMENTATION`. V4 is prospectively sealed to exclude
 only declared host metadata from package-content identity while still reporting
 its presence, replay Bun offline without reacquisition, and then run the three
 remaining risk classes.
+
+V4 passed regular-file identity but failed before external execution because
+the retained Bun cache contains 216 absolute symlinks to V2's deleted temporary
+root; ordinary `copytree` followed them and failed. This makes the retained
+topology itself non-replayable even though its package files are intact. V5 may
+derive a disposable cache by preserving files and rebasing only links that are
+proven to target an existing object inside that retained package payload. It
+must leave retained evidence untouched and report every transformed link.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host

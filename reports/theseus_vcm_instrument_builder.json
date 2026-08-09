@@ -4,10 +4,12 @@
     "path": "configs/theseus_vcm_instrument_builder.json",
     "sha256": "28c8ee6d880cf8cc07ad3c4e5adde895f1e28f10a165d1299f60f5458565816c"
   },
-  "created_utc": "2026-08-09T00:56:54.217057Z",
+  "created_utc": "2026-08-09T00:58:00Z",
   "external_reference_calls": 0,
-  "faults": [],
-  "maximum_inference": "A GREEN V4 execution report may prove only that the qualified Bun package payload was reused without reacquisition or mutation while declared host metadata was separately reported, and that exact Task 4 Yarn, Task 61 TypeScript, and Task 36 Rust risk canaries executed and replayed under their sealed sandbox, toolchain, resource, and host-reserve contract. A static replay report proves none of those executions. Neither state qualifies remaining closures, repository evaluators, VCM packets, model utility, Luna, D1, D2, training, serving, or book support.",
+  "faults": [
+    "bun_resume_copy_followed_broken_absolute_cache_symlinks"
+  ],
+  "maximum_inference": "This RED V4 report records an INCONCLUSIVE_IMPLEMENTATION before any external command or network call: the retained Bun payload contains 216 absolute cache symlinks whose original temporary target root no longer exists, and generic copytree followed rather than preserved them. The 8,320 regular package files remain content-identical to V2. This is not a task, VCM, model, or book result. Yarn, TypeScript, Rust, repository evaluators, packets, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed.",
   "network_or_dependency_execution_performed": false,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_instrument_builder_v1",
@@ -225,6 +227,19 @@
     "source_report": "reports/theseus_vcm_instrument_builder.json",
     "source_report_sha256": "7230943309a9ee56fb3846ec4c551bf2e980f856efb3a648c112b16b42f7495e"
   },
+  "risk_execution_performed": false,
+  "risk_receipts": {
+    "attempt_id": "k2_03_generic_ecosystem_risk_canaries_v4",
+    "exception_class": "shutil.Error",
+    "fault": "bun_resume_copy_followed_broken_absolute_cache_symlinks",
+    "retained_bun_regular_file_count": 8320,
+    "retained_bun_broken_absolute_symlink_count": 216,
+    "external_commands_started": 0,
+    "network_calls": 0,
+    "retained_store_writes": 0,
+    "candidate_or_control_calls": 0,
+    "external_reference_calls": 0
+  },
   "rows": [
     {
       "audit": {
@@ -405,7 +420,7 @@
     "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
     "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
   },
-  "state": "GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
+  "state": "K2_03_RISK_CANARIES_FAILED",
   "static_evidence_replay_only": true,
   "store_contract": {
     "historical_task_specific_stores": "retained evidence only; never forward topology",
@@ -421,5 +436,5 @@
     },
     "per_task_duplicate_package_cache_authorized": false
   },
-  "trigger_state": "GREEN"
+  "trigger_state": "RED"
 }
