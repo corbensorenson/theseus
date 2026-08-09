@@ -1,0 +1,84 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_task_count": 6,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "982d0af00c3b16e42a49d8ba54794c5d111361ce3eae17f9c84166350dc3bdb3"
+  },
+  "created_utc": "2026-08-09T02:51:08.977560Z",
+  "external_reference_calls": 0,
+  "faults": [
+    "diagnostic_receipt_invalid:35:stderr",
+    "diagnostic_receipt_invalid:35:stdout"
+  ],
+  "inconclusive_task_count": 1,
+  "maximum_inference": "The audit is role-separated rederivation inside this repository. It checks the six-row denominator, target/archive/tool identities, full diagnostics, lock hashes and syntax, scoped dispositions, zero execution/model counters, and no partial-panel admission. It is not producer-independent replay or external reproduction and cannot support a VCM or ASI Stack capability claim.",
+  "network_or_dependency_execution_performed": false,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_immutable_resolution_segment_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_immutable_resolution_segment_v2.json",
+    "sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2"
+  },
+  "qualified_task_count": 5,
+  "rows": [
+    {
+      "boundary_hit": false,
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK",
+      "index": 12,
+      "lock_sha256": "62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd",
+      "manager": "uv",
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "returncode": 0
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "index": 13,
+      "lock_sha256": null,
+      "manager": "uv",
+      "repository": "dknowles2/ha-pitboss",
+      "returncode": 1
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK",
+      "index": 16,
+      "lock_sha256": "55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a",
+      "manager": "uv",
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "returncode": 0
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK",
+      "index": 25,
+      "lock_sha256": "8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6",
+      "manager": "uv",
+      "repository": "fibsem-os/fibsem-os",
+      "returncode": 0
+    },
+    {
+      "boundary_hit": null,
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR",
+      "index": 35,
+      "lock_sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6",
+      "manager": "cargo",
+      "repository": "Stranger6667/jsonschema",
+      "returncode": null
+    },
+    {
+      "boundary_hit": false,
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK",
+      "index": 56,
+      "lock_sha256": "edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b",
+      "manager": "uv",
+      "repository": "AbsoluteMode/session-recall",
+      "returncode": 0
+    }
+  ],
+  "state": "K2_05_IMMUTABLE_RESOLUTION_AUDIT_FAILED",
+  "trigger_state": "RED"
+}
