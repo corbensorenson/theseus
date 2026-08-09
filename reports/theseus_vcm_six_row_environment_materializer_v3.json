@@ -1,0 +1,1602 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_environment_materializer.json",
+    "sha256": "6a727dbe3d61069c0c9b7d976c15ddd785fcbf3eb47e57556b06a83a5ecaa874"
+  },
+  "created_utc": "2026-08-09T04:00:31.185422Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact immutable locks can materialize through one shared uv/Cargo store into disposable environments and replay with network denied, with Python source builds disabled, Cargo limited to fetch, exact lock membership checked, complete diagnostics retained, and the 10 GiB reserve preserved. V3 reuses four V1-qualified rows and the exact retained 1.16 GB shared store, repairs only PEP 503 name normalization, pinned Cargo toolchain PATH visibility, and declared macOS host-metadata exclusion, and prospectively bounds the remaining store growth at 721,666,008 bytes plus 3 GiB for the largest serial disposable environment and operational temporary data. It does not run a repository verifier, establish parent-fail/target-pass behavior, admit a panel, evaluate a model or VCM, or support an ASI Stack claim.",
+  "network_denied_replays": 2,
+  "network_enabled_materializations": 2,
+  "package_installations": 4,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_six_row_environment_materializer_v1",
+  "project_installations": 0,
+  "qualified_task_count": 6,
+  "repository_runner_executions": 0,
+  "retained_shared_store": {
+    "bytes": 1754707286,
+    "file_count": 95673,
+    "identity_sha256": "bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "rows": [
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 12,
+      "lock": {
+        "package_count": 6,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+        "sha256": "62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd"
+      },
+      "manager": "uv",
+      "receipts": {
+        "predecessor_report_sha256": "d6256238603970982a46549b7f2d6c9817170a0f580cc4da5bd78300d532668c",
+        "predecessor_reuse": true
+      },
+      "repository": "rickli0822-prog/windows-ai-login-doctor"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 13,
+      "lock": {
+        "package_count": 158,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+        "sha256": "f9802c9804d8527d671a342c8add16225fcc20218d740f9076122b3f36226fef"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "acme",
+              "version": "5.4.0"
+            },
+            {
+              "name": "aiodns",
+              "version": "4.0.4"
+            },
+            {
+              "name": "aioesphomeapi",
+              "version": "45.7.0"
+            },
+            {
+              "name": "aiogithubapi",
+              "version": "26.0.0"
+            },
+            {
+              "name": "aiohappyeyeballs",
+              "version": "2.7.1"
+            },
+            {
+              "name": "aiohasupervisor",
+              "version": "0.5.0"
+            },
+            {
+              "name": "aiohttp",
+              "version": "3.14.3"
+            },
+            {
+              "name": "aiohttp-asyncmdnsresolver",
+              "version": "0.2.0"
+            },
+            {
+              "name": "aiohttp-cors",
+              "version": "0.8.1"
+            },
+            {
+              "name": "aiohttp-fast-zlib",
+              "version": "0.3.0"
+            },
+            {
+              "name": "aiooui",
+              "version": "0.1.9"
+            },
+            {
+              "name": "aiosignal",
+              "version": "1.4.0"
+            },
+            {
+              "name": "aiousbwatcher",
+              "version": "1.1.2"
+            },
+            {
+              "name": "aiozoneinfo",
+              "version": "0.2.3"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "annotatedyaml",
+              "version": "1.0.2"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "ast-serialize",
+              "version": "0.8.0"
+            },
+            {
+              "name": "astral",
+              "version": "2.2"
+            },
+            {
+              "name": "async-interrupt",
+              "version": "1.2.2"
+            },
+            {
+              "name": "asyncinotify",
+              "version": "4.4.4"
+            },
+            {
+              "name": "atomicwrites-homeassistant",
+              "version": "1.4.1"
+            },
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "audioop-lts",
+              "version": "0.2.2"
+            },
+            {
+              "name": "awesomeversion",
+              "version": "25.8.0"
+            },
+            {
+              "name": "backoff",
+              "version": "2.2.1"
+            },
+            {
+              "name": "bcrypt",
+              "version": "5.0.0"
+            },
+            {
+              "name": "bleak",
+              "version": "3.0.2"
+            },
+            {
+              "name": "bleak-retry-connector",
+              "version": "4.6.3"
+            },
+            {
+              "name": "bluetooth-adapters",
+              "version": "2.4.0"
+            },
+            {
+              "name": "bluetooth-auto-recovery",
+              "version": "1.6.4"
+            },
+            {
+              "name": "bluetooth-data-tools",
+              "version": "1.29.6"
+            },
+            {
+              "name": "boolean-py",
+              "version": "5.0"
+            },
+            {
+              "name": "boto3",
+              "version": "1.43.67"
+            },
+            {
+              "name": "botocore",
+              "version": "1.43.67"
+            },
+            {
+              "name": "btsocket",
+              "version": "0.3.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "chacha20poly1305-reuseable",
+              "version": "0.13.2"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "ciso8601",
+              "version": "2.3.3"
+            },
+            {
+              "name": "colorlog",
+              "version": "6.12.0"
+            },
+            {
+              "name": "coverage",
+              "version": "7.14.1"
+            },
+            {
+              "name": "cronsim",
+              "version": "2.7"
+            },
+            {
+              "name": "cryptography",
+              "version": "48.0.1"
+            },
+            {
+              "name": "dukpy",
+              "version": "0.6.0"
+            },
+            {
+              "name": "envs",
+              "version": "1.4"
+            },
+            {
+              "name": "execnet",
+              "version": "2.1.2"
+            },
+            {
+              "name": "fnv-hash-fast",
+              "version": "2.0.3"
+            },
+            {
+              "name": "fnvhash",
+              "version": "0.2.1"
+            },
+            {
+              "name": "freezegun",
+              "version": "1.5.5"
+            },
+            {
+              "name": "frozenlist",
+              "version": "1.8.0"
+            },
+            {
+              "name": "grpcio",
+              "version": "1.83.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "habluetooth",
+              "version": "6.1.0"
+            },
+            {
+              "name": "hass-nabucasa",
+              "version": "2.2.0"
+            },
+            {
+              "name": "home-assistant-bluetooth",
+              "version": "2.0.0"
+            },
+            {
+              "name": "homeassistant",
+              "version": "2026.7.4"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "icmplib",
+              "version": "3.0.4"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "ifaddr",
+              "version": "0.2.0"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "jmespath",
+              "version": "1.1.0"
+            },
+            {
+              "name": "josepy",
+              "version": "2.2.0"
+            },
+            {
+              "name": "librt",
+              "version": "0.15.0"
+            },
+            {
+              "name": "license-expression",
+              "version": "30.4.3"
+            },
+            {
+              "name": "lru-dict",
+              "version": "1.4.1"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "mashumaro",
+              "version": "3.22"
+            },
+            {
+              "name": "mock-open",
+              "version": "1.4.0"
+            },
+            {
+              "name": "multidict",
+              "version": "6.7.1"
+            },
+            {
+              "name": "mypy",
+              "version": "2.3.0"
+            },
+            {
+              "name": "mypy-extensions",
+              "version": "1.1.0"
+            },
+            {
+              "name": "noiseprotocol",
+              "version": "0.3.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.3.2"
+            },
+            {
+              "name": "orjson",
+              "version": "3.11.9"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "paho-mqtt",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pathspec",
+              "version": "1.1.1"
+            },
+            {
+              "name": "pillow",
+              "version": "12.2.0"
+            },
+            {
+              "name": "pip",
+              "version": "26.2.1"
+            },
+            {
+              "name": "pipdeptree",
+              "version": "2.26.1"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "propcache",
+              "version": "0.5.2"
+            },
+            {
+              "name": "protobuf",
+              "version": "7.35.1"
+            },
+            {
+              "name": "psutil",
+              "version": "7.2.2"
+            },
+            {
+              "name": "psutil-home-assistant",
+              "version": "0.0.1"
+            },
+            {
+              "name": "pycares",
+              "version": "5.0.1"
+            },
+            {
+              "name": "pycognito",
+              "version": "2024.5.1"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyjwt",
+              "version": "2.12.1"
+            },
+            {
+              "name": "pynacl",
+              "version": "1.6.2"
+            },
+            {
+              "name": "pyobjc-core",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-cocoa",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-corebluetooth",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-libdispatch",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyopenssl",
+              "version": "26.2.0"
+            },
+            {
+              "name": "pyrfc3339",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pyric",
+              "version": "0.1.6.3"
+            },
+            {
+              "name": "pyserial",
+              "version": "3.5"
+            },
+            {
+              "name": "pyserial-asyncio",
+              "version": "0.6"
+            },
+            {
+              "name": "pytboss",
+              "version": "2026.8.3"
+            },
+            {
+              "name": "pytest",
+              "version": "9.0.3"
+            },
+            {
+              "name": "pytest-aiohttp",
+              "version": "1.1.1"
+            },
+            {
+              "name": "pytest-asyncio",
+              "version": "1.4.0"
+            },
+            {
+              "name": "pytest-cov",
+              "version": "7.1.0"
+            },
+            {
+              "name": "pytest-freezer",
+              "version": "0.4.9"
+            },
+            {
+              "name": "pytest-github-actions-annotate-failures",
+              "version": "0.4.0"
+            },
+            {
+              "name": "pytest-homeassistant-custom-component",
+              "version": "0.13.348"
+            },
+            {
+              "name": "pytest-picked",
+              "version": "0.5.1"
+            },
+            {
+              "name": "pytest-socket",
+              "version": "0.8.0"
+            },
+            {
+              "name": "pytest-timeout",
+              "version": "2.4.0"
+            },
+            {
+              "name": "pytest-unordered",
+              "version": "0.8.0"
+            },
+            {
+              "name": "pytest-xdist",
+              "version": "3.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "python-slugify",
+              "version": "8.0.4"
+            },
+            {
+              "name": "pytz",
+              "version": "2026.3.post1"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "regex",
+              "version": "2026.7.19"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "requests-mock",
+              "version": "1.12.1"
+            },
+            {
+              "name": "respx",
+              "version": "0.23.1"
+            },
+            {
+              "name": "ruff",
+              "version": "0.16.0"
+            },
+            {
+              "name": "s3transfer",
+              "version": "0.19.2"
+            },
+            {
+              "name": "securetar",
+              "version": "2026.4.1"
+            },
+            {
+              "name": "sentence-stream",
+              "version": "1.3.0"
+            },
+            {
+              "name": "serialx",
+              "version": "1.8.2"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "snitun",
+              "version": "0.45.1"
+            },
+            {
+              "name": "sqlalchemy",
+              "version": "2.0.51"
+            },
+            {
+              "name": "standard-aifc",
+              "version": "3.13.0"
+            },
+            {
+              "name": "standard-chunk",
+              "version": "3.13.0"
+            },
+            {
+              "name": "standard-telnetlib",
+              "version": "3.13.0"
+            },
+            {
+              "name": "syrupy",
+              "version": "5.3.2"
+            },
+            {
+              "name": "text-unidecode",
+              "version": "1.3"
+            },
+            {
+              "name": "tqdm",
+              "version": "4.67.1"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "tzdata",
+              "version": "2026.3"
+            },
+            {
+              "name": "tzlocal",
+              "version": "5.4.4"
+            },
+            {
+              "name": "uart-devices",
+              "version": "0.1.1"
+            },
+            {
+              "name": "ulid-transform",
+              "version": "2.2.9"
+            },
+            {
+              "name": "unidiff",
+              "version": "0.7.5"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "usb-devices",
+              "version": "0.5.1"
+            },
+            {
+              "name": "uv",
+              "version": "0.11.25"
+            },
+            {
+              "name": "voluptuous",
+              "version": "0.15.2"
+            },
+            {
+              "name": "voluptuous-openapi",
+              "version": "0.4.1"
+            },
+            {
+              "name": "voluptuous-serialize",
+              "version": "2.7.0"
+            },
+            {
+              "name": "webrtc-models",
+              "version": "0.3.0"
+            },
+            {
+              "name": "yarl",
+              "version": "1.24.5"
+            },
+            {
+              "name": "zeroconf",
+              "version": "0.150.0"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-tbyl4_qz\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-tbyl4_qz/task-13/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--find-links",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/wheels",
+            "--offline"
+          ],
+          "duration_ms": 25994.65,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 158 packages in 37ms\nInstalled 158 packages in 25.88s\n + acme==5.4.0\n + aiodns==4.0.4\n + aioesphomeapi==45.7.0\n + aiogithubapi==26.0.0\n + aiohappyeyeballs==2.7.1\n + aiohasupervisor==0.5.0\n + aiohttp==3.14.3\n + aiohttp-asyncmdnsresolver==0.2.0\n + aiohttp-cors==0.8.1\n + aiohttp-fast-zlib==0.3.0\n + aiooui==0.1.9\n + aiosignal==1.4.0\n + aiousbwatcher==1.1.2\n + aiozoneinfo==0.2.3\n + annotated-types==0.8.0\n + annotatedyaml==1.0.2\n + anyio==4.14.2\n + ast-serialize==0.8.0\n + astral==2.2\n + async-interrupt==1.2.2\n + asyncinotify==4.4.4\n + atomicwrites-homeassistant==1.4.1\n + attrs==26.1.0\n + audioop-lts==0.2.2\n + awesomeversion==25.8.0\n + backoff==2.2.1\n + bcrypt==5.0.0\n + bleak==3.0.2\n + bleak-retry-connector==4.6.3\n + bluetooth-adapters==2.4.0\n + bluetooth-auto-recovery==1.6.4\n + bluetooth-data-tools==1.29.6\n + boolean-py==5.0\n + boto3==1.43.67\n + botocore==1.43.67\n + btsocket==0.3.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + chacha20poly1305-reuseable==0.13.2\n + charset-normalizer==3.4.9\n + ciso8601==2.3.3\n + colorlog==6.12.0\n + coverage==7.14.1\n + cronsim==2.7\n + cryptography==48.0.1\n + dukpy==0.6.0\n + envs==1.4\n + execnet==2.1.2\n + fnv-hash-fast==2.0.3\n + fnvhash==0.2.1\n + freezegun==1.5.5\n + frozenlist==1.8.0\n + grpcio==1.83.0\n + h11==0.16.0\n + habluetooth==6.1.0\n + hass-nabucasa==2.2.0\n + home-assistant-bluetooth==2.0.0\n + homeassistant==2026.7.4\n + httpcore==1.0.9\n + httpx==0.28.1\n + icmplib==3.0.4\n + idna==3.18\n + ifaddr==0.2.0\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + jmespath==1.1.0\n + josepy==2.2.0\n + librt==0.15.0\n + license-expression==30.4.3\n + lru-dict==1.4.1\n + markupsafe==3.0.3\n + mashumaro==3.22\n + mock-open==1.4.0\n + multidict==6.7.1\n + mypy==2.3.0\n + mypy-extensions==1.1.0\n + noiseprotocol==0.3.1\n + numpy==2.3.2\n + orjson==3.11.9\n + packaging==26.3\n + paho-mqtt==2.1.0\n + pathspec==1.1.1\n + pillow==12.2.0\n + pip==26.2.1\n + pipdeptree==2.26.1\n + pluggy==1.6.0\n + propcache==0.5.2\n + protobuf==7.35.1\n + psutil==7.2.2\n + psutil-home-assistant==0.0.1\n + pycares==5.0.1\n + pycognito==2024.5.1\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pyjwt==2.12.1\n + pynacl==1.6.2\n + pyobjc-core==12.2.1\n + pyobjc-framework-cocoa==12.2.1\n + pyobjc-framework-corebluetooth==12.2.1\n + pyobjc-framework-libdispatch==12.2.1\n + pyopenssl==26.2.0\n + pyrfc3339==2.1.0\n + pyric==0.1.6.3\n + pyserial==3.5\n + pyserial-asyncio==0.6\n + pytboss==2026.8.3\n + pytest==9.0.3\n + pytest-aiohttp==1.1.1\n + pytest-asyncio==1.4.0\n + pytest-cov==7.1.0\n + pytest-freezer==0.4.9\n + pytest-github-actions-annotate-failures==0.4.0\n + pytest-homeassistant-custom-component==0.13.348\n + pytest-picked==0.5.1\n + pytest-socket==0.8.0\n + pytest-timeout==2.4.0\n + pytest-unordered==0.8.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + python-slugify==8.0.4\n + pytz==2026.3.post1\n + pyyaml==6.0.3\n + regex==2026.7.19\n + requests==2.34.2\n + requests-mock==1.12.1\n + respx==0.23.1\n + ruff==0.16.0\n + s3transfer==0.19.2\n + securetar==2026.4.1\n + sentence-stream==1.3.0\n + serialx==1.8.2\n + six==1.17.0\n + snitun==0.45.1\n + sqlalchemy==2.0.51\n + standard-aifc==3.13.0\n + standard-chunk==3.13.0\n + standard-telnetlib==3.13.0\n + syrupy==5.3.2\n + text-unidecode==1.3\n + tqdm==4.67.1\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + tzdata==2026.3\n + tzlocal==5.4.4\n + uart-devices==0.1.1\n + ulid-transform==2.2.9\n + unidiff==0.7.5\n + urllib3==2.7.0\n + usb-devices==0.5.1\n + uv==0.11.25\n + voluptuous==0.15.2\n + voluptuous-openapi==0.4.1\n + voluptuous-serialize==2.7.0\n + webrtc-models==0.3.0\n + yarl==1.24.5\n + zeroconf==0.150.0\n",
+          "stderr_bytes": 3623,
+          "stderr_complete": true,
+          "stderr_sha256": "1c8b9815b4c595d9ecac8cd55750a022b75adef712f1f7a286c6fda9c050d964",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-tbyl4_qz\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-tbyl4_qz/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 27.954,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "acme",
+              "version": "5.4.0"
+            },
+            {
+              "name": "aiodns",
+              "version": "4.0.4"
+            },
+            {
+              "name": "aioesphomeapi",
+              "version": "45.7.0"
+            },
+            {
+              "name": "aiogithubapi",
+              "version": "26.0.0"
+            },
+            {
+              "name": "aiohappyeyeballs",
+              "version": "2.7.1"
+            },
+            {
+              "name": "aiohasupervisor",
+              "version": "0.5.0"
+            },
+            {
+              "name": "aiohttp",
+              "version": "3.14.3"
+            },
+            {
+              "name": "aiohttp-asyncmdnsresolver",
+              "version": "0.2.0"
+            },
+            {
+              "name": "aiohttp-cors",
+              "version": "0.8.1"
+            },
+            {
+              "name": "aiohttp-fast-zlib",
+              "version": "0.3.0"
+            },
+            {
+              "name": "aiooui",
+              "version": "0.1.9"
+            },
+            {
+              "name": "aiosignal",
+              "version": "1.4.0"
+            },
+            {
+              "name": "aiousbwatcher",
+              "version": "1.1.2"
+            },
+            {
+              "name": "aiozoneinfo",
+              "version": "0.2.3"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "annotatedyaml",
+              "version": "1.0.2"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "ast-serialize",
+              "version": "0.8.0"
+            },
+            {
+              "name": "astral",
+              "version": "2.2"
+            },
+            {
+              "name": "async-interrupt",
+              "version": "1.2.2"
+            },
+            {
+              "name": "asyncinotify",
+              "version": "4.4.4"
+            },
+            {
+              "name": "atomicwrites-homeassistant",
+              "version": "1.4.1"
+            },
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "audioop-lts",
+              "version": "0.2.2"
+            },
+            {
+              "name": "awesomeversion",
+              "version": "25.8.0"
+            },
+            {
+              "name": "backoff",
+              "version": "2.2.1"
+            },
+            {
+              "name": "bcrypt",
+              "version": "5.0.0"
+            },
+            {
+              "name": "bleak",
+              "version": "3.0.2"
+            },
+            {
+              "name": "bleak-retry-connector",
+              "version": "4.6.3"
+            },
+            {
+              "name": "bluetooth-adapters",
+              "version": "2.4.0"
+            },
+            {
+              "name": "bluetooth-auto-recovery",
+              "version": "1.6.4"
+            },
+            {
+              "name": "bluetooth-data-tools",
+              "version": "1.29.6"
+            },
+            {
+              "name": "boolean-py",
+              "version": "5.0"
+            },
+            {
+              "name": "boto3",
+              "version": "1.43.67"
+            },
+            {
+              "name": "botocore",
+              "version": "1.43.67"
+            },
+            {
+              "name": "btsocket",
+              "version": "0.3.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "chacha20poly1305-reuseable",
+              "version": "0.13.2"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "ciso8601",
+              "version": "2.3.3"
+            },
+            {
+              "name": "colorlog",
+              "version": "6.12.0"
+            },
+            {
+              "name": "coverage",
+              "version": "7.14.1"
+            },
+            {
+              "name": "cronsim",
+              "version": "2.7"
+            },
+            {
+              "name": "cryptography",
+              "version": "48.0.1"
+            },
+            {
+              "name": "dukpy",
+              "version": "0.6.0"
+            },
+            {
+              "name": "envs",
+              "version": "1.4"
+            },
+            {
+              "name": "execnet",
+              "version": "2.1.2"
+            },
+            {
+              "name": "fnv-hash-fast",
+              "version": "2.0.3"
+            },
+            {
+              "name": "fnvhash",
+              "version": "0.2.1"
+            },
+            {
+              "name": "freezegun",
+              "version": "1.5.5"
+            },
+            {
+              "name": "frozenlist",
+              "version": "1.8.0"
+            },
+            {
+              "name": "grpcio",
+              "version": "1.83.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "habluetooth",
+              "version": "6.1.0"
+            },
+            {
+              "name": "hass-nabucasa",
+              "version": "2.2.0"
+            },
+            {
+              "name": "home-assistant-bluetooth",
+              "version": "2.0.0"
+            },
+            {
+              "name": "homeassistant",
+              "version": "2026.7.4"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "icmplib",
+              "version": "3.0.4"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "ifaddr",
+              "version": "0.2.0"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "jmespath",
+              "version": "1.1.0"
+            },
+            {
+              "name": "josepy",
+              "version": "2.2.0"
+            },
+            {
+              "name": "librt",
+              "version": "0.15.0"
+            },
+            {
+              "name": "license-expression",
+              "version": "30.4.3"
+            },
+            {
+              "name": "lru-dict",
+              "version": "1.4.1"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "mashumaro",
+              "version": "3.22"
+            },
+            {
+              "name": "mock-open",
+              "version": "1.4.0"
+            },
+            {
+              "name": "multidict",
+              "version": "6.7.1"
+            },
+            {
+              "name": "mypy",
+              "version": "2.3.0"
+            },
+            {
+              "name": "mypy-extensions",
+              "version": "1.1.0"
+            },
+            {
+              "name": "noiseprotocol",
+              "version": "0.3.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.3.2"
+            },
+            {
+              "name": "orjson",
+              "version": "3.11.9"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "paho-mqtt",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pathspec",
+              "version": "1.1.1"
+            },
+            {
+              "name": "pillow",
+              "version": "12.2.0"
+            },
+            {
+              "name": "pip",
+              "version": "26.2.1"
+            },
+            {
+              "name": "pipdeptree",
+              "version": "2.26.1"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "propcache",
+              "version": "0.5.2"
+            },
+            {
+              "name": "protobuf",
+              "version": "7.35.1"
+            },
+            {
+              "name": "psutil",
+              "version": "7.2.2"
+            },
+            {
+              "name": "psutil-home-assistant",
+              "version": "0.0.1"
+            },
+            {
+              "name": "pycares",
+              "version": "5.0.1"
+            },
+            {
+              "name": "pycognito",
+              "version": "2024.5.1"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyjwt",
+              "version": "2.12.1"
+            },
+            {
+              "name": "pynacl",
+              "version": "1.6.2"
+            },
+            {
+              "name": "pyobjc-core",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-cocoa",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-corebluetooth",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-libdispatch",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyopenssl",
+              "version": "26.2.0"
+            },
+            {
+              "name": "pyrfc3339",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pyric",
+              "version": "0.1.6.3"
+            },
+            {
+              "name": "pyserial",
+              "version": "3.5"
+            },
+            {
+              "name": "pyserial-asyncio",
+              "version": "0.6"
+            },
+            {
+              "name": "pytboss",
+              "version": "2026.8.3"
+            },
+            {
+              "name": "pytest",
+              "version": "9.0.3"
+            },
+            {
+              "name": "pytest-aiohttp",
+              "version": "1.1.1"
+            },
+            {
+              "name": "pytest-asyncio",
+              "version": "1.4.0"
+            },
+            {
+              "name": "pytest-cov",
+              "version": "7.1.0"
+            },
+            {
+              "name": "pytest-freezer",
+              "version": "0.4.9"
+            },
+            {
+              "name": "pytest-github-actions-annotate-failures",
+              "version": "0.4.0"
+            },
+            {
+              "name": "pytest-homeassistant-custom-component",
+              "version": "0.13.348"
+            },
+            {
+              "name": "pytest-picked",
+              "version": "0.5.1"
+            },
+            {
+              "name": "pytest-socket",
+              "version": "0.8.0"
+            },
+            {
+              "name": "pytest-timeout",
+              "version": "2.4.0"
+            },
+            {
+              "name": "pytest-unordered",
+              "version": "0.8.0"
+            },
+            {
+              "name": "pytest-xdist",
+              "version": "3.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "python-slugify",
+              "version": "8.0.4"
+            },
+            {
+              "name": "pytz",
+              "version": "2026.3.post1"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "regex",
+              "version": "2026.7.19"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "requests-mock",
+              "version": "1.12.1"
+            },
+            {
+              "name": "respx",
+              "version": "0.23.1"
+            },
+            {
+              "name": "ruff",
+              "version": "0.16.0"
+            },
+            {
+              "name": "s3transfer",
+              "version": "0.19.2"
+            },
+            {
+              "name": "securetar",
+              "version": "2026.4.1"
+            },
+            {
+              "name": "sentence-stream",
+              "version": "1.3.0"
+            },
+            {
+              "name": "serialx",
+              "version": "1.8.2"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "snitun",
+              "version": "0.45.1"
+            },
+            {
+              "name": "sqlalchemy",
+              "version": "2.0.51"
+            },
+            {
+              "name": "standard-aifc",
+              "version": "3.13.0"
+            },
+            {
+              "name": "standard-chunk",
+              "version": "3.13.0"
+            },
+            {
+              "name": "standard-telnetlib",
+              "version": "3.13.0"
+            },
+            {
+              "name": "syrupy",
+              "version": "5.3.2"
+            },
+            {
+              "name": "text-unidecode",
+              "version": "1.3"
+            },
+            {
+              "name": "tqdm",
+              "version": "4.67.1"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "tzdata",
+              "version": "2026.3"
+            },
+            {
+              "name": "tzlocal",
+              "version": "5.4.4"
+            },
+            {
+              "name": "uart-devices",
+              "version": "0.1.1"
+            },
+            {
+              "name": "ulid-transform",
+              "version": "2.2.9"
+            },
+            {
+              "name": "unidiff",
+              "version": "0.7.5"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "usb-devices",
+              "version": "0.5.1"
+            },
+            {
+              "name": "uv",
+              "version": "0.11.25"
+            },
+            {
+              "name": "voluptuous",
+              "version": "0.15.2"
+            },
+            {
+              "name": "voluptuous-openapi",
+              "version": "0.4.1"
+            },
+            {
+              "name": "voluptuous-serialize",
+              "version": "2.7.0"
+            },
+            {
+              "name": "webrtc-models",
+              "version": "0.3.0"
+            },
+            {
+              "name": "yarl",
+              "version": "1.24.5"
+            },
+            {
+              "name": "zeroconf",
+              "version": "0.150.0"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-tbyl4_qz\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-tbyl4_qz/task-13/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--find-links",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/wheels"
+          ],
+          "duration_ms": 27483.434,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 158 packages in 538ms\nInstalled 158 packages in 26.76s\n + acme==5.4.0\n + aiodns==4.0.4\n + aioesphomeapi==45.7.0\n + aiogithubapi==26.0.0\n + aiohappyeyeballs==2.7.1\n + aiohasupervisor==0.5.0\n + aiohttp==3.14.3\n + aiohttp-asyncmdnsresolver==0.2.0\n + aiohttp-cors==0.8.1\n + aiohttp-fast-zlib==0.3.0\n + aiooui==0.1.9\n + aiosignal==1.4.0\n + aiousbwatcher==1.1.2\n + aiozoneinfo==0.2.3\n + annotated-types==0.8.0\n + annotatedyaml==1.0.2\n + anyio==4.14.2\n + ast-serialize==0.8.0\n + astral==2.2\n + async-interrupt==1.2.2\n + asyncinotify==4.4.4\n + atomicwrites-homeassistant==1.4.1\n + attrs==26.1.0\n + audioop-lts==0.2.2\n + awesomeversion==25.8.0\n + backoff==2.2.1\n + bcrypt==5.0.0\n + bleak==3.0.2\n + bleak-retry-connector==4.6.3\n + bluetooth-adapters==2.4.0\n + bluetooth-auto-recovery==1.6.4\n + bluetooth-data-tools==1.29.6\n + boolean-py==5.0\n + boto3==1.43.67\n + botocore==1.43.67\n + btsocket==0.3.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + chacha20poly1305-reuseable==0.13.2\n + charset-normalizer==3.4.9\n + ciso8601==2.3.3\n + colorlog==6.12.0\n + coverage==7.14.1\n + cronsim==2.7\n + cryptography==48.0.1\n + dukpy==0.6.0\n + envs==1.4\n + execnet==2.1.2\n + fnv-hash-fast==2.0.3\n + fnvhash==0.2.1\n + freezegun==1.5.5\n + frozenlist==1.8.0\n + grpcio==1.83.0\n + h11==0.16.0\n + habluetooth==6.1.0\n + hass-nabucasa==2.2.0\n + home-assistant-bluetooth==2.0.0\n + homeassistant==2026.7.4\n + httpcore==1.0.9\n + httpx==0.28.1\n + icmplib==3.0.4\n + idna==3.18\n + ifaddr==0.2.0\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + jmespath==1.1.0\n + josepy==2.2.0\n + librt==0.15.0\n + license-expression==30.4.3\n + lru-dict==1.4.1\n + markupsafe==3.0.3\n + mashumaro==3.22\n + mock-open==1.4.0\n + multidict==6.7.1\n + mypy==2.3.0\n + mypy-extensions==1.1.0\n + noiseprotocol==0.3.1\n + numpy==2.3.2\n + orjson==3.11.9\n + packaging==26.3\n + paho-mqtt==2.1.0\n + pathspec==1.1.1\n + pillow==12.2.0\n + pip==26.2.1\n + pipdeptree==2.26.1\n + pluggy==1.6.0\n + propcache==0.5.2\n + protobuf==7.35.1\n + psutil==7.2.2\n + psutil-home-assistant==0.0.1\n + pycares==5.0.1\n + pycognito==2024.5.1\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pyjwt==2.12.1\n + pynacl==1.6.2\n + pyobjc-core==12.2.1\n + pyobjc-framework-cocoa==12.2.1\n + pyobjc-framework-corebluetooth==12.2.1\n + pyobjc-framework-libdispatch==12.2.1\n + pyopenssl==26.2.0\n + pyrfc3339==2.1.0\n + pyric==0.1.6.3\n + pyserial==3.5\n + pyserial-asyncio==0.6\n + pytboss==2026.8.3\n + pytest==9.0.3\n + pytest-aiohttp==1.1.1\n + pytest-asyncio==1.4.0\n + pytest-cov==7.1.0\n + pytest-freezer==0.4.9\n + pytest-github-actions-annotate-failures==0.4.0\n + pytest-homeassistant-custom-component==0.13.348\n + pytest-picked==0.5.1\n + pytest-socket==0.8.0\n + pytest-timeout==2.4.0\n + pytest-unordered==0.8.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + python-slugify==8.0.4\n + pytz==2026.3.post1\n + pyyaml==6.0.3\n + regex==2026.7.19\n + requests==2.34.2\n + requests-mock==1.12.1\n + respx==0.23.1\n + ruff==0.16.0\n + s3transfer==0.19.2\n + securetar==2026.4.1\n + sentence-stream==1.3.0\n + serialx==1.8.2\n + six==1.17.0\n + snitun==0.45.1\n + sqlalchemy==2.0.51\n + standard-aifc==3.13.0\n + standard-chunk==3.13.0\n + standard-telnetlib==3.13.0\n + syrupy==5.3.2\n + text-unidecode==1.3\n + tqdm==4.67.1\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + tzdata==2026.3\n + tzlocal==5.4.4\n + uart-devices==0.1.1\n + ulid-transform==2.2.9\n + unidiff==0.7.5\n + urllib3==2.7.0\n + usb-devices==0.5.1\n + uv==0.11.25\n + voluptuous==0.15.2\n + voluptuous-openapi==0.4.1\n + voluptuous-serialize==2.7.0\n + webrtc-models==0.3.0\n + yarl==1.24.5\n + zeroconf==0.150.0\n",
+          "stderr_bytes": 3624,
+          "stderr_complete": true,
+          "stderr_sha256": "73d22172b17b508552269b109fb1af09fb60a46c2d122be722466f19412e987d",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-tbyl4_qz\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-tbyl4_qz/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 226.987,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "dknowles2/ha-pitboss"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 16,
+      "lock": {
+        "package_count": 35,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+        "sha256": "55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a"
+      },
+      "manager": "uv",
+      "receipts": {
+        "predecessor_report_sha256": "d6256238603970982a46549b7f2d6c9817170a0f580cc4da5bd78300d532668c",
+        "predecessor_reuse": true
+      },
+      "repository": "dynatrace-wwse/codespaces-framework"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 25,
+      "lock": {
+        "package_count": 39,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+        "sha256": "8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6"
+      },
+      "manager": "uv",
+      "receipts": {
+        "predecessor_report_sha256": "d6256238603970982a46549b7f2d6c9817170a0f580cc4da5bd78300d532668c",
+        "predecessor_reuse": true
+      },
+      "repository": "fibsem-os/fibsem-os"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 35,
+      "lock": {
+        "package_count": 404,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-35-Cargo.lock",
+        "sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+      },
+      "manager": "cargo",
+      "receipts": {
+        "offline_fetch": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-tbyl4_qz\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+            "fetch",
+            "--locked",
+            "--manifest-path",
+            "/private/tmp/theseus-vcm-six-env-tbyl4_qz/task-35/repository/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/Cargo.toml",
+            "--config",
+            "net.git-fetch-with-cli=false",
+            "--offline"
+          ],
+          "duration_ms": 376.996,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "",
+          "stderr_bytes": 0,
+          "stderr_complete": true,
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_fetch": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-tbyl4_qz\")))\n(allow file-write* (subpath \"/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1\"))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+            "fetch",
+            "--locked",
+            "--manifest-path",
+            "/private/tmp/theseus-vcm-six-env-tbyl4_qz/task-35/repository/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/Cargo.toml",
+            "--config",
+            "net.git-fetch-with-cli=false"
+          ],
+          "duration_ms": 8869.511,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": " Downloading crates ...\n  Downloaded wasm-bindgen-shared v0.2.126\n  Downloaded futures-core v0.3.33\n  Downloaded sync_wrapper v1.0.2\n  Downloaded futures-task v0.3.33\n  Downloaded futures-io v0.3.33\n  Downloaded icu_normalizer_data v1.5.1\n  Downloaded wasm-bindgen-macro v0.2.126\n  Downloaded wasm-bindgen-futures v0.4.76\n  Downloaded wasm-bindgen-test-shared v0.2.126\n  Downloaded cfg-if v1.0.4\n  Downloaded rustversion v1.0.23\n  Downloaded slab v0.4.12\n  Downloaded futures-sink v0.3.33\n  Downloaded futures-macro v0.3.33\n  Downloaded test-case v3.3.1\n  Downloaded borrow-or-share v0.2.4\n  Downloaded winapi-util v0.1.11\n  Downloaded heck v0.5.0\n  Downloaded same-file v1.0.6\n  Downloaded wasm-bindgen-test-macro v0.3.76\n  Downloaded itoa v1.0.18\n  Downloaded cast v0.3.0\n  Downloaded test-case-core v3.3.1\n  Downloaded utf16_iter v1.0.5\n  Downloaded openssl-probe v0.2.1\n  Downloaded windows-link v0.2.1\n  Downloaded test-case-macros v3.3.1\n  Downloaded ref-cast-impl v1.0.26\n  Downloaded tokio-macros v2.7.2\n  Downloaded form_urlencoded v1.2.2\n  Downloaded ref-cast v1.0.26\n  Downloaded equivalent v1.0.2\n  Downloaded page_size v0.6.0\n  Downloaded http-body v1.1.0\n  Downloaded pin-project-lite v0.2.17\n  Downloaded percent-encoding v2.3.2\n  Downloaded scopeguard v1.2.0\n  Downloaded tower-layer v0.3.3\n  Downloaded zmij v1.0.23\n  Downloaded rustls-platform-verifier-android v0.1.1\n  Downloaded write16 v1.0.0\n  Downloaded windows-targets v0.42.2\n  Downloaded jni-sys-macros v0.4.1\n  Downloaded crunchy v0.2.4\n  Downloaded ciborium-io v0.2.2\n  Downloaded oorandom v11.1.5\n  Downloaded cfg_aliases v0.2.2\n  Downloaded nu-ansi-term v0.50.3\n  Downloaded wasi v0.11.1+wasi-snapshot-preview1\n  Downloaded tower-service v0.3.3\n  Downloaded quote v1.0.47\n  Downloaded find-msvc-tools v0.1.10\n  Downloaded walkdir v2.5.0\n  Downloaded tinytemplate v1.2.1\n  Downloaded async-trait v0.1.92\n  Downloaded redox_syscall v0.5.18\n  Downloaded rand_core v0.10.1\n  Downloaded serde-wasm-bindgen v0.6.5\n  Downloaded futures-executor v0.3.33\n  Downloaded jni-sys v0.3.1\n  Downloaded futures-channel v0.3.33\n  Downloaded cesu8 v1.1.0\n  Downloaded target-triple v1.0.1\n  Downloaded once_cell v1.21.4\n  Downloaded atomic-waker v1.1.2\n  Downloaded lazy_static v1.5.0\n  Downloaded strum v0.28.0\n  Downloaded autocfg v1.5.1\n  Downloaded serde_core v1.0.229\n  Downloaded minicov v0.3.8\n  Downloaded bitflags v2.13.1\n  Downloaded fnv v1.0.7\n  Downloaded jni-sys v0.4.1\n  Downloaded parking_lot v0.12.5\n  Downloaded foldhash v0.2.0\n  Downloaded shlex v2.0.1\n  Downloaded parking_lot_core v0.9.12\n  Downloaded lock_api v0.4.14\n  Downloaded seq-macro v0.3.6\n  Downloaded proc-macro2 v1.0.107\n  Downloaded try-lock v0.2.5\n  Downloaded num-traits v0.2.19\n  Downloaded want v0.3.1\n  Downloaded wasm-bindgen-test v0.3.76\n  Downloaded pyo3-macros v0.29.2\n  Downloaded fastrand v2.5.0\n  Downloaded jobserver v0.1.34\n  Downloaded fluent-uri v0.4.1\n  Downloaded smallvec v1.15.2\n  Downloaded getrandom v0.4.3\n  Downloaded getrandom v0.3.4\n  Downloaded socket2 v0.6.5\n  Downloaded wit-bindgen v0.46.0\n  Downloaded micromap v0.3.0\n  Downloaded r-efi v6.0.0\n  Downloaded num-iter v0.1.46\n  Downloaded wasm-bindgen v0.2.126\n  Downloaded serde_derive v1.0.229\n  Downloaded allocator-api2 v0.2.21\n  Downloaded r-efi v5.3.0\n  Downloaded bytes v1.12.1\n  Downloaded icu_provider_macros v1.5.0\n  Downloaded adler2 v2.0.1\n  Downloaded memchr v2.8.3\n  Downloaded futures v0.3.33\n  Downloaded unicode-ident v1.0.24\n  Downloaded pkg-config v0.3.33\n  Downloaded hegeltest-macros v0.28.8\n  Downloaded bumpalo v3.20.3\n  Downloaded serde v1.0.229\n  Downloaded stable_deref_trait v1.2.1\n  Downloaded toml_datetime v0.7.5+spec-1.1.0\n  Downloaded js-sys v0.3.103\n  Downloaded getrandom v0.2.17\n  Downloaded wasm-bindgen-macro-support v0.2.126\n  Downloaded icu_locid_transform_data v1.5.1\n  Downloaded cc v1.4.2\n  Downloaded encode_unicode v1.0.0\n  Downloaded num v0.4.3\n  Downloaded shell-words v1.1.1\n  Downloaded mio v1.2.2\n  Downloaded zerocopy-derive v0.8.56\n  Downloaded rb-sys-env v0.2.3\n  Downloaded wasip2 v1.0.1+wasi-0.2.4\n  Downloaded magnus-macros v0.8.0\n  Downloaded serde_spanned v1.0.4\n  Downloaded proc-macro-crate v3.4.0\n  Downloaded core-foundation v0.10.1\n  Downloaded rustls-native-certs v0.8.4\n  Downloaded num-cmp v0.1.0\n  Downloaded serde_json v1.0.151\n  Downloaded libm v0.2.16\n  Downloaded criterion v0.8.2\n  Downloaded hashbrown v0.17.1\n  Downloaded thiserror-impl v1.0.69\n  Downloaded ipnet v2.12.1\n  Downloaded regex v1.13.1\n  Downloaded rustc-hash v2.1.3\n  Downloaded aho-corasick v1.1.5\n  Downloaded toml_datetime v1.0.1+spec-1.1.0\n  Downloaded strsim v0.11.1\n  Downloaded zerofrom v0.1.8\n  Downloaded futures-util v0.3.33\n  Downloaded http-body-util v0.1.4\n  Downloaded cexpr v0.6.0\n  Downloaded target-lexicon v0.13.5\n  Downloaded clap_lex v1.0.1\n  Downloaded downcast-rs v1.2.1\n  Downloaded toml_writer v1.0.7+spec-1.1.0\n  Downloaded zerovec-derive v0.10.3\n  Downloaded rand v0.10.2\n  Downloaded fs_extra v1.3.0\n  Downloaded json-pointer v0.3.4\n  Downloaded assert_cmd v2.1.2\n  Downloaded dunce v1.0.5\n  Downloaded rb-sys-build v0.9.128\n  Downloaded security-framework-sys v2.17.0\n  Downloaded icu_normalizer v1.5.0\n  Downloaded chacha20 v0.10.1\n  Downloaded num-integer v0.1.46\n  Downloaded tokio-rustls v0.26.4\n  Downloaded shlex v1.3.0\n  Downloaded termcolor v1.4.1\n  Downloaded uuid v1.20.0\n  Downloaded data-encoding v2.11.1\n  Downloaded iana-time-zone-haiku v0.1.2\n  Downloaded num-rational v0.4.2\n  Downloaded phf_generator v0.11.3\n  Downloaded criterion-plot v0.5.0\n  Downloaded similar v2.7.0\n  Downloaded windows-strings v0.4.2\n  Downloaded is-terminal v0.4.17\n  Downloaded version_check v0.9.5\n  Downloaded email_address v0.2.9\n  Downloaded windows-link v0.1.3\n  Downloaded appendlist v1.4.0\n  Downloaded arraydeque v0.5.1\n  Downloaded encoding_rs_io v0.1.8\n  Downloaded zerofrom-derive v0.1.7\n  Downloaded rustls-pki-types v1.15.1\n  Downloaded base64 v0.21.7\n  Downloaded bytecount v0.6.9\n  Downloaded core-foundation-sys v0.8.7\n  Downloaded schannel v0.1.29\n  Downloaded thiserror v1.0.69\n  Downloaded rb-sys v0.9.128\n  Downloaded trybuild v1.0.116\n  Downloaded httparse v1.10.1\n  Downloaded hyper-rustls v0.27.7\n  Downloaded num-complex v0.4.6\n  Downloaded syn v3.0.3\n  Downloaded toml_parser v1.0.10+spec-1.1.0\n  Downloaded aws-lc-rs v1.18.0\n  Downloaded itertools v0.10.5\n  Downloaded anstyle-wincon v3.0.11\n  Downloaded pyo3-build-config v0.29.2\n  Downloaded itertools v0.13.0\n  Downloaded libloading v0.8.9\n  Downloaded idna_adapter v1.2.0\n  Downloaded approx v0.5.1\n  Downloaded uritemplate-next v0.2.0\n  Downloaded anstyle v1.0.14\n  Downloaded cmake v0.1.58\n  Downloaded yoke-derive v0.7.5\n  Downloaded once_cell_polyfill v1.70.2\n  Downloaded syn v2.0.119\n  Downloaded granit-parser v0.0.7\n  Downloaded colored v3.1.1\n  Downloaded glob v0.3.4\n  Downloaded litemap v0.7.4\n  Downloaded regex-syntax v0.8.11\n  Downloaded clap_builder v4.5.61\n  Downloaded rand_core v0.6.4\n  Downloaded boon v0.6.1\n  Downloaded icu_locid v1.5.0\n  Downloaded log v0.4.33\n  Downloaded tracing-core v0.1.36\n  Downloaded clang-sys v1.9.1\n  Downloaded toml v1.0.7+spec-1.1.0\n  Downloaded unicode-general-category v1.1.0\n  Downloaded windows-result v0.3.4\n  Downloaded hegeltest v0.28.8\n  Downloaded miniz_oxide v0.8.9\n  Downloaded unicode-width v0.2.2\n  Downloaded rustls-platform-verifier v0.6.2\n  Downloaded difflib v0.4.0\n  Downloaded fluent-uri v0.3.2\n  Downloaded wait-timeout v0.2.1\n  Downloaded erased-serde v0.3.31\n  Downloaded anes v0.1.6\n  Downloaded clap_derive v4.5.61\n  Downloaded anstream v1.0.0\n  Downloaded utf8_iter v1.0.4\n  Downloaded windows-core v0.61.2\n  Downloaded base64 v0.22.1\n  Downloaded errno v0.3.14\n  Downloaded windows-implement v0.60.2\n  Downloaded addr v0.15.6\n  Downloaded pyo3-macros-backend v0.29.2\n  Downloaded vsimd v0.8.0\n  Downloaded alloca v0.4.0\n  Downloaded predicates v3.1.4\n  Downloaded pyo3-built v0.6.0\n  Downloaded nix v0.31.3\n  Downloaded regex-automata v0.4.18\n  Downloaded strum_macros v0.28.0\n  Downloaded icu_properties v1.5.1\n  Downloaded console v0.16.4\n  Downloaded web-sys v0.3.103\n  Downloaded pyo3-ffi v0.29.2\n  Downloaded jsonway v2.0.0\n  Downloaded insta v1.48.0\n  Downloaded anstyle-query v1.1.5\n  Downloaded anstyle-parse v1.0.0\n  Downloaded ciborium-ll v0.2.2\n  Downloaded windows-targets v0.52.6\n  Downloaded synstructure v0.13.2\n  Downloaded static_assertions v1.1.0\n  Downloaded predicates-core v1.0.10\n  Downloaded is_terminal_polyfill v1.70.2\n  Downloaded cpufeatures v0.3.0\n  Downloaded phf_codegen v0.11.3\n  Downloaded zerovec v0.10.4\n  Downloaded bit-vec v0.8.0\n  Downloaded ciborium v0.2.2\n  Downloaded hegeltest-c v0.30.5\n  Downloaded security-framework v3.6.0\n  Downloaded jni v0.21.1\n  Downloaded indexmap v2.11.4\n  Downloaded minimal-lexical v0.2.1\n  Downloaded jsonschema-valid v0.5.2\n  Downloaded prettyplease v0.2.37\n  Downloaded fancy-regex v0.11.0\n  Downloaded cargo-lock v11.1.0\n  Downloaded half v2.4.1\n  Downloaded untrusted v0.9.0\n  Downloaded paste v1.0.15\n  Downloaded outref v0.5.2\n  Downloaded windows-interface v0.59.3\n  Downloaded subtle v2.6.1\n  Downloaded android_system_properties v0.1.6\n  Downloaded iana-time-zone v0.1.65\n  Downloaded libc v0.2.189\n  Downloaded predicates-tree v1.0.13\n  Downloaded bit-set v0.5.3\n  Downloaded zeroize v1.8.2\n  Downloaded phf v0.11.3\n  Downloaded writeable v0.5.5\n  Downloaded either v1.17.0\n  Downloaded dashu-base v0.4.3\n  Downloaded criterion-plot v0.8.2\n  Downloaded tower v0.5.3\n  Downloaded hermit-abi v0.5.2\n  Downloaded psl-types v2.0.11\n  Downloaded windows_i686_msvc v0.52.6\n  Downloaded crc32fast v1.5.0\n  Downloaded rand v0.8.7\n  Downloaded codspeed-criterion-compat v5.0.1\n  Downloaded built v0.8.1\n  Downloaded hyper-util v0.1.20\n  Downloaded annotate-snippets v0.12.13\n  Downloaded anyhow v1.0.104\n  Downloaded ahash v0.8.12\n  Downloaded textwrap v0.16.2\n  Downloaded psl v2.1.223\n  Downloaded num-bigint v0.4.8\n  Downloaded tokio v1.53.1\n  Downloaded icu_properties_data v1.5.1\n  Downloaded icu_collections v1.5.0\n  Downloaded nom v7.1.3\n  Downloaded fraction v0.15.4\n  Downloaded semver v1.0.28\n  Downloaded icu_locid_transform v1.5.0\n  Downloaded bit-vec v0.6.3\n  Downloaded rustls-webpki v0.103.13\n  Downloaded windows_aarch64_gnullvm v0.52.6\n  Downloaded winapi v0.3.9\n  Downloaded combine v4.6.7\n  Downloaded windows_x86_64_gnullvm v0.52.6\n  Downloaded http v1.5.0\n  Downloaded tower-http v0.6.11\n  Downloaded webpki-root-certs v1.0.9\n  Downloaded hashbrown v0.16.1\n  Downloaded ring v0.17.14\n  Downloaded encoding_rs v0.8.35\n  Downloaded tokio-util v0.7.19\n  Downloaded windows-sys v0.61.2\n  Downloaded phf_shared v0.11.3\n  Downloaded siphasher v1.0.3\n  Downloaded termtree v0.5.1\n  Downloaded uuid-simd v0.8.0\n  Downloaded bit-set v0.8.0\n  Downloaded utf8parse v0.2.2\n  Downloaded windows-sys v0.52.0\n  Downloaded tempfile v3.27.0\n  Downloaded winapi-i686-pc-windows-gnu v0.4.0\n  Downloaded winapi-x86_64-pc-windows-gnu v0.4.0\n  Downloaded hyper v1.11.0\n  Downloaded displaydoc v0.2.7\n  Downloaded colorchoice v1.0.5\n  Downloaded tinystr v0.7.6\n  Downloaded h2 v0.4.15\n  Downloaded portable-atomic v1.14.0\n  Downloaded iri-string v0.5.6\n  Downloaded winnow v1.0.4\n  Downloaded magnus v0.8.2\n  Downloaded aws-lc-sys v0.44.0\n  Downloaded num-modular v0.6.5\n  Downloaded fancy-regex v0.18.0\n  Downloaded yoke v0.7.5\n  Downloaded clap v4.5.61\n  Downloaded icu_provider v1.5.0\n  Downloaded dashu-int v0.4.3\n  Downloaded valico v4.0.0\n  Downloaded statrs v0.18.0\n  Downloaded url v2.5.8\n  Downloaded bindgen v0.72.1\n  Downloaded toml_edit v0.23.10+spec-1.0.0\n  Downloaded codspeed-criterion-compat-walltime v5.0.1\n  Downloaded zerocopy v0.8.56\n  Downloaded idna v1.1.0\n  Downloaded reqwest v0.13.3\n  Downloaded chrono v0.4.45\n  Downloaded winnow v0.7.15\n  Downloaded windows_x86_64_gnullvm v0.42.2\n  Downloaded bstr v1.13.0\n  Downloaded windows_aarch64_gnullvm v0.42.2\n  Downloaded rustls v0.23.43\n  Downloaded tracing v0.1.44\n  Downloaded windows_i686_gnullvm v0.52.6\n  Downloaded rustix v1.1.4\n  Downloaded windows_x86_64_msvc v0.42.2\n  Downloaded windows_aarch64_msvc v0.42.2\n  Downloaded windows_i686_msvc v0.42.2\n  Downloaded windows_x86_64_gnu v0.42.2\n  Downloaded serde-saphyr v0.0.29\n  Downloaded codspeed v5.0.1\n  Downloaded windows_i686_gnu v0.42.2\n  Downloaded windows_aarch64_msvc v0.52.6\n  Downloaded windows_x86_64_gnu v0.52.6\n  Downloaded windows_i686_gnu v0.52.6\n  Downloaded windows_x86_64_msvc v0.52.6\n  Downloaded pyo3 v0.29.2\n  Downloaded windows-sys v0.45.0\n  Downloaded linux-raw-sys v0.12.1\n",
+          "stderr_bytes": 12531,
+          "stderr_complete": true,
+          "stderr_sha256": "9ba9ceb9c57fb320ff889ef8494b125168a9c4f4651db72adde67889b8a12f82",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "Stranger6667/jsonschema"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 56,
+      "lock": {
+        "package_count": 74,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+        "sha256": "edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b"
+      },
+      "manager": "uv",
+      "receipts": {
+        "predecessor_report_sha256": "d6256238603970982a46549b7f2d6c9817170a0f580cc4da5bd78300d532668c",
+        "predecessor_reuse": true
+      },
+      "repository": "AbsoluteMode/session-recall"
+    }
+  ],
+  "source_build_executions": 0,
+  "state": "K2_05_SIX_ROW_ENVIRONMENTS_MATERIALIZED_WITH_SCOPED_DISPOSITIONS",
+  "task_count": 6,
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

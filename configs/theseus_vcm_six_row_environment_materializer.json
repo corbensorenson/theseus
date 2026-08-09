@@ -2,7 +2,7 @@
   "policy":"project_theseus_vcm_six_row_environment_materializer_v1",
   "state":"PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V3_RESUME_FIT",
   "owner":"scripts/theseus_vcm_six_row_environment_materializer.py","owner_sha256":"8d3ba44f89f3c7b5b3f415ea4def74efc45217fe38d22e35c8d0f315108acd6e",
-  "audit_policy":"project_theseus_vcm_six_row_environment_materializer_audit_v1","audit_owner":"scripts/theseus_vcm_six_row_environment_materializer_audit.py","audit_owner_sha256":"6bfe5897746a1162bc7e1eef9d7e4cb56d45c18095411a5f9a41d8381ec3fd1d",
+  "audit_policy":"project_theseus_vcm_six_row_environment_materializer_audit_v1","audit_owner":"scripts/theseus_vcm_six_row_environment_materializer_audit.py","audit_owner_sha256":"4efc6b1354d51339517f8b8d0737a4fe5d4578208b57827fe5ad2def68e40bbf",
   "sources":{
     "fit":{"path":"reports/theseus_vcm_six_row_environment_preflight.json","sha256":"159b08e8a3760634a8200fcbc30e54210c0437279faca521dfe9a9da6a4be7ee"},
     "fit_audit":{"path":"reports/theseus_vcm_six_row_environment_preflight_audit.json","sha256":"2f098b7812a137913055450044618c15a1a0f0c3b8ea10fdae88e392a792bf9e"},

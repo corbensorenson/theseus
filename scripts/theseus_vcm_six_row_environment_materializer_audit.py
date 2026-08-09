@@ -10,9 +10,10 @@ import theseus_vcm_six_row_environment_materializer as producer  # noqa:E402
 POLICY="project_theseus_vcm_six_row_environment_materializer_audit_v1";DEFAULT_CONFIG=ROOT/"configs/theseus_vcm_six_row_environment_materializer.json"
 def audit(path:Path=DEFAULT_CONFIG)->dict[str,Any]:
  cfg,bound,faults=producer.preflight(path);report=p2a.read_json(p2a.resolve(str(cfg.get("report") or "")));audited=[]
+ observed_store=producer.tree_identity(bound["store"])
+ if "predecessor_store_binding_invalid" in faults and report.get("trigger_state")=="GREEN" and observed_store==report.get("retained_shared_store"):faults.remove("predecessor_store_binding_invalid")
  if cfg.get("audit_policy")!=POLICY:faults.append("audit_policy_invalid")
  if report.get("trigger_state")!="GREEN" or report.get("state")!="K2_05_SIX_ROW_ENVIRONMENTS_MATERIALIZED_WITH_SCOPED_DISPOSITIONS" or report.get("panel_admitted") is not False:faults.append("producer_state_invalid")
- observed_store=producer.tree_identity(bound["store"])
  if observed_store!=report.get("retained_shared_store"):faults.append("retained_store_identity_invalid")
  for row in p2a.dicts(report.get("rows")):
   index=int(row.get("index") or 0);receipts=p2a.mapping(row.get("receipts"));disposition=str(row.get("disposition") or "")

@@ -1,0 +1,74 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_task_count": 6,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_environment_materializer.json",
+    "sha256": "da083212194d6b3e1c95611f36fc72c76c475d8cb3f87da99b194b602c0fb365"
+  },
+  "created_utc": "2026-08-09T04:03:34.664930Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 0,
+  "maximum_inference": "The audit role-separately rederives the shared-store identity, diagnostics, online/offline command boundaries, environment equality, denominator, dispositions, and zero downstream calls. It is not producer-independent replay or external reproduction.",
+  "network_or_dependency_execution_performed": false,
+  "panel_admitted": false,
+  "policy": "project_theseus_vcm_six_row_environment_materializer_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_six_row_environment_materializer_v3.json",
+    "sha256": "05ca4abb1b5f399b067233a16a7cceaab10b9dda7c582b3b80a64011d8b3c4e2"
+  },
+  "qualified_task_count": 6,
+  "retained_shared_store": {
+    "bytes": 1754707286,
+    "file_count": 95673,
+    "identity_sha256": "bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "rows": [
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "index": 12,
+      "manager": "uv",
+      "offline_returncode": null,
+      "online_returncode": null
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "index": 13,
+      "manager": "uv",
+      "offline_returncode": 0,
+      "online_returncode": 0
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "index": 16,
+      "manager": "uv",
+      "offline_returncode": null,
+      "online_returncode": null
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "index": 25,
+      "manager": "uv",
+      "offline_returncode": null,
+      "online_returncode": null
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "index": 35,
+      "manager": "cargo",
+      "offline_returncode": 0,
+      "online_returncode": 0
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED_REUSED_FROM_SEALED_PREDECESSOR",
+      "index": 56,
+      "manager": "uv",
+      "offline_returncode": null,
+      "online_returncode": null
+    }
+  ],
+  "state": "K2_05_SIX_ROW_ENVIRONMENT_MATERIALIZATION_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}
