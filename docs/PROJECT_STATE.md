@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_K2_05_MATCHED_VERIFIER_EXECUTION_ACTIVE` | K2.05's target-free plan, all-62 parent stores, all eight static evaluators, all six immutable locks, and all six common evaluator environments are GREEN; matched parent/target verifier receipts are next, while the locked batch remains closed by the 40.6 GiB deficit |
+| Active VCM claim | `VCM_V3_K2_05_THREE_ROW_ADEQUACY_REPAIR_ACTIVE` | The matched six-row campaign is terminal at 3/6 qualified: Tasks 16, 25, and 56 pass parent-fail/target-pass; Tasks 12, 13, and 35 have scoped host-platform, dependency, and Ruby-toolchain walls. The panel is unadmitted and the locked batch remains closed by the 40.6 GiB deficit |
 | VCM information flow | `BROAD_PARENT_ROOT_AND_SELECTOR_AUDIT_GREEN` | The prospective claim contract no longer exposes target-derived `allowed_effect_paths`; every arm uses broad root `repository`, and the K2.04 audit rederived all candidate-visible bytes and request/parent-only selector inputs |
 | VCM natural-task route | `REPRESENTATIVE_PARENT_ONLY_MATERIALIZER_GREEN` | Four exact parent archives produced complete uncapped text frontiers, matched governed/plain/maximal/retrieval information identities, production VCM ABI receipts, and zero downstream calls; all-62 coverage remains K2.05 work |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -67,10 +67,10 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`k2_05_six_row_matched_verifier_execution_v1`, last closed task 26, and the wall
-`six_common_environments_green_matched_parent_target_verifier_receipts_not_yet_executed`.
+`k2_05_three_row_source_host_toolchain_adequacy_repair_v1`, last closed task 26, and the wall
+`matched_verifier_panel_3_of_6_qualified_task12_host_platform_task13_dependency_task35_ruby_toolchain_inconclusive`.
 The next legal action is
-`prospectively_seal_and_execute_six_matched_parent_target_verifiers_without_partial_panel_admission`.
+`prospectively_bind_one_new_campaign_adequacy_repair_for_tasks_12_13_35_without_rerunning_qualified_surfaces_or_admitting_partial_panel`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 

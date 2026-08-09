@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_MATCHED_VERIFIER_EXECUTION_ACTIVE` |
+| State | `VCM_V3_K2_05_THREE_ROW_ADEQUACY_REPAIR_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_six_row_matched_verifier_execution_v1` |
-| Current wall | `six_common_environments_green_matched_parent_target_verifier_receipts_not_yet_executed` |
+| Active attempt | `k2_05_three_row_source_host_toolchain_adequacy_repair_v1` |
+| Current wall | `matched_verifier_panel_3_of_6_qualified_task12_host_platform_task13_dependency_task35_ruby_toolchain_inconclusive` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_seal_and_execute_six_matched_parent_target_verifiers_without_partial_panel_admission` |
+| Next legal action | `prospectively_bind_one_new_campaign_adequacy_repair_for_tasks_12_13_35_without_rerunning_qualified_surfaces_or_admitting_partial_panel` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -463,10 +463,19 @@ sdist qualification and network-denied wheel builds for its sdist frontier.
 The resolution phase installed no packages and ran no repository evaluator or
 model. One generic, serial, reserve-safe owner has now materialized and
 role-separately rederived all six common evaluator environments through a
-1.75 GB shared uv/Cargo store with network-denied replay. K2.05 now advances to
-exact matched parent/target verifier execution. The full locked batch remains
-closed by the existing storage wall and may not be smuggled through partial
-panel admission.
+1.75 GB shared uv/Cargo store with network-denied replay. The terminal matched
+verifier campaign then qualified Tasks 16, 25, and 56. Task 12 is
+`INCONCLUSIVE_EXPERIMENT_HOST_PLATFORM_BOUNDARY` because the common evaluator
+imports a Windows-only package on Darwin; Task 13 remains
+`INCONCLUSIVE_IMPLEMENTATION` because its exact upstream Home Assistant stack
+is internally incompatible; Task 35 remains `INCONCLUSIVE_IMPLEMENTATION`
+because the pre-existing CI all-features regime reaches the host's incompatible
+Ruby/Magnus toolchain before the hidden evaluator. The role audit is GREEN,
+the shared store is unchanged, and no model or reference call occurred. The
+six-row panel is 3/6 and unadmitted. One new campaign may repair or
+invalidation-replace only Tasks 12, 13, and 35 without rerunning Tasks 16, 25,
+or 56. The full locked batch remains closed by the existing storage wall and
+may not be smuggled through partial panel admission.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -780,12 +789,14 @@ retention through governed custody rather than ad hoc cleanup.
 4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. **CURRENT — MATCHED VERIFIER EXECUTION:** Preserve the GREEN eight-row
-   static segment, six immutable locks, and six common environments;
-   prospectively seal one matched parent/target verifier path. Preserve
-   the 62-row denominator and do not admit a partial panel. The 48-row locked
-   segment remains separately closed by the 40.6 GiB reserve-safe storage
-   deficit until a bounded acquisition plan fits.
+5. **CURRENT — THREE-ROW ADEQUACY REPAIR:** Preserve the GREEN eight-row
+   static segment, six immutable locks, six common environments, and qualified
+   Tasks 16, 25, and 56. Prospectively bind one new campaign for only the Task
+   12 host-platform, Task 13 dependency, and Task 35 Ruby-toolchain walls;
+   repair faithfully or invalidation-replace under the frozen rank rule. Never
+   rerun the three qualified surfaces or admit a partial panel. The 48-row
+   locked segment remains separately closed by the 40.6 GiB reserve-safe
+   storage deficit until a bounded acquisition plan fits.
 6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/
    intervention/cost identity and complete producer-independent replay plus the
    role-separated blindness audit.

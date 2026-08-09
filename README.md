@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_MATCHED_VERIFIER_EXECUTION_ACTIVE` |
+| State | `VCM_V3_K2_05_THREE_ROW_ADEQUACY_REPAIR_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_six_row_matched_verifier_execution_v1` |
-| Current wall | `six_common_environments_green_matched_parent_target_verifier_receipts_not_yet_executed` |
+| Active attempt | `k2_05_three_row_source_host_toolchain_adequacy_repair_v1` |
+| Current wall | `matched_verifier_panel_3_of_6_qualified_task12_host_platform_task13_dependency_task35_ruby_toolchain_inconclusive` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_seal_and_execute_six_matched_parent_target_verifiers_without_partial_panel_admission` |
+| Next legal action | `prospectively_bind_one_new_campaign_adequacy_repair_for_tasks_12_13_35_without_rerunning_qualified_surfaces_or_admitting_partial_panel` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -151,7 +151,12 @@ plan. All 62 archive-backed parent stores are now role-separately GREEN across
 and 27 first qualified; the common target-verifier repair then qualified all
 eight exact parent-fail/target-pass constructs. All six immutable dependency
 locks and all six common evaluator environments are now role-separately GREEN.
-Matched parent/target verifier receipts are next. No partial panel exists.
+The terminal matched-verifier campaign qualified Tasks 16, 25, and 56. Task 12
+requires a Windows host, Task 13's frozen upstream Python dependencies are
+internally incompatible, and Task 35 hit the host Ruby/Magnus toolchain before
+its all-features evaluator ran. The six-row panel is 3/6 and remains unadmitted.
+Only those three residual rows may enter one new-campaign adequacy repair or
+invalidation replacement; the qualified surfaces may not rerun.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under
