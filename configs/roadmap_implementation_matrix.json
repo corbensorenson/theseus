@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_05_IMMUTABLE_RESOLUTION_ACTIVE",
+      "state": "VCM_V3_K2_05_ENVIRONMENT_MATERIALIZATION_ACTIVE",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_05_immutable_resolution_segment_v1",
-      "current_blocker": "six_immutable_resolution_dependency_closures_not_yet_materialized",
+      "active_attempt_id": "k2_05_six_row_environment_materialization_v1",
+      "current_blocker": "six_immutable_locks_green_common_evaluator_environments_not_yet_materialized",
       "last_closed_task_index": 26,
-      "next_legal_action": "prospectively_seal_and_materialize_six_immutable_resolution_closures_without_partial_panel_admission",
+      "next_legal_action": "prospectively_seal_and_materialize_common_evaluator_environments_then_run_matched_parent_target_verifiers_without_partial_panel_admission",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.05 has role-separately GREEN target-free segmentation, all-62 parent stores, and all eight static parent-fail/target-pass evaluator constructs. The static repair uses the exact target verifier bytes as one common hidden evaluator on both parent and target, preserves archive file modes, isolates Task 23 from unrelated conftest imports, retains complete diagnostics, denies network, and admits no partial panel. The invalid nested-sandbox launch and initial 3/8 construct result remain preserved evidence. This is evaluator-instrument evidence only, not model or VCM utility. Six immutable-resolution closures, 48 locked closures, model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.05 has role-separately GREEN target-free segmentation, all-62 parent stores, all eight static parent-fail/target-pass evaluator constructs, and all six immutable dependency locks. The immutable segment reuses five sealed locks and adds one Python 3.14 Task 13 lock after exact static sdist qualification and network-denied wheel builds; it installs no packages and runs no evaluator or model. This is evaluator-instrument evidence only, not model or VCM utility. Common evaluator environments, matched verifier receipts, 48 locked closures, model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -405,7 +405,7 @@
             ],
             "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
             "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden.",
-            "latest_observation": "The target-free 8/6/48 plan, all-62 parent stores, and all eight static evaluator constructs are now role-separately GREEN. The repaired static owner freezes exact target-verifier bytes as the identical hidden evaluator on both parent and target, preserves executable modes, isolates Task 23's scoped verifier from unrelated conftest imports, retains complete diagnostics, and runs network-denied. All eight parents fail and exact targets pass. Prior invalid and inconclusive attempts remain preserved. Panel admission is withheld and no model or reference call occurred. The six immutable-resolution closures are next; locked work remains closed by the storage wall."
+            "latest_observation": "The target-free 8/6/48 plan, all-62 parent stores, all eight static evaluator constructs, and all six immutable dependency locks are role-separately GREEN. Five locks were reused byte-for-byte and Task 13 resolved on Python 3.14.2 after exact static sdist qualification and network-denied wheel builds. Resolution installed no packages and ran no evaluator or model. Common evaluator-environment materialization and matched parent/target verifier execution are next; panel admission remains withheld and locked work remains closed by the storage wall."
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
@@ -1735,7 +1735,13 @@
         "config":"configs/theseus_vcm_static_evaluator_segment.json","owner":"scripts/theseus_vcm_static_evaluator_segment.py","test":"tests/test_theseus_vcm_static_evaluator_segment.py","report":"reports/theseus_vcm_static_evaluator_segment.json","audit_owner":"scripts/theseus_vcm_static_evaluator_segment_audit.py","audit_report":"reports/theseus_vcm_static_evaluator_segment_audit.json",
         "owner_sha256":"28311d5376fb9ff4858e971a102d30a94d017fb80548c4551d718efe5fc3d315","config_sha256":"00ab8338072b9cc85bc44450f043522b659d16a7b07327f3a009b62403e5c7ca","test_sha256":"c7e09938288c565bc9a7f6228847e48bee888528b2ef9350e7c309e689a60793","report_sha256":"033347115805fb2118a89308d4be2746ea583a3fc5043b93b38713dc4e435c6a","audit_owner_sha256":"2a2d8bd1eab3c4b1b7981a45c06a17d5f3b871e9ea2b0820bf206c465a9394c9","audit_report_sha256":"0a8dd4a81eded8ff7b4638b13c7c0e263e3d9e600ed39c20423e7c5c25d694b3",
         "state":"K2_05_STATIC_SEGMENT_ROLE_SEPARATELY_REDERIVED","task_count":8,"qualified_task_count":8,"qualified_task_indices":[1,10,20,22,23,27,57,58],"inconclusive_task_count":0,"inconclusive_task_indices":[],"common_target_verifier_identity_rederived":true,"archive_file_modes_preserved":true,"complete_diagnostics_retained":true,"parent_target_or_evaluator_executions":16,"panel_admitted":false,"network_or_dependency_execution_performed":false,"local_model_calls":0,"external_reference_calls":0,
-        "maximum_inference":"all eight exact static evaluator constructs qualify parent-fail/target-pass under one common target-verifier identity; this is evaluator-instrument evidence only and cannot support task, model, VCM, or book conclusions","next_boundary":"prospectively seal and materialize the six immutable-resolution closures without partial panel admission"
+        "maximum_inference":"all eight exact static evaluator constructs qualify parent-fail/target-pass under one common target-verifier identity; this is evaluator-instrument evidence only and cannot support task, model, VCM, or book conclusions","next_boundary":"preserve the now-GREEN six-lock immutable-resolution segment and materialize its common evaluator environments without partial panel admission"
+      },
+      "vcm_immutable_resolution_segment": {
+        "config":"configs/theseus_vcm_immutable_resolution_segment.json","owner":"scripts/theseus_vcm_immutable_resolution_segment.py","test":"tests/test_theseus_vcm_immutable_resolution_segment.py","report":"reports/theseus_vcm_immutable_resolution_segment_v5.json","audit_owner":"scripts/theseus_vcm_immutable_resolution_segment_audit.py","audit_report":"reports/theseus_vcm_immutable_resolution_segment_audit_v5.json",
+        "owner_sha256":"8cd7a55cf58a8daf294469f05cb3c1158eaf8fa65aa59dca5a50c5b1e47acf70","config_sha256":"506277fc20da7d00099e696e0286e8796e0a4e8cc98fb8fb0365d001e1025c08","test_sha256":"3e499ea7feecee2df07e0ed327da9f22003a90ddddeb6d442d181ca151816ccb","report_sha256":"2a96925e2d2604faea3ddcfe9d7b706e300446c9ee6ee94e72813d479e838275","audit_owner_sha256":"74f4cf6466bb90b06eb87a2e0c17f32b3eac53b504fbbd927137b08fb489afee","audit_report_sha256":"ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066",
+        "state":"K2_05_IMMUTABLE_RESOLUTION_ROLE_SEPARATELY_REDERIVED","task_count":6,"qualified_task_count":6,"qualified_task_indices":[12,13,16,25,35,56],"inconclusive_task_count":0,"reused_lock_count":5,"new_lock_count":1,"task13_python_version":"3.14.2","task13_package_count":158,"package_installations":0,"source_build_executions":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,"panel_admitted":false,
+        "maximum_inference":"all six exact immutable dependency declarations have audited hashed locks; this is resolution-instrument evidence only and cannot support task, evaluator, model, VCM, or book conclusions","next_boundary":"prospectively seal and materialize common evaluator environments, then run matched parent/target verifiers without partial panel admission"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

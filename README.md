@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_IMMUTABLE_RESOLUTION_ACTIVE` |
+| State | `VCM_V3_K2_05_ENVIRONMENT_MATERIALIZATION_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_immutable_resolution_segment_v1` |
-| Current wall | `six_immutable_resolution_dependency_closures_not_yet_materialized` |
+| Active attempt | `k2_05_six_row_environment_materialization_v1` |
+| Current wall | `six_immutable_locks_green_common_evaluator_environments_not_yet_materialized` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_seal_and_materialize_six_immutable_resolution_closures_without_partial_panel_admission` |
+| Next legal action | `prospectively_seal_and_materialize_common_evaluator_environments_then_run_matched_parent_target_verifiers_without_partial_panel_admission` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -149,8 +149,10 @@ Luna, evaluator, repository runner, or dependency execution occurred in the
 plan. All 62 archive-backed parent stores are now role-separately GREEN across
 133,048 regular files and 130,968 UTF-8 pages. Static evaluator Tasks 10, 22,
 and 27 first qualified; the common target-verifier repair then qualified all
-eight exact parent-fail/target-pass constructs. The six immutable-resolution
-closures are next. No partial panel exists.
+eight exact parent-fail/target-pass constructs. All six immutable dependency
+locks are now role-separately GREEN. Common evaluator-environment
+materialization and matched parent/target verifier receipts are next. No
+partial panel exists.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under
