@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE` |
+| State | `VCM_V3_K2_05_STATIC_SEGMENT_REPAIR_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_static_segment_v1` |
-| Current wall | `eight_static_parent_fail_target_pass_evaluator_paths_not_yet_qualified` |
+| Active attempt | `k2_05_static_segment_diagnostic_repair_v2` |
+| Current wall | `five_of_eight_static_evaluator_constructs_not_parent_fail_target_pass` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_seal_and_qualify_eight_static_parent_fail_target_pass_evaluator_paths_without_partial_panel_admission` |
+| Next legal action | `prospectively_seal_diagnostic_retention_and_repair_five_static_evaluator_constructs_without_partial_panel_admission` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -448,9 +448,13 @@ evaluator, packet, local-model, or reference call occurred. The next bounded
 transaction has now materialized and role-separately rederived all 62
 archive-backed parent stores: 133,048 regular files, 130,968 UTF-8 pages, and
 248 candidate-visible field receipts, with no duplicated payload and zero
-downstream calls. The eight static parent-fail/target-pass evaluator paths are
-now the active segment. The full locked batch remains closed by the existing
-storage wall and may not be smuggled through partial panel admission.
+downstream calls. The static segment then qualified exact parent-fail/target-pass
+behavior for Tasks 10, 22, and 27. Tasks 1, 20, 23, 57, and 58 are scoped
+`INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT`; the uniform code-71 nested
+sandbox attempt is separately preserved as an invalid launch wall. The five
+constructs require diagnostic-retaining repair before immutable work. The full
+locked batch remains closed by the existing storage wall and may not be
+smuggled through partial panel admission.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -764,11 +768,11 @@ retention through governed custody rather than ad hoc cleanup.
 4. **COMPLETE:** Build and independently audit the real parent-only VCM store and
    request-to-packet materializer on already qualified rows. Remove all
    target-derived effect paths and selector inputs before any task packet exists.
-5. **CURRENT — STATIC SEGMENT:** Preserve the GREEN all-62 parent-store batch,
-   then prospectively seal and qualify the eight static parent-fail/target-pass
-   evaluator paths. Preserve the 62-row denominator and do not admit a partial
-   panel. The 48-row locked segment remains separately closed by the 40.6 GiB
-   reserve-safe storage deficit until a bounded acquisition plan fits.
+5. **CURRENT — STATIC REPAIR:** Preserve the three qualified static rows and
+   prospectively seal diagnostic retention plus bounded evaluator repair for
+   Tasks 1, 20, 23, 57, and 58. Preserve the 62-row denominator and do not admit
+   a partial panel. The 48-row locked segment remains separately closed by the
+   40.6 GiB reserve-safe storage deficit until a bounded acquisition plan fits.
 6. Freeze one contiguous K2 source/evaluator/store/packet/sandbox/output/
    intervention/cost identity and complete producer-independent replay plus the
    role-separated blindness audit.

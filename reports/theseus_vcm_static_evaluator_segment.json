@@ -4,16 +4,16 @@
     "path": "configs/theseus_vcm_static_evaluator_segment.json",
     "sha256": "9559a393e2e3f4984be544333c4cd8b808fd31911a1985212ec5b1868cd169a9"
   },
-  "created_utc": "2026-08-09T02:21:55.563081Z",
+  "created_utc": "2026-08-09T02:23:11.009417Z",
   "external_reference_calls": 0,
   "faults": [],
-  "inconclusive_task_count": 8,
+  "inconclusive_task_count": 5,
   "maximum_inference": "A mechanically GREEN execution report establishes only scoped parent-fail/target-pass dispositions for the eight exact static evaluator paths under the bound Python or project-local Node runtime with network denied and no dependency installation. A nonqualifying row is INCONCLUSIVE_EXPERIMENT for that evaluator construct, not a task, model, VCM, or ASI Stack negative. It admits no partial panel and authorizes no candidate, local-model, Luna, D1, D2, training, serving, or book action.",
   "network_or_dependency_execution_performed": false,
   "panel_admitted": false,
   "parent_target_or_evaluator_executions": 16,
   "policy": "project_theseus_vcm_static_evaluator_segment_v1",
-  "qualified_task_count": 0,
+  "qualified_task_count": 3,
   "rows": [
     {
       "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
@@ -28,19 +28,19 @@
           "--test",
           "test/design.test.js"
         ],
-        "duration_ms": 28.562,
-        "profile_sha256": "fbe1da13ca4589f4974419ec32c9a03d60c16efd09f50cc437287411cfcbaa0b",
+        "duration_ms": 469.419,
+        "profile_sha256": "abec346b90699e2d50dcb56f9cb158b6b0c65bcc4110328d5b12ca3842df0d7e",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "test/design.test.js",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 2099,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "60183cc06a97c1008399f2c3c2f0ffc70a5621e6e524421857dd9e1354058cfd"
       },
-      "parent_failed": true,
+      "parent_failed": false,
       "repository": "endoftheline818/opensourcesai-cmdcenter",
       "target": {
         "archive": "runtime/vcm_evaluator/source_archives/01_endoftheline818-opensourcesai-cmdcenter_target.tar.gz",
@@ -52,22 +52,22 @@
           "--test",
           "test/design.test.js"
         ],
-        "duration_ms": 28.394,
-        "profile_sha256": "a11393b3ab6460cb6148bc8a7be04f799654cf418c432f350da1fa2ba55cc980",
+        "duration_ms": 323.053,
+        "profile_sha256": "510a015e9c5f4a8b54e9d88209726c44217547dfb9ff3fd632dfab475cf91373",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "test/design.test.js",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 2802,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "b8c6164be6b63699a703ebc5fa9699206af0139709f64e534523455e507e88b9"
       },
-      "target_passed": false
+      "target_passed": true
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 10,
       "parent": {
         "archive": "runtime/vcm_evaluator/source_archives/10_autodidac-orphanedmiscprojects_parent.tar.gz",
@@ -78,14 +78,14 @@
           "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64/bin/node",
           "VidCoreLargePlayer/tests/popup-guard.test.mjs"
         ],
-        "duration_ms": 35.357,
-        "profile_sha256": "dd2221d2b6e8adf924f47374d1795b06701522360b0379d1b5c7d0254836478b",
+        "duration_ms": 164.634,
+        "profile_sha256": "54935fc5678013df6cfa4032c0b985aac8ea7654c6436f92569e1a87fd2c11cd",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 1,
         "selected_verifier_path": "VidCoreLargePlayer/tests/popup-guard.test.mjs",
-        "stderr_bytes": 53,
+        "stderr_bytes": 868,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "49a6e695896513d937a397a2c02504fd8388cb3c00aba3dc678f6f3e890d8db7",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -101,19 +101,19 @@
           "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/node-v22.22.2-darwin-arm64/bin/node",
           "VidCoreLargePlayer/tests/popup-guard.test.mjs"
         ],
-        "duration_ms": 32.735,
-        "profile_sha256": "f58e83b218e4f5dfeb5ed576b9d36c711a9519a54dccb81bfd48fad56dbabb94",
+        "duration_ms": 141.778,
+        "profile_sha256": "ecb69ef62ffe3e7712df3d9e4e42e1f877dfd03d19f95b1b9b7eb39e472aa5d9",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "VidCoreLargePlayer/tests/popup-guard.test.mjs",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 81,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "a1a3d1f0263b47329bc4f1e632007251d22fdb946e83753c1c5f7ef566133f45"
       },
-      "target_passed": false
+      "target_passed": true
     },
     {
       "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
@@ -129,14 +129,14 @@
           "unittest",
           "tests/test_codexicon.py"
         ],
-        "duration_ms": 25.087,
-        "profile_sha256": "750f77c4b7b3d5567f9e070101869e93ba4ebe4923569c9982dce85aad1853a4",
+        "duration_ms": 8904.543,
+        "profile_sha256": "013b4b73df06732401bc7a0b7295c6589e0c49f3d7cd0abc32b4b9cdd6b51802",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 1,
         "selected_verifier_path": "tests/test_codexicon.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 751,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "4d2140bcd85b1b2e103823db9d8137bab64fe56f9484a17daee9b50a11f13f28",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -154,14 +154,14 @@
           "unittest",
           "tests/test_codexicon.py"
         ],
-        "duration_ms": 21.086,
-        "profile_sha256": "4bdd4beb249ad4f2b273672f9a4d7034a09a78edd444c5e5366f3e71aec7c882",
+        "duration_ms": 6057.458,
+        "profile_sha256": "46cbf3074e9588acbad57ab088f16770de92c719a13da8410a7489c9567dca3b",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 1,
         "selected_verifier_path": "tests/test_codexicon.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 4229,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "7f749ed1d0d3cdb56438a8c3280517719e3149c53130e6e0921a7fa7c9d54805",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -169,7 +169,7 @@
       "target_passed": false
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 22,
       "parent": {
         "archive": "runtime/vcm_evaluator/source_archives/22_tejashprakash-student-management-system_parent.tar.gz",
@@ -182,14 +182,14 @@
           "unittest",
           "tests/test_input_validators.py"
         ],
-        "duration_ms": 14.84,
-        "profile_sha256": "1971aa406315251b1faeeb74fba0f49a3c8135f4a0274afc8b695f02c7975269",
+        "duration_ms": 90.355,
+        "profile_sha256": "782b3d3656d444015e26e6fa8a9d195df60758c304b44f600444eaa3aede24d0",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 1,
         "selected_verifier_path": "tests/test_input_validators.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 723,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "a0cf38da96715e9f75f39139762d9b0b719df334a8a19e46ff7b9b59d303a9b4",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -207,19 +207,19 @@
           "unittest",
           "tests/test_input_validators.py"
         ],
-        "duration_ms": 27.563,
-        "profile_sha256": "6d132424a8e8d20be8587808337650a25dc99c1bbd09a15bcf2409a1388c5a7f",
+        "duration_ms": 81.939,
+        "profile_sha256": "04527b6b9d43139c78f2853e85560ff2a7fa707d597256bf17949f0886695c19",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "tests/test_input_validators.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 100,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "a6707d4eff38012da33ddc34bc6dc076a3b17151cfc9aef223c8790cbe64c3da",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
       },
-      "target_passed": false
+      "target_passed": true
     },
     {
       "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
@@ -236,14 +236,14 @@
           "-q",
           "tests/unit/test_vulnerability_baseline.py"
         ],
-        "duration_ms": 31.076,
-        "profile_sha256": "2f99ef1fdf3ea4ff17eecdfd112c19ba5fa89d3177aa6add489c8aea013b3466",
+        "duration_ms": 1101.917,
+        "profile_sha256": "69338eaa77d8354c04e78a360c9aed7402b812c6ae008d8b5118699db1b96442",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 4,
         "selected_verifier_path": "tests/unit/test_vulnerability_baseline.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 340,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "8f6cbfc9916197c1a4fb1a37d6179b6d2ff50b24e9dd3ebabdf5a926a122abc4",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -262,14 +262,14 @@
           "-q",
           "tests/unit/test_vulnerability_baseline.py"
         ],
-        "duration_ms": 51.416,
-        "profile_sha256": "29e6bfd3dfe4529dbf312dc3e3c1d3c645bc7232444226a1075733537e5d74cb",
+        "duration_ms": 606.558,
+        "profile_sha256": "f94d5d54847ebd954b727d849456f02c46e8a979f37b49213777c613227a7942",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 4,
         "selected_verifier_path": "tests/unit/test_vulnerability_baseline.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 340,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stderr_sha256": "d42ebbbb043ef477084761597b0227a801bdfee2eebbcfdb27f29abccbe4f4fe",
         "stdout_bytes": 0,
         "stdout_complete": true,
         "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
@@ -277,7 +277,7 @@
       "target_passed": false
     },
     {
-      "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
+      "disposition": "QUALIFIED_PARENT_FAIL_TARGET_PASS",
       "index": 27,
       "parent": {
         "archive": "runtime/vcm_evaluator/source_archives/27_malkreide-mcp-audit-skill_parent.tar.gz",
@@ -291,17 +291,17 @@
           "-q",
           "tests/test_carry_forward.py"
         ],
-        "duration_ms": 16.315,
-        "profile_sha256": "f06a0ac1838b2dd92b339e5b395eeafa7943872733f675da4a6f68854c6df68c",
+        "duration_ms": 366.265,
+        "profile_sha256": "6890336895368490c1eec3124b2af50df16810c72607311544f8a2d750a093ea",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 4,
         "selected_verifier_path": "tests/test_carry_forward.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 65,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "4852f77d7653e828c00ff7c47c5c1a55531b149780861b143f62f5b832ce50a1",
+        "stdout_bytes": 23,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "a6fc53a5cef0fe8278c459c532a5e372bbe2dd65e4c365a7d7757a210299799f"
       },
       "parent_failed": true,
       "repository": "malkreide/mcp-audit-skill",
@@ -317,19 +317,19 @@
           "-q",
           "tests/test_carry_forward.py"
         ],
-        "duration_ms": 25.136,
-        "profile_sha256": "19e0b1ac6f5763834d217f57016990fd44eac51c03557dccc85cf0d27786b00b",
+        "duration_ms": 541.602,
+        "profile_sha256": "d42a7bb92e4eee4cd33f6b3a88aa70bac628e77aef96137a456f7b6af1ca9055",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "tests/test_carry_forward.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 99,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "05d90f1b42234a898bc8c3511fd81afe39e578d31635335fadf9a77181c9110e"
       },
-      "target_passed": false
+      "target_passed": true
     },
     {
       "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
@@ -346,19 +346,19 @@
           "-q",
           "tests/test_merge_queue.py"
         ],
-        "duration_ms": 28.887,
-        "profile_sha256": "e570e94fc7ec62fe2d147335a9e6fd534a22d085ee15c50b22cf8bfbd9dd6ac1",
+        "duration_ms": 2326.479,
+        "profile_sha256": "4517eb0e03d12258c307b0a13e6f94e4e38d6869198c993e5911ead801c9ff58",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "tests/test_merge_queue.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 180,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "1d52823c90933ff4564b4ebb848939ddf39b25cabf3994c6ec6e06e2faa68ee5"
       },
-      "parent_failed": true,
+      "parent_failed": false,
       "repository": "matt82198/aesop",
       "target": {
         "archive": "runtime/vcm_evaluator/source_archives/57_matt82198-aesop_target.tar.gz",
@@ -372,19 +372,19 @@
           "-q",
           "tests/test_merge_queue.py"
         ],
-        "duration_ms": 15.732,
-        "profile_sha256": "9b495ba26065cb813b4cc4828bd4da2cbb3501859da207cf8e63d22300237d96",
+        "duration_ms": 2463.233,
+        "profile_sha256": "4253f440d3120a592cab349287fdff3ea74b358784f409ff38e9f57fb9c9d51e",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "tests/test_merge_queue.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 180,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "90afa5f8cff720df94804cdb447ba0eb595daf8893fe51b1be5435db9079064b"
       },
-      "target_passed": false
+      "target_passed": true
     },
     {
       "disposition": "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT",
@@ -401,19 +401,19 @@
           "-q",
           "tests/test_core.py"
         ],
-        "duration_ms": 22.733,
-        "profile_sha256": "daf6b560f343e5643dc11e93b114358e44ba040d62d2ca0c28b9de44c118bc0f",
+        "duration_ms": 924.003,
+        "profile_sha256": "38b031db656f938cb41c626775d458dcd34d8784eaac5022d9eabebb9231e21a",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "tests/test_core.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 99,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "1456f30ad6b29683b3dbf2cf20e1e5b0035560e452e23e4bf259d32b29950e3e"
       },
-      "parent_failed": true,
+      "parent_failed": false,
       "repository": "ShadowEnemyx/serien-sammler",
       "target": {
         "archive": "runtime/vcm_evaluator/source_archives/58_shadowenemyx-serien-sammler_target.tar.gz",
@@ -427,19 +427,19 @@
           "-q",
           "tests/test_core.py"
         ],
-        "duration_ms": 18.892,
-        "profile_sha256": "fb2192b6adfaa3609ca1fcddb0fe807a95b6e3ffadf7ef3ddb3af178a5976d89",
+        "duration_ms": 750.73,
+        "profile_sha256": "1a276393904be098e43503e0a327395a4e636e7a6d521a9fe96eac9634ed72e9",
         "project_selected_output_cap": null,
-        "returncode": 71,
+        "returncode": 0,
         "selected_verifier_path": "tests/test_core.py",
-        "stderr_bytes": 53,
+        "stderr_bytes": 0,
         "stderr_complete": true,
-        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
-        "stdout_bytes": 0,
+        "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stdout_bytes": 99,
         "stdout_complete": true,
-        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        "stdout_sha256": "ffdd005dfc0497845a943e3e92e0ded09284d0537b981ca005c13eea977d0012"
       },
-      "target_passed": false
+      "target_passed": true
     }
   ],
   "state": "K2_05_STATIC_SEGMENT_EXECUTED_WITH_SCOPED_DISPOSITIONS",

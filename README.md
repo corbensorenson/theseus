@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE` |
+| State | `VCM_V3_K2_05_STATIC_SEGMENT_REPAIR_ACTIVE` |
 | Selected task | 26 |
-| Active attempt | `k2_05_static_segment_v1` |
-| Current wall | `eight_static_parent_fail_target_pass_evaluator_paths_not_yet_qualified` |
+| Active attempt | `k2_05_static_segment_diagnostic_repair_v2` |
+| Current wall | `five_of_eight_static_evaluator_constructs_not_parent_fail_target_pass` |
 | Last closed task | 26 |
-| Next legal action | `prospectively_seal_and_qualify_eight_static_parent_fail_target_pass_evaluator_paths_without_partial_panel_admission` |
+| Next legal action | `prospectively_seal_diagnostic_retention_and_repair_five_static_evaluator_constructs_without_partial_panel_admission` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -147,8 +147,9 @@ manifest and an 8 static / 6 immutable-resolution / 48 locked schedule from
 the authoritative aligned sources. Panel admission is withheld and no model,
 Luna, evaluator, repository runner, or dependency execution occurred in the
 plan. All 62 archive-backed parent stores are now role-separately GREEN across
-133,048 regular files and 130,968 UTF-8 pages. The eight static evaluator paths
-are next and cannot be treated as a partial panel.
+133,048 regular files and 130,968 UTF-8 pages. Static evaluator Tasks 10, 22,
+and 27 now qualify parent-fail/target-pass; five exact constructs remain scoped
+inconclusive and require diagnostic-retaining repair. No partial panel exists.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

@@ -12,19 +12,19 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_K2_05_STATIC_SEGMENT_QUALIFICATION_ACTIVE",
+      "state": "VCM_V3_K2_05_STATIC_SEGMENT_REPAIR_ACTIVE",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "k2_05_static_segment_v1",
-      "current_blocker": "eight_static_parent_fail_target_pass_evaluator_paths_not_yet_qualified",
+      "active_attempt_id": "k2_05_static_segment_diagnostic_repair_v2",
+      "current_blocker": "five_of_eight_static_evaluator_constructs_not_parent_fail_target_pass",
       "last_closed_task_index": 26,
-      "next_legal_action": "prospectively_seal_and_qualify_eight_static_parent_fail_target_pass_evaluator_paths_without_partial_panel_admission",
+      "next_legal_action": "prospectively_seal_diagnostic_retention_and_repair_five_static_evaluator_constructs_without_partial_panel_admission",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
       "D1_authorized": false,
-      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.03 scoped-qualified four ecosystem risk classes and K2.04 qualified representative parent-only materialization. K2.05's call-free segment-plan audit rederived the target-free 8/6/48 schedule, and the subsequent role-separated batch audit rederived complete archive-backed stores for all 62 exact parents: 133,048 regular files, 130,968 UTF-8 pages, 248 candidate-visible fields, common broad effect root repository, no convenience cap, no payload duplication, and zero downstream calls. This is parent-store and information-flow mechanics only. Static and immutable execution, locked closures, evaluators, model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain unqualified or closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
+      "maximum_inference": "The exact Semantic-IR implementation remains INCONCLUSIVE_EXPERIMENT and frozen for this TMax/host block. K2.05 has role-separately GREEN target-free segmentation and all-62 parent stores. The first valid externally sandboxed static execution qualified exact parent-fail/target-pass behavior for Tasks 10, 22, and 27. Tasks 1, 20, 23, 57, and 58 are INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT because their exact scoped commands did not yield parent-fail/target-pass; the earlier uniform return-code-71 run is preserved as an enclosing-sandbox launch wall. Neither result is task, model, VCM, or book evidence. Diagnostic retention and bounded evaluator repair for those five rows must precede immutable or locked execution. Model-visible packet adequacy, local-model calls, Luna calls, D1, D2, training, serving, and book promotion remain closed; the locked batch retains its 40,614,855,880-byte reserve-safe wall.",
       "decision_acceleration_contract": {
         "state": "PROSPECTIVE_VCM_PARENT_ONLY_INSTRUMENT_BASELINE_COST_AND_LAYERED_DECISION_FREEZE_BEFORE_MODEL_CALLS",
         "review_anchor": {
@@ -310,6 +310,22 @@
             "candidate_or_control_calls": 0,
             "external_reference_calls": 0
           },
+          "k2_05_static_evaluator_segment": {
+            "path": "reports/theseus_vcm_static_evaluator_segment.json",
+            "sha256": "34efb5b249de0ce444333a93ebc8760f149da9c1fb5230d84c3b747d2137db72",
+            "audit_path": "reports/theseus_vcm_static_evaluator_segment_audit.json",
+            "audit_sha256": "359a81f1e0213c599a00eeb5264715cdff6c046df928b652ec78096f66cc3dd9",
+            "state": "K2_05_STATIC_SEGMENT_ROLE_SEPARATELY_REDERIVED",
+            "task_count": 8,
+            "qualified_task_count": 3,
+            "qualified_task_indices": [10, 22, 27],
+            "inconclusive_task_count": 5,
+            "inconclusive_task_indices": [1, 20, 23, 57, 58],
+            "invalid_nested_sandbox_attempt_preserved_in_prior_commit": "646a5f7e",
+            "panel_admitted": false,
+            "candidate_or_control_calls": 0,
+            "external_reference_calls": 0
+          },
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -384,7 +400,7 @@
             ],
             "action": "Materialize the remaining frozen dependency closures, immutable-resolution/static paths, repository runners, parent-only stores and packets, and independent parent-fail/target-pass evaluator receipts through the generic owner.",
             "exit": "Every one of the 62 frozen rows has a source-bound execution class, effect boundary, parent receipt, target receipt, parent-only store and packet receipt, evaluator result, and failure receipt; partial panel admission remains forbidden.",
-            "latest_observation": "The monolithic locked-batch upper-bound remains execution-closed by a 40.6 GiB reserve-safe deficit. The target-free 8/6/48 segment plan is role-separately GREEN, and the all-parent batch now materializes and independently rederives complete archive-backed stores for all 62 rows: 133,048 regular files, 130,968 UTF-8 pages, 248 visible fields, no payload duplication, no convenience cap, and zero dependency, repository, evaluator, model, or reference calls. Panel admission remains withheld. The eight static parent-fail/target-pass evaluator paths are next; immutable and locked segments remain unopened."
+            "latest_observation": "The target-free 8/6/48 plan and all-62 parent stores are role-separately GREEN. The first static launch inside the enclosing Codex sandbox produced uniform return code 71 and is preserved as an invalid sandbox-launch wall. The unchanged sealed segment then ran through its own network-denied sandbox outside that enclosure: Tasks 10, 22, and 27 qualified parent-fail/target-pass; Tasks 1, 20, 23, 57, and 58 remain construct-inconclusive. The role audit rederived all eight dispositions. Panel admission remains withheld and no model or reference call occurred. A diagnostic-retaining bounded evaluator repair for those five rows is required before immutable or locked work."
           },
           {
             "id": "K2_06_INSTRUMENT_FREEZE",
@@ -1709,6 +1725,12 @@
         "owner_sha256":"2f9651810719f6f984119ea2860437e8d401772d0c509380c50ab039c3addb71","config_sha256":"776b95cf09ea1def62cf497c86bdf8bfcbf48851ea2e77ee43ef43c3d4950479","test_sha256":"e6549b5d83c5eb9998dd584afa6b19c63220752664a343d8b0cc832dab01ae34","report_sha256":"438f7e8e10306835ba5b2a0825b0daf9e3095ea26a1c63bf3914d6ea39cec5ce","audit_owner_sha256":"4ad33b8284ddc49740a35c5466a8fd8f8d72c97d725130edc7b12413d6387440","audit_report_sha256":"3329e5fea68b72b0cc319772f63677927b054bd6f97f217aef75baa6aad6482f","store_artifact_sha256":"78b3b0d180a567b28fd8ca53228d3ab87e986cd6769ee5ce9a7d6ab6117c8d37",
         "state":"K2_05_ALL_62_PARENT_STORES_ROLE_SEPARATELY_REDERIVED","row_count":62,"regular_file_count":133048,"text_page_count":130968,"candidate_visible_field_count":248,"store_artifact_bytes":108880763,"archive_backed_without_payload_duplication":true,"panel_admitted":false,"network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"all-62 parent-store and information-flow mechanics only; no static, immutable, locked, evaluator, model, VCM utility, economics, transfer, or book claim is qualified","next_boundary":"prospectively seal and qualify the eight static parent-fail/target-pass evaluator paths without partial panel admission"
+      },
+      "vcm_static_evaluator_segment": {
+        "config":"configs/theseus_vcm_static_evaluator_segment.json","owner":"scripts/theseus_vcm_static_evaluator_segment.py","test":"tests/test_theseus_vcm_static_evaluator_segment.py","report":"reports/theseus_vcm_static_evaluator_segment.json","audit_owner":"scripts/theseus_vcm_static_evaluator_segment_audit.py","audit_report":"reports/theseus_vcm_static_evaluator_segment_audit.json",
+        "owner_sha256":"f87218da8a547504c895674975f6d03b0c33103fbb1cc8b706d6ae0171d4cb3a","config_sha256":"9559a393e2e3f4984be544333c4cd8b808fd31911a1985212ec5b1868cd169a9","test_sha256":"c7e09938288c565bc9a7f6228847e48bee888528b2ef9350e7c309e689a60793","report_sha256":"34efb5b249de0ce444333a93ebc8760f149da9c1fb5230d84c3b747d2137db72","audit_owner_sha256":"db4c5afe8bc473f06eed48b0616250667b8162d8a451b614215af56c682d4136","audit_report_sha256":"359a81f1e0213c599a00eeb5264715cdff6c046df928b652ec78096f66cc3dd9",
+        "state":"K2_05_STATIC_SEGMENT_ROLE_SEPARATELY_REDERIVED","task_count":8,"qualified_task_count":3,"qualified_task_indices":[10,22,27],"inconclusive_task_count":5,"inconclusive_task_indices":[1,20,23,57,58],"parent_target_or_evaluator_executions":16,"panel_admitted":false,"network_or_dependency_execution_performed":false,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"three exact static evaluator constructs qualify parent-fail/target-pass and five remain scoped INCONCLUSIVE_EXPERIMENT; this is evaluator-instrument evidence only and cannot support task, model, VCM, or book conclusions","next_boundary":"retain complete diagnostics and repair the five inconclusive static evaluator constructs under a new bounded identity"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",
