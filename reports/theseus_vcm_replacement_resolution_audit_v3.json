@@ -1,0 +1,55 @@
+{
+  "audit_kind": "role-separated_rederivation",
+  "config": {
+    "path": "configs/theseus_vcm_replacement_resolution.json",
+    "sha256": "46a46917e17c005a3357651dca2ff8a5dad0cea20f9f71c2bb006bf0f9e887f6"
+  },
+  "created_utc": "2026-08-09T06:11:38.849310Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN role audit independently rederives the three exact immutable lock identities and structures, the one network resolution, one sealed-receipt reuse, one static repository-lock copy, source immutability, complete diagnostics, and zero-install/evaluator boundary. It does not qualify environments, evaluators, models, VCM effects, or book support.",
+  "network_resolution_task_count": 1,
+  "package_count": 218,
+  "package_installations": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_replacement_resolution_audit_v3",
+  "producer_report": {
+    "path": "reports/theseus_vcm_replacement_resolution_v3.json",
+    "sha256": "250979af1605b346b989a94eaaa0f55d9ecb1f1fc74c15bec31d473d51841dd6"
+  },
+  "qualified_task_count": 3,
+  "repository_runner_executions": 0,
+  "rows": [
+    {
+      "faults": [],
+      "index": 12,
+      "lock_sha256": "733fa33ed6537d573a63ce97a47750bc7f7f0918f203623c4be0e3a674db4427",
+      "manager": "receipt_reuse",
+      "package_count": 16,
+      "repository": "plwp/chief-wiggum"
+    },
+    {
+      "faults": [],
+      "index": 13,
+      "lock_sha256": "4ab7e20f4a3bae9391386521d9dc82004aa42d01da609f3dbabfcba8c4015e56",
+      "manager": "uv",
+      "package_count": 60,
+      "repository": "paulomtts/pyjinhx"
+    },
+    {
+      "faults": [],
+      "index": 35,
+      "lock_sha256": "546d1def8a5b79fdcebaf07e1469d6642f37051c56c0e6180ad96f3ea2e72cc4",
+      "manager": "cargo_static",
+      "package_count": 142,
+      "repository": "knoguchi/marsdb"
+    }
+  ],
+  "sealed_receipt_reuse_task_count": 1,
+  "source_build_executions": 0,
+  "state": "THREE_REPLACEMENT_LOCKS_ROLE_SEPARATELY_REDERIVED",
+  "static_lock_task_count": 1,
+  "task_count": 3,
+  "trigger_state": "GREEN"
+}
