@@ -12,14 +12,14 @@
     "active_flagship_track_id": "F_memory_planning_tool_substrate",
     "active_claim": {
       "claim_id": "virtual-context-abi.core",
-      "state": "VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED",
+      "state": "VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
       "subsystem_id": "virtual_context_abi",
       "phase": "K2_EVALUATOR_INSTRUMENT_QUALIFICATION",
       "selected_task_index": 26,
-      "active_attempt_id": "generic_vcm_instrument_builder_v1",
-      "current_blocker": "generic_manifest_owner_not_implemented_or_existing_closures_replayed",
+      "active_attempt_id": "generic_vcm_resource_and_risk_canaries_v1",
+      "current_blocker": "shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified",
       "last_closed_task_index": 26,
-      "next_legal_action": "implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence",
+      "next_legal_action": "preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes",
       "observed_residual": "full_source_model_visible_context_ingestion_not_host_operable",
       "next_evidence_class": "VCM_PRODUCTION_PATH_NON_CLAIM_MECHANICS_AND_MATCHED_CAUSAL_DESIGN",
       "fresh_claim_pool_authorized": false,
@@ -157,6 +157,9 @@
           "no_project_lock_static_task_count": 8,
           "remaining_dependency_closures_use_one_manifest_driven_generic_owner": true,
           "planned_generic_owner": "scripts/theseus_vcm_instrument_builder.py",
+          "generic_owner_state": "GREEN_EXISTING_SIX_CLOSURES_REPLAYED_STATIC_ONLY",
+          "generic_owner_replayed_closure_count": 6,
+          "generic_owner_replayed_managers": ["cargo", "npm", "pnpm", "uv"],
           "generic_owner_output_shape": "one row-oriented config, one compact report, one test family, and content-bound per-row receipts",
           "remaining_ecosystem_risk_canaries": [
             "bun",
@@ -197,7 +200,7 @@
           },
           {
             "id": "K2_02_GENERIC_INSTRUMENT_BUILDER",
-            "status": "ACTIVE",
+            "status": "COMPLETE",
             "depends_on": [
               "K2_01_TASK26_FINAL_BESPOKE_CANARY"
             ],
@@ -206,7 +209,7 @@
           },
           {
             "id": "K2_03_RESOURCE_AND_RISK_CANARIES",
-            "status": "PENDING",
+            "status": "ACTIVE",
             "depends_on": [
               "K2_02_GENERIC_INSTRUMENT_BUILDER"
             ],
@@ -1531,6 +1534,12 @@
         "owner_sha256":"6560c88cbd4e3a48d460979a488209b8dc52ad22c2a1435a3b32760cc9101e1e","config_sha256":"47fcaae1f0c7c13af77db4fed10f68dd0c566eb2acb69f7e098579e610ac6575","test_sha256":"50336bcea51b2f00f02af48c0b2b8288678bafb802fbe1f020ab403a92c245c3","report_sha256":"36a9357a2e9cbd6004681ecd426656a0d7bbea785a269d301b64729f61714222",
         "state":"GREEN_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_INDEPENDENTLY_REDERIVED","disposition":"INCONCLUSIVE_INSTRUMENT_DEPENDENCY_POLICY_RISK_CLASS","task_index":26,"lock_package_count":58,"blocking_distribution":"proxy-tools==0.1.0","blocking_distribution_has_sdist":true,"blocking_distribution_wheel_count":0,"source_file_count":2234,"source_bytes":11963370,"source_identity_sha256":"ad8e116aa512785d3962d634d328e19bc8dc3588e634f30971699e41b620ed48","network_or_dependency_execution_performed":false,"source_build_executions":0,"project_installations":0,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
         "maximum_inference":"role-separated rederivation of the exact task-26 sdist-only wheel-policy wall; no negative inference about the task, uv generally, VCM, TMax, or the ASI Stack claim","next_boundary":"implement one generic manifest-driven instrument owner and replay existing closure evidence without new per-task families"
+      },
+      "vcm_instrument_builder": {
+        "config":"configs/theseus_vcm_instrument_builder.json","owner":"scripts/theseus_vcm_instrument_builder.py","test":"tests/test_theseus_vcm_instrument_builder.py","report":"reports/theseus_vcm_instrument_builder.json",
+        "owner_sha256":"e7df9b81b7d9f33f33712c022cf2d0e80cdaec7f6237a4b0b53dab3ef60c4e7c","config_sha256":"572e9cfe4925faba74e39288da2f9848d630ba578013208500382d2b4d67a659","test_sha256":"0ff6a8eab3d90c9e10b44f17fe9082ed652f678a1bed1e7e8b9128b62c87c53a","report_sha256":"dbed6570f8b6362c36dab585b47e71125548d38396e0baae7951b919280afa75",
+        "state":"GREEN_GENERIC_VCM_INSTRUMENT_EXISTING_CLOSURES_REPLAYED","replayed_closure_count":6,"replayed_managers":["cargo","npm","pnpm","uv"],"shared_content_addressed_manager_stores_required":true,"installed_environments_are_disposable":true,"per_task_duplicate_package_cache_authorized":false,"resource_projection_state":"STATIC_REPLAY_ONLY_K2_03_PROJECTION_PENDING","network_or_dependency_execution_performed":false,"repository_runner_executions":0,"parent_target_or_evaluator_executions":0,"local_model_calls":0,"external_reference_calls":0,
+        "maximum_inference":"six already qualified closures replay through one content-bound row schema and a prospective shared-store/disposable-environment topology; no forward dependency, build, evaluator, VCM, model, or claim execution is qualified","next_boundary":"preflight real shared-store resource projections and qualify only Bun Yarn TypeScript transpilation and untrusted Rust risk classes"
       },
       "vcm_task7_dependency_canary": {
         "config": "configs/theseus_vcm_task7_dependency_canary.json",

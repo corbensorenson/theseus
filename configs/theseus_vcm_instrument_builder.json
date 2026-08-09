@@ -1,0 +1,172 @@
+{
+  "policy": "project_theseus_vcm_instrument_builder_v1",
+  "state": "GENERIC_MANIFEST_OWNER_STATIC_REPLAY_BEFORE_FORWARD_EXECUTION",
+  "owner": "scripts/theseus_vcm_instrument_builder.py",
+  "owner_sha256": "e7df9b81b7d9f33f33712c022cf2d0e80cdaec7f6237a4b0b53dab3ef60c4e7c",
+  "schedule": {
+    "path": "reports/theseus_vcm_dependency_prefetch_plan.json",
+    "sha256": "de6229dc990d2eb98d3b2c7ce14332920f260f43c6cb3f98f706898a358025cc"
+  },
+  "expected_replayed_closure_count": 6,
+  "expected_replayed_managers": ["cargo", "npm", "pnpm", "uv"],
+  "rows": [
+    {
+      "closure_id": "task-03-identical-parent-target",
+      "task_index": 3,
+      "schedule_ordinal": 1,
+      "manager": "npm",
+      "side": "identical_parent_target",
+      "audit": {"path": "reports/theseus_vcm_dependency_closure_audit.json", "sha256": "06d7c635a9522c8e1f4df9a50f033e3a869932c106285d72a35176b094914ecf"},
+      "required_audit_state": "TASK_3_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+      "dependency_denominator_kind": "npm_lock_integrities",
+      "retained_store_identity_scope": "content_blobs",
+      "projection": {
+        "dependency_denominator": "observations.expected_lock_integrity_count",
+        "retained_store_bytes": "observations.retained_cache_bytes",
+        "retained_store_file_count": "observations.retained_cache_file_count",
+        "retained_store_identity_sha256": "rederived_cache.content_blobs_sha256",
+        "source_bytes": "observations.source_bytes",
+        "source_file_count": "observations.source_file_count",
+        "source_identity_sha256": "rederived_source.identity_sha256"
+      }
+    },
+    {
+      "closure_id": "task-07-identical-parent-target",
+      "task_index": 7,
+      "schedule_ordinal": 2,
+      "manager": "pnpm",
+      "side": "identical_parent_target",
+      "audit": {"path": "reports/theseus_vcm_task7_dependency_closure_audit.json", "sha256": "16fdba39cd5a15b14a51c7f15b1a3d2c6098eff2aaaf68fe8a45abcef1cbe4a8"},
+      "required_audit_state": "TASK_7_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+      "dependency_denominator_kind": "pnpm_index_declared_files",
+      "retained_store_identity_scope": "complete_store",
+      "projection": {
+        "dependency_denominator": "observations.pnpm_index_declared_file_count",
+        "retained_store_bytes": "observations.retained_store_bytes",
+        "retained_store_file_count": "observations.retained_store_file_count",
+        "retained_store_identity_sha256": "rederived_store.identity_sha256",
+        "source_bytes": "observations.source_bytes",
+        "source_file_count": "observations.source_file_count",
+        "source_identity_sha256": "rederived_source.identity_sha256"
+      }
+    },
+    {
+      "closure_id": "task-36-identical-parent-target",
+      "task_index": 36,
+      "schedule_ordinal": 3,
+      "manager": "cargo",
+      "side": "identical_parent_target",
+      "audit": {"path": "reports/theseus_vcm_task36_dependency_closure_audit.json", "sha256": "848aa849a6580e7fda0bf61f9a676a1b0c63532502aba007baf7d3b7a5a39808"},
+      "required_audit_state": "TASK_36_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+      "dependency_denominator_kind": "cargo_lock_checksums",
+      "retained_store_identity_scope": "complete_store",
+      "projection": {
+        "dependency_denominator": "observations.lock_checksum_package_count",
+        "retained_store_bytes": "observations.retained_store_bytes",
+        "retained_store_file_count": "observations.retained_store_file_count",
+        "retained_store_identity_sha256": "rederived_store.files_identity_sha256",
+        "source_bytes": "observations.source_bytes",
+        "source_file_count": "observations.source_file_count",
+        "source_identity_sha256": "rederived_source.identity_sha256"
+      }
+    },
+    {
+      "closure_id": "task-14-parent",
+      "task_index": 14,
+      "schedule_ordinal": 4,
+      "manager": "uv",
+      "side": "parent",
+      "audit": {"path": "reports/theseus_vcm_task14_dual_dependency_closure_audit.json", "sha256": "39ca5902c9fa06a1760c9e07c67b0bdb0e71f05355fd8b045cca67e24dc67bb1"},
+      "required_audit_state": "TASK_14_DUAL_UV_DEPENDENCY_CLOSURES_INDEPENDENTLY_REDERIVED",
+      "dependency_denominator_kind": "uv_lock_packages",
+      "retained_store_identity_scope": "complete_store",
+      "projection": {
+        "dependency_denominator": "observations.parent.lock_package_count",
+        "retained_store_bytes": "observations.parent.retained_store_bytes",
+        "retained_store_file_count": "observations.parent.retained_store_file_count",
+        "retained_store_identity_sha256": "observations.parent.retained_store_identity_sha256",
+        "source_bytes": "observations.parent.source_bytes",
+        "source_file_count": "observations.parent.source_file_count",
+        "source_identity_sha256": "observations.parent.source_identity_sha256"
+      }
+    },
+    {
+      "closure_id": "task-14-target",
+      "task_index": 14,
+      "schedule_ordinal": 4,
+      "manager": "uv",
+      "side": "target",
+      "audit": {"path": "reports/theseus_vcm_task14_dual_dependency_closure_audit.json", "sha256": "39ca5902c9fa06a1760c9e07c67b0bdb0e71f05355fd8b045cca67e24dc67bb1"},
+      "required_audit_state": "TASK_14_DUAL_UV_DEPENDENCY_CLOSURES_INDEPENDENTLY_REDERIVED",
+      "dependency_denominator_kind": "uv_lock_packages",
+      "retained_store_identity_scope": "complete_store",
+      "projection": {
+        "dependency_denominator": "observations.target.lock_package_count",
+        "retained_store_bytes": "observations.target.retained_store_bytes",
+        "retained_store_file_count": "observations.target.retained_store_file_count",
+        "retained_store_identity_sha256": "observations.target.retained_store_identity_sha256",
+        "source_bytes": "observations.target.source_bytes",
+        "source_file_count": "observations.target.source_file_count",
+        "source_identity_sha256": "observations.target.source_identity_sha256"
+      }
+    },
+    {
+      "closure_id": "task-30-identical-parent-target",
+      "task_index": 30,
+      "schedule_ordinal": 5,
+      "manager": "cargo",
+      "side": "identical_parent_target",
+      "audit": {"path": "reports/theseus_vcm_task30_dependency_closure_audit.json", "sha256": "48e5e40c514704b2e09fd9d2ebcbdfab4e6322916893049dc5637b3482af0bfd"},
+      "required_audit_state": "TASK_30_DEPENDENCY_CLOSURE_INDEPENDENTLY_REDERIVED",
+      "dependency_denominator_kind": "cargo_lock_checksums",
+      "retained_store_identity_scope": "complete_store",
+      "projection": {
+        "dependency_denominator": "observations.lock_checksum_package_count",
+        "retained_store_bytes": "observations.retained_store_bytes",
+        "retained_store_file_count": "observations.retained_store_file_count",
+        "retained_store_identity_sha256": "rederived_store.files_identity_sha256",
+        "source_bytes": "observations.source_bytes",
+        "source_file_count": "observations.source_file_count",
+        "source_identity_sha256": "rederived_source.identity_sha256"
+      }
+    }
+  ],
+  "store_contract": {
+    "manager_roots": {
+      "npm": "runtime/vcm_evaluator/dependency_store/shared/npm",
+      "pnpm": "runtime/vcm_evaluator/dependency_store/shared/pnpm",
+      "cargo": "runtime/vcm_evaluator/dependency_store/shared/cargo",
+      "uv": "runtime/vcm_evaluator/dependency_store/shared/uv"
+    },
+    "installed_environment_root": "runtime/vcm_evaluator/installed_environments/disposable",
+    "installed_environments_are_disposable": true,
+    "per_task_duplicate_package_cache_authorized": false,
+    "historical_task_specific_stores": "retained evidence only; never forward topology"
+  },
+  "resource_contract": {
+    "host_reserve_bytes": 10737418240,
+    "required_fields": ["projected_download_bytes", "projected_installed_bytes", "projected_peak_temporary_bytes", "shared_store_deduplicated_bytes", "host_free_bytes", "host_reserve_bytes", "projected_wall_time", "untrusted_build_risk_class"],
+    "K2_03_must_replace_static_replay_zeros_or_nulls_before_mutating_execution": true
+  },
+  "report": "reports/theseus_vcm_instrument_builder.json",
+  "authority": {
+    "static_evidence_replay_authorized": true,
+    "network_calls_authorized": false,
+    "dependency_fetch_or_install_authorized": false,
+    "source_build_authorized": false,
+    "build_backend_execution_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN report proves only that six already qualified npm, pnpm, Cargo, and uv dependency closures replay through one content-bound row schema and that the prospective forward topology uses manager-shared package stores with disposable installed environments and no per-task duplicate cache authority. It executes no dependency operation and does not yet qualify Bun, Yarn, TypeScript transpilation, untrusted Rust compilation, remaining closures, repository runners, evaluators, VCM packets, models, D1, D2, or book claims."
+}

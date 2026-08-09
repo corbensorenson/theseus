@@ -83,6 +83,8 @@ def test_decision_acceleration_contract_freezes_scope_and_evidence_growth() -> N
     assert scope["exact_consumed_surface_rerun_authorized"] is False
     assert k2["task26_is_final_bespoke_per_task_dependency_canary"] is True
     assert k2["remaining_dependency_closures_use_one_manifest_driven_generic_owner"]
+    assert k2["generic_owner_replayed_closure_count"] == 6
+    assert k2["generic_owner_replayed_managers"] == ["cargo", "npm", "pnpm", "uv"]
     assert k2["distinct_parent_target_dependency_closure_count"] == 58
     assert k2["closures_green_before_task26"] == 6
     assert k2["closures_green_after_task26"] == 6
@@ -134,7 +136,7 @@ def test_active_work_packages_form_one_forward_dependency_graph() -> None:
 
     assert len(package_ids) == len(set(package_ids))
     assert [package["id"] for package in packages if package["status"] == "ACTIVE"] == [
-        "K2_02_GENERIC_INSTRUMENT_BUILDER"
+        "K2_03_RESOURCE_AND_RISK_CANARIES"
     ]
 
     seen: set[str] = set()

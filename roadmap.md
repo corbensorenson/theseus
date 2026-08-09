@@ -54,12 +54,12 @@ that record and may not independently redefine it.
 | Claim | `virtual-context-abi.core` |
 | Subsystem | `virtual_context_abi` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED` |
+| State | `VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED` |
 | Selected task | 26 |
-| Active attempt | `generic_vcm_instrument_builder_v1` |
-| Current wall | `generic_manifest_owner_not_implemented_or_existing_closures_replayed` |
+| Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
+| Current wall | `shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified` |
 | Last closed task | 26 |
-| Next legal action | `implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence` |
+| Next legal action | `preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes` |
 
 The exact Semantic-IR implementation is terminal
 `INCONCLUSIVE_EXPERIMENT` and frozen for the current TMax/host block. Its
@@ -335,6 +335,13 @@ The generic owner must:
 6. resume idempotently without treating partial success as panel admission; and
 7. replay completed npm, pnpm, Cargo, and uv evidence before claiming the
    generic path is faithful.
+
+K2.02 is now complete for this bounded boundary: the owner statically replays
+the six already qualified closures as six content-bound rows across npm, pnpm,
+Cargo, and uv, and freezes the manager-shared/disposable forward topology. It
+does not yet execute forward dependency work. K2.03 is current and must replace
+the replay-only zero/null projections with measured resource estimates while
+qualifying the four named ecosystem risk classes.
 
 Before bulk materialization, the owner must measure projected download,
 installed, temporary, and deduplicated-store bytes; projected wall time; host
@@ -639,9 +646,10 @@ retention through governed custody rather than ad hoc cleanup.
 1. Preserve the completed Task 26 result: its exact wheel-only canary failed on
    sdist-only `proxy-tools==0.1.0`, and the role-separated audit scoped it to
    `INCONCLUSIVE_INSTRUMENT`. Do not weaken the policy or add another per-task owner.
-2. **CURRENT:** Build one manifest-driven generic instrument owner and replay the completed
+2. Preserve the GREEN generic static replay of six existing closures; it freezes
+   the shared-store/disposable-environment schema but grants no execution authority.
    npm, pnpm, Cargo, and uv closure evidence through its common row schema.
-3. Preflight storage, memory, wall time, host reserve, and untrusted-build risk;
+3. **CURRENT:** Preflight storage, memory, wall time, host reserve, and untrusted-build risk;
    then qualify only Bun, Yarn, TypeScript transpilation, and untrusted Rust as
    generic-owner risk classes. Stop K2 if the instrument is not resource-feasible.
 4. Build and independently audit the real parent-only VCM store and

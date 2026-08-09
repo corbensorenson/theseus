@@ -120,12 +120,12 @@ The machine-readable active state is:
 | --- | --- |
 | Claim | `virtual-context-abi.core` |
 | Phase | `K2_EVALUATOR_INSTRUMENT_QUALIFICATION` |
-| State | `VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED` |
+| State | `VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED` |
 | Selected task | 26 |
-| Active attempt | `generic_vcm_instrument_builder_v1` |
-| Current wall | `generic_manifest_owner_not_implemented_or_existing_closures_replayed` |
+| Active attempt | `generic_vcm_resource_and_risk_canaries_v1` |
+| Current wall | `shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified` |
 | Last closed task | 26 |
-| Next legal action | `implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence` |
+| Next legal action | `preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes` |
 
 The VCM instrument is frozen at 62 source-disjoint tasks: nine for local
 control qualification and 53 for the powered claim campaign. Task 26 was the
@@ -136,6 +136,13 @@ generic manifest-driven owner with shared content-addressed package stores and
 disposable installed environments. Special handling is limited to Bun, Yarn,
 TypeScript transpilation, and untrusted Rust risk classes; a storage/host-reserve
 preflight may stop the instrument before bulk materialization.
+
+That generic owner is now GREEN for static replay only: it normalizes the six
+qualified closures into six content-bound rows across npm, pnpm, Cargo, and uv,
+while reserving manager-shared forward stores and disposable environments. It
+has not executed forward dependency work. K2.03 must replace its placeholder
+resource projections and qualify the four named ecosystem risk classes before
+bulk materialization.
 
 K3 begins only after all parent-fail/target-pass receipts, the real parent-only
 VCM materializer, and the independently recomputed blindness audit freeze under

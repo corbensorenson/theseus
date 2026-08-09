@@ -56,7 +56,7 @@ change.
 | Semantic-IR P4 | `TERMINAL_INCONCLUSIVE_IMPLEMENTATION` | Direct solved 3/10, plan control 1/10, Semantic IR 0/10; Semantic IR parsed/lowered only 2/10 against its 8/10 floor, so no treatment effect or broad negative is authorized |
 | Semantic-IR production repair | `BOUNDED_MECHANICS_GREEN_ADEQUACY_OPEN` | The role-aware production owner passes 10/10 deterministic conformance fixtures and one source-disjoint project-authored frozen-TMax canary with 2/2 naturally completed parse/lower/apply/verify paths. This is mechanics evidence only, not a claim effect or distributional competence result |
 | Semantic-IR independent adequacy | `TERMINAL_INCONCLUSIVE_EXPERIMENT_FROZEN_CURRENT_BLOCK` | The prospectively audited v6 run sealed Task 1, then Task 2's 45,113-token prompt generated zero tokens before the 600-second host wall. The physical context boundary and quality cap were untouched, the route held the empty response, and hidden evaluation stayed at zero. This exact implementation is frozen for the current TMax/host block; Semantic IR, cognitive compilation, TMax capability, and the book claim remain unresolved |
-| Active VCM claim | `VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED` | Required closures 1-6 and their role-separated audits are GREEN. Task 26's exact wheel-only UV canary failed on locked sdist-only `proxy-tools==0.1.0`; a separate audit rederived the scoped instrument-policy wall, ending bespoke per-task ownership without creating task or VCM evidence |
+| Active VCM claim | `VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED` | The six qualified closures replay through one content-bound generic row schema across npm, pnpm, Cargo, and uv. Manager-shared stores and disposable installed environments are frozen prospectively; K2.03 resource and ecosystem-risk qualification remains open |
 | VCM information flow | `REPAIR_REQUIRED_BEFORE_PACKET_MATERIALIZATION` | The v1 claim contract exposes target-derived `allowed_effect_paths`. No candidate has consumed them. K2 must replace them with one broad parent-snapshot effect root and independently audit every selector input |
 | VCM natural-task route | `PARENT_ONLY_MATERIALIZER_NOT_YET_IMPLEMENTED` | Synthetic VCM mechanics exist, but no owner currently turns the frozen external parent archives into the real production VCM store and task packet |
 | VCM decision model | `L0_TO_L4_LAYERED` | Conformance, integrity, model use/utility, economics, and transfer are separate findings. K3 can establish only L0-L3 for the exact local regime; book support cannot move automatically |
@@ -67,10 +67,10 @@ change.
 
 The authoritative active record additionally binds phase
 `K2_EVALUATOR_INSTRUMENT_QUALIFICATION`, selected task 26, attempt
-`generic_vcm_instrument_builder_v1`, last closed task 26, and the wall
-`generic_manifest_owner_not_implemented_or_existing_closures_replayed`. The
-next legal action is
-`implement_generic_manifest_driven_instrument_owner_and_replay_existing_closure_evidence`.
+`generic_vcm_resource_and_risk_canaries_v1`, last closed task 26, and the wall
+`shared_store_resource_projections_and_four_ecosystem_risk_classes_not_qualified`.
+The next legal action is
+`preflight_shared_store_resource_envelope_and_qualify_bun_yarn_typescript_untrusted_rust_risk_classes`.
 These values come from `configs/roadmap_implementation_matrix.json`; prose does
 not supersede them.
 
@@ -721,9 +721,10 @@ authorize regenerating historical reports or reopening neural work.
 1. Preserve Task 26's completed scoped instrument wall: the sealed wheel-only
    canary failed on sdist-only `proxy-tools==0.1.0`, the separate static audit is
    GREEN, and no policy weakening or task/VCM negative is authorized.
-2. **CURRENT:** End bespoke per-task ownership; build one manifest-driven generic owner with
-   shared package stores, then replay existing npm/pnpm/Cargo/uv evidence.
-3. Preflight host reserve and qualify only Bun, Yarn, TypeScript-transpilation,
+2. Preserve the GREEN generic static replay of six existing closures across one
+   row schema; it freezes shared-store/disposable-environment topology but no
+   forward execution authority.
+3. **CURRENT:** Preflight host reserve and qualify only Bun, Yarn, TypeScript-transpilation,
    and untrusted-Rust risk classes. Stop if the instrument is not feasible.
 4. Build the production parent-only VCM store/materializer on qualified rows and
    remove target-derived effect paths before any candidate packet exists.

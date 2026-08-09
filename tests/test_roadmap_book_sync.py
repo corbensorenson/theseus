@@ -44,7 +44,7 @@ class RoadmapBookSyncTests(unittest.TestCase):
             recenter["active_claim"]["claim_id"],
         )
         self.assertEqual(
-            "VCM_V3_TASK_26_WHEEL_ONLY_INSTRUMENT_WALL_AUDITED",
+            "VCM_V3_GENERIC_INSTRUMENT_EXISTING_CLOSURES_REPLAYED",
             recenter["active_claim"]["state"],
         )
         self.assertFalse(recenter["active_claim"]["fresh_claim_pool_authorized"])
