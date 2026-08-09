@@ -1,0 +1,32 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_packet_count": 36,
+  "audited_route_count": 6,
+  "audited_row_count": 6,
+  "config": {
+    "bytes": 10103,
+    "path": "configs/theseus_vcm_k3_route_preflight.json",
+    "sha256": "ea5958232156b72bf86038f088a70359c87d1f3953e6730db55ddbde7eaa8080"
+  },
+  "created_utc": "2026-08-09T07:10:47.977088Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "hidden_evaluator_calls": 0,
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN role-separated audit rederives the 36 candidate packet receipts, six route identities, parent-information matching, exact tokenizer residuals, counterbalancing, forbidden-field absence, zero-call custody, and frozen decision boundaries. It is not external reproduction and does not establish model competence, VCM utility, economics, transfer, or ASI Stack support.",
+  "packets_artifact": {
+    "bytes": 1360438,
+    "path": "runtime/vcm_evaluator/k3_six_row_route_packets_v4.json",
+    "sha256": "4210b60dcac78520b56002cd376cabe507df18c7456127d33f1c9f8fec3272b0"
+  },
+  "physically_ineligible_packet_count": 12,
+  "policy": "project_theseus_vcm_k3_route_preflight_audit_v4",
+  "producer_report": {
+    "bytes": 1508715,
+    "path": "reports/theseus_vcm_k3_route_preflight_v4.json",
+    "sha256": "e2fcac96935828f44ba4304e00f6c3dabe166813fab4269922dd71a4ff0e69dd"
+  },
+  "state": "K3_CALL_FREE_ROUTE_PREFLIGHT_ROLE_SEPARATELY_REDERIVED",
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

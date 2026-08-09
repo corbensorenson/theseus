@@ -15,8 +15,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_parent_only_materializer as parent_only  # noqa: E402
 
-POLICY = "project_theseus_vcm_k3_route_preflight_v4"
-CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v4"
+POLICY = "project_theseus_vcm_k3_route_preflight_v5"
+CONFIG_POLICY = "project_theseus_vcm_k3_route_preflight_config_v5"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_k3_route_preflight.json"
 ROUTES = (
     "no_added_context_floor",
@@ -174,7 +174,7 @@ def build(
             "request_id": request_id,
             "row_ordinal": ordinal,
             "route_order": rotation,
-            "grounded_request_term_count": len(grounded_terms(frontier)),
+            "grounded_request_term_count": len(grounded_terms(enriched_frontier)),
             "vcm_page_count": len(vcm_pages),
             "ordinary_retrieval_page_count": len(ordinary_pages),
             "full_parent_page_count": len(all_pages),

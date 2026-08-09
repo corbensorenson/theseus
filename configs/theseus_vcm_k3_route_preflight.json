@@ -1,7 +1,7 @@
 {
-  "policy": "project_theseus_vcm_k3_route_preflight_config_v4",
-  "audit_policy": "project_theseus_vcm_k3_route_preflight_audit_v4",
-  "state": "PROSPECTIVE_K3_CALL_FREE_SIX_ROW_ROUTE_PREFLIGHT_V4_WITH_EARLY_CONSERVATIVE_INELIGIBILITY_PROOF",
+  "policy": "project_theseus_vcm_k3_route_preflight_config_v5",
+  "audit_policy": "project_theseus_vcm_k3_route_preflight_audit_v5",
+  "state": "PROSPECTIVE_K3_CALL_FREE_SIX_ROW_ROUTE_PREFLIGHT_V5_WITH_CORRECT_GROUNDED_TERM_RECEIPTS",
   "predecessor_invalidated_attempt": {
     "seal_commit": "e9b46943",
     "producer_report": "reports/theseus_vcm_k3_route_preflight_v1_producer_green_audit_wall.json",
@@ -36,12 +36,27 @@
     "external_reference_calls": 0,
     "disposition": "INCONCLUSIVE_IMPLEMENTATION"
   },
+  "fourth_invalidated_attempt": {
+    "seal_commit": "6f30658f",
+    "producer_report": "reports/theseus_vcm_k3_route_preflight_v4_metric_wall.json",
+    "producer_report_sha256": "e2fcac96935828f44ba4304e00f6c3dabe166813fab4269922dd71a4ff0e69dd",
+    "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v4_metric_wall.json",
+    "audit_report_sha256": "a44c3e7a8cda860ff6d06e15b1fa28a5b5ce1173341e9be3cddacf9eac8dea93",
+    "packets": "runtime/vcm_evaluator/k3_six_row_route_packets_v4_metric_wall.json",
+    "packets_sha256": "4210b60dcac78520b56002cd376cabe507df18c7456127d33f1c9f8fec3272b0",
+    "invalidation_class": "GROUNDED_REQUEST_TERM_REPORT_METRIC_USED_UNENRICHED_FRONTIER",
+    "packet_selection_and_token_measurements_affected": false,
+    "local_model_calls": 0,
+    "hidden_evaluator_calls": 0,
+    "external_reference_calls": 0,
+    "disposition": "INCONCLUSIVE_IMPLEMENTATION"
+  },
   "owner": "scripts/theseus_vcm_k3_route_preflight.py",
-  "owner_sha256": "2e947a30fd3032d91bfdb3d7db4e6ff187f95fbf1d54c0b7632485043a883edf",
+  "owner_sha256": "2034ce4fc11c575c4a99f8cd720d99d1612ee3457888444fcabc01fcdf8e759e",
   "audit_owner": "scripts/theseus_vcm_k3_route_preflight_audit.py",
-  "audit_owner_sha256": "fd25b76720bea13617fd7ff73ab39e26c3197fad45e1752f6fdefc6c61e0ef56",
+  "audit_owner_sha256": "97a4f920739e4ec40704f85767c4d9379251ba0b5141ea497b437b664e97f6d8",
   "test_owner": "tests/test_theseus_vcm_k3_route_preflight.py",
-  "test_owner_sha256": "26eb2e71f6a09248e8b11954e422a7304bd1c869a998ae3b46109edf6b3fe7b2",
+  "test_owner_sha256": "0219bcee8b7efb0f8c49f75b8049acdbdabe14d8ca7ee71dc0b6c5a0aa73e44a",
   "k2_store": "runtime/vcm_evaluator/contiguous_six_row_store_v1.json",
   "k2_store_sha256": "c7d2f5d4c744273eaa4091e06b8245af3736ed753d11cb3936ee51efe67c0348",
   "k2_report": "reports/theseus_vcm_contiguous_six_row_freeze.json",
@@ -145,9 +160,9 @@
     "book_support_promotion_authorized": false,
     "user_or_operator_gate": false
   },
-  "packets_out": "runtime/vcm_evaluator/k3_six_row_route_packets_v4.json",
-  "report": "reports/theseus_vcm_k3_route_preflight_v4.json",
-  "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v4.json",
+  "packets_out": "runtime/vcm_evaluator/k3_six_row_route_packets_v5.json",
+  "report": "reports/theseus_vcm_k3_route_preflight_v5.json",
+  "audit_report": "reports/theseus_vcm_k3_route_preflight_audit_v5.json",
   "maximum_inference": "A GREEN call-free preflight proves only that six required local K3 routes can be deterministically materialized from exact parent-only stores, counterbalanced, counted by the pinned tokenizer, and bounded by frozen analysis, custody, cost, completion, and host-canary rules. It authorizes no candidate, evaluator, Luna, teacher, training, serving, D1, D2, or book action and is not VCM utility evidence.",
   "audit_maximum_inference": "A GREEN role-separated audit rederives the 36 candidate packet receipts, six route identities, parent-information matching, exact tokenizer residuals, counterbalancing, forbidden-field absence, zero-call custody, and frozen decision boundaries. It is not external reproduction and does not establish model competence, VCM utility, economics, transfer, or ASI Stack support."
 }

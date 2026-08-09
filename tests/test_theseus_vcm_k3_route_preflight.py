@@ -24,6 +24,7 @@ def test_call_free_preflight_materializes_all_six_routes() -> None:
     assert report["local_model_calls"] == 0
     assert report["external_reference_calls"] == 0
     assert len(packets["rows"]) == 36
+    assert all(0 < row["grounded_request_term_count"] <= 12 for row in report["rows"])
 
 
 def test_flat_and_vcm_share_parent_information_but_not_route_envelope() -> None:
