@@ -13,8 +13,8 @@ sys.path.insert(0, str(ROOT / "scripts"))
 import theseus_assistant_p2a as p2a  # noqa: E402
 import theseus_vcm_k3_route_preflight as v3  # noqa: E402
 
-POLICY = "project_theseus_vcm_v4_chunked_route_preflight_v1"
-CONFIG_POLICY = "project_theseus_vcm_v4_chunked_route_preflight_config_v1"
+POLICY = "project_theseus_vcm_v4_chunked_route_preflight_v2"
+CONFIG_POLICY = "project_theseus_vcm_v4_chunked_route_preflight_config_v2"
 DEFAULT_CONFIG = ROOT / "configs" / "theseus_vcm_v4_chunked_route_preflight.json"
 
 
@@ -185,9 +185,13 @@ def build(
         faults.append("denominator_invalid")
     if pair_count != 6:
         faults.append("vcm_flat_physical_pair_incomplete")
-    consumed = {(148, "no_added_context_floor"), (123235, "ordinary_direct_retrieval_same_parent_store_query_and_context_opportunity")}
-    if any((row.get("exact_chat_prompt_tokens"), row.get("route")) in consumed and row.get("prompt_sha256") in {call.get("prompt_sha256") for call in p2a.dicts(host.get("calls"))} for row in packet_rows):
-        faults.append("consumed_v3_prompt_reused")
+    consumed_hashes = {str(call.get("prompt_sha256") or "") for call in p2a.dicts(host.get("calls"))}
+    consumed_identity_count = 0
+    for row in packet_rows:
+        consumed_identity = row.get("prompt_sha256") in consumed_hashes
+        row["consumed_v3_prompt_identity"] = consumed_identity
+        row["new_host_call_authorized"] = False
+        consumed_identity_count += int(consumed_identity)
     report = {
         "policy": POLICY, "created_utc": p2a.now(),
         "trigger_state": "GREEN" if not faults else "RED",
@@ -197,6 +201,7 @@ def build(
         "source_file_count": total_files, "source_chunk_count": total_chunks,
         "reconstructed_source_file_count": reconstructed_files,
         "vcm_flat_physically_addressable_matched_pair_count": pair_count,
+        "consumed_v3_prompt_identity_count": consumed_identity_count,
         "rows": row_rows,
         "consumed_v3_prompt_reruns_authorized": False,
         "new_local_model_calls_authorized": 0,
@@ -206,7 +211,7 @@ def build(
         "maximum_inference": cfg.get("maximum_inference"),
     }
     packets = {
-        "policy": "project_theseus_vcm_v4_chunked_packet_manifest_v1",
+        "policy": "project_theseus_vcm_v4_chunked_packet_manifest_v2",
         "created_utc": p2a.now(), "rows": packet_rows,
         "raw_context_stored": False, "local_model_calls": 0,
         "external_reference_calls": 0,

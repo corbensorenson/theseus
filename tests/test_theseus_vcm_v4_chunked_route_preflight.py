@@ -22,8 +22,10 @@ def test_v4_call_free_build_has_six_matched_pairs_and_no_calls():
     assert report["row_count"]==6 and report["packet_count"]==36
     assert report["source_file_count"]==report["reconstructed_source_file_count"]
     assert report["vcm_flat_physically_addressable_matched_pair_count"]==6
+    assert report["consumed_v3_prompt_identity_count"]>=1
     assert report["local_model_calls"]==0 and report["hidden_evaluator_calls"]==0
     assert len(packets["rows"])==36
+    assert all(row["new_host_call_authorized"] is False for row in packets["rows"])
 
 def test_vcm_and_flat_share_exact_chunk_information():
     report,_=owner.build(CONFIG,token_counter=fake_counter)
