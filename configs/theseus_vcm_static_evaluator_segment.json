@@ -1,11 +1,11 @@
 {
   "policy": "project_theseus_vcm_static_evaluator_segment_v1",
-  "state": "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_DIAGNOSTIC_REPLAY_V2",
+  "state": "PROSPECTIVE_K2_05_COMMON_TARGET_EVALUATOR_TRANSPLANT_REPAIR_V3",
   "owner": "scripts/theseus_vcm_static_evaluator_segment.py",
-  "owner_sha256": "a5156608ab5c9027901d3551b83de5e1206a28692e0c0d13245b97d9bd8b1e19",
+  "owner_sha256": "28311d5376fb9ff4858e971a102d30a94d017fb80548c4551d718efe5fc3d315",
   "audit_policy": "project_theseus_vcm_static_evaluator_segment_audit_v1",
   "audit_owner": "scripts/theseus_vcm_static_evaluator_segment_audit.py",
-  "audit_owner_sha256": "6fffcaa65f957c2d37db4dd752625dd066448ae6f06974f4183a34b5ee8c012e",
+  "audit_owner_sha256": "2a2d8bd1eab3c4b1b7981a45c06a17d5f3b871e9ea2b0820bf206c465a9394c9",
   "expected_task_count": 8,
   "sources": [
     {"id":"repository_closures","path":"reports/theseus_vcm_repository_closure_materialization_v2.json","sha256":"0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df"},
@@ -22,7 +22,7 @@
     {"index":10,"runtime":"node","arguments":["VidCoreLargePlayer/tests/popup-guard.test.mjs"],"selected_verifier_path":"VidCoreLargePlayer/tests/popup-guard.test.mjs"},
     {"index":20,"runtime":"python","arguments":["-m","unittest","tests/test_codexicon.py"],"selected_verifier_path":"tests/test_codexicon.py"},
     {"index":22,"runtime":"python","arguments":["-m","unittest","tests/test_input_validators.py"],"selected_verifier_path":"tests/test_input_validators.py"},
-    {"index":23,"runtime":"python","arguments":["-m","pytest","-q","tests/unit/test_vulnerability_baseline.py"],"selected_verifier_path":"tests/unit/test_vulnerability_baseline.py"},
+    {"index":23,"runtime":"python","arguments":["-m","pytest","-q","--noconftest","tests/unit/test_vulnerability_baseline.py"],"selected_verifier_path":"tests/unit/test_vulnerability_baseline.py"},
     {"index":27,"runtime":"python","arguments":["-m","pytest","-q","tests/test_carry_forward.py"],"selected_verifier_path":"tests/test_carry_forward.py"},
     {"index":57,"runtime":"python","arguments":["-m","pytest","-q","tests/test_merge_queue.py"],"selected_verifier_path":"tests/test_merge_queue.py"},
     {"index":58,"runtime":"python","arguments":["-m","pytest","-q","tests/test_core.py"],"selected_verifier_path":"tests/test_core.py"}

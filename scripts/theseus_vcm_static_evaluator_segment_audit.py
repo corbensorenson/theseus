@@ -6,6 +6,7 @@ import argparse
 import hashlib
 import json
 import sys
+import tarfile
 from pathlib import Path
 from typing import Any
 
@@ -45,6 +46,7 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
         index = int(actual.get("index") or 0)
         expected = configured.get(index, {})
         sides = {side: p2a.mapping(actual.get(side)) for side in ("parent", "target")}
+        expected_evaluator_sha = target_verifier_sha256(p2a.resolve(str(sides["target"].get("archive") or "")), str(expected.get("selected_verifier_path") or ""))
         for side, receipt in sides.items():
             if receipt.get("selected_verifier_path") != expected.get("selected_verifier_path") or receipt.get("command", [None])[1:] != expected.get("arguments"):
                 faults.append(f"command_or_verifier_receipt_invalid:{index}:{side}")
@@ -57,6 +59,8 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
                 payload = str(receipt.get(stream) or "").encode("utf-8")
                 if len(payload) != receipt.get(f"{stream}_bytes") or hashlib.sha256(payload).hexdigest() != receipt.get(f"{stream}_sha256"):
                     faults.append(f"retained_diagnostic_invalid:{index}:{side}:{stream}")
+            if receipt.get("common_target_verifier_sha256") != expected_evaluator_sha or receipt.get("common_target_verifier_transplanted_to_parent") is not True:
+                faults.append(f"common_evaluator_identity_invalid:{index}:{side}")
         parent_failed = sides["parent"].get("returncode") not in (None, 0) and not sides["parent"].get("boundary_hit")
         target_passed = sides["target"].get("returncode") == 0 and not sides["target"].get("boundary_hit")
         disposition = "QUALIFIED_PARENT_FAIL_TARGET_PASS" if parent_failed and target_passed else "INCONCLUSIVE_EXPERIMENT_STATIC_EVALUATOR_CONSTRUCT"
@@ -69,6 +73,15 @@ def audit(path: Path = DEFAULT_CONFIG, *, execution: dict[str, Any] | None = Non
     if execution_report.get("qualified_task_count") != qualified or execution_report.get("inconclusive_task_count") != len(audited_rows) - qualified:
         faults.append("producer_count_rederivation_failed")
     return {"policy": POLICY, "created_utc": p2a.now(), "trigger_state": "GREEN" if not faults else "RED", "state": "K2_05_STATIC_SEGMENT_ROLE_SEPARATELY_REDERIVED" if not faults else "K2_05_STATIC_SEGMENT_AUDIT_FAILED", "faults": sorted(set(faults)), "config": {"path": p2a.rel(path), "sha256": p2a.sha256_file(path)}, "producer_report": {"path": cfg.get("report"), "sha256": p2a.sha256_file(p2a.resolve(str(cfg.get("report") or ""))) if execution is None else None}, "audited_task_count": len(audited_rows), "qualified_task_count": qualified, "inconclusive_task_count": len(audited_rows) - qualified, "rows": audited_rows, "panel_admitted": False, "audit_kind": "role-separated rederivation", "network_or_dependency_execution_performed": False, "parent_target_or_evaluator_executions": 0, "candidate_or_control_calls": 0, "external_reference_calls": 0, "maximum_inference": cfg.get("audit_maximum_inference")}
+
+
+def target_verifier_sha256(archive: Path, verifier: str) -> str:
+    with tarfile.open(archive, "r:gz") as handle:
+        members = [member for member in handle.getmembers() if member.isfile() and member.name.endswith(f"/{verifier}")]
+        if len(members) != 1:
+            return ""
+        extracted = handle.extractfile(members[0])
+        return hashlib.sha256(extracted.read()).hexdigest() if extracted is not None else ""
 
 
 if __name__ == "__main__":

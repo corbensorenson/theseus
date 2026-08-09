@@ -43,6 +43,7 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
     if cfg.get("policy") != POLICY or cfg.get("state") not in {
         "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_BEFORE_EXECUTION",
         "PROSPECTIVE_K2_05_EIGHT_STATIC_EVALUATORS_DIAGNOSTIC_REPLAY_V2",
+        "PROSPECTIVE_K2_05_COMMON_TARGET_EVALUATOR_TRANSPLANT_REPAIR_V3",
     }:
         faults.append("policy_or_state_invalid")
     owner = p2a.resolve(str(cfg.get("owner") or ""))
@@ -99,17 +100,33 @@ def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
         for row in p2a.dicts(cfg.get("rows")):
             index = int(row.get("index") or 0)
             artifacts = {str(item.get("label") or ""): item for item in p2a.dicts(bound["closures"][index].get("artifacts"))}
+            roots: dict[str, Path] = {}
+            works: dict[str, Path] = {}
+            archives: dict[str, Path] = {}
+            for side in ("parent", "target"):
+                works[side] = temp_root / f"task-{index:02d}-{side}"
+                archives[side] = p2a.resolve(str(p2a.mapping(artifacts.get(side)).get("normalized") or ""))
+                roots[side], extract_faults = extract_regular_archive(archives[side], works[side])
+                faults.extend(f"task_{index}:{side}:{fault}" for fault in extract_faults)
+            verifier = str(row.get("selected_verifier_path") or "")
+            target_verifier = roots["target"] / verifier
+            parent_verifier = roots["parent"] / verifier
+            if not target_verifier.is_file():
+                faults.append(f"task_{index}:target_verifier_missing")
+                evaluator_sha = ""
+            else:
+                evaluator_payload = target_verifier.read_bytes()
+                evaluator_sha = hashlib.sha256(evaluator_payload).hexdigest()
+                parent_verifier.parent.mkdir(parents=True, exist_ok=True)
+                parent_verifier.write_bytes(evaluator_payload)
+                parent_verifier.chmod(target_verifier.stat().st_mode & 0o777)
             sides: dict[str, dict[str, Any]] = {}
             for side in ("parent", "target"):
-                work = temp_root / f"task-{index:02d}-{side}"
-                archive = p2a.resolve(str(p2a.mapping(artifacts.get(side)).get("normalized") or ""))
-                source_root, extract_faults = extract_regular_archive(archive, work)
-                faults.extend(f"task_{index}:{side}:{fault}" for fault in extract_faults)
                 runtime = str(row.get("runtime") or "")
                 executable = str(bound["executables"].get(runtime) or "")
                 command = [executable, *p2a.strings(row.get("arguments"))]
-                receipt = run(command, source_root, work, limits)
-                receipt.update({"archive": p2a.rel(archive), "archive_sha256": p2a.sha256_file(archive), "command": command, "selected_verifier_path": row.get("selected_verifier_path")})
+                receipt = run(command, roots[side], works[side], limits)
+                receipt.update({"archive": p2a.rel(archives[side]), "archive_sha256": p2a.sha256_file(archives[side]), "command": command, "selected_verifier_path": verifier, "common_target_verifier_sha256": evaluator_sha, "common_target_verifier_transplanted_to_parent": True})
                 sides[side] = receipt
             parent_failed = sides["parent"].get("returncode") not in (None, 0) and not sides["parent"].get("boundary_hit")
             target_passed = sides["target"].get("returncode") == 0 and not sides["target"].get("boundary_hit")
@@ -130,7 +147,9 @@ def extract_regular_archive(archive: Path, destination: Path) -> tuple[Path, lis
             roots.add(parts[0])
             target = destination.joinpath(*parts)
             if member.isdir():
-                target.mkdir(parents=True, exist_ok=True); continue
+                target.mkdir(parents=True, exist_ok=True)
+                target.chmod(member.mode & 0o777)
+                continue
             if not member.isfile():
                 faults.append("non_regular_member"); continue
             target.parent.mkdir(parents=True, exist_ok=True)
@@ -138,6 +157,7 @@ def extract_regular_archive(archive: Path, destination: Path) -> tuple[Path, lis
             if extracted is None:
                 faults.append("unreadable_regular_member"); continue
             target.write_bytes(extracted.read())
+            target.chmod(member.mode & 0o777)
     if len(roots) != 1:
         faults.append("archive_root_count_invalid")
     return destination / next(iter(roots), ""), sorted(set(faults))
