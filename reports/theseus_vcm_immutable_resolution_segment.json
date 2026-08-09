@@ -1,0 +1,29 @@
+{
+  "cache": {},
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_immutable_resolution_segment.json",
+    "sha256": "f60555c9f2fd31a3e526722e54fc11631c0c7abf838d4196a8ec749f17673e47"
+  },
+  "created_utc": "2026-08-09T02:46:28.266079Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "free_bytes_after": 16689553408,
+  "free_bytes_before": 16689553408,
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were offered once to the pinned uv/Python or Cargo resolver under the sealed registry, build, host-reserve, and output contracts; each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
+  "qualified_task_count": 0,
+  "repository_runner_executions": 0,
+  "rows": [],
+  "source_build_executions": 0,
+  "state": "READY_FOR_SIX_IMMUTABLE_RESOLUTION_CLOSURES",
+  "task_count": 0,
+  "teacher_calls": 0,
+  "trigger_state": "PAUSED"
+}

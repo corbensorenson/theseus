@@ -1,0 +1,170 @@
+{
+  "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
+  "state": "PROSPECTIVE_K2_05_SIX_IMMUTABLE_RESOLUTION_CLOSURES_V1",
+  "owner": "scripts/theseus_vcm_immutable_resolution_segment.py",
+  "owner_sha256": "15addf13da3a64f4d1e7760a34905ab90c104d3051dd2af8012cd03f61f64aac",
+  "audit_policy": "project_theseus_vcm_immutable_resolution_segment_audit_v1",
+  "audit_owner": "scripts/theseus_vcm_immutable_resolution_segment_audit.py",
+  "audit_owner_sha256": "0328c3072fb0a280973fc3437b3b56ea7c262ed4133fb5f455b8c458e16e285f",
+  "sources": [
+    {
+      "id": "repository_closures",
+      "path": "reports/theseus_vcm_repository_closure_materialization_v2.json",
+      "sha256": "0d0d6f1862406c0a130524df2b1fbb8484b718a1f89e1f1a86a8fce08b9b66df"
+    },
+    {
+      "id": "runner_inventory",
+      "path": "reports/theseus_vcm_repository_runner_inventory_v3.json",
+      "sha256": "0ae98001209d444cd5084dec216a8b14a78b0ac7a1ef02e3c7afeed2810bd123"
+    },
+    {
+      "id": "dependency_classes",
+      "path": "reports/theseus_vcm_dependency_class_audit_v2.json",
+      "sha256": "1076934144ad15789046147a398ca5c8c2293dd96438701bbf4936c5798e8dff"
+    }
+  ],
+  "tools": {
+    "uv": {
+      "path": "runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+      "sha256": "0e71bad1f36bc9762cdecef1932f68ea3db541e45495c60dd474e1c860e21edf",
+      "version": "0.11.28"
+    },
+    "python": {
+      "path": "runtime/venvs/mlx-0.32.0-py312/bin/python",
+      "sha256": "9f8220969501e003220f3b518caf8dc1687f09149a9e1b60c9957aefd0ffedf3",
+      "version": "3.12.5"
+    },
+    "cargo": {
+      "path": "runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+      "sha256": "7672ead309d505577c018fff2cafb3433601f073e38cbe87359ac1f7b944bbf5",
+      "version": "1.97.1"
+    }
+  },
+  "rows": [
+    {
+      "index": 12,
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "manager": "uv",
+      "inputs": ["pyproject.toml"],
+      "extras": ["dev"],
+      "manifest_receipts": [
+        {"path": "pyproject.toml", "sha256": "6b313dd1c2c8c8ad06ed69c918f0623dc259ea4e0735e9ba458a691608e87d28"}
+      ],
+      "selected_verifier_paths": ["tests/test_packaging.py"],
+      "output_name": "task-12-requirements.lock"
+    },
+    {
+      "index": 13,
+      "repository": "dknowles2/ha-pitboss",
+      "manager": "uv",
+      "inputs": ["requirements.txt"],
+      "extras": [],
+      "manifest_receipts": [
+        {"path": "requirements.txt", "sha256": "cb4cad7da55769284f35c0d8e3a86f9a7029d60ff77686d82add46a062710b33"}
+      ],
+      "selected_verifier_paths": ["tests/test_sensor.py"],
+      "output_name": "task-13-requirements.lock"
+    },
+    {
+      "index": 16,
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "manager": "uv",
+      "inputs": ["ops-server/requirements.txt", "requirements-dev.txt"],
+      "extras": [],
+      "manifest_receipts": [
+        {"path": "ops-server/requirements.txt", "sha256": "29c7c4c0c7561d012acfef1e032d3c5f4d84e7eefc368993c9e6a2929751a960"},
+        {"path": "requirements-dev.txt", "sha256": "d24d85418dd2f21d938633089703415f8141dca1a7f3024c435a2d0cae63809c"}
+      ],
+      "selected_verifier_paths": ["ops-server/dashboard/test_arena_auth.py", "ops-server/tools/training_test_runner.py"],
+      "output_name": "task-16-requirements.lock"
+    },
+    {
+      "index": 25,
+      "repository": "fibsem-os/fibsem-os",
+      "manager": "uv",
+      "inputs": ["pyproject.toml"],
+      "extras": ["test"],
+      "manifest_receipts": [
+        {"path": "pyproject.toml", "sha256": "a2283802997b2cec046072f3783cf25dc0a8a398ffbf4f8d451f6c103d538808"}
+      ],
+      "selected_verifier_paths": ["tests/autolamella/test_status_dict_vocabulary.py"],
+      "output_name": "task-25-requirements.lock"
+    },
+    {
+      "index": 35,
+      "repository": "Stranger6667/jsonschema",
+      "manager": "cargo",
+      "inputs": ["Cargo.toml"],
+      "extras": [],
+      "manifest_receipts": [
+        {"path": "Cargo.toml", "sha256": "1ce5ce0185a5b3830324d528e8754c436fce2394e82ab6c8079abacfc9720d5b"},
+        {"path": "crates/jsonschema/Cargo.toml", "sha256": "46c0fa8d2337243a0f902e49be2f5680562301636d637dededdee7b1bfec6368"}
+      ],
+      "selected_verifier_paths": [
+        "crates/jsonschema/tests/canonical-suite/algebra.json",
+        "crates/jsonschema/tests/canonical-suite/dependencies.json",
+        "crates/jsonschema/tests/canonical-suite/errors.json",
+        "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+        "crates/jsonschema/tests/canonical-suite/items.json",
+        "crates/jsonschema/tests/canonical-suite/object.json",
+        "crates/jsonschema/tests/canonical-suite/oneof.json",
+        "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+        "crates/jsonschema/tests/canonicalization.rs"
+      ],
+      "output_name": "task-35-Cargo.lock"
+    },
+    {
+      "index": 56,
+      "repository": "AbsoluteMode/session-recall",
+      "manager": "uv",
+      "inputs": ["pyproject.toml"],
+      "extras": ["dev"],
+      "manifest_receipts": [
+        {"path": "pyproject.toml", "sha256": "3938f2467a788c875aefb81acafa7afdd10c573677551f7fa08e50943bd0a931"}
+      ],
+      "selected_verifier_paths": ["tests/test_share_cli.py", "tests/test_share_transport.py"],
+      "output_name": "task-56-requirements.lock"
+    }
+  ],
+  "expected_task_count": 6,
+  "shared_cache_root": "runtime/vcm_evaluator/dependency_store/immutable-resolution",
+  "output_directory": "reports/theseus_vcm_immutable_resolution_locks",
+  "report": "reports/theseus_vcm_immutable_resolution_segment.json",
+  "audit_report": "reports/theseus_vcm_immutable_resolution_segment_audit.json",
+  "partial_panel_admission_forbidden": true,
+  "declared_dependency_gap_policy": "Use only exact target-declared dependency inputs and do not guess, stub, or hand-author undeclared imports; preserve any resulting evaluator wall as scoped instrument evidence.",
+  "limits": {
+    "minimum_free_bytes_after_execution": 10737418240,
+    "maximum_shared_cache_bytes": 4294967296,
+    "wall_seconds_per_command": 900,
+    "cpu_seconds_per_command": 300,
+    "open_files": 512,
+    "user_processes": 384,
+    "terminate_grace_seconds": 5,
+    "boundary_activation_disposition": "INCONCLUSIVE_EXPERIMENT_HOST_RESOURCE_BOUNDARY_NOT_TASK_OR_MECHANISM_FAILURE"
+  },
+  "authority": {
+    "target_archive_extraction_authorized": true,
+    "registry_metadata_resolution_authorized": true,
+    "immutable_lock_write_authorized": true,
+    "shared_resolver_cache_authorized": true,
+    "package_installation_authorized": false,
+    "source_build_authorized": false,
+    "build_backend_execution_authorized": false,
+    "project_installation_authorized": false,
+    "repository_runner_execution_authorized": false,
+    "parent_target_evaluator_execution_authorized": false,
+    "candidate_packet_materialization_authorized": false,
+    "local_model_calls_authorized": false,
+    "external_reference_calls_authorized": false,
+    "teacher_calls_authorized": false,
+    "training_rows_authorized": false,
+    "serving_authorized": false,
+    "D1_authorized": false,
+    "D2_authorized": false,
+    "book_support_promotion_authorized": false,
+    "user_or_operator_gate": false
+  },
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were offered once to the pinned uv/Python or Cargo resolver under the sealed registry, build, host-reserve, and output contracts; each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
+  "audit_maximum_inference": "The audit is role-separated rederivation inside this repository. It checks the six-row denominator, target/archive/tool identities, full diagnostics, lock hashes and syntax, scoped dispositions, zero execution/model counters, and no partial-panel admission. It is not producer-independent replay or external reproduction and cannot support a VCM or ASI Stack capability claim."
+}
