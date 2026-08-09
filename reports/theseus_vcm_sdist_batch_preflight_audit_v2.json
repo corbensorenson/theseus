@@ -1,0 +1,57 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "audited_row_count": 3,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_sdist_batch_preflight.json",
+    "sha256": "34c9d5dab548305f47af3051b8925441bf2b1420b07ef771dddc2ac5de423a08"
+  },
+  "created_utc": "2026-08-09T03:17:33.904172Z",
+  "eligible_row_count": 3,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_row_count": 0,
+  "maximum_inference": "This role-separated audit rederives the three retained sdist identities, archive safety receipts, license presence, build backends, build requirements, AST setup.py characteristics, and dispositions without network or build execution. It is not producer-independent replay or external reproduction.",
+  "network_or_build_execution_performed": false,
+  "policy": "project_theseus_vcm_sdist_batch_preflight_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_sdist_batch_preflight_v2.json",
+    "sha256": "7d84efbf8d3386dca9dd4cdcae11a2ee156d59d7dcaa06dad2d91ff70f7e672a"
+  },
+  "rows": [
+    {
+      "build_backend": "poetry.core.masonry.api",
+      "build_requirements": [
+        "setuptools>=77.0",
+        "Cython>=3",
+        "poetry-core>=2.0.0"
+      ],
+      "disposition": "ELIGIBLE_FOR_NETWORK_DENIED_BATCH_BUILD",
+      "name": "habluetooth",
+      "version": "6.26.5"
+    },
+    {
+      "build_backend": "poetry.core.masonry.api",
+      "build_requirements": [
+        "setuptools>=77.0",
+        "Cython",
+        "poetry-core>=2.0.0"
+      ],
+      "disposition": "ELIGIBLE_FOR_NETWORK_DENIED_BATCH_BUILD",
+      "name": "bluetooth-data-tools",
+      "version": "1.29.21"
+    },
+    {
+      "build_backend": "setuptools.build_meta:__legacy__",
+      "build_requirements": [
+        "setuptools==80.9.0",
+        "wheel==0.45.1"
+      ],
+      "disposition": "ELIGIBLE_FOR_NETWORK_DENIED_BATCH_BUILD",
+      "name": "PyRIC",
+      "version": "0.1.6.3"
+    }
+  ],
+  "state": "TASK13_TRANSITIVE_SDIST_BATCH_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}
