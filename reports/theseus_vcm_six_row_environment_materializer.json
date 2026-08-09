@@ -1,0 +1,2691 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_environment_materializer.json",
+    "sha256": "55b84c7690158b94877c67d0328f8040f14b2b94e343363efce8ddac17a5d53b"
+  },
+  "created_utc": "2026-08-09T03:47:49.891124Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 2,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact immutable locks can materialize through one shared uv/Cargo store into disposable environments and replay with network denied, with Python source builds disabled, Cargo limited to fetch, exact lock membership checked, complete diagnostics retained, and the 10 GiB reserve preserved. It does not run a repository verifier, establish parent-fail/target-pass behavior, admit a panel, evaluate a model or VCM, or support an ASI Stack claim.",
+  "network_denied_replays": 4,
+  "network_enabled_materializations": 6,
+  "package_installations": 10,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_six_row_environment_materializer_v1",
+  "project_installations": 0,
+  "qualified_task_count": 4,
+  "repository_runner_executions": 0,
+  "retained_shared_store": {
+    "bytes": 1164497003,
+    "file_count": 71729,
+    "identity_sha256": "a005b29b502c5b93b6eaf3a17f8f7b4a32d3a48b0b27b0764555b6d5231f2605",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "rows": [
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 12,
+      "lock": {
+        "package_count": 6,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+        "sha256": "62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pillow",
+              "version": "12.3.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-12/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--offline"
+          ],
+          "duration_ms": 242.777,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 6 packages in 1ms\nInstalled 6 packages in 209ms\n + iniconfig==2.3.0\n + packaging==26.3\n + pillow==12.3.0\n + pluggy==1.6.0\n + pygments==2.20.0\n + pytest==9.1.1\n",
+          "stderr_bytes": 209,
+          "stderr_complete": true,
+          "stderr_sha256": "80a4c7319a1669ff915a35202d278ca114c9b6f056dbcd1c9a1985b585990583",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 28.706,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pillow",
+              "version": "12.3.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-12/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 1410.204,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 6 packages in 304ms\nDownloading pillow (4.6MiB)\nDownloading pygments (1.2MiB)\n Downloaded pygments\n Downloaded pillow\nPrepared 6 packages in 829ms\nInstalled 6 packages in 217ms\n + iniconfig==2.3.0\n + packaging==26.3\n + pillow==12.3.0\n + pluggy==1.6.0\n + pygments==2.20.0\n + pytest==9.1.1\n",
+          "stderr_bytes": 338,
+          "stderr_complete": true,
+          "stderr_sha256": "5da2a7e721f5b28d0ce656ae693879fe5113792cd1daf58bcab126e17a4d4e61",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 65.244,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "rickli0822-prog/windows-ai-login-doctor"
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_ENVIRONMENT_MATERIALIZATION",
+      "faults": [
+        "online:installed_distribution_not_locked:boolean.py@5.0"
+      ],
+      "index": 13,
+      "lock": {
+        "package_count": 158,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+        "sha256": "f9802c9804d8527d671a342c8add16225fcc20218d740f9076122b3f36226fef"
+      },
+      "manager": "uv",
+      "receipts": {
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "acme",
+              "version": "5.4.0"
+            },
+            {
+              "name": "aiodns",
+              "version": "4.0.4"
+            },
+            {
+              "name": "aioesphomeapi",
+              "version": "45.7.0"
+            },
+            {
+              "name": "aiogithubapi",
+              "version": "26.0.0"
+            },
+            {
+              "name": "aiohappyeyeballs",
+              "version": "2.7.1"
+            },
+            {
+              "name": "aiohasupervisor",
+              "version": "0.5.0"
+            },
+            {
+              "name": "aiohttp",
+              "version": "3.14.3"
+            },
+            {
+              "name": "aiohttp-asyncmdnsresolver",
+              "version": "0.2.0"
+            },
+            {
+              "name": "aiohttp-cors",
+              "version": "0.8.1"
+            },
+            {
+              "name": "aiohttp-fast-zlib",
+              "version": "0.3.0"
+            },
+            {
+              "name": "aiooui",
+              "version": "0.1.9"
+            },
+            {
+              "name": "aiosignal",
+              "version": "1.4.0"
+            },
+            {
+              "name": "aiousbwatcher",
+              "version": "1.1.2"
+            },
+            {
+              "name": "aiozoneinfo",
+              "version": "0.2.3"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "annotatedyaml",
+              "version": "1.0.2"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "ast-serialize",
+              "version": "0.8.0"
+            },
+            {
+              "name": "astral",
+              "version": "2.2"
+            },
+            {
+              "name": "async-interrupt",
+              "version": "1.2.2"
+            },
+            {
+              "name": "asyncinotify",
+              "version": "4.4.4"
+            },
+            {
+              "name": "atomicwrites-homeassistant",
+              "version": "1.4.1"
+            },
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "audioop-lts",
+              "version": "0.2.2"
+            },
+            {
+              "name": "awesomeversion",
+              "version": "25.8.0"
+            },
+            {
+              "name": "backoff",
+              "version": "2.2.1"
+            },
+            {
+              "name": "bcrypt",
+              "version": "5.0.0"
+            },
+            {
+              "name": "bleak",
+              "version": "3.0.2"
+            },
+            {
+              "name": "bleak-retry-connector",
+              "version": "4.6.3"
+            },
+            {
+              "name": "bluetooth-adapters",
+              "version": "2.4.0"
+            },
+            {
+              "name": "bluetooth-auto-recovery",
+              "version": "1.6.4"
+            },
+            {
+              "name": "bluetooth-data-tools",
+              "version": "1.29.6"
+            },
+            {
+              "name": "boolean.py",
+              "version": "5.0"
+            },
+            {
+              "name": "boto3",
+              "version": "1.43.67"
+            },
+            {
+              "name": "botocore",
+              "version": "1.43.67"
+            },
+            {
+              "name": "btsocket",
+              "version": "0.3.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "chacha20poly1305-reuseable",
+              "version": "0.13.2"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "ciso8601",
+              "version": "2.3.3"
+            },
+            {
+              "name": "colorlog",
+              "version": "6.12.0"
+            },
+            {
+              "name": "coverage",
+              "version": "7.14.1"
+            },
+            {
+              "name": "cronsim",
+              "version": "2.7"
+            },
+            {
+              "name": "cryptography",
+              "version": "48.0.1"
+            },
+            {
+              "name": "dukpy",
+              "version": "0.6.0"
+            },
+            {
+              "name": "envs",
+              "version": "1.4"
+            },
+            {
+              "name": "execnet",
+              "version": "2.1.2"
+            },
+            {
+              "name": "fnv-hash-fast",
+              "version": "2.0.3"
+            },
+            {
+              "name": "fnvhash",
+              "version": "0.2.1"
+            },
+            {
+              "name": "freezegun",
+              "version": "1.5.5"
+            },
+            {
+              "name": "frozenlist",
+              "version": "1.8.0"
+            },
+            {
+              "name": "grpcio",
+              "version": "1.83.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "habluetooth",
+              "version": "6.1.0"
+            },
+            {
+              "name": "hass-nabucasa",
+              "version": "2.2.0"
+            },
+            {
+              "name": "home-assistant-bluetooth",
+              "version": "2.0.0"
+            },
+            {
+              "name": "homeassistant",
+              "version": "2026.7.4"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "icmplib",
+              "version": "3.0.4"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "ifaddr",
+              "version": "0.2.0"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "jmespath",
+              "version": "1.1.0"
+            },
+            {
+              "name": "josepy",
+              "version": "2.2.0"
+            },
+            {
+              "name": "librt",
+              "version": "0.15.0"
+            },
+            {
+              "name": "license-expression",
+              "version": "30.4.3"
+            },
+            {
+              "name": "lru-dict",
+              "version": "1.4.1"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "mashumaro",
+              "version": "3.22"
+            },
+            {
+              "name": "mock-open",
+              "version": "1.4.0"
+            },
+            {
+              "name": "multidict",
+              "version": "6.7.1"
+            },
+            {
+              "name": "mypy",
+              "version": "2.3.0"
+            },
+            {
+              "name": "mypy-extensions",
+              "version": "1.1.0"
+            },
+            {
+              "name": "noiseprotocol",
+              "version": "0.3.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.3.2"
+            },
+            {
+              "name": "orjson",
+              "version": "3.11.9"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "paho-mqtt",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pathspec",
+              "version": "1.1.1"
+            },
+            {
+              "name": "pillow",
+              "version": "12.2.0"
+            },
+            {
+              "name": "pip",
+              "version": "26.2.1"
+            },
+            {
+              "name": "pipdeptree",
+              "version": "2.26.1"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "propcache",
+              "version": "0.5.2"
+            },
+            {
+              "name": "protobuf",
+              "version": "7.35.1"
+            },
+            {
+              "name": "psutil",
+              "version": "7.2.2"
+            },
+            {
+              "name": "psutil-home-assistant",
+              "version": "0.0.1"
+            },
+            {
+              "name": "pycares",
+              "version": "5.0.1"
+            },
+            {
+              "name": "pycognito",
+              "version": "2024.5.1"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyjwt",
+              "version": "2.12.1"
+            },
+            {
+              "name": "pynacl",
+              "version": "1.6.2"
+            },
+            {
+              "name": "pyobjc-core",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-cocoa",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-corebluetooth",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyobjc-framework-libdispatch",
+              "version": "12.2.1"
+            },
+            {
+              "name": "pyopenssl",
+              "version": "26.2.0"
+            },
+            {
+              "name": "pyrfc3339",
+              "version": "2.1.0"
+            },
+            {
+              "name": "pyric",
+              "version": "0.1.6.3"
+            },
+            {
+              "name": "pyserial",
+              "version": "3.5"
+            },
+            {
+              "name": "pyserial-asyncio",
+              "version": "0.6"
+            },
+            {
+              "name": "pytboss",
+              "version": "2026.8.3"
+            },
+            {
+              "name": "pytest",
+              "version": "9.0.3"
+            },
+            {
+              "name": "pytest-aiohttp",
+              "version": "1.1.1"
+            },
+            {
+              "name": "pytest-asyncio",
+              "version": "1.4.0"
+            },
+            {
+              "name": "pytest-cov",
+              "version": "7.1.0"
+            },
+            {
+              "name": "pytest-freezer",
+              "version": "0.4.9"
+            },
+            {
+              "name": "pytest-github-actions-annotate-failures",
+              "version": "0.4.0"
+            },
+            {
+              "name": "pytest-homeassistant-custom-component",
+              "version": "0.13.348"
+            },
+            {
+              "name": "pytest-picked",
+              "version": "0.5.1"
+            },
+            {
+              "name": "pytest-socket",
+              "version": "0.8.0"
+            },
+            {
+              "name": "pytest-timeout",
+              "version": "2.4.0"
+            },
+            {
+              "name": "pytest-unordered",
+              "version": "0.8.0"
+            },
+            {
+              "name": "pytest-xdist",
+              "version": "3.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "python-slugify",
+              "version": "8.0.4"
+            },
+            {
+              "name": "pytz",
+              "version": "2026.3.post1"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "regex",
+              "version": "2026.7.19"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "requests-mock",
+              "version": "1.12.1"
+            },
+            {
+              "name": "respx",
+              "version": "0.23.1"
+            },
+            {
+              "name": "ruff",
+              "version": "0.16.0"
+            },
+            {
+              "name": "s3transfer",
+              "version": "0.19.2"
+            },
+            {
+              "name": "securetar",
+              "version": "2026.4.1"
+            },
+            {
+              "name": "sentence-stream",
+              "version": "1.3.0"
+            },
+            {
+              "name": "serialx",
+              "version": "1.8.2"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "snitun",
+              "version": "0.45.1"
+            },
+            {
+              "name": "sqlalchemy",
+              "version": "2.0.51"
+            },
+            {
+              "name": "standard-aifc",
+              "version": "3.13.0"
+            },
+            {
+              "name": "standard-chunk",
+              "version": "3.13.0"
+            },
+            {
+              "name": "standard-telnetlib",
+              "version": "3.13.0"
+            },
+            {
+              "name": "syrupy",
+              "version": "5.3.2"
+            },
+            {
+              "name": "text-unidecode",
+              "version": "1.3"
+            },
+            {
+              "name": "tqdm",
+              "version": "4.67.1"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "tzdata",
+              "version": "2026.3"
+            },
+            {
+              "name": "tzlocal",
+              "version": "5.4.4"
+            },
+            {
+              "name": "uart-devices",
+              "version": "0.1.1"
+            },
+            {
+              "name": "ulid-transform",
+              "version": "2.2.9"
+            },
+            {
+              "name": "unidiff",
+              "version": "0.7.5"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "usb-devices",
+              "version": "0.5.1"
+            },
+            {
+              "name": "uv",
+              "version": "0.11.25"
+            },
+            {
+              "name": "voluptuous",
+              "version": "0.15.2"
+            },
+            {
+              "name": "voluptuous-openapi",
+              "version": "0.4.1"
+            },
+            {
+              "name": "voluptuous-serialize",
+              "version": "2.7.0"
+            },
+            {
+              "name": "webrtc-models",
+              "version": "0.3.0"
+            },
+            {
+              "name": "yarl",
+              "version": "1.24.5"
+            },
+            {
+              "name": "zeroconf",
+              "version": "0.150.0"
+            }
+          ],
+          "faults": [
+            "installed_distribution_not_locked:boolean.py@5.0"
+          ]
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-13/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--find-links",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/wheels"
+          ],
+          "duration_ms": 50362.926,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.14.2 environment at: venv\nResolved 158 packages in 7.76s\nDownloading botocore (14.9MiB)\nDownloading pip (1.7MiB)\nDownloading zeroconf (1.6MiB)\nDownloading sqlalchemy (2.1MiB)\nDownloading pydantic-core (1.9MiB)\nDownloading pillow (4.5MiB)\nDownloading ruff (10.0MiB)\nDownloading uv (21.8MiB)\nDownloading dukpy (2.5MiB)\nDownloading pyobjc-core (6.1MiB)\nDownloading mypy (13.3MiB)\nDownloading numpy (4.9MiB)\nDownloading grpcio (11.6MiB)\nDownloading cryptography (7.6MiB)\nDownloading homeassistant (54.9MiB)\nDownloading ast-serialize (1.1MiB)\n Downloaded ast-serialize\n Downloaded zeroconf\n Downloaded pydantic-core\n Downloaded pip\n Downloaded sqlalchemy\n Downloaded dukpy\n Downloaded pillow\n Downloaded numpy\n Downloaded pyobjc-core\n Downloaded cryptography\n Downloaded ruff\n Downloaded grpcio\n Downloaded mypy\n Downloaded botocore\n Downloaded uv\n Downloaded homeassistant\nPrepared 154 packages in 15.68s\nInstalled 158 packages in 26.78s\n + acme==5.4.0\n + aiodns==4.0.4\n + aioesphomeapi==45.7.0\n + aiogithubapi==26.0.0\n + aiohappyeyeballs==2.7.1\n + aiohasupervisor==0.5.0\n + aiohttp==3.14.3\n + aiohttp-asyncmdnsresolver==0.2.0\n + aiohttp-cors==0.8.1\n + aiohttp-fast-zlib==0.3.0\n + aiooui==0.1.9\n + aiosignal==1.4.0\n + aiousbwatcher==1.1.2\n + aiozoneinfo==0.2.3\n + annotated-types==0.8.0\n + annotatedyaml==1.0.2\n + anyio==4.14.2\n + ast-serialize==0.8.0\n + astral==2.2\n + async-interrupt==1.2.2\n + asyncinotify==4.4.4\n + atomicwrites-homeassistant==1.4.1\n + attrs==26.1.0\n + audioop-lts==0.2.2\n + awesomeversion==25.8.0\n + backoff==2.2.1\n + bcrypt==5.0.0\n + bleak==3.0.2\n + bleak-retry-connector==4.6.3\n + bluetooth-adapters==2.4.0\n + bluetooth-auto-recovery==1.6.4\n + bluetooth-data-tools==1.29.6\n + boolean-py==5.0\n + boto3==1.43.67\n + botocore==1.43.67\n + btsocket==0.3.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + chacha20poly1305-reuseable==0.13.2\n + charset-normalizer==3.4.9\n + ciso8601==2.3.3\n + colorlog==6.12.0\n + coverage==7.14.1\n + cronsim==2.7\n + cryptography==48.0.1\n + dukpy==0.6.0\n + envs==1.4\n + execnet==2.1.2\n + fnv-hash-fast==2.0.3\n + fnvhash==0.2.1\n + freezegun==1.5.5\n + frozenlist==1.8.0\n + grpcio==1.83.0\n + h11==0.16.0\n + habluetooth==6.1.0\n + hass-nabucasa==2.2.0\n + home-assistant-bluetooth==2.0.0\n + homeassistant==2026.7.4\n + httpcore==1.0.9\n + httpx==0.28.1\n + icmplib==3.0.4\n + idna==3.18\n + ifaddr==0.2.0\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + jmespath==1.1.0\n + josepy==2.2.0\n + librt==0.15.0\n + license-expression==30.4.3\n + lru-dict==1.4.1\n + markupsafe==3.0.3\n + mashumaro==3.22\n + mock-open==1.4.0\n + multidict==6.7.1\n + mypy==2.3.0\n + mypy-extensions==1.1.0\n + noiseprotocol==0.3.1\n + numpy==2.3.2\n + orjson==3.11.9\n + packaging==26.3\n + paho-mqtt==2.1.0\n + pathspec==1.1.1\n + pillow==12.2.0\n + pip==26.2.1\n + pipdeptree==2.26.1\n + pluggy==1.6.0\n + propcache==0.5.2\n + protobuf==7.35.1\n + psutil==7.2.2\n + psutil-home-assistant==0.0.1\n + pycares==5.0.1\n + pycognito==2024.5.1\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pyjwt==2.12.1\n + pynacl==1.6.2\n + pyobjc-core==12.2.1\n + pyobjc-framework-cocoa==12.2.1\n + pyobjc-framework-corebluetooth==12.2.1\n + pyobjc-framework-libdispatch==12.2.1\n + pyopenssl==26.2.0\n + pyrfc3339==2.1.0\n + pyric==0.1.6.3\n + pyserial==3.5\n + pyserial-asyncio==0.6\n + pytboss==2026.8.3\n + pytest==9.0.3\n + pytest-aiohttp==1.1.1\n + pytest-asyncio==1.4.0\n + pytest-cov==7.1.0\n + pytest-freezer==0.4.9\n + pytest-github-actions-annotate-failures==0.4.0\n + pytest-homeassistant-custom-component==0.13.348\n + pytest-picked==0.5.1\n + pytest-socket==0.8.0\n + pytest-timeout==2.4.0\n + pytest-unordered==0.8.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + python-slugify==8.0.4\n + pytz==2026.3.post1\n + pyyaml==6.0.3\n + regex==2026.7.19\n + requests==2.34.2\n + requests-mock==1.12.1\n + respx==0.23.1\n + ruff==0.16.0\n + s3transfer==0.19.2\n + securetar==2026.4.1\n + sentence-stream==1.3.0\n + serialx==1.8.2\n + six==1.17.0\n + snitun==0.45.1\n + sqlalchemy==2.0.51\n + standard-aifc==3.13.0\n + standard-chunk==3.13.0\n + standard-telnetlib==3.13.0\n + syrupy==5.3.2\n + text-unidecode==1.3\n + tqdm==4.67.1\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + tzdata==2026.3\n + tzlocal==5.4.4\n + uart-devices==0.1.1\n + ulid-transform==2.2.9\n + unidiff==0.7.5\n + urllib3==2.7.0\n + usb-devices==0.5.1\n + uv==0.11.25\n + voluptuous==0.15.2\n + voluptuous-openapi==0.4.1\n + voluptuous-serialize==2.7.0\n + webrtc-models==0.3.0\n + yarl==1.24.5\n + zeroconf==0.150.0\n",
+          "stderr_bytes": 4468,
+          "stderr_complete": true,
+          "stderr_sha256": "e7313e17ae5039d5b5bec8eee285f6e71d20a7d71dbb577ad7f8939db4f6fce8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 172.646,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.14.2 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 212,
+          "stderr_complete": true,
+          "stderr_sha256": "fa0662cdb5d47e4f351386359b9bb2371054bdb668b63441eb01ddb2ed797601",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "dknowles2/ha-pitboss"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 16,
+      "lock": {
+        "package_count": 35,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+        "sha256": "55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "annotated-doc",
+              "version": "0.0.5"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "click",
+              "version": "8.4.2"
+            },
+            {
+              "name": "cryptography",
+              "version": "50.0.0"
+            },
+            {
+              "name": "fastapi",
+              "version": "0.141.1"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httptools",
+              "version": "0.8.0"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "psutil",
+              "version": "7.2.2"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-mock",
+              "version": "3.15.1"
+            },
+            {
+              "name": "python-dotenv",
+              "version": "1.2.2"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "redis",
+              "version": "8.1.0"
+            },
+            {
+              "name": "starlette",
+              "version": "1.6.0"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "uvicorn",
+              "version": "0.52.1"
+            },
+            {
+              "name": "uvloop",
+              "version": "0.22.1"
+            },
+            {
+              "name": "watchfiles",
+              "version": "1.2.0"
+            },
+            {
+              "name": "websockets",
+              "version": "17.0.1"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-16/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--offline"
+          ],
+          "duration_ms": 676.269,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 35 packages in 12ms\nInstalled 35 packages in 621ms\n + annotated-doc==0.0.5\n + annotated-types==0.8.0\n + anyio==4.14.2\n + certifi==2026.7.22\n + cffi==2.1.1\n + click==8.4.2\n + cryptography==50.0.0\n + fastapi==0.141.1\n + h11==0.16.0\n + httpcore==1.0.9\n + httptools==0.8.0\n + httpx==0.28.1\n + idna==3.18\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + markupsafe==3.0.3\n + packaging==26.3\n + pluggy==1.6.0\n + psutil==7.2.2\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pytest==9.1.1\n + pytest-mock==3.15.1\n + python-dotenv==1.2.2\n + pyyaml==6.0.3\n + redis==8.1.0\n + starlette==1.6.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + uvicorn==0.52.1\n + uvloop==0.22.1\n + watchfiles==1.2.0\n + websockets==17.0.1\n",
+          "stderr_bytes": 798,
+          "stderr_complete": true,
+          "stderr_sha256": "024e90aca3437a4bfeba920299c2f5ee2b7ddc1dbf16fc4912557c434674ee66",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-16/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 34.256,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "annotated-doc",
+              "version": "0.0.5"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "click",
+              "version": "8.4.2"
+            },
+            {
+              "name": "cryptography",
+              "version": "50.0.0"
+            },
+            {
+              "name": "fastapi",
+              "version": "0.141.1"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httptools",
+              "version": "0.8.0"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jinja2",
+              "version": "3.1.6"
+            },
+            {
+              "name": "markupsafe",
+              "version": "3.0.3"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "psutil",
+              "version": "7.2.2"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-mock",
+              "version": "3.15.1"
+            },
+            {
+              "name": "python-dotenv",
+              "version": "1.2.2"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "redis",
+              "version": "8.1.0"
+            },
+            {
+              "name": "starlette",
+              "version": "1.6.0"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "uvicorn",
+              "version": "0.52.1"
+            },
+            {
+              "name": "uvloop",
+              "version": "0.22.1"
+            },
+            {
+              "name": "watchfiles",
+              "version": "1.2.0"
+            },
+            {
+              "name": "websockets",
+              "version": "17.0.1"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-16/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 1995.918,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 35 packages in 370ms\nDownloading uvloop (1.3MiB)\nDownloading cryptography (3.8MiB)\nDownloading pydantic-core (1.9MiB)\n Downloaded uvloop\n Downloaded pydantic-core\n Downloaded cryptography\nPrepared 17 packages in 938ms\nInstalled 35 packages in 606ms\n + annotated-doc==0.0.5\n + annotated-types==0.8.0\n + anyio==4.14.2\n + certifi==2026.7.22\n + cffi==2.1.1\n + click==8.4.2\n + cryptography==50.0.0\n + fastapi==0.141.1\n + h11==0.16.0\n + httpcore==1.0.9\n + httptools==0.8.0\n + httpx==0.28.1\n + idna==3.18\n + iniconfig==2.3.0\n + jinja2==3.1.6\n + markupsafe==3.0.3\n + packaging==26.3\n + pluggy==1.6.0\n + psutil==7.2.2\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pygments==2.20.0\n + pytest==9.1.1\n + pytest-mock==3.15.1\n + python-dotenv==1.2.2\n + pyyaml==6.0.3\n + redis==8.1.0\n + starlette==1.6.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + uvicorn==0.52.1\n + uvloop==0.22.1\n + watchfiles==1.2.0\n + websockets==17.0.1\n",
+          "stderr_bytes": 996,
+          "stderr_complete": true,
+          "stderr_sha256": "d3cdc7bb12f47ea655a2e331fb40f2ce6dc2148cea12346193f6f35273dd7a2c",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-16/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 101.113,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "dynatrace-wwse/codespaces-framework"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 25,
+      "lock": {
+        "package_count": 39,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+        "sha256": "8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "contourpy",
+              "version": "1.3.3"
+            },
+            {
+              "name": "cycler",
+              "version": "0.12.1"
+            },
+            {
+              "name": "execnet",
+              "version": "2.1.2"
+            },
+            {
+              "name": "fonttools",
+              "version": "4.63.0"
+            },
+            {
+              "name": "imageio",
+              "version": "2.37.4"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "kiwisolver",
+              "version": "1.5.0"
+            },
+            {
+              "name": "lazy-loader",
+              "version": "0.5"
+            },
+            {
+              "name": "lxml",
+              "version": "6.1.1"
+            },
+            {
+              "name": "lxml-html-clean",
+              "version": "0.4.5"
+            },
+            {
+              "name": "matplotlib",
+              "version": "3.11.1"
+            },
+            {
+              "name": "networkx",
+              "version": "3.6.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.5.1"
+            },
+            {
+              "name": "ome-types",
+              "version": "0.6.3"
+            },
+            {
+              "name": "opencv-python-headless",
+              "version": "5.0.0.93"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pandas",
+              "version": "3.0.5"
+            },
+            {
+              "name": "petname",
+              "version": "2.9"
+            },
+            {
+              "name": "pillow",
+              "version": "12.3.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "psygnal",
+              "version": "0.15.1"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pydantic-extra-types",
+              "version": "2.11.1"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyparsing",
+              "version": "3.3.2"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-timeout",
+              "version": "2.4.0"
+            },
+            {
+              "name": "pytest-xdist",
+              "version": "3.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "scikit-image",
+              "version": "0.26.0"
+            },
+            {
+              "name": "scipy",
+              "version": "1.18.0"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "tifffile",
+              "version": "2026.7.31"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "xsdata",
+              "version": "26.2"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-25/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--offline"
+          ],
+          "duration_ms": 2859.966,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 39 packages in 9ms\nInstalled 39 packages in 2.79s\n + annotated-types==0.8.0\n + contourpy==1.3.3\n + cycler==0.12.1\n + execnet==2.1.2\n + fonttools==4.63.0\n + imageio==2.37.4\n + iniconfig==2.3.0\n + kiwisolver==1.5.0\n + lazy-loader==0.5\n + lxml==6.1.1\n + lxml-html-clean==0.4.5\n + matplotlib==3.11.1\n + networkx==3.6.1\n + numpy==2.5.1\n + ome-types==0.6.3\n + opencv-python-headless==5.0.0.93\n + packaging==26.3\n + pandas==3.0.5\n + petname==2.9\n + pillow==12.3.0\n + pluggy==1.6.0\n + psygnal==0.15.1\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pydantic-extra-types==2.11.1\n + pygments==2.20.0\n + pyparsing==3.3.2\n + pytest==9.1.1\n + pytest-timeout==2.4.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + pyyaml==6.0.3\n + scikit-image==0.26.0\n + scipy==1.18.0\n + six==1.17.0\n + tifffile==2026.7.31\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + xsdata==26.2\n",
+          "stderr_bytes": 926,
+          "stderr_complete": true,
+          "stderr_sha256": "48e9f2f11e1914d2d7702010f4aea2452e9d47111c73025d7ad809cc4314bf18",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-25/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 31.506,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "contourpy",
+              "version": "1.3.3"
+            },
+            {
+              "name": "cycler",
+              "version": "0.12.1"
+            },
+            {
+              "name": "execnet",
+              "version": "2.1.2"
+            },
+            {
+              "name": "fonttools",
+              "version": "4.63.0"
+            },
+            {
+              "name": "imageio",
+              "version": "2.37.4"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "kiwisolver",
+              "version": "1.5.0"
+            },
+            {
+              "name": "lazy-loader",
+              "version": "0.5"
+            },
+            {
+              "name": "lxml",
+              "version": "6.1.1"
+            },
+            {
+              "name": "lxml-html-clean",
+              "version": "0.4.5"
+            },
+            {
+              "name": "matplotlib",
+              "version": "3.11.1"
+            },
+            {
+              "name": "networkx",
+              "version": "3.6.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.5.1"
+            },
+            {
+              "name": "ome-types",
+              "version": "0.6.3"
+            },
+            {
+              "name": "opencv-python-headless",
+              "version": "5.0.0.93"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pandas",
+              "version": "3.0.5"
+            },
+            {
+              "name": "petname",
+              "version": "2.9"
+            },
+            {
+              "name": "pillow",
+              "version": "12.3.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "psygnal",
+              "version": "0.15.1"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pydantic-extra-types",
+              "version": "2.11.1"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyparsing",
+              "version": "3.3.2"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-timeout",
+              "version": "2.4.0"
+            },
+            {
+              "name": "pytest-xdist",
+              "version": "3.8.0"
+            },
+            {
+              "name": "python-dateutil",
+              "version": "2.9.0.post0"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "scikit-image",
+              "version": "0.26.0"
+            },
+            {
+              "name": "scipy",
+              "version": "1.18.0"
+            },
+            {
+              "name": "six",
+              "version": "1.17.0"
+            },
+            {
+              "name": "tifffile",
+              "version": "2026.7.31"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "xsdata",
+              "version": "26.2"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-25/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 15961.474,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 39 packages in 538ms\nDownloading pandas (9.5MiB)\nDownloading fonttools (2.7MiB)\nDownloading networkx (2.0MiB)\nDownloading scikit-image (11.5MiB)\nDownloading matplotlib (8.9MiB)\nDownloading numpy (5.1MiB)\nDownloading scipy (19.5MiB)\nDownloading lxml (8.2MiB)\nDownloading opencv-python-headless (46.1MiB)\n Downloaded networkx\n Downloaded fonttools\n Downloaded numpy\n Downloaded lxml\n Downloaded matplotlib\n Downloaded pandas\n Downloaded scikit-image\n Downloaded scipy\n Downloaded opencv-python-headless\nPrepared 22 packages in 12.60s\nInstalled 39 packages in 2.73s\n + annotated-types==0.8.0\n + contourpy==1.3.3\n + cycler==0.12.1\n + execnet==2.1.2\n + fonttools==4.63.0\n + imageio==2.37.4\n + iniconfig==2.3.0\n + kiwisolver==1.5.0\n + lazy-loader==0.5\n + lxml==6.1.1\n + lxml-html-clean==0.4.5\n + matplotlib==3.11.1\n + networkx==3.6.1\n + numpy==2.5.1\n + ome-types==0.6.3\n + opencv-python-headless==5.0.0.93\n + packaging==26.3\n + pandas==3.0.5\n + petname==2.9\n + pillow==12.3.0\n + pluggy==1.6.0\n + psygnal==0.15.1\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pydantic-extra-types==2.11.1\n + pygments==2.20.0\n + pyparsing==3.3.2\n + pytest==9.1.1\n + pytest-timeout==2.4.0\n + pytest-xdist==3.8.0\n + python-dateutil==2.9.0.post0\n + pyyaml==6.0.3\n + scikit-image==0.26.0\n + scipy==1.18.0\n + six==1.17.0\n + tifffile==2026.7.31\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + xsdata==26.2\n",
+          "stderr_bytes": 1439,
+          "stderr_complete": true,
+          "stderr_sha256": "56a4da2d2112a36148f913eced822aedcc902999080da13d50264d2f82b9f674",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-25/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 131.939,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "fibsem-os/fibsem-os"
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_ENVIRONMENT_MATERIALIZATION",
+      "faults": [
+        "network_denied_cargo_replay_failed",
+        "online_cargo_fetch_failed"
+      ],
+      "index": 35,
+      "lock": {
+        "package_count": 404,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-35-Cargo.lock",
+        "sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+      },
+      "manager": "cargo",
+      "receipts": {
+        "online_fetch": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+            "fetch",
+            "--locked",
+            "--manifest-path",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-35/repository/jsonschema-a9dcbd105acde626758be4c6e12400a3d0a7f484/Cargo.toml",
+            "--config",
+            "net.git-fetch-with-cli=false"
+          ],
+          "duration_ms": 2827.155,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 101,
+          "stderr": "    Updating crates.io index\nerror: could not execute process `rustc -vV` (never executed)\n\nCaused by:\n  No such file or directory (os error 2)\n",
+          "stderr_bytes": 144,
+          "stderr_complete": true,
+          "stderr_sha256": "04cd7f960fab3a242a9f9442b3ceb4e1ccf1ef8786d6e326de51afffeac243cd",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "Stranger6667/jsonschema"
+    },
+    {
+      "disposition": "ENVIRONMENT_MATERIALIZATION_QUALIFIED",
+      "faults": [],
+      "index": 56,
+      "lock": {
+        "package_count": 74,
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+        "sha256": "edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b"
+      },
+      "manager": "uv",
+      "receipts": {
+        "offline_environment": {
+          "distributions": [
+            {
+              "name": "aiohappyeyeballs",
+              "version": "2.7.1"
+            },
+            {
+              "name": "aiohttp",
+              "version": "3.14.3"
+            },
+            {
+              "name": "aiolimiter",
+              "version": "1.2.1"
+            },
+            {
+              "name": "aiosignal",
+              "version": "1.4.0"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "click",
+              "version": "8.4.2"
+            },
+            {
+              "name": "cryptography",
+              "version": "50.0.0"
+            },
+            {
+              "name": "distro",
+              "version": "1.9.0"
+            },
+            {
+              "name": "filelock",
+              "version": "3.32.2"
+            },
+            {
+              "name": "frozenlist",
+              "version": "1.8.0"
+            },
+            {
+              "name": "fsspec",
+              "version": "2026.7.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "hf-xet",
+              "version": "1.6.0"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "httpx-sse",
+              "version": "0.4.3"
+            },
+            {
+              "name": "huggingface-hub",
+              "version": "1.27.0"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jsonpatch",
+              "version": "1.33"
+            },
+            {
+              "name": "jsonpointer",
+              "version": "3.1.1"
+            },
+            {
+              "name": "jsonschema",
+              "version": "4.26.0"
+            },
+            {
+              "name": "jsonschema-specifications",
+              "version": "2025.9.1"
+            },
+            {
+              "name": "langchain-core",
+              "version": "1.5.3"
+            },
+            {
+              "name": "langchain-protocol",
+              "version": "0.0.18"
+            },
+            {
+              "name": "langchain-text-splitters",
+              "version": "1.1.2"
+            },
+            {
+              "name": "langsmith",
+              "version": "0.10.17"
+            },
+            {
+              "name": "mcp",
+              "version": "1.29.0"
+            },
+            {
+              "name": "multidict",
+              "version": "6.7.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.5.1"
+            },
+            {
+              "name": "orjson",
+              "version": "3.11.9"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pillow",
+              "version": "12.3.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "propcache",
+              "version": "0.5.2"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pydantic-settings",
+              "version": "2.15.0"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyjwt",
+              "version": "2.13.0"
+            },
+            {
+              "name": "pynacl",
+              "version": "1.6.2"
+            },
+            {
+              "name": "pysqlite3",
+              "version": "0.6.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-mock",
+              "version": "3.15.1"
+            },
+            {
+              "name": "python-dotenv",
+              "version": "1.2.2"
+            },
+            {
+              "name": "python-multipart",
+              "version": "0.0.32"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "referencing",
+              "version": "0.37.0"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "requests-toolbelt",
+              "version": "1.0.0"
+            },
+            {
+              "name": "rpds-py",
+              "version": "2026.6.3"
+            },
+            {
+              "name": "sniffio",
+              "version": "1.3.1"
+            },
+            {
+              "name": "sqlite-vec",
+              "version": "0.1.9"
+            },
+            {
+              "name": "sse-starlette",
+              "version": "3.4.8"
+            },
+            {
+              "name": "starlette",
+              "version": "1.6.0"
+            },
+            {
+              "name": "tenacity",
+              "version": "9.1.4"
+            },
+            {
+              "name": "tokenizers",
+              "version": "0.23.1"
+            },
+            {
+              "name": "tqdm",
+              "version": "4.70.0"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "uuid-utils",
+              "version": "0.17.0"
+            },
+            {
+              "name": "uvicorn",
+              "version": "0.52.1"
+            },
+            {
+              "name": "voyageai",
+              "version": "0.5.0"
+            },
+            {
+              "name": "websockets",
+              "version": "17.0.1"
+            },
+            {
+              "name": "xxhash",
+              "version": "3.8.1"
+            },
+            {
+              "name": "yarl",
+              "version": "1.24.5"
+            },
+            {
+              "name": "zstandard",
+              "version": "0.25.0"
+            }
+          ],
+          "faults": []
+        },
+        "offline_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-56/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never",
+            "--offline"
+          ],
+          "duration_ms": 1751.042,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 74 packages in 12ms\nInstalled 74 packages in 1.70s\n + aiohappyeyeballs==2.7.1\n + aiohttp==3.14.3\n + aiolimiter==1.2.1\n + aiosignal==1.4.0\n + annotated-types==0.8.0\n + anyio==4.14.2\n + attrs==26.1.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + charset-normalizer==3.4.9\n + click==8.4.2\n + cryptography==50.0.0\n + distro==1.9.0\n + filelock==3.32.2\n + frozenlist==1.8.0\n + fsspec==2026.7.0\n + h11==0.16.0\n + hf-xet==1.6.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + httpx-sse==0.4.3\n + huggingface-hub==1.27.0\n + idna==3.18\n + iniconfig==2.3.0\n + jsonpatch==1.33\n + jsonpointer==3.1.1\n + jsonschema==4.26.0\n + jsonschema-specifications==2025.9.1\n + langchain-core==1.5.3\n + langchain-protocol==0.0.18\n + langchain-text-splitters==1.1.2\n + langsmith==0.10.17\n + mcp==1.29.0\n + multidict==6.7.1\n + numpy==2.5.1\n + orjson==3.11.9\n + packaging==26.3\n + pillow==12.3.0\n + pluggy==1.6.0\n + propcache==0.5.2\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pydantic-settings==2.15.0\n + pygments==2.20.0\n + pyjwt==2.13.0\n + pynacl==1.6.2\n + pysqlite3==0.6.0\n + pytest==9.1.1\n + pytest-mock==3.15.1\n + python-dotenv==1.2.2\n + python-multipart==0.0.32\n + pyyaml==6.0.3\n + referencing==0.37.0\n + requests==2.34.2\n + requests-toolbelt==1.0.0\n + rpds-py==2026.6.3\n + sniffio==1.3.1\n + sqlite-vec==0.1.9\n + sse-starlette==3.4.8\n + starlette==1.6.0\n + tenacity==9.1.4\n + tokenizers==0.23.1\n + tqdm==4.70.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + urllib3==2.7.0\n + uuid-utils==0.17.0\n + uvicorn==0.52.1\n + voyageai==0.5.0\n + websockets==17.0.1\n + xxhash==3.8.1\n + yarl==1.24.5\n + zstandard==0.25.0\n",
+          "stderr_bytes": 1656,
+          "stderr_complete": true,
+          "stderr_sha256": "f34ba4563899420ae6f2ad959a8b245cf10f718378c5b8d0b59d9da495098aa7",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "offline_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-56/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 23.551,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_environment": {
+          "distributions": [
+            {
+              "name": "aiohappyeyeballs",
+              "version": "2.7.1"
+            },
+            {
+              "name": "aiohttp",
+              "version": "3.14.3"
+            },
+            {
+              "name": "aiolimiter",
+              "version": "1.2.1"
+            },
+            {
+              "name": "aiosignal",
+              "version": "1.4.0"
+            },
+            {
+              "name": "annotated-types",
+              "version": "0.8.0"
+            },
+            {
+              "name": "anyio",
+              "version": "4.14.2"
+            },
+            {
+              "name": "attrs",
+              "version": "26.1.0"
+            },
+            {
+              "name": "certifi",
+              "version": "2026.7.22"
+            },
+            {
+              "name": "cffi",
+              "version": "2.1.1"
+            },
+            {
+              "name": "charset-normalizer",
+              "version": "3.4.9"
+            },
+            {
+              "name": "click",
+              "version": "8.4.2"
+            },
+            {
+              "name": "cryptography",
+              "version": "50.0.0"
+            },
+            {
+              "name": "distro",
+              "version": "1.9.0"
+            },
+            {
+              "name": "filelock",
+              "version": "3.32.2"
+            },
+            {
+              "name": "frozenlist",
+              "version": "1.8.0"
+            },
+            {
+              "name": "fsspec",
+              "version": "2026.7.0"
+            },
+            {
+              "name": "h11",
+              "version": "0.16.0"
+            },
+            {
+              "name": "hf-xet",
+              "version": "1.6.0"
+            },
+            {
+              "name": "httpcore",
+              "version": "1.0.9"
+            },
+            {
+              "name": "httpx",
+              "version": "0.28.1"
+            },
+            {
+              "name": "httpx-sse",
+              "version": "0.4.3"
+            },
+            {
+              "name": "huggingface-hub",
+              "version": "1.27.0"
+            },
+            {
+              "name": "idna",
+              "version": "3.18"
+            },
+            {
+              "name": "iniconfig",
+              "version": "2.3.0"
+            },
+            {
+              "name": "jsonpatch",
+              "version": "1.33"
+            },
+            {
+              "name": "jsonpointer",
+              "version": "3.1.1"
+            },
+            {
+              "name": "jsonschema",
+              "version": "4.26.0"
+            },
+            {
+              "name": "jsonschema-specifications",
+              "version": "2025.9.1"
+            },
+            {
+              "name": "langchain-core",
+              "version": "1.5.3"
+            },
+            {
+              "name": "langchain-protocol",
+              "version": "0.0.18"
+            },
+            {
+              "name": "langchain-text-splitters",
+              "version": "1.1.2"
+            },
+            {
+              "name": "langsmith",
+              "version": "0.10.17"
+            },
+            {
+              "name": "mcp",
+              "version": "1.29.0"
+            },
+            {
+              "name": "multidict",
+              "version": "6.7.1"
+            },
+            {
+              "name": "numpy",
+              "version": "2.5.1"
+            },
+            {
+              "name": "orjson",
+              "version": "3.11.9"
+            },
+            {
+              "name": "packaging",
+              "version": "26.3"
+            },
+            {
+              "name": "pillow",
+              "version": "12.3.0"
+            },
+            {
+              "name": "pluggy",
+              "version": "1.6.0"
+            },
+            {
+              "name": "propcache",
+              "version": "0.5.2"
+            },
+            {
+              "name": "pycparser",
+              "version": "3.0"
+            },
+            {
+              "name": "pydantic",
+              "version": "2.13.4"
+            },
+            {
+              "name": "pydantic-core",
+              "version": "2.46.4"
+            },
+            {
+              "name": "pydantic-settings",
+              "version": "2.15.0"
+            },
+            {
+              "name": "pygments",
+              "version": "2.20.0"
+            },
+            {
+              "name": "pyjwt",
+              "version": "2.13.0"
+            },
+            {
+              "name": "pynacl",
+              "version": "1.6.2"
+            },
+            {
+              "name": "pysqlite3",
+              "version": "0.6.0"
+            },
+            {
+              "name": "pytest",
+              "version": "9.1.1"
+            },
+            {
+              "name": "pytest-mock",
+              "version": "3.15.1"
+            },
+            {
+              "name": "python-dotenv",
+              "version": "1.2.2"
+            },
+            {
+              "name": "python-multipart",
+              "version": "0.0.32"
+            },
+            {
+              "name": "pyyaml",
+              "version": "6.0.3"
+            },
+            {
+              "name": "referencing",
+              "version": "0.37.0"
+            },
+            {
+              "name": "requests",
+              "version": "2.34.2"
+            },
+            {
+              "name": "requests-toolbelt",
+              "version": "1.0.0"
+            },
+            {
+              "name": "rpds-py",
+              "version": "2026.6.3"
+            },
+            {
+              "name": "sniffio",
+              "version": "1.3.1"
+            },
+            {
+              "name": "sqlite-vec",
+              "version": "0.1.9"
+            },
+            {
+              "name": "sse-starlette",
+              "version": "3.4.8"
+            },
+            {
+              "name": "starlette",
+              "version": "1.6.0"
+            },
+            {
+              "name": "tenacity",
+              "version": "9.1.4"
+            },
+            {
+              "name": "tokenizers",
+              "version": "0.23.1"
+            },
+            {
+              "name": "tqdm",
+              "version": "4.70.0"
+            },
+            {
+              "name": "typing-extensions",
+              "version": "4.16.0"
+            },
+            {
+              "name": "typing-inspection",
+              "version": "0.4.2"
+            },
+            {
+              "name": "urllib3",
+              "version": "2.7.0"
+            },
+            {
+              "name": "uuid-utils",
+              "version": "0.17.0"
+            },
+            {
+              "name": "uvicorn",
+              "version": "0.52.1"
+            },
+            {
+              "name": "voyageai",
+              "version": "0.5.0"
+            },
+            {
+              "name": "websockets",
+              "version": "17.0.1"
+            },
+            {
+              "name": "xxhash",
+              "version": "3.8.1"
+            },
+            {
+              "name": "yarl",
+              "version": "1.24.5"
+            },
+            {
+              "name": "zstandard",
+              "version": "0.25.0"
+            }
+          ],
+          "faults": []
+        },
+        "online_sync": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "pip",
+            "sync",
+            "/Users/corbensorenson/Documents/Theseus-Hive/reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+            "--python",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-56/venv/bin/python",
+            "--require-hashes",
+            "--no-build",
+            "--index-strategy",
+            "first-index",
+            "--default-index",
+            "https://pypi.org/simple",
+            "--cache-dir",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/shared-cache/uv",
+            "--link-mode",
+            "copy",
+            "--no-config",
+            "--no-progress",
+            "--color",
+            "never"
+          ],
+          "duration_ms": 4109.074,
+          "network_denied": false,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using Python 3.12.5 environment at: venv\nResolved 74 packages in 693ms\nDownloading hf-xet (3.7MiB)\nDownloading tokenizers (2.9MiB)\n Downloaded tokenizers\n Downloaded hf-xet\nPrepared 40 packages in 1.69s\nInstalled 74 packages in 1.58s\n + aiohappyeyeballs==2.7.1\n + aiohttp==3.14.3\n + aiolimiter==1.2.1\n + aiosignal==1.4.0\n + annotated-types==0.8.0\n + anyio==4.14.2\n + attrs==26.1.0\n + certifi==2026.7.22\n + cffi==2.1.1\n + charset-normalizer==3.4.9\n + click==8.4.2\n + cryptography==50.0.0\n + distro==1.9.0\n + filelock==3.32.2\n + frozenlist==1.8.0\n + fsspec==2026.7.0\n + h11==0.16.0\n + hf-xet==1.6.0\n + httpcore==1.0.9\n + httpx==0.28.1\n + httpx-sse==0.4.3\n + huggingface-hub==1.27.0\n + idna==3.18\n + iniconfig==2.3.0\n + jsonpatch==1.33\n + jsonpointer==3.1.1\n + jsonschema==4.26.0\n + jsonschema-specifications==2025.9.1\n + langchain-core==1.5.3\n + langchain-protocol==0.0.18\n + langchain-text-splitters==1.1.2\n + langsmith==0.10.17\n + mcp==1.29.0\n + multidict==6.7.1\n + numpy==2.5.1\n + orjson==3.11.9\n + packaging==26.3\n + pillow==12.3.0\n + pluggy==1.6.0\n + propcache==0.5.2\n + pycparser==3.0\n + pydantic==2.13.4\n + pydantic-core==2.46.4\n + pydantic-settings==2.15.0\n + pygments==2.20.0\n + pyjwt==2.13.0\n + pynacl==1.6.2\n + pysqlite3==0.6.0\n + pytest==9.1.1\n + pytest-mock==3.15.1\n + python-dotenv==1.2.2\n + python-multipart==0.0.32\n + pyyaml==6.0.3\n + referencing==0.37.0\n + requests==2.34.2\n + requests-toolbelt==1.0.0\n + rpds-py==2026.6.3\n + sniffio==1.3.1\n + sqlite-vec==0.1.9\n + sse-starlette==3.4.8\n + starlette==1.6.0\n + tenacity==9.1.4\n + tokenizers==0.23.1\n + tqdm==4.70.0\n + typing-extensions==4.16.0\n + typing-inspection==0.4.2\n + urllib3==2.7.0\n + uuid-utils==0.17.0\n + uvicorn==0.52.1\n + voyageai==0.5.0\n + websockets==17.0.1\n + xxhash==3.8.1\n + yarl==1.24.5\n + zstandard==0.25.0\n",
+          "stderr_bytes": 1789,
+          "stderr_complete": true,
+          "stderr_sha256": "428985fe057bcfa7a20cc88e81f9861638c5236a82940cb5833c8f02364ee758",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        "online_venv": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny file-write* (require-not (subpath \"/private/tmp/theseus-vcm-six-env-nnecru1t\")))\n(allow file-write* (literal \"/dev/null\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-env-nnecru1t/task-56/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 125.321,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 0,
+          "stderr": "Using CPython 3.12.5 interpreter at: /Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python\nCreating virtual environment at: venv\n",
+          "stderr_bytes": 162,
+          "stderr_complete": true,
+          "stderr_sha256": "484e875aa02184f7aaae0cbff1611c3d98ff58f3e65fdd6c2a38d840bfce54b8",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "repository": "AbsoluteMode/session-recall"
+    }
+  ],
+  "source_build_executions": 0,
+  "state": "K2_05_SIX_ROW_ENVIRONMENTS_MATERIALIZED_WITH_SCOPED_DISPOSITIONS",
+  "task_count": 6,
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

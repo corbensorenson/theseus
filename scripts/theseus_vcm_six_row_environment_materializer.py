@@ -126,7 +126,7 @@ def materialize_row(cfg: dict[str, Any], bound: dict[str, Any], row: dict[str, A
         source = p2a.mapping(item["resolver"]); repository, extract_faults = resolver.extract_regular_archive(source["archive"], work / "repository")
         faults.extend(extract_faults); sealed_lock = repository / "Cargo.lock"
         if not faults: shutil.copyfile(item["lock"], sealed_lock)
-        env["CARGO_HOME"] = str(cache / "cargo"); env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "false"; env["CARGO_REGISTRIES_CRATES_IO_PROTOCOL"] = "sparse"
+        env["CARGO_HOME"] = str(cache / "cargo"); env["CARGO_NET_GIT_FETCH_WITH_CLI"] = "false"; env["CARGO_REGISTRIES_CRATES_IO_PROTOCOL"] = "sparse"; env["PATH"] = f'{Path(bound["tools"]["cargo"]).parent}:/usr/bin:/bin'
         command = [bound["tools"]["cargo"], "fetch", "--locked", "--manifest-path", str(repository / "Cargo.toml"), "--config", "net.git-fetch-with-cli=false"]
         if not faults: receipts["online_fetch"] = run_sandboxed(command, repository, batch, env, cfg, False)
         if failed(receipts.get("online_fetch", {})): faults.append("online_cargo_fetch_failed")
@@ -147,11 +147,11 @@ def run_sandboxed(command: list[str], cwd: Path, batch: Path, env: dict[str, str
 
 
 def inspect_python_environment(venv: Path, lock: Path) -> dict[str, Any]:
-    expected = {(name.lower().replace("_","-"), version) for name, version in re.findall(r"^([A-Za-z0-9_.-]+)==([^\\\s]+)", lock.read_text(), re.MULTILINE)}; rows=[]; faults=[]; parser=email.parser.Parser()
+    expected = {(normalize_name(name), version) for name, version in re.findall(r"^([A-Za-z0-9_.-]+)==([^\\\s]+)", lock.read_text(), re.MULTILINE)}; rows=[]; faults=[]; parser=email.parser.Parser()
     sites=list(venv.glob("lib/python*/site-packages"))
     if len(sites)!=1: return {"faults":["site_packages_denominator_invalid"],"distributions":[]}
     for metadata in sites[0].glob("*.dist-info/METADATA"):
-        parsed=parser.parsestr(metadata.read_text(errors="replace")); row={"name":str(parsed.get("Name") or "").lower().replace("_","-"),"version":str(parsed.get("Version") or "")}; rows.append(row)
+        parsed=parser.parsestr(metadata.read_text(errors="replace")); row={"name":normalize_name(str(parsed.get("Name") or "")),"version":str(parsed.get("Version") or "")}; rows.append(row)
         if (row["name"],row["version"]) not in expected:faults.append(f"installed_distribution_not_locked:{row['name']}@{row['version']}")
     return {"faults":sorted(set(faults)),"distributions":sorted(rows,key=lambda v:(v["name"],v["version"]))}
 
@@ -159,11 +159,14 @@ def inspect_python_environment(venv: Path, lock: Path) -> dict[str, Any]:
 def tree_identity(root: Path) -> dict[str, Any]:
     rows=[]; total=0
     if root.exists():
-        for path in sorted(p for p in root.rglob("*") if p.is_file() and not p.is_symlink()): size=path.stat().st_size; total+=size; rows.append({"path":path.relative_to(root).as_posix(),"bytes":size,"sha256":p2a.sha256_file(path)})
+        for path in sorted(p for p in root.rglob("*") if p.is_file() and not p.is_symlink() and p.name != ".DS_Store"): size=path.stat().st_size; total+=size; rows.append({"path":path.relative_to(root).as_posix(),"bytes":size,"sha256":p2a.sha256_file(path)})
     return {"path":p2a.rel(root),"file_count":len(rows),"bytes":total,"identity_sha256":hashlib.sha256(json.dumps(rows,sort_keys=True,separators=(",",":")).encode()).hexdigest()}
 
 
 def failed(receipt: dict[str, Any]) -> bool: return not receipt or receipt.get("returncode") != 0 or receipt.get("boundary_hit") is True
+
+
+def normalize_name(value: str) -> str: return re.sub(r"[-_.]+", "-", value).lower()
 
 
 def finish(cfg: dict[str, Any], path: Path, faults: list[str], rows: list[dict[str, Any]], executed: bool, store: dict[str, Any]) -> dict[str, Any]:
