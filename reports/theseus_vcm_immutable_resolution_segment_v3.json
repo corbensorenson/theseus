@@ -1,29 +1,196 @@
 {
-  "cache": {},
+  "cache": {
+    "bytes": 133731483,
+    "file_count": 792,
+    "identity_sha256": "926b46cd4c26b56a42b7ade33ea0edbb43c2f21db865706c09787c6e4cfe25aa"
+  },
   "candidate_or_control_calls": 0,
   "config": {
     "path": "configs/theseus_vcm_immutable_resolution_segment.json",
     "sha256": "cf5575937b034d1e6e423464ce42f02d38d2a467ab7b99f7e50637e9ad7a3eaf"
   },
-  "created_utc": "2026-08-09T02:55:11.120333Z",
-  "execution_performed": false,
+  "created_utc": "2026-08-09T02:55:58.431896Z",
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
-  "free_bytes_after": 16501264384,
-  "free_bytes_before": 16501264384,
-  "inconclusive_task_count": 0,
+  "free_bytes_after": 16447000576,
+  "free_bytes_before": 16476741632,
+  "inconclusive_task_count": 1,
   "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact target dependency declarations were resolved under the pinned uv/Python or Cargo resolver, registry, no-build, host-reserve, and output contracts; the five V2-qualified locks are reused byte-for-byte and only Task 13 is retried with the project-local Python 3.14.2 required by its exact Home Assistant manifest. Each successful row has a hashed immutable lock and each unsuccessful row has a scoped dependency-resolution or host-boundary receipt. The V3 audit repairs V2's reused-row diagnostic bookkeeping and rederives every reused lock. No package or project was installed, no source or build backend ran, no repository runner or parent/target evaluator ran, no task or model was evaluated, no local-model, Luna, teacher, D1, D2, serving, training-row, or book-support action occurred, and no partial panel is admitted.",
   "package_installations": 0,
   "panel_admitted": false,
   "parent_target_or_evaluator_executions": 0,
   "partial_panel_admission_forbidden": true,
   "policy": "project_theseus_vcm_immutable_resolution_segment_v1",
-  "qualified_task_count": 0,
+  "qualified_task_count": 5,
   "repository_runner_executions": 0,
-  "rows": [],
+  "rows": [
+    {
+      "command": [],
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 12,
+      "manager": "uv",
+      "receipt": {
+        "lock": {
+          "bytes": 9136,
+          "manager": "uv",
+          "package_count": 6,
+          "path": "reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+          "sha256": "62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd"
+        },
+        "predecessor_producer_report_sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2",
+        "predecessor_reuse": true
+      },
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "target_archive": "runtime/vcm_evaluator/source_archives/12_rickli0822-prog-windows-ai-login-doctor_target.tar.gz",
+      "target_archive_sha256": "5ae1f0640b06d7f7f6a66f790f52c5b33dedd20ef4f46d7d2f62e0d6c0b497e9"
+    },
+    {
+      "command": [
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+        "pip",
+        "compile",
+        "/private/tmp/theseus-vcm-immutable-resolution-otnslyl7/task-13/ha-pitboss-b9ba58fc1a47cfab9c8577c5163ce553f2c35de7/requirements.txt",
+        "--python",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+        "--python-platform",
+        "aarch64-apple-darwin",
+        "--generate-hashes",
+        "--no-build",
+        "--index-strategy",
+        "first-index",
+        "--default-index",
+        "https://pypi.org/simple",
+        "--cache-dir",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/immutable-resolution/uv",
+        "--output-file",
+        "/private/tmp/theseus-vcm-immutable-resolution-otnslyl7/task-13-requirements.lock",
+        "--color",
+        "never",
+        "--no-progress"
+      ],
+      "disposition": "INCONCLUSIVE_EXPERIMENT_DEPENDENCY_RESOLUTION",
+      "faults": [],
+      "index": 13,
+      "manager": "uv",
+      "receipt": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "duration_ms": 1283.507,
+        "project_selected_output_cap": null,
+        "returncode": 1,
+        "source_after": {
+          "bytes": 230125,
+          "file_count": 67,
+          "identity_sha256": "8e8c540ff0156763e3ee09ed39d2e878b9dd9493bed7642f20e0373910baa764"
+        },
+        "source_before": {
+          "bytes": 230125,
+          "file_count": 67,
+          "identity_sha256": "8e8c540ff0156763e3ee09ed39d2e878b9dd9493bed7642f20e0373910baa764"
+        },
+        "stderr": "  \u00d7 No solution found when resolving dependencies:\n  \u2570\u2500\u25b6 Because mock-open==1.4.0 has no usable wheels and\n      pytest-homeassistant-custom-component==0.13.348\n      depends on mock-open==1.4.0, we can conclude that\n      pytest-homeassistant-custom-component==0.13.348 cannot be used.\n      And because you require pytest-homeassistant-custom-component==0.13.348,\n      we can conclude that your requirements are unsatisfiable.\n\nhint: Wheels are required for `mock-open` because building from source is disabled for all packages (i.e., with `--no-build`)",
+        "stderr_bytes": 563,
+        "stderr_complete": true,
+        "stderr_sha256": "46006847806a51b75678310476d008a6f4302872805ab4491d49b300a94c52c0",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "repository": "dknowles2/ha-pitboss",
+      "target_archive": "runtime/vcm_evaluator/source_archives/13_dknowles2-ha-pitboss_target.tar.gz",
+      "target_archive_sha256": "13ab7d38aadeef369f2a6d103f3a26fd011876460a73eea7565411ef74a9c62b"
+    },
+    {
+      "command": [],
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 16,
+      "manager": "uv",
+      "receipt": {
+        "lock": {
+          "bytes": 71763,
+          "manager": "uv",
+          "package_count": 35,
+          "path": "reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+          "sha256": "55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a"
+        },
+        "predecessor_producer_report_sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2",
+        "predecessor_reuse": true
+      },
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "target_archive": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_target.tar.gz",
+      "target_archive_sha256": "1bbc4a3d47db5d94dba594b5ca61baef447cc0c4ba5029405d4b70c827a2c9f4"
+    },
+    {
+      "command": [],
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 25,
+      "manager": "uv",
+      "receipt": {
+        "lock": {
+          "bytes": 84609,
+          "manager": "uv",
+          "package_count": 39,
+          "path": "reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+          "sha256": "8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6"
+        },
+        "predecessor_producer_report_sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2",
+        "predecessor_reuse": true
+      },
+      "repository": "fibsem-os/fibsem-os",
+      "target_archive": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_target.tar.gz",
+      "target_archive_sha256": "2f584468f375eb28c080c897473cf3bceb70511dc6b99a21e26a55fbedbe6d7a"
+    },
+    {
+      "command": [],
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 35,
+      "manager": "cargo",
+      "receipt": {
+        "lock": {
+          "bytes": 96993,
+          "manager": "cargo",
+          "package_count": 404,
+          "path": "reports/theseus_vcm_immutable_resolution_locks/task-35-Cargo.lock",
+          "sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+        },
+        "predecessor_producer_report_sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2",
+        "predecessor_reuse": true
+      },
+      "repository": "Stranger6667/jsonschema",
+      "target_archive": "runtime/vcm_evaluator/source_archives/35_stranger6667-jsonschema_target.tar.gz",
+      "target_archive_sha256": "e261b60af50400bb36e3daf510b16bf9b9a50cec3b38516432f31ba4e6550874"
+    },
+    {
+      "command": [],
+      "disposition": "RESOLUTION_QUALIFIED_IMMUTABLE_LOCK_REUSED_FROM_SEALED_PREDECESSOR",
+      "faults": [],
+      "index": 56,
+      "manager": "uv",
+      "receipt": {
+        "lock": {
+          "bytes": 179641,
+          "manager": "uv",
+          "package_count": 74,
+          "path": "reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+          "sha256": "edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b"
+        },
+        "predecessor_producer_report_sha256": "699a7c2c57ddb085d5eda10fb161b23a69bd3d398114cc7ce097e906441928e2",
+        "predecessor_reuse": true
+      },
+      "repository": "AbsoluteMode/session-recall",
+      "target_archive": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_target.tar.gz",
+      "target_archive_sha256": "87ce5c0d72e64f0c2973c60d21e1236ab7f5e9e3d29fba098c96451e0c6d9a69"
+    }
+  ],
   "source_build_executions": 0,
-  "state": "READY_FOR_SIX_IMMUTABLE_RESOLUTION_CLOSURES",
-  "task_count": 0,
+  "state": "K2_05_IMMUTABLE_RESOLUTION_SEGMENT_EXECUTED_WITH_SCOPED_DISPOSITIONS",
+  "task_count": 6,
   "teacher_calls": 0,
-  "trigger_state": "PAUSED"
+  "trigger_state": "GREEN"
 }
