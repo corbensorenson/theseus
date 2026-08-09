@@ -4,22 +4,179 @@
     "path": "configs/theseus_vcm_untrusted_build_preflight.json",
     "sha256": "396a84fd181a1db6ab4b7a1e6612a46d8cc2442d4cd55b41877388afadf03ff3"
   },
-  "created_utc": "2026-08-09T03:03:15.782640Z",
-  "execution_performed": false,
+  "created_utc": "2026-08-09T03:03:42.867286Z",
+  "execution_performed": true,
   "external_reference_calls": 0,
   "faults": [],
-  "free_bytes_after": 17540841472,
+  "free_bytes_after": 17535361024,
   "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the exact PyPI mock-open 1.4.0 source distribution named by Task 13's resolver wall matches its published hash, has safe bounded archive structure, carries a license file, and has a statically low-complexity legacy setup.py with no detected network/process/dynamic-execution tokens. It authorizes only a separately sealed network-denied sandbox wheel-build canary. It does not prove build safety, wheel correctness, dependency resolution, package installation, evaluator adequacy, task capability, VCM utility, model behavior, D1, D2, or an ASI Stack claim.",
-  "network_downloads": 0,
-  "next_authorized_boundary": "none",
+  "network_downloads": 1,
+  "next_authorized_boundary": "prospectively_seal_network_denied_sandbox_wheel_build_canary",
   "package_installations": 0,
   "parent_target_or_evaluator_executions": 0,
   "policy": "project_theseus_vcm_untrusted_build_preflight_v1",
-  "receipt": {},
+  "receipt": {
+    "download": {
+      "bytes": 12127,
+      "command": [
+        "/usr/bin/curl",
+        "--fail",
+        "--location",
+        "--silent",
+        "--show-error",
+        "--max-time",
+        "60",
+        "--max-filesize",
+        "1048576",
+        "--user-agent",
+        "Project-Theseus-VCM-Instrument/1",
+        "--output",
+        "/private/tmp/theseus-vcm-sdist-preflight-9jb5xg7f/package.tar.gz",
+        "https://files.pythonhosted.org/packages/9a/02/cef85a80ff6d3092a458448c46816656d1c532afd45aeeeb8f50a84aed35/mock-open-1.4.0.tar.gz"
+      ],
+      "returncode": 0,
+      "sha256": "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100",
+      "stderr": "",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "url": "https://files.pythonhosted.org/packages/9a/02/cef85a80ff6d3092a458448c46816656d1c532afd45aeeeb8f50a84aed35/mock-open-1.4.0.tar.gz"
+    },
+    "inspection": {
+      "archive_root_count": 1,
+      "license_paths": [
+        "LICENSE"
+      ],
+      "member_receipts": [
+        {
+          "bytes": 6,
+          "path": ".version",
+          "sha256": "78b591400c56b7b67b8cb3b2b8a8e65e9093897f02ce0878e6b5405c68620fa7"
+        },
+        {
+          "bytes": 1081,
+          "path": "LICENSE",
+          "sha256": "85c849cdacf44460fc53b8f65f93b4d613a3d1ff99b738fb2f67be62f4c80480"
+        },
+        {
+          "bytes": 51,
+          "path": "MANIFEST.in",
+          "sha256": "f59bb861a62e6994053d801b51a26f1fa6341d881e5d78930bcdaf7b8191acd0"
+        },
+        {
+          "bytes": 3753,
+          "path": "PKG-INFO",
+          "sha256": "4fe6ac48a8b8fe8cef604d2e0e979ea72cdb25b996fc25fc6ee634200479456f"
+        },
+        {
+          "bytes": 2345,
+          "path": "README.md",
+          "sha256": "d6670f6a046d3cb9435b3754aac6c284fd86409e271793cbd7ccee259eb19a42"
+        },
+        {
+          "bytes": 38,
+          "path": "setup.cfg",
+          "sha256": "1c473cbaee8da5fc46e7f0158794af5cea4414c34a3cf3f180c2001f5e38bd3e"
+        },
+        {
+          "bytes": 1750,
+          "path": "setup.py",
+          "sha256": "e1b1ca274c5cf51d0b594e5979a560ec25ce188816c9e224ccbe395922920bdb"
+        },
+        {
+          "bytes": 3753,
+          "path": "src/mock_open.egg-info/PKG-INFO",
+          "sha256": "4fe6ac48a8b8fe8cef604d2e0e979ea72cdb25b996fc25fc6ee634200479456f"
+        },
+        {
+          "bytes": 425,
+          "path": "src/mock_open.egg-info/SOURCES.txt",
+          "sha256": "9601478275ab610f1f93b104536ee9f2b50ffaa2fb6c0400abfdc32664cd284d"
+        },
+        {
+          "bytes": 1,
+          "path": "src/mock_open.egg-info/dependency_links.txt",
+          "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+        },
+        {
+          "bytes": 10,
+          "path": "src/mock_open.egg-info/top_level.txt",
+          "sha256": "0ac516923dee4fba818d993407d887578e2869a6d8426e6a8054a3f679895f64"
+        },
+        {
+          "bytes": 63,
+          "path": "src/mock_open/__init__.py",
+          "sha256": "8a024030d9e5c9f83ce32fb17ca5b34baaf12b46a7c1648cbeccba82e36c8fb9"
+        },
+        {
+          "bytes": 7611,
+          "path": "src/mock_open/mocks.py",
+          "sha256": "49cb07ba77ff106b3adc3e09647ac9002ef8e753b1a05fc5d017e7d83ff1df93"
+        },
+        {
+          "bytes": 161,
+          "path": "src/mock_open/test/__init__.py",
+          "sha256": "f80ed88012c317f23d31e86d9da7c2989eae4a1a63b6918d02799c28d034e2f8"
+        },
+        {
+          "bytes": 0,
+          "path": "src/mock_open/test/cpython/__init__.py",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "bytes": 4364,
+          "path": "src/mock_open/test/cpython/testmock.py",
+          "sha256": "4857c9e31f93384c8d57ef73fa178bbcea439d86087e310f9e5ba866cae7a6ed"
+        },
+        {
+          "bytes": 8496,
+          "path": "src/mock_open/test/cpython/testwith.py",
+          "sha256": "03faf05627209c1c1cec9f13da54e08b5bee5b551bfcba0fe6c4d56a6e435329"
+        },
+        {
+          "bytes": 24292,
+          "path": "src/mock_open/test/test_mocks.py",
+          "sha256": "5f361c8240e09beedb272a12fe14cab9218e59f928701289a14206ec59d4f1cd"
+        }
+      ],
+      "member_receipts_sha256": "cad48e70b5070a736d84b58c81c6e55156ab370a9cb78b46553d153f820810fe",
+      "pyproject_present": false,
+      "regular_file_bytes": 58200,
+      "regular_file_count": 18,
+      "risk_class": "LOW_COMPLEXITY_LEGACY_SETUP_PY_ELIGIBLE_FOR_NETWORK_DENIED_SANDBOX_CANARY",
+      "setup_py": {
+        "bytes": 1750,
+        "calls": [
+          "DEPENDENCIES.append",
+          "_get_description",
+          "_get_version",
+          "find_packages",
+          "join",
+          "open",
+          "readme.read",
+          "rstrip",
+          "setup",
+          "version.read"
+        ],
+        "dangerous_tokens": [],
+        "imports": [
+          "setuptools",
+          "sys"
+        ],
+        "parse_fault": "",
+        "sha256": "e1b1ca274c5cf51d0b594e5979a560ec25ce188816c9e224ccbe395922920bdb"
+      }
+    },
+    "retained_sdist": {
+      "bytes": 12127,
+      "path": "runtime/vcm_evaluator/dependency_store/sdist/mock-open-1.4.0.tar.gz",
+      "sha256": "c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100"
+    }
+  },
   "repository_runner_executions": 0,
-  "risk_class": "",
+  "risk_class": "LOW_COMPLEXITY_LEGACY_SETUP_PY_ELIGIBLE_FOR_NETWORK_DENIED_SANDBOX_CANARY",
   "source_build_executions": 0,
-  "state": "READY_FOR_EXACT_SDIST_STATIC_PREFLIGHT",
+  "state": "EXACT_SDIST_STATIC_PREFLIGHT_QUALIFIED",
   "teacher_calls": 0,
-  "trigger_state": "PAUSED"
+  "trigger_state": "GREEN"
 }

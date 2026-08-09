@@ -1,0 +1,22 @@
+{
+  "audit_kind": "role-separated rederivation",
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_untrusted_build_preflight.json",
+    "sha256": "396a84fd181a1db6ab4b7a1e6612a46d8cc2442d4cd55b41877388afadf03ff3"
+  },
+  "created_utc": "2026-08-09T03:03:47.067671Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "This role-separated audit rederives the retained sdist identity, archive member receipts, setup.py AST characteristics, license presence, and low-complexity risk classification without network or build execution. It is not producer-independent replay, external reproduction, or evidence of task or VCM capability.",
+  "member_receipts_sha256": "cad48e70b5070a736d84b58c81c6e55156ab370a9cb78b46553d153f820810fe",
+  "network_or_build_execution_performed": false,
+  "policy": "project_theseus_vcm_untrusted_build_preflight_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_untrusted_build_preflight_v3.json",
+    "sha256": "ce4450e090ac8cc8452a804f5672fa9cae5fc48b2d4af4cc66d90b2ddc0f379d"
+  },
+  "risk_class": "LOW_COMPLEXITY_LEGACY_SETUP_PY_ELIGIBLE_FOR_NETWORK_DENIED_SANDBOX_CANARY",
+  "state": "EXACT_SDIST_STATIC_RISK_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}
