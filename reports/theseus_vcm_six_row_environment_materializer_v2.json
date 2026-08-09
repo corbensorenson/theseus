@@ -1,0 +1,32 @@
+{
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_environment_materializer.json",
+    "sha256": "aaa41f078a6f2751c01a242b26b1c91765f4cb1cb29e4cafba745b8194d58f19"
+  },
+  "created_utc": "2026-08-09T03:53:31.907939Z",
+  "execution_performed": false,
+  "external_reference_calls": 0,
+  "faults": [
+    "current_fit_boundary_closed"
+  ],
+  "inconclusive_task_count": 0,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit proves only that the six exact immutable locks can materialize through one shared uv/Cargo store into disposable environments and replay with network denied, with Python source builds disabled, Cargo limited to fetch, exact lock membership checked, complete diagnostics retained, and the 10 GiB reserve preserved. V2 reuses four V1-qualified rows and repairs only PEP 503 name normalization, pinned Cargo toolchain PATH visibility, and declared macOS host-metadata exclusion before replaying the two inconclusive rows. It does not run a repository verifier, establish parent-fail/target-pass behavior, admit a panel, evaluate a model or VCM, or support an ASI Stack claim.",
+  "network_denied_replays": 0,
+  "network_enabled_materializations": 0,
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 0,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_six_row_environment_materializer_v1",
+  "project_installations": 0,
+  "qualified_task_count": 0,
+  "repository_runner_executions": 0,
+  "retained_shared_store": {},
+  "rows": [],
+  "source_build_executions": 0,
+  "state": "K2_05_SIX_ROW_ENVIRONMENT_MATERIALIZATION_INVALID",
+  "task_count": 0,
+  "teacher_calls": 0,
+  "trigger_state": "RED"
+}
