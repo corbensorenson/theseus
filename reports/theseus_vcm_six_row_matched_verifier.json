@@ -1,0 +1,789 @@
+{
+  "cache_clone_receipts": {
+    "cargo": {
+      "command": [
+        "/bin/cp",
+        "-cR",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1/cargo",
+        "/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/cargo"
+      ],
+      "destination_kind": "disposable_copy_on_write_clone",
+      "duration_ms": 5619.321,
+      "network_denied_by_absence_of_network_operation": true,
+      "project_selected_output_cap": null,
+      "returncode": 0,
+      "source": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1/cargo",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uv": {
+      "command": [
+        "/bin/cp",
+        "-cR",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/six-row-environments-v1/uv",
+        "/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/uv"
+      ],
+      "destination_kind": "disposable_copy_on_write_clone",
+      "duration_ms": 15298.114,
+      "network_denied_by_absence_of_network_operation": true,
+      "project_selected_output_cap": null,
+      "returncode": 0,
+      "source": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1/uv",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_six_row_matched_verifier.json",
+    "sha256": "997faa229fefdbca6dcd895fb512ff0a484e0fc6cafaf0ee365a110c609f452c"
+  },
+  "created_utc": "2026-08-09T04:25:14.044393Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "host_resource_boundary_closed": false,
+  "inconclusive_task_count": 6,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only that these six exact frozen parent/target source pairs execute under the same target-derived hidden evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete-diagnostic policy, and can scope each row as parent-fail/target-pass or inconclusive. Target production paths are never transplanted, Task 16's changed training_test_runner.py is explicitly excluded, the retained shared store must remain byte-identical, and no partial panel is admitted. This qualifies evaluator mechanics for the six-row immutable-resolution segment; it does not admit the 62-task K2 panel, evaluate a model or VCM route, support an ASI Stack claim, or authorize K3.",
+  "network_enabled_calls": 0,
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 2,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_six_row_matched_verifier_v1",
+  "project_installations": 0,
+  "project_selected_output_cap": null,
+  "qualified_task_count": 0,
+  "repository_runner_executions": 2,
+  "retained_store_after": {
+    "bytes": 1754707286,
+    "file_count": 95673,
+    "identity_sha256": "bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "retained_store_before": {
+    "bytes": 1754707286,
+    "file_count": 95673,
+    "identity_sha256": "bef04799893b26491a1006326375741eb885a41bfcbddf58727ae341703020c9",
+    "path": "runtime/vcm_evaluator/dependency_store/six-row-environments-v1"
+  },
+  "retained_store_unchanged": true,
+  "rows": [
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/12_rickli0822-prog-windows-ai-login-doctor_parent.tar.gz",
+          "sha256": "3958886a0ab9697e38e98c29c950e173e6d79d540c816c28c0c6426de5d646e6"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/12_rickli0822-prog-windows-ai-login-doctor_target.tar.gz",
+          "sha256": "5ae1f0640b06d7f7f6a66f790f52c5b33dedd20ef4f46d7d2f62e0d6c0b497e9"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_packaging.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "path": "tests/test_packaging.py",
+          "sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "path": "tests/test_packaging.py",
+          "sha256": "19c4c696dec753030cb15f4e05908a565f978fa9c09c683f80962d11066d5958",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-12/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-12\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 21.878,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "02960ed6e107583430eb53fb946fd4b7145bae61e798b251949f0d22956a7282",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        "CHANGELOG.md",
+        "CODE_OF_CONDUCT.md",
+        "README.md",
+        "ROADMAP.md",
+        "docs/FOUNDATION_READINESS.md",
+        "docs/PACKAGE_DISTRIBUTION.md",
+        "docs/SCREENSHOT_EVIDENCE.md",
+        "docs/assets/authkit-codex-proxy-result-v1.png",
+        "scripts/README.md",
+        "scripts/capture_readme_screenshot.py",
+        "scripts/foundation_audit.py"
+      ],
+      "index": 12,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-12-requirements.lock",
+        "sha256": "62aaaef19b037d4be1ed62672f22424070d0cb74abeafc480ab7cbaa89da95bd"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "rickli0822-prog/windows-ai-login-doctor",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 11
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/13_dknowles2-ha-pitboss_parent.tar.gz",
+          "sha256": "6bd4afec9af2668a3a679c033d176e7ceeac21a7da41cae47f9067c02fe965af"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/13_dknowles2-ha-pitboss_target.tar.gz",
+          "sha256": "13ab7d38aadeef369f2a6d103f3a26fd011876460a73eea7565411ef74a9c62b"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_sensor.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "path": "tests/test_sensor.py",
+          "sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "path": "tests/test_sensor.py",
+          "sha256": "c2956a81bca9830803c4136b0f32bf5bd253c130da6ef1c52bc43f3180fe2337",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-13/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-13\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.14.2-macos-aarch64-none/bin/python3.14",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 11.5,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "852fcbd88f45e1766c5603134f0f42ade367d394add3aefc81a33f95a7df5c26",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        "custom_components/pitboss/coordinator.py",
+        "custom_components/pitboss/sensor.py"
+      ],
+      "index": 13,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-13-requirements.lock",
+        "sha256": "f9802c9804d8527d671a342c8add16225fcc20218d740f9076122b3f36226fef"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "dknowles2/ha-pitboss",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 2
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_parent.tar.gz",
+          "sha256": "46e74b1a28265f06454de0dd488e501eb0c763c20ed983ca1b48db393324892f"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_target.tar.gz",
+          "sha256": "1bbc4a3d47db5d94dba594b5ca61baef447cc0c4ba5029405d4b70c827a2c9f4"
+        }
+      },
+      "common_evaluator_paths": [
+        "ops-server/dashboard/test_arena_auth.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "path": "ops-server/dashboard/test_arena_auth.py",
+          "sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "path": "ops-server/dashboard/test_arena_auth.py",
+          "sha256": "dfbf1e40a78f0ff0ad1582b9a82aadde8800d1de77873421a49c2d70db835060",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-16/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-16\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-16/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 12.165,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "39181fb5f59a932dcca29655311aa3ea9e87decbea4bffb587a0bbb03fdbe58a",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        "ops-server/dashboard/app.py",
+        "ops-server/tools/agentic_validator.py",
+        "ops-server/tools/bootcamp_loadtest.py",
+        "ops-server/tools/training_test_runner.py"
+      ],
+      "index": 16,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-16-requirements.lock",
+        "sha256": "55cae8eaccc687935be9fd9538d9e09ff8ffbb6dfff76b3f7314c2757a0fd64a"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 4
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_parent.tar.gz",
+          "sha256": "6181909b18c8ac3062c1611bbe4d3cc273478ebbda8b9070f1d65bc77211ac7e"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_target.tar.gz",
+          "sha256": "2f584468f375eb28c080c897473cf3bceb70511dc6b99a21e26a55fbedbe6d7a"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/autolamella/test_status_dict_vocabulary.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "path": "tests/autolamella/test_status_dict_vocabulary.py",
+          "sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "path": "tests/autolamella/test_status_dict_vocabulary.py",
+          "sha256": "0ce50c99b8d937e75e1c7b2a6e70ac3c37b95f40f45f8f4f20fc82355310e684",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-25/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-25\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-25/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 11.784,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "99c30b70c1f5b31db4b6a12516eca472c1bf7ab3bc96d925cae96150e33f018f",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        "fibsem/applications/autolamella/ui/AutoLamellaMainUI.py",
+        "fibsem/applications/autolamella/workflows/tasks/manager.py",
+        "fibsem/ui/fm/widgets/fm_overview_widget.py",
+        "fibsem/ui/widgets/workflow_timeline_widget.py",
+        "tests/ui/test_fm_overview_widget.py"
+      ],
+      "index": 25,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-25-requirements.lock",
+        "sha256": "8415295e308f5e54e614accfe8b158cc4c98e8abf6cdc1392ddf402bedd60fe6"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "fibsem-os/fibsem-os",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 5
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/35_stranger6667-jsonschema_parent.tar.gz",
+          "sha256": "1dd9564528eb4d07e4a992fca3eb4a8ce49a865ce05aeb10735681298f2f3431"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/35_stranger6667-jsonschema_target.tar.gz",
+          "sha256": "e261b60af50400bb36e3daf510b16bf9b9a50cec3b38516432f31ba4e6550874"
+        }
+      },
+      "common_evaluator_paths": [
+        "crates/jsonschema/tests/canonical-suite/algebra.json",
+        "crates/jsonschema/tests/canonical-suite/dependencies.json",
+        "crates/jsonschema/tests/canonical-suite/errors.json",
+        "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+        "crates/jsonschema/tests/canonical-suite/items.json",
+        "crates/jsonschema/tests/canonical-suite/object.json",
+        "crates/jsonschema/tests/canonical-suite/oneof.json",
+        "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+        "crates/jsonschema/tests/canonicalization.rs"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "path": "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "path": "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "sha256": "0bd94823d973feae7242a23d40bc86e8ee4c87e000ba613c3d6fcd5f9f417f89",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "path": "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "path": "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "sha256": "bb95fc72f9b373e6e9ec39f48116dbdd876566ec7d48e3d8ef3045cf81fd9824",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "path": "crates/jsonschema/tests/canonical-suite/errors.json",
+          "sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "path": "crates/jsonschema/tests/canonical-suite/errors.json",
+          "sha256": "5a6ee2dfb4bc74f74f46e1ace0fb27ecb0da0f055352d16e878ff9bf76f7902d",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "path": "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "path": "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "sha256": "df59126673dffcd8af95fadf64c9d1426f4e0072f642f00dc271e8998f5d2df8",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "path": "crates/jsonschema/tests/canonical-suite/items.json",
+          "sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "path": "crates/jsonschema/tests/canonical-suite/items.json",
+          "sha256": "4edb212262901f08911ef14af9bfbfc53e9451b5172f855e55f29a7194a45062",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "path": "crates/jsonschema/tests/canonical-suite/object.json",
+          "sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "path": "crates/jsonschema/tests/canonical-suite/object.json",
+          "sha256": "ee1f29b26490aaefef4c688f76a41b7b569f4cb6bb4ae85f5072a8d8ca7e5c4f",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "path": "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "path": "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "sha256": "a36f716d99c99b466fb4fb5af86d91e4f24bb57c797c99a5b634d3d5037b9264",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "path": "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "path": "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "sha256": "225a059f5d36ee6ad275de447ea15bc02e0daf53d980e5b39e5565f4e1fa162a",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "path": "crates/jsonschema/tests/canonicalization.rs",
+          "sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "path": "crates/jsonschema/tests/canonicalization.rs",
+          "sha256": "f14a26e1a597e53cffbd7ee7d03aeba508f5241a1a9eadb6f7ee1c9f0271f436",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "cargo_home": "/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/cargo",
+        "network_denied": true,
+        "parent_lock_sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6",
+        "project_installation": false,
+        "target_lock_sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "crates/jsonschema/src/canonical/algebra.rs"
+      ],
+      "index": 35,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-35-Cargo.lock",
+        "sha256": "5a7844a4fbfb71aeef85f80badeb3d9d8bea7d33c1ae4d4e89b11461142938c6"
+      },
+      "manager": "cargo",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-35/parent\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/cargo\"))",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "common_evaluator_paths": [
+          "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "crates/jsonschema/tests/canonical-suite/errors.json",
+          "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "crates/jsonschema/tests/canonical-suite/items.json",
+          "crates/jsonschema/tests/canonical-suite/object.json",
+          "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "crates/jsonschema/tests/canonicalization.rs"
+        ],
+        "declared_arguments": [
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "duration_ms": 12.397,
+        "manager": "cargo",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 71,
+        "sandbox_profile_sha256": "13d0f3541099056c34d0b8548c2c9771c5b20b77bcebb83511e1da717f0dd39e",
+        "side": "parent",
+        "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+        "stderr_bytes": 53,
+        "stderr_complete": true,
+        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_directory": "."
+      },
+      "repository": "Stranger6667/jsonschema",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-35/target\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/cargo\"))",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "common_evaluator_paths": [
+          "crates/jsonschema/tests/canonical-suite/algebra.json",
+          "crates/jsonschema/tests/canonical-suite/dependencies.json",
+          "crates/jsonschema/tests/canonical-suite/errors.json",
+          "crates/jsonschema/tests/canonical-suite/if_then_else.json",
+          "crates/jsonschema/tests/canonical-suite/items.json",
+          "crates/jsonschema/tests/canonical-suite/object.json",
+          "crates/jsonschema/tests/canonical-suite/oneof.json",
+          "crates/jsonschema/tests/canonical-suite/unevaluated.json",
+          "crates/jsonschema/tests/canonicalization.rs"
+        ],
+        "declared_arguments": [
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "jsonschema",
+          "--test",
+          "canonicalization"
+        ],
+        "duration_ms": 11.505,
+        "manager": "cargo",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "returncode": 71,
+        "sandbox_profile_sha256": "4df2bbd19cec8b2d9e1628b823b8831df018ec3cde56a009c48cd0bc2c46a219",
+        "side": "target",
+        "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+        "stderr_bytes": 53,
+        "stderr_complete": true,
+        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 1
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_parent.tar.gz",
+          "sha256": "970326306f6c83d7f23c7dcf0ba79b820c1a400ed1358a6cda1d7ab68e32d55f"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_target.tar.gz",
+          "sha256": "87ce5c0d72e64f0c2973c60d21e1236ab7f5e9e3d29fba098c96451e0c6d9a69"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_share_cli.py",
+        "tests/test_share_transport.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "path": "tests/test_share_cli.py",
+          "sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "path": "tests/test_share_cli.py",
+          "sha256": "593312fdfa6998c21b502085e0b31bbd45ec21af136afd9eed0fb6866909a280",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "path": "tests/test_share_transport.py",
+          "sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "path": "tests/test_share_transport.py",
+          "sha256": "bb2c77885d133830f95ca17ab217764fbe99fe92b13de3c60d902cab1ad5ff36",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-56/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/task-56\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-six-verifier-freiirjv/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-six-verifier-freiirjv/task-56/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/venvs/mlx-0.32.0-py312/bin/python",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 11.811,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "b3479ae228f221e70e540208632ce205902d2ecce60eae3c1bed326cff4b8d71",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        "README.md",
+        "src/session_recall/share/cli.py",
+        "src/session_recall/share/transport.py"
+      ],
+      "index": 56,
+      "lock": {
+        "path": "reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock",
+        "sha256": "edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "AbsoluteMode/session-recall",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 3
+    }
+  ],
+  "source_build_executions": 2,
+  "state": "K2_05_SIX_ROW_MATCHED_VERIFIERS_EXECUTED_WITH_SCOPED_DISPOSITIONS",
+  "target_production_transplant_count": 0,
+  "task_count": 6,
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}

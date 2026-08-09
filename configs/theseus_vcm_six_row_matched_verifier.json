@@ -1,6 +1,7 @@
 {
   "policy": "project_theseus_vcm_six_row_matched_verifier_v1",
   "state": "PROSPECTIVE_K2_05_SIX_ROW_MATCHED_PARENT_TARGET_VERIFIERS_V1",
+  "attempt": "v2_outer_execution_wrapper_repair_after_zero_evaluator_calls",
   "owner": "scripts/theseus_vcm_six_row_matched_verifier.py",
   "owner_sha256": "11d5ab180404b85cb671112ec8689a713f985bdfddec1c87aad9a904ae2025cd",
   "audit_policy": "project_theseus_vcm_six_row_matched_verifier_audit_v1",
@@ -12,7 +13,9 @@
     "environment": {"path": "reports/theseus_vcm_six_row_environment_materializer_v3.json", "sha256": "05ca4abb1b5f399b067233a16a7cceaab10b9dda7c582b3b80a64011d8b3c4e2"},
     "environment_audit": {"path": "reports/theseus_vcm_six_row_environment_materializer_audit_v3.json", "sha256": "a085713689bd052e8b2ad5c80cf05313c22a7531575278e5ae1a299c5478a155"},
     "immutable_resolution": {"path": "reports/theseus_vcm_immutable_resolution_segment_v5.json", "sha256": "2a96925e2d2604faea3ddcfe9d7b706e300446c9ee6ee94e72813d479e838275"},
-    "immutable_resolution_audit": {"path": "reports/theseus_vcm_immutable_resolution_segment_audit_v5.json", "sha256": "ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066"}
+    "immutable_resolution_audit": {"path": "reports/theseus_vcm_immutable_resolution_segment_audit_v5.json", "sha256": "ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066"},
+    "outer_sandbox_wall_v1": {"path": "reports/theseus_vcm_six_row_matched_verifier.json", "sha256": "116b04698e5899e53ef0059bc2bba54adbad84f8f53c84d46053c14b36053441"},
+    "outer_sandbox_wall_audit_v1": {"path": "reports/theseus_vcm_six_row_matched_verifier_audit.json", "sha256": "0aac8079fc7f7227d0bcb0700c8fbac8c1201ef53d7f42075491641965b91766"}
   },
   "tools": {
     "sandbox_exec": {"path": "/usr/bin/sandbox-exec", "sha256": "196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},
@@ -43,6 +46,14 @@
     "environment_wall_seconds": 1200,
     "python_wall_seconds": 1800,
     "cargo_wall_seconds": 3600
+  },
+  "execution_wrapper_repair": {
+    "predecessor_external_commands_started": 12,
+    "predecessor_commands_reaching_uv_pytest_or_cargo": 0,
+    "predecessor_parent_target_evaluator_surfaces_consumed": 0,
+    "predecessor_failure": "outer_codex_filesystem_sandbox_rejected_inner_sandbox_exec_before_child_command_start",
+    "required_repair": "run_the_unchanged_sealed_owner_outside_the_outer_codex_filesystem_sandbox_while_retaining_each_inner_denied_network_sandbox",
+    "task_evaluator_environment_command_or_budget_change_authorized": false
   },
   "rows": [
     {
@@ -158,9 +169,9 @@
       "target_changed_paths": ["README.md", "src/session_recall/share/cli.py", "src/session_recall/share/transport.py", "tests/test_share_cli.py", "tests/test_share_transport.py"]
     }
   ],
-  "report": "reports/theseus_vcm_six_row_matched_verifier.json",
-  "audit_report": "reports/theseus_vcm_six_row_matched_verifier_audit.json",
+  "report": "reports/theseus_vcm_six_row_matched_verifier_v2.json",
+  "audit_report": "reports/theseus_vcm_six_row_matched_verifier_audit_v2.json",
   "project_selected_output_cap": null,
-  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only that these six exact frozen parent/target source pairs execute under the same target-derived hidden evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete-diagnostic policy, and can scope each row as parent-fail/target-pass or inconclusive. Target production paths are never transplanted, Task 16's changed training_test_runner.py is explicitly excluded, the retained shared store must remain byte-identical, and no partial panel is admitted. This qualifies evaluator mechanics for the six-row immutable-resolution segment; it does not admit the 62-task K2 panel, evaluate a model or VCM route, support an ASI Stack claim, or authorize K3.",
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only that these six exact frozen parent/target source pairs execute under the same target-derived hidden evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete-diagnostic policy, and can scope each row as parent-fail/target-pass or inconclusive. V2 changes only the outer execution wrapper after V1 proved that Codex's outer filesystem sandbox rejected every inner sandbox before uv, pytest, or Cargo began; no evaluator surface was consumed in V1. Target production paths are never transplanted, Task 16's changed training_test_runner.py is explicitly excluded, the retained shared store must remain byte-identical, and no partial panel is admitted. This qualifies evaluator mechanics for the six-row immutable-resolution segment; it does not admit the 62-task K2 panel, evaluate a model or VCM route, support an ASI Stack claim, or authorize K3.",
   "audit_maximum_inference": "The role-separated audit independently rederives source changes, archive and common-evaluator identities, commands, complete diagnostic hashes, offline policy, exact dispositions, denominators, and retained-store identity from the sealed config and producer receipts. It is role-separated rederivation, not external reproduction, and cannot support a model, VCM, or ASI Stack claim."
 }
