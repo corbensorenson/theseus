@@ -23,7 +23,7 @@ import theseus_vcm_immutable_resolution_segment as resolver  # noqa: E402
 import theseus_vcm_six_row_environment_preflight as fit_owner  # noqa: E402
 
 POLICY = "project_theseus_vcm_six_row_environment_materializer_v1"
-STATE = "PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V2_RESUME"
+STATE = "PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V3_RESUME_FIT"
 DEFAULT_CONFIG = ROOT / "configs/theseus_vcm_six_row_environment_materializer.json"
 
 
@@ -54,6 +54,8 @@ def preflight(path: Path = DEFAULT_CONFIG) -> tuple[dict[str, Any], dict[str, An
     if sources.get("resolution", {}).get("qualified_task_count") != 6 or sources.get("resolution_audit", {}).get("trigger_state") != "GREEN": faults.append("resolution_predecessor_invalid")
     predecessor = sources.get("materializer_v1", {}); predecessor_audit = sources.get("materializer_audit_v1", {})
     if predecessor.get("trigger_state") != "GREEN" or predecessor.get("qualified_task_count") != 4 or predecessor.get("inconclusive_task_count") != 2 or predecessor_audit.get("trigger_state") != "GREEN": faults.append("materializer_predecessor_invalid")
+    resume_v2 = sources.get("materializer_v2_fit_wall", {})
+    if resume_v2.get("execution_performed") is not False or resume_v2.get("faults") != ["current_fit_boundary_closed"]: faults.append("resume_fit_wall_predecessor_invalid")
     resolver_cfg, resolver_bound, resolver_faults = resolver.preflight(ROOT / "configs/theseus_vcm_immutable_resolution_segment.json")
     faults.extend(f"resolver:{fault}" for fault in resolver_faults)
     tools: dict[str, str] = {}
@@ -88,9 +90,9 @@ def preflight_report(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
 def execute(path: Path = DEFAULT_CONFIG) -> dict[str, Any]:
     cfg, bound, faults = preflight(path); store: Path = bound.get("store", Path("/invalid"))
     if faults: return finish(cfg, path, faults, [], False, {})
-    fit = fit_owner.evaluate(ROOT / "configs/theseus_vcm_six_row_environment_preflight.json")
-    if fit.get("execution_ready") is not True: return finish(cfg, path, ["current_fit_boundary_closed"], [], False, {})
-    limits = p2a.mapping(cfg["limits"]); rows: list[dict[str, Any]] = []
+    limits = p2a.mapping(cfg["limits"]); resume_required = int(limits["resume_remaining_shared_store_upper_bytes"]) + int(limits["resume_disposable_and_temporary_bytes"])
+    if shutil.disk_usage(ROOT).free - resume_required < int(limits["minimum_free_bytes_after_execution"]): return finish(cfg, path, ["current_resume_fit_boundary_closed"], [], False, {})
+    rows: list[dict[str, Any]] = []
     with tempfile.TemporaryDirectory(prefix="theseus-vcm-six-env-", dir="/private/tmp") as raw:
         batch = Path(raw).resolve(); cache = store; previous = {int(row.get("index") or 0): row for row in p2a.dicts(bound["sources"]["materializer_v1"].get("rows"))}
         for index in resolver.EXPECTED_INDICES:

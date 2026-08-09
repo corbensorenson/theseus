@@ -1,7 +1,7 @@
 {
   "policy":"project_theseus_vcm_six_row_environment_materializer_v1",
-  "state":"PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V2_RESUME",
-  "owner":"scripts/theseus_vcm_six_row_environment_materializer.py","owner_sha256":"b833e1d5dfee1ce1adbada643e635577d5cfa0f0b0b34194bf3eeebee2bbaf44",
+  "state":"PROSPECTIVE_K2_05_SIX_ROW_SHARED_STORE_DISPOSABLE_ENVIRONMENT_V3_RESUME_FIT",
+  "owner":"scripts/theseus_vcm_six_row_environment_materializer.py","owner_sha256":"8d3ba44f89f3c7b5b3f415ea4def74efc45217fe38d22e35c8d0f315108acd6e",
   "audit_policy":"project_theseus_vcm_six_row_environment_materializer_audit_v1","audit_owner":"scripts/theseus_vcm_six_row_environment_materializer_audit.py","audit_owner_sha256":"6bfe5897746a1162bc7e1eef9d7e4cb56d45c18095411a5f9a41d8381ec3fd1d",
   "sources":{
     "fit":{"path":"reports/theseus_vcm_six_row_environment_preflight.json","sha256":"159b08e8a3760634a8200fcbc30e54210c0437279faca521dfe9a9da6a4be7ee"},
@@ -9,7 +9,8 @@
     "resolution":{"path":"reports/theseus_vcm_immutable_resolution_segment_v5.json","sha256":"2a96925e2d2604faea3ddcfe9d7b706e300446c9ee6ee94e72813d479e838275"},
     "resolution_audit":{"path":"reports/theseus_vcm_immutable_resolution_segment_audit_v5.json","sha256":"ccee8262a180d4970745952006c65fadb0e55a06866c6107e73e255a5f19c066"},
     "materializer_v1":{"path":"reports/theseus_vcm_six_row_environment_materializer.json","sha256":"d6256238603970982a46549b7f2d6c9817170a0f580cc4da5bd78300d532668c"},
-    "materializer_audit_v1":{"path":"reports/theseus_vcm_six_row_environment_materializer_audit.json","sha256":"974dda07b340f2f0829b157b0e425e00af76ec4fc53bd465ffb8665902bcae5a"}
+    "materializer_audit_v1":{"path":"reports/theseus_vcm_six_row_environment_materializer_audit.json","sha256":"974dda07b340f2f0829b157b0e425e00af76ec4fc53bd465ffb8665902bcae5a"},
+    "materializer_v2_fit_wall":{"path":"reports/theseus_vcm_six_row_environment_materializer_v2.json","sha256":"699e1f89685f2bd56e2336293ad36791c77ebd85a7632ff7d2942e0fa4ab0901"}
   },
   "tools":{
     "sandbox_exec":{"path":"/usr/bin/sandbox-exec","sha256":"196848b32c5570fec825f425676cbbf658a2be1bed07078c9676b89cb4aded38"},
@@ -27,9 +28,9 @@
     {"index":56,"repository":"AbsoluteMode/session-recall","manager":"uv","python_tool":"python","lock":"reports/theseus_vcm_immutable_resolution_locks/task-56-requirements.lock","sha256":"edc38fa6fcd28371eb01abd51458db95d604a37f6de256efeb372586f518270b","package_count":74}
   ],
   "store":"runtime/vcm_evaluator/dependency_store/six-row-environments-v1",
-  "limits":{"minimum_free_bytes_after_execution":10737418240,"maximum_shared_store_bytes":2147483648,"wall_seconds_per_command":1200},
+  "limits":{"minimum_free_bytes_after_execution":10737418240,"maximum_shared_store_bytes":2147483648,"wall_seconds_per_command":1200,"resume_remaining_shared_store_upper_bytes":721666008,"resume_disposable_and_temporary_bytes":3221225472},
   "authority":{"serialized_network_dependency_materialization_authorized":true,"network_denied_offline_replay_authorized":true,"wheel_only_python_installation_authorized":true,"cargo_fetch_without_build_authorized":true,"shared_store_retention_authorized":true,"disposable_environment_authorized":true,"source_build_authorized":false,"build_backend_execution_authorized":false,"project_installation_authorized":false,"repository_runner_execution_authorized":false,"parent_target_evaluator_execution_authorized":false,"candidate_packet_materialization_authorized":false,"local_model_calls_authorized":false,"external_reference_calls_authorized":false,"teacher_calls_authorized":false,"training_rows_authorized":false,"serving_authorized":false,"D1_authorized":false,"D2_authorized":false,"book_support_promotion_authorized":false,"user_or_operator_gate":false},
-  "report":"reports/theseus_vcm_six_row_environment_materializer_v2.json","audit_report":"reports/theseus_vcm_six_row_environment_materializer_audit_v2.json",
-  "maximum_inference":"A GREEN producer plus GREEN role-separated audit proves only that the six exact immutable locks can materialize through one shared uv/Cargo store into disposable environments and replay with network denied, with Python source builds disabled, Cargo limited to fetch, exact lock membership checked, complete diagnostics retained, and the 10 GiB reserve preserved. V2 reuses four V1-qualified rows and repairs only PEP 503 name normalization, pinned Cargo toolchain PATH visibility, and declared macOS host-metadata exclusion before replaying the two inconclusive rows. It does not run a repository verifier, establish parent-fail/target-pass behavior, admit a panel, evaluate a model or VCM, or support an ASI Stack claim.",
+  "report":"reports/theseus_vcm_six_row_environment_materializer_v3.json","audit_report":"reports/theseus_vcm_six_row_environment_materializer_audit_v3.json",
+  "maximum_inference":"A GREEN producer plus GREEN role-separated audit proves only that the six exact immutable locks can materialize through one shared uv/Cargo store into disposable environments and replay with network denied, with Python source builds disabled, Cargo limited to fetch, exact lock membership checked, complete diagnostics retained, and the 10 GiB reserve preserved. V3 reuses four V1-qualified rows and the exact retained 1.16 GB shared store, repairs only PEP 503 name normalization, pinned Cargo toolchain PATH visibility, and declared macOS host-metadata exclusion, and prospectively bounds the remaining store growth at 721,666,008 bytes plus 3 GiB for the largest serial disposable environment and operational temporary data. It does not run a repository verifier, establish parent-fail/target-pass behavior, admit a panel, evaluate a model or VCM, or support an ASI Stack claim.",
   "audit_maximum_inference":"The audit role-separately rederives the shared-store identity, diagnostics, online/offline command boundaries, environment equality, denominator, dispositions, and zero downstream calls. It is not producer-independent replay or external reproduction."
 }
