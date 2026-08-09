@@ -1,0 +1,44 @@
+{
+  "audit_kind": "role-separated_rederivation",
+  "audited_task_count": 3,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_replacement_matched_verifier.json",
+    "sha256": "e479fd2ade0b22594904716109da069d3744be70da7d86aa0e41a17841c1feca"
+  },
+  "created_utc": "2026-08-09T06:25:22.184666Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 3,
+  "maximum_inference": "The role-separated audit rederives archive, evaluator, command, diagnostic, disposition, denominator, and retained-store identities. It is role-separated rederivation rather than external reproduction and cannot support a model, VCM, or ASI Stack claim.",
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_replacement_matched_verifier_audit_v1",
+  "producer_report": {
+    "path": "reports/theseus_vcm_replacement_matched_verifier.json",
+    "sha256": "67a32e48b1d5edec683bd92243b16833aaa165a724f4348ba2c8796e379ed278"
+  },
+  "qualified_task_count": 0,
+  "retained_store_identity_rederived": true,
+  "rows": [
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "index": 12,
+      "parent_returncode": null,
+      "target_returncode": null
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "index": 13,
+      "parent_returncode": null,
+      "target_returncode": null
+    },
+    {
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "index": 35,
+      "parent_returncode": 71,
+      "target_returncode": 71
+    }
+  ],
+  "state": "THREE_REPLACEMENT_MATCHED_VERIFIERS_ROLE_SEPARATELY_REDERIVED",
+  "trigger_state": "GREEN"
+}

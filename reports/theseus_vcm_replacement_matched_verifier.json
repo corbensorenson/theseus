@@ -1,0 +1,474 @@
+{
+  "cache_clone_receipts": {
+    "cargo": {
+      "command": [
+        "/bin/cp",
+        "-cR",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1/cargo",
+        "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/cargo"
+      ],
+      "destination_kind": "disposable_copy_on_write_clone",
+      "duration_ms": 2003.567,
+      "network_denied_by_absence_of_network_operation": true,
+      "project_selected_output_cap": null,
+      "returncode": 0,
+      "source": "runtime/vcm_evaluator/dependency_store/replacement-environments-v1/cargo",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "uv": {
+      "command": [
+        "/bin/cp",
+        "-cR",
+        "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/dependency_store/replacement-environments-v1/uv",
+        "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/uv"
+      ],
+      "destination_kind": "disposable_copy_on_write_clone",
+      "duration_ms": 3691.944,
+      "network_denied_by_absence_of_network_operation": true,
+      "project_selected_output_cap": null,
+      "returncode": 0,
+      "source": "runtime/vcm_evaluator/dependency_store/replacement-environments-v1/uv",
+      "stderr": "",
+      "stderr_bytes": 0,
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout": "",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_replacement_matched_verifier.json",
+    "sha256": "e479fd2ade0b22594904716109da069d3744be70da7d86aa0e41a17841c1feca"
+  },
+  "created_utc": "2026-08-09T06:24:51.899406Z",
+  "execution_performed": true,
+  "external_reference_calls": 0,
+  "faults": [],
+  "inconclusive_task_count": 3,
+  "maximum_inference": "A GREEN producer plus GREEN role-separated audit can establish only which of these three exact frozen parent/target pairs reach parent-fail/target-pass under identical target-derived common evaluator bytes, exact offline dependency lock, runtime, command, denied-network sandbox, and complete diagnostics. Changed production/configuration paths are never transplanted, the retained shared store must stay byte-identical, and no partial panel is admitted. It qualifies evaluator mechanics only; it does not evaluate any candidate, control, VCM route, model, Luna, D1, or D2 surface and cannot support an ASI Stack claim.",
+  "network_enabled_calls": 0,
+  "package_installations": 0,
+  "panel_admitted": false,
+  "parent_target_or_evaluator_executions": 2,
+  "partial_panel_admission_forbidden": true,
+  "policy": "project_theseus_vcm_replacement_matched_verifier_v1",
+  "project_installations": 0,
+  "project_selected_output_cap": null,
+  "qualified_task_count": 0,
+  "repository_runner_executions": 2,
+  "retained_store_after": {
+    "bytes": 495134168,
+    "file_count": 26876,
+    "identity_sha256": "beabae138e2eef16089f6ea5073980b0f01626554664ee674fe37d0be115b469",
+    "path": "runtime/vcm_evaluator/dependency_store/replacement-environments-v1"
+  },
+  "retained_store_before": {
+    "bytes": 495134168,
+    "file_count": 26876,
+    "identity_sha256": "beabae138e2eef16089f6ea5073980b0f01626554664ee674fe37d0be115b469",
+    "path": "runtime/vcm_evaluator/dependency_store/replacement-environments-v1"
+  },
+  "retained_store_unchanged": true,
+  "rows": [
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/12_plwp-chief-wiggum_parent.tar.gz",
+          "sha256": "8a416d5e3ebb45e13a6cb0db7681dad2f31f4f619661c5f97e3ae0cdc7f33381"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/12_plwp-chief-wiggum_target.tar.gz",
+          "sha256": "9418b0bdc48b92ab15a6c24730ed625c4c0f9a34a2cebd58ffd6990ef8e48063"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/test_epic_inventory.py",
+        "tests/test_tracker.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "23d82fd34832be6bf9d6cc526989e5f1273aa33146ef20390aeea690db6a529b",
+          "path": "tests/test_epic_inventory.py",
+          "sha256": "23d82fd34832be6bf9d6cc526989e5f1273aa33146ef20390aeea690db6a529b",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "23d82fd34832be6bf9d6cc526989e5f1273aa33146ef20390aeea690db6a529b",
+          "path": "tests/test_epic_inventory.py",
+          "sha256": "23d82fd34832be6bf9d6cc526989e5f1273aa33146ef20390aeea690db6a529b",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "41a6457dc0bc7a6a91a6518740ae8e88b08a74290a22eb9f2a197a7e8e06bf36",
+          "path": "tests/test_tracker.py",
+          "sha256": "41a6457dc0bc7a6a91a6518740ae8e88b08a74290a22eb9f2a197a7e8e06bf36",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "41a6457dc0bc7a6a91a6518740ae8e88b08a74290a22eb9f2a197a7e8e06bf36",
+          "path": "tests/test_tracker.py",
+          "sha256": "41a6457dc0bc7a6a91a6518740ae8e88b08a74290a22eb9f2a197a7e8e06bf36",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-12/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-12\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-12/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 13.827,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "c6cab34839db78e4d7cc8110f235faf2e531726256f543265cc4a7741115b13c",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        ".claude/commands/architect.md",
+        ".claude/commands/close-epic.md",
+        ".claude/commands/implement-wave.md",
+        ".claude/commands/implement.md",
+        "scripts/chief_wiggum/artifacts.py",
+        "scripts/epic_inventory.py",
+        "scripts/tracker.py"
+      ],
+      "index": 12,
+      "lock": {
+        "path": "reports/theseus_vcm_replacement_resolution_locks/task-12-requirements.lock",
+        "sha256": "733fa33ed6537d573a63ce97a47750bc7f7f0918f203623c4be0e3a674db4427"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "plwp/chief-wiggum",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 7
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/13_paulomtts-pyjinhx_parent.tar.gz",
+          "sha256": "59776e3da5f4e81372131e96224bab4c14ca51c8dbe47ce23ee908ad57040f27"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/13_paulomtts-pyjinhx_target.tar.gz",
+          "sha256": "afcc2fa79da5862eaa5b02d11b737a683aa7dcaca6d960c62ec3691a4bda9e22"
+        }
+      },
+      "common_evaluator_paths": [
+        "tests/minimal/test_bare_install.py",
+        "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+        "tests/pyjinhx/integrations/test_registry.py",
+        "tests/pyjinhx/test_import_graph.py",
+        "tests/pyjinhx/test_setup_backend_dispatch.py"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "5c1f83ca893578a70c3d3f4a52264c60e47cd4ae86fd1baffe5dbc58c372dc4e",
+          "path": "tests/minimal/test_bare_install.py",
+          "sha256": "5c1f83ca893578a70c3d3f4a52264c60e47cd4ae86fd1baffe5dbc58c372dc4e",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "5c1f83ca893578a70c3d3f4a52264c60e47cd4ae86fd1baffe5dbc58c372dc4e",
+          "path": "tests/minimal/test_bare_install.py",
+          "sha256": "5c1f83ca893578a70c3d3f4a52264c60e47cd4ae86fd1baffe5dbc58c372dc4e",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "afd17c96c3d360aecf6f6aff7284c3921d5f8cf855fbe98e77cfb7cbbb427f93",
+          "path": "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+          "sha256": "afd17c96c3d360aecf6f6aff7284c3921d5f8cf855fbe98e77cfb7cbbb427f93",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "afd17c96c3d360aecf6f6aff7284c3921d5f8cf855fbe98e77cfb7cbbb427f93",
+          "path": "tests/pyjinhx/integrations/test_fastapi_wiring.py",
+          "sha256": "afd17c96c3d360aecf6f6aff7284c3921d5f8cf855fbe98e77cfb7cbbb427f93",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "1d731151abec55da0d61fa4696c4521530de8e579ddd786741ce2fcc2e122fc3",
+          "path": "tests/pyjinhx/integrations/test_registry.py",
+          "sha256": "1d731151abec55da0d61fa4696c4521530de8e579ddd786741ce2fcc2e122fc3",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "1d731151abec55da0d61fa4696c4521530de8e579ddd786741ce2fcc2e122fc3",
+          "path": "tests/pyjinhx/integrations/test_registry.py",
+          "sha256": "1d731151abec55da0d61fa4696c4521530de8e579ddd786741ce2fcc2e122fc3",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "d10dc679c13d9f2fd7481ed9ecdd0436f8005a391e79bf4b2576dbec07d0334a",
+          "path": "tests/pyjinhx/test_import_graph.py",
+          "sha256": "d10dc679c13d9f2fd7481ed9ecdd0436f8005a391e79bf4b2576dbec07d0334a",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "d10dc679c13d9f2fd7481ed9ecdd0436f8005a391e79bf4b2576dbec07d0334a",
+          "path": "tests/pyjinhx/test_import_graph.py",
+          "sha256": "d10dc679c13d9f2fd7481ed9ecdd0436f8005a391e79bf4b2576dbec07d0334a",
+          "side": "target"
+        },
+        {
+          "expected_sha256": "8daed9956a71e1e1593932e7940152fc7c776c476f0fffdd4cc9e30cf63137d1",
+          "path": "tests/pyjinhx/test_setup_backend_dispatch.py",
+          "sha256": "8daed9956a71e1e1593932e7940152fc7c776c476f0fffdd4cc9e30cf63137d1",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "8daed9956a71e1e1593932e7940152fc7c776c476f0fffdd4cc9e30cf63137d1",
+          "path": "tests/pyjinhx/test_setup_backend_dispatch.py",
+          "sha256": "8daed9956a71e1e1593932e7940152fc7c776c476f0fffdd4cc9e30cf63137d1",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "network_denied": true,
+        "project_installation": false,
+        "sync": {},
+        "venv": "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-13/venv",
+        "venv_command": {
+          "boundary_hit": false,
+          "boundary_reason": "",
+          "command": [
+            "/usr/bin/sandbox-exec",
+            "-p",
+            "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-13\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/uv\"))",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/task_complete_toolchains/uv-bootstrap/bin/uv",
+            "venv",
+            "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-13/venv",
+            "--python",
+            "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/uv-python/cpython-3.13.14-macos-aarch64-none/bin/python3.13",
+            "--no-python-downloads",
+            "--no-config"
+          ],
+          "duration_ms": 12.315,
+          "network_denied": true,
+          "project_selected_output_cap": null,
+          "returncode": 71,
+          "sandbox_profile_sha256": "b1ae60b6b2784624b8348d8b2e8c2207b6b9c710fec0f4461b57c074030dfe67",
+          "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+          "stderr_bytes": 53,
+          "stderr_complete": true,
+          "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+          "stdout": "",
+          "stdout_bytes": 0,
+          "stdout_complete": true,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      },
+      "faults": [
+        "offline_exact_lock_sync_failed",
+        "offline_venv_creation_failed"
+      ],
+      "forbidden_transplant_paths": [
+        ".github/workflows/tests.yml",
+        "pyjinhx/config.py",
+        "pyjinhx/integrations/base.py",
+        "pyjinhx/integrations/fastapi.py",
+        "pyproject.toml",
+        "uv.lock"
+      ],
+      "index": 13,
+      "lock": {
+        "path": "reports/theseus_vcm_replacement_resolution_locks/task-13-requirements.lock",
+        "sha256": "4ab7e20f4a3bae9391386521d9dc82004aa42d01da609f3dbabfcba8c4015e56"
+      },
+      "manager": "uv",
+      "parent": {},
+      "repository": "paulomtts/pyjinhx",
+      "target": {},
+      "target_production_or_nontransplanted_path_count": 6
+    },
+    {
+      "archives": {
+        "parent": {
+          "path": "runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_parent.tar.gz",
+          "sha256": "fb9f478eccb18c7192419fb73cc5d4790b833e493968d4f0b703034642124481"
+        },
+        "target": {
+          "path": "runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_target.tar.gz",
+          "sha256": "20f2427c60900e542ecde798adda0a569d56fb815a33e16020dcb9696acebf6c"
+        }
+      },
+      "common_evaluator_paths": [
+        "marsdb/tests/embed.rs"
+      ],
+      "common_evaluator_receipts": [
+        {
+          "expected_sha256": "d4a13e2348d1b994c8018897eccd5921df2cd36ac1f52ab12d9d9526d4c2c21a",
+          "path": "marsdb/tests/embed.rs",
+          "sha256": "d4a13e2348d1b994c8018897eccd5921df2cd36ac1f52ab12d9d9526d4c2c21a",
+          "side": "parent"
+        },
+        {
+          "expected_sha256": "d4a13e2348d1b994c8018897eccd5921df2cd36ac1f52ab12d9d9526d4c2c21a",
+          "path": "marsdb/tests/embed.rs",
+          "sha256": "d4a13e2348d1b994c8018897eccd5921df2cd36ac1f52ab12d9d9526d4c2c21a",
+          "side": "target"
+        }
+      ],
+      "disposition": "INCONCLUSIVE_IMPLEMENTATION_MATCHED_VERIFIER_MECHANICS",
+      "environment": {
+        "cargo_home": "/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/cargo",
+        "network_denied": true,
+        "parent_lock_sha256": "546d1def8a5b79fdcebaf07e1469d6642f37051c56c0e6180ad96f3ea2e72cc4",
+        "project_installation": false,
+        "target_lock_sha256": "546d1def8a5b79fdcebaf07e1469d6642f37051c56c0e6180ad96f3ea2e72cc4"
+      },
+      "faults": [],
+      "forbidden_transplant_paths": [
+        "README.md",
+        "marsdb-cli/src/main.rs",
+        "marsdb-query/src/cypher.pest",
+        "marsdb-query/src/lib.rs",
+        "marsdb-query/src/parser.rs",
+        "marsdb/src/lib.rs"
+      ],
+      "index": 35,
+      "lock": {
+        "path": "reports/theseus_vcm_replacement_resolution_locks/task-35-Cargo.lock",
+        "sha256": "546d1def8a5b79fdcebaf07e1469d6642f37051c56c0e6180ad96f3ea2e72cc4"
+      },
+      "manager": "cargo",
+      "parent": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "cargo_environment_tools": {},
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-35/parent\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/cargo\"))",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "marsdb",
+          "--test",
+          "embed"
+        ],
+        "common_evaluator_paths": [
+          "marsdb/tests/embed.rs"
+        ],
+        "declared_arguments": [
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "marsdb",
+          "--test",
+          "embed"
+        ],
+        "duration_ms": 13.894,
+        "manager": "cargo",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "python_path_roots": [],
+        "returncode": 71,
+        "sandbox_profile_sha256": "4b62b8f41fbd1db1e1d451f755b1030c53ba8f403eddafe008e0e5073708bc2a",
+        "side": "parent",
+        "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+        "stderr_bytes": 53,
+        "stderr_complete": true,
+        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_directory": "."
+      },
+      "repository": "knoguchi/marsdb",
+      "target": {
+        "boundary_hit": false,
+        "boundary_reason": "",
+        "cargo_environment_tools": {},
+        "command": [
+          "/usr/bin/sandbox-exec",
+          "-p",
+          "(version 1)\n(allow default)\n(deny network*)\n(deny mach-lookup)\n(deny file-write*)\n(allow file-write* (literal \"/dev/null\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/task-35/target\"))\n(allow file-write* (subpath \"/private/tmp/theseus-vcm-replacement-verifier-d_dxege9/cache/cargo\"))",
+          "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/toolchains/rustup-task36/toolchains/1.97.1-aarch64-apple-darwin/bin/cargo",
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "marsdb",
+          "--test",
+          "embed"
+        ],
+        "common_evaluator_paths": [
+          "marsdb/tests/embed.rs"
+        ],
+        "declared_arguments": [
+          "test",
+          "--locked",
+          "--offline",
+          "-p",
+          "marsdb",
+          "--test",
+          "embed"
+        ],
+        "duration_ms": 13.76,
+        "manager": "cargo",
+        "network_denied": true,
+        "project_selected_output_cap": null,
+        "python_path_roots": [],
+        "returncode": 71,
+        "sandbox_profile_sha256": "2f530dac391ea73c32aa6b8fcebe4263607d21135ccae0058530594ffde73c45",
+        "side": "target",
+        "stderr": "sandbox-exec: sandbox_apply: Operation not permitted\n",
+        "stderr_bytes": 53,
+        "stderr_complete": true,
+        "stderr_sha256": "d34a4e4359a4dc36526cf5b363da32f7b7594a3a09eea17cbdfd6425b052d93e",
+        "stdout": "",
+        "stdout_bytes": 0,
+        "stdout_complete": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "working_directory": "."
+      },
+      "target_production_or_nontransplanted_path_count": 6
+    }
+  ],
+  "source_build_executions": 2,
+  "state": "THREE_REPLACEMENT_MATCHED_VERIFIERS_EXECUTED_WITH_SCOPED_DISPOSITIONS",
+  "target_production_transplant_count": 0,
+  "task_count": 3,
+  "teacher_calls": 0,
+  "trigger_state": "GREEN"
+}
