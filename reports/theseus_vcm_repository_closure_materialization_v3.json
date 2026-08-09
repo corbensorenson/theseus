@@ -1,0 +1,3122 @@
+{
+  "archive_artifacts": 124,
+  "candidate_or_control_calls": 0,
+  "config": {
+    "path": "configs/theseus_vcm_repository_closure_materialization_v3.json",
+    "sha256": "74faab4f54a62fd9eea28dfa94e8e000b5c170abc9b26f5b5273cee56690abd1"
+  },
+  "created_utc": "2026-08-09T05:24:50.369252Z",
+  "downloaded_bytes": 6358113,
+  "execution_authorized": false,
+  "external_reference_calls": 0,
+  "faults": [],
+  "maximum_inference": "A GREEN v3 report proves only that the revised 62-row panel has exact normalized parent/head repository closures and that the existing 59 closures replay unchanged while only six missing public archives for replacement Tasks 12, 13, and 35 are fetched. It executes no repository, dependency, evaluator, candidate, model, Luna, D1, or D2 surface and cannot qualify evaluator mechanics or a VCM claim.",
+  "network_fetches": 6,
+  "parent_target_or_evaluator_executions": 0,
+  "physical_boundary_hit": false,
+  "planned_archive_count": 124,
+  "policy": "project_theseus_vcm_repository_closure_materialization_v1",
+  "source_panel": {
+    "path": "reports/theseus_vcm_source_panel_audit_v4.json",
+    "sha256": "6d6a2270298b5022455b37376c2763855280e7e94c73bba1662857faab5d8886"
+  },
+  "state": "EXACT_PARENT_HEAD_REPOSITORY_CLOSURES_MATERIALIZED",
+  "storage": {
+    "available_bytes": 15389302784,
+    "maximum_upstream_archive_bytes": 2147483648,
+    "minimum_free_bytes_after_download": 10737418240,
+    "total_bytes": 994662584320
+  },
+  "task_count": 62,
+  "tasks": [
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/01_endoftheline818-opensourcesai-cmdcenter_parent.tar.gz",
+          "normalized_name": "01_endoftheline818-opensourcesai-cmdcenter_parent.tar.gz",
+          "normalized_sha256": "05dedc12ea4bba961e2554f815f8236182d1a82e3a2d63339d693770e08b1382",
+          "required_relative_members": [
+            "src/serve/ui.js",
+            "test/design.test.js"
+          ],
+          "revision": "7a7dc5a93937c23c0dc3b371f53056f1aea4ab57",
+          "sanitization_name": "01_endoftheline818-opensourcesai-cmdcenter_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/01_endoftheline818-opensourcesai-cmdcenter_parent.json",
+          "sanitization_report_sha256": "ba1a1d0d06ec591977748546fabdef5b143bbd2f36ab822ef69f069b93e35ae9",
+          "source_archive_root": "opensourcesai-cmdcenter-7a7dc5a93937c23c0dc3b371f53056f1aea4ab57",
+          "upstream_name": "01_endoftheline818-opensourcesai-cmdcenter_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "35ac203fc9eeca002e27337225342e62d4bc5c92c34f3d20b546596f36855a51",
+          "url": "https://codeload.github.com/endoftheline818/opensourcesai-cmdcenter/tar.gz/7a7dc5a93937c23c0dc3b371f53056f1aea4ab57"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/01_endoftheline818-opensourcesai-cmdcenter_target.tar.gz",
+          "normalized_name": "01_endoftheline818-opensourcesai-cmdcenter_target.tar.gz",
+          "normalized_sha256": "dbde850887b28c2eeac1675b2480d4e5112458726634b8a8668c14bc3214b355",
+          "required_relative_members": [
+            "src/serve/ui.js",
+            "test/design.test.js"
+          ],
+          "revision": "9649c2b954a8ea6aca912f1db28667ee90f02851",
+          "sanitization_name": "01_endoftheline818-opensourcesai-cmdcenter_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/01_endoftheline818-opensourcesai-cmdcenter_target.json",
+          "sanitization_report_sha256": "879889bc3d1f69e862fb4b51a03d7aa65192fa3be08b4e763c41a5a21581072a",
+          "source_archive_root": "opensourcesai-cmdcenter-9649c2b954a8ea6aca912f1db28667ee90f02851",
+          "upstream_name": "01_endoftheline818-opensourcesai-cmdcenter_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "c3c887d5a37838b020ebcb4ae1e092dfeda0cf990db6a36fed758738771b6fb5",
+          "url": "https://codeload.github.com/endoftheline818/opensourcesai-cmdcenter/tar.gz/9649c2b954a8ea6aca912f1db28667ee90f02851"
+        }
+      ],
+      "campaign_index": 1,
+      "repository": "endoftheline818/opensourcesai-cmdcenter",
+      "selection_digest": "5c8a47132e08ef1bea2c9aa825a3726f208e87c300216788a77ada3d4950230e"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/02_aditya8369-pollution-control-hub_parent.tar.gz",
+          "normalized_name": "02_aditya8369-pollution-control-hub_parent.tar.gz",
+          "normalized_sha256": "fc4dc2beece741dd631345215415fe9d43798e3cad60d2e7bf4377bd6b9b1829",
+          "required_relative_members": [
+            "src/services/airQualityService.js",
+            "src/services/airQualityService.test.js"
+          ],
+          "revision": "23fdcf07fc5441cae041c92d2203bb84be886e6d",
+          "sanitization_name": "02_aditya8369-pollution-control-hub_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/02_aditya8369-pollution-control-hub_parent.json",
+          "sanitization_report_sha256": "8e5c673609c4ec5f9b235cc3785611f7c2d7e2c350d6c2f7013ba07950fb2719",
+          "source_archive_root": "Pollution-Control-Hub-23fdcf07fc5441cae041c92d2203bb84be886e6d",
+          "upstream_name": "02_aditya8369-pollution-control-hub_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "4c3facb46363b80d5f5f799b029563c400547b5a2f31b864562eb3ff9307a5d1",
+          "url": "https://codeload.github.com/Aditya8369/Pollution-Control-Hub/tar.gz/23fdcf07fc5441cae041c92d2203bb84be886e6d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/02_aditya8369-pollution-control-hub_target.tar.gz",
+          "normalized_name": "02_aditya8369-pollution-control-hub_target.tar.gz",
+          "normalized_sha256": "b563a35ebc0a156b4a8c1203a3358ac95aea98dfa7b26a3fd49da9532bae2cf5",
+          "required_relative_members": [
+            "src/services/airQualityService.js",
+            "src/services/airQualityService.test.js",
+            "src/services/airQualityService.timezone.test.js"
+          ],
+          "revision": "7a36922d7efa8f68f52ade181a1f72069329fa7e",
+          "sanitization_name": "02_aditya8369-pollution-control-hub_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/02_aditya8369-pollution-control-hub_target.json",
+          "sanitization_report_sha256": "bdfaec87383df8e576f1f28a58872dc45b5435861b41dc87b829c306ad0fea09",
+          "source_archive_root": "Pollution-Control-Hub-7a36922d7efa8f68f52ade181a1f72069329fa7e",
+          "upstream_name": "02_aditya8369-pollution-control-hub_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "5231ec879cb3c174b6748ffa9be161d9aedf7b302df05fa272b5e1767c88f3f1",
+          "url": "https://codeload.github.com/Aditya8369/Pollution-Control-Hub/tar.gz/7a36922d7efa8f68f52ade181a1f72069329fa7e"
+        }
+      ],
+      "campaign_index": 2,
+      "repository": "Aditya8369/Pollution-Control-Hub",
+      "selection_digest": "3db17ae9feedbcbbd6ce99b993152add91e394e765807f7fde07db98f4ae1bd0"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_parent.tar.gz",
+          "normalized_name": "03_qoderai-better-harness_parent.tar.gz",
+          "normalized_sha256": "3368e4e6ec82bdfc671040a82544644caeb40acc197cd99f01175ad54d75cf7d",
+          "required_relative_members": [
+            "docs/specs/2026-07-30-kimi-host-support.md",
+            "scripts/agent-customize/core/items.mjs",
+            "scripts/session-analysis/platforms/kimi.mjs",
+            "test/session-analysis-fs.test.mjs",
+            "test/session-analysis-providers.test.mjs"
+          ],
+          "revision": "6ba2ed637894d2cae4c4b14863a7018e4fd5703d",
+          "sanitization_name": "03_qoderai-better-harness_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/03_qoderai-better-harness_parent.json",
+          "sanitization_report_sha256": "4cb3dc49c61c853c6fdc1521cf8cac284b5aeb475e31d38b56eff5a5632c6edc",
+          "source_archive_root": "better-harness-6ba2ed637894d2cae4c4b14863a7018e4fd5703d",
+          "upstream_name": "03_qoderai-better-harness_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6e863c622055be23bc21a3e896660ab00c38d9ad9b4d712e1a04fcc4162503fb",
+          "url": "https://codeload.github.com/QoderAI/better-harness/tar.gz/6ba2ed637894d2cae4c4b14863a7018e4fd5703d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/03_qoderai-better-harness_target.tar.gz",
+          "normalized_name": "03_qoderai-better-harness_target.tar.gz",
+          "normalized_sha256": "8859614e83d8edb9aefe3affd77140229419892e39c9457c1635a3412296d64b",
+          "required_relative_members": [
+            "docs/specs/2026-07-30-kimi-host-support.md",
+            "scripts/agent-customize/core/items.mjs",
+            "scripts/session-analysis/platforms/kimi.mjs",
+            "test/session-analysis-fs.test.mjs",
+            "test/session-analysis-providers.test.mjs"
+          ],
+          "revision": "e7f26542eb2e60639b472d6cf852e53fda52b1de",
+          "sanitization_name": "03_qoderai-better-harness_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/03_qoderai-better-harness_target.json",
+          "sanitization_report_sha256": "3c4213c6c3c0e7cf51fdf10077d9c2a09c3629bd8840fb5c3aa2e67333c1e3f0",
+          "source_archive_root": "better-harness-e7f26542eb2e60639b472d6cf852e53fda52b1de",
+          "upstream_name": "03_qoderai-better-harness_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "0227f55ecdeca526215360888aed45916fec0de05771abb4e96271d52094dbf3",
+          "url": "https://codeload.github.com/QoderAI/better-harness/tar.gz/e7f26542eb2e60639b472d6cf852e53fda52b1de"
+        }
+      ],
+      "campaign_index": 3,
+      "repository": "QoderAI/better-harness",
+      "selection_digest": "52dc6a4ca1a111759a8c3556bb634e84d7be5b770514fcba9ebd36f51f483b16"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/04_frappe-draw_parent.tar.gz",
+          "normalized_name": "04_frappe-draw_parent.tar.gz",
+          "normalized_sha256": "ffbc0a2c9b1c310fc6b0e6ba79ac0a609d96f854b702301f6b6ea9079b2b5f79",
+          "required_relative_members": [
+            "draw/draw/doctype/draw_diagram/test_draw_diagram.py",
+            "frontend/src/composables/useShare.js",
+            "frontend/src/composables/useShare.test.js",
+            "frontend/src/icons/lucideNodes.js"
+          ],
+          "revision": "8aa6784b6dc2e570ff9679a52236d89d07d650fa",
+          "sanitization_name": "04_frappe-draw_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/04_frappe-draw_parent.json",
+          "sanitization_report_sha256": "61c4f27c27e483d72793ac92e76b30318d13bd447e84b27689a21708007f3bce",
+          "source_archive_root": "draw-8aa6784b6dc2e570ff9679a52236d89d07d650fa",
+          "upstream_name": "04_frappe-draw_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "690a78ac5d377b8f415ec8cd772bf7d018ae9187d3ba50d4724aae5add2a3d10",
+          "url": "https://codeload.github.com/frappe/draw/tar.gz/8aa6784b6dc2e570ff9679a52236d89d07d650fa"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/04_frappe-draw_target.tar.gz",
+          "normalized_name": "04_frappe-draw_target.tar.gz",
+          "normalized_sha256": "bf43b7c0c18c462f90185e4e8036a6da351903c32d3bc94589412fcf4db62a7a",
+          "required_relative_members": [
+            "draw/draw/doctype/draw_diagram/test_draw_diagram.py",
+            "frontend/src/components/toolbar/ShareMenu.test.js",
+            "frontend/src/composables/useShare.js",
+            "frontend/src/composables/useShare.test.js",
+            "frontend/src/icons/lucideNodes.js"
+          ],
+          "revision": "d2c1871423d0f4b742090437f322dea8b3566ac8",
+          "sanitization_name": "04_frappe-draw_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/04_frappe-draw_target.json",
+          "sanitization_report_sha256": "83fcdb85f55d7a1408ec4f9106380d45b6e6a7c6b30acc2be6a3388a0710756f",
+          "source_archive_root": "draw-d2c1871423d0f4b742090437f322dea8b3566ac8",
+          "upstream_name": "04_frappe-draw_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6af983073e55a23ef864bc618633d9e4d14da5352f447ea3d9ca9f6d3a75200c",
+          "url": "https://codeload.github.com/frappe/draw/tar.gz/d2c1871423d0f4b742090437f322dea8b3566ac8"
+        }
+      ],
+      "campaign_index": 4,
+      "repository": "frappe/draw",
+      "selection_digest": "c5574c74ccff38ac024af2aca7cc1f8c830f1dbac0bc072bea11b271e10b17b3"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/05_didaquis-didibudget-frontend_parent.tar.gz",
+          "normalized_name": "05_didaquis-didibudget-frontend_parent.tar.gz",
+          "normalized_sha256": "ea5a0850d0d3192fc0861ad49933af9a4eabefc05a86e3356c000a28afd72745",
+          "required_relative_members": [
+            "src/components/Expenses/AddExpenseForm/index.js",
+            "src/components/Expenses/AddExpenseForm/index.test.js"
+          ],
+          "revision": "02272aa56ebd1b7398ea31f49670a40db37e736b",
+          "sanitization_name": "05_didaquis-didibudget-frontend_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/05_didaquis-didibudget-frontend_parent.json",
+          "sanitization_report_sha256": "f1d9598d917c13bb8d105ce689c1d2c70d35a39cbeb37afa2e7d46472df1a6ec",
+          "source_archive_root": "didibudget-frontend-02272aa56ebd1b7398ea31f49670a40db37e736b",
+          "upstream_name": "05_didaquis-didibudget-frontend_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6c40a81cb6cc41b661c924052bfb18d06034d30cb0931329935fb74be881e735",
+          "url": "https://codeload.github.com/didaquis/didibudget-frontend/tar.gz/02272aa56ebd1b7398ea31f49670a40db37e736b"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/05_didaquis-didibudget-frontend_target.tar.gz",
+          "normalized_name": "05_didaquis-didibudget-frontend_target.tar.gz",
+          "normalized_sha256": "7a067d3d87f1685f3927191f24e98c12569c5f233a04ee96f30b5f3c5468cd74",
+          "required_relative_members": [
+            "src/components/Expenses/AddExpenseForm/index.js",
+            "src/components/Expenses/AddExpenseForm/index.test.js",
+            "src/components/SuccessToast/index.js",
+            "src/components/SuccessToast/index.test.js"
+          ],
+          "revision": "50ac29f0dfef8dd0adbe90a90f0e68779a18babf",
+          "sanitization_name": "05_didaquis-didibudget-frontend_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/05_didaquis-didibudget-frontend_target.json",
+          "sanitization_report_sha256": "ce6f7cbb5a083fbd178e6a4adcaeefa309e33a0d6aa674de932754499700d51c",
+          "source_archive_root": "didibudget-frontend-50ac29f0dfef8dd0adbe90a90f0e68779a18babf",
+          "upstream_name": "05_didaquis-didibudget-frontend_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b90fcc1792af58788a8bb7c94f6cdcc6293a997c8579b1ac3ca52683a4f59ca5",
+          "url": "https://codeload.github.com/didaquis/didibudget-frontend/tar.gz/50ac29f0dfef8dd0adbe90a90f0e68779a18babf"
+        }
+      ],
+      "campaign_index": 5,
+      "repository": "didaquis/didibudget-frontend",
+      "selection_digest": "363d44e6423da98c21570ebb4eed4fcb958bc162d503f4a3c2a6f54a4cb0bbbb"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/06_elkimek-get-based_parent.tar.gz",
+          "normalized_name": "06_elkimek-get-based_parent.tar.gz",
+          "normalized_sha256": "c3eb9f68d2ae3073c61a7496c64273c314f4d1702f459c73e8df8584cd9aac1e",
+          "required_relative_members": [
+            "api/share.js",
+            "lib/proxy-rate-limit.js",
+            "tests/api-network-runtime.test.js",
+            "tests/proxy-rate-limit.test.js"
+          ],
+          "revision": "3629bfd67c2c47aeba13600fedf456f20555fbed",
+          "sanitization_name": "06_elkimek-get-based_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/06_elkimek-get-based_parent.json",
+          "sanitization_report_sha256": "3fc32e71c81acb24a5ba25263f9933b18cee092e03e1d57c1e0fa51ad2f40bb6",
+          "source_archive_root": "get-based-3629bfd67c2c47aeba13600fedf456f20555fbed",
+          "upstream_name": "06_elkimek-get-based_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7d1f2220566e6a445a4b3cd4060927d00389339a68466cacf1602619785902f0",
+          "url": "https://codeload.github.com/elkimek/get-based/tar.gz/3629bfd67c2c47aeba13600fedf456f20555fbed"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/06_elkimek-get-based_target.tar.gz",
+          "normalized_name": "06_elkimek-get-based_target.tar.gz",
+          "normalized_sha256": "c2a9b16ca776ecbc14168d8a8643fe048636611b38b087220c3c216f02f7e528",
+          "required_relative_members": [
+            "api/share.js",
+            "lib/proxy-rate-limit.js",
+            "tests/api-network-runtime.test.js",
+            "tests/proxy-rate-limit.test.js"
+          ],
+          "revision": "bd4b987a02b8bffbe0c0a1b22bbda385841a0b28",
+          "sanitization_name": "06_elkimek-get-based_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/06_elkimek-get-based_target.json",
+          "sanitization_report_sha256": "fcaf6b60052e5c4a1ff9ba5252e0ea08a426cce93509c515aeb64b678e0f17a1",
+          "source_archive_root": "get-based-bd4b987a02b8bffbe0c0a1b22bbda385841a0b28",
+          "upstream_name": "06_elkimek-get-based_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "d05034eb2580493cbeede17b27194eecaaf6400440de4fa72d1260b54bf89007",
+          "url": "https://codeload.github.com/elkimek/get-based/tar.gz/bd4b987a02b8bffbe0c0a1b22bbda385841a0b28"
+        }
+      ],
+      "campaign_index": 6,
+      "repository": "elkimek/get-based",
+      "selection_digest": "d4d7306965c780cc59a4c2806d162991f47d2b9208ecbe3b674d7e7e07549b18"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/07_moshcoder-moshcode_parent.tar.gz",
+          "normalized_name": "07_moshcoder-moshcode_parent.tar.gz",
+          "normalized_sha256": "e726ac7ff6f7fceb2896ea1f0ffe8cfd97472e248004defcfb070c159ab3c5e0",
+          "required_relative_members": [
+            "src/serve.mjs",
+            "test/serve.test.mjs"
+          ],
+          "revision": "be906053dba93d429301525a3f3caff15b198ed6",
+          "sanitization_name": "07_moshcoder-moshcode_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/07_moshcoder-moshcode_parent.json",
+          "sanitization_report_sha256": "57b9446744a8875750f194b46a60c3a60f70225fc32b1bc128f66285f7456a04",
+          "source_archive_root": "moshcode-be906053dba93d429301525a3f3caff15b198ed6",
+          "upstream_name": "07_moshcoder-moshcode_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "cc1d20758dd547096f2c49673200557f7984b6ef02160da740526dcc46e3554d",
+          "url": "https://codeload.github.com/moshcoder/moshcode/tar.gz/be906053dba93d429301525a3f3caff15b198ed6"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/07_moshcoder-moshcode_target.tar.gz",
+          "normalized_name": "07_moshcoder-moshcode_target.tar.gz",
+          "normalized_sha256": "b81fa591eaadc4a86612595d0ddfbe4177186177ab9609ad637b2cd7e5b3f974",
+          "required_relative_members": [
+            "src/serve.mjs",
+            "test/serve.test.mjs"
+          ],
+          "revision": "136a57101a048e5baf6a6a32d68169356487a438",
+          "sanitization_name": "07_moshcoder-moshcode_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/07_moshcoder-moshcode_target.json",
+          "sanitization_report_sha256": "e3607dd46f1a5ce556faa82c8bdcc8fb2dc367c5ed7aa3feff8eb45854ffc785",
+          "source_archive_root": "moshcode-136a57101a048e5baf6a6a32d68169356487a438",
+          "upstream_name": "07_moshcoder-moshcode_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "0874d211632dd193b5c974937447dfd60f10487a8caf630d3639083135df92ee",
+          "url": "https://codeload.github.com/moshcoder/moshcode/tar.gz/136a57101a048e5baf6a6a32d68169356487a438"
+        }
+      ],
+      "campaign_index": 7,
+      "repository": "moshcoder/moshcode",
+      "selection_digest": "141c80e5a77804674dcc7f5b34706b79fbfb7cfb0c05978624c62da02d43e1d6"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/08_manufosela-karajan-code_parent.tar.gz",
+          "normalized_name": "08_manufosela-karajan-code_parent.tar.gz",
+          "normalized_sha256": "1ab94fdebdc58a39faa02980efed22fc1fd0621fc4c493cf3d0bcf9345600f94",
+          "required_relative_members": [
+            "src/commands/env.js",
+            "src/config/schema.js",
+            "src/environment/board-access.js"
+          ],
+          "revision": "dc365eb32e85417bba7366fcabdd756f2d5b19a6",
+          "sanitization_name": "08_manufosela-karajan-code_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/08_manufosela-karajan-code_parent.json",
+          "sanitization_report_sha256": "89bff558f90c9333c3c866afd6cded662293b5cb69bb122f130bb8c92585e902",
+          "source_archive_root": "karajan-code-dc365eb32e85417bba7366fcabdd756f2d5b19a6",
+          "upstream_name": "08_manufosela-karajan-code_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "3fef6810522880d99f670eb1513a4b1e3940c5b88bc7605e6fb88ea44cb59a1f",
+          "url": "https://codeload.github.com/manufosela/karajan-code/tar.gz/dc365eb32e85417bba7366fcabdd756f2d5b19a6"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/08_manufosela-karajan-code_target.tar.gz",
+          "normalized_name": "08_manufosela-karajan-code_target.tar.gz",
+          "normalized_sha256": "904dd9d348b8651d99c533c5d54d74bcbb99c16392e70766490ab8585d30f360",
+          "required_relative_members": [
+            "src/commands/env.js",
+            "src/config/schema.js",
+            "src/environment/board-access.js",
+            "src/environment/board-select.js",
+            "tests/environment/board-select.test.js"
+          ],
+          "revision": "3cfdfa0bcd47fc263e7f0202ade08aa431c94b38",
+          "sanitization_name": "08_manufosela-karajan-code_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/08_manufosela-karajan-code_target.json",
+          "sanitization_report_sha256": "ba257c31f5e60a5decd78a25886246e04e21764c0c8db0fa3de82ac4162e305e",
+          "source_archive_root": "karajan-code-3cfdfa0bcd47fc263e7f0202ade08aa431c94b38",
+          "upstream_name": "08_manufosela-karajan-code_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7d4442d36c2b6e6f63b41f3125af350c466e72cc74f550d0684ccd4f09d24e16",
+          "url": "https://codeload.github.com/manufosela/karajan-code/tar.gz/3cfdfa0bcd47fc263e7f0202ade08aa431c94b38"
+        }
+      ],
+      "campaign_index": 8,
+      "repository": "manufosela/karajan-code",
+      "selection_digest": "83d2768430452330ea813dbb69170d5c234400b3e8dc969a3932af96644d3034"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/09_kosalyohyn-vue-route-state_parent.tar.gz",
+          "normalized_name": "09_kosalyohyn-vue-route-state_parent.tar.gz",
+          "normalized_sha256": "049f491bd62e4784b59ef54fb0dcfa2ba92d0938f0b491f4185f410ce294dd84",
+          "required_relative_members": [
+            "playground/src/router.js",
+            "src/index.js"
+          ],
+          "revision": "5fe4c2cbda9361af0d872f6cd323436180fd774e",
+          "sanitization_name": "09_kosalyohyn-vue-route-state_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/09_kosalyohyn-vue-route-state_parent.json",
+          "sanitization_report_sha256": "5f1e59e186a289cc66c23e799e174e9bfcca8aaaad85533ab9baeb10ef920ff3",
+          "source_archive_root": "vue-route-state-5fe4c2cbda9361af0d872f6cd323436180fd774e",
+          "upstream_name": "09_kosalyohyn-vue-route-state_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ce2b1f370079a910874f4b88c33311b4062dc3a2b50040e6c50d693bba55b103",
+          "url": "https://codeload.github.com/KosAlyohyn/vue-route-state/tar.gz/5fe4c2cbda9361af0d872f6cd323436180fd774e"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/09_kosalyohyn-vue-route-state_target.tar.gz",
+          "normalized_name": "09_kosalyohyn-vue-route-state_target.tar.gz",
+          "normalized_sha256": "52da36da26fc59ba85381a9ecae0e314430ba404a9bd0c2e18332750113f674f",
+          "required_relative_members": [
+            "playground/src/router.js",
+            "src/composables/use-url-query-param.js",
+            "src/index.js",
+            "tests/use-url-query-param.spec.js"
+          ],
+          "revision": "4985aa27518ea587260954a4da8c8a269613366d",
+          "sanitization_name": "09_kosalyohyn-vue-route-state_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/09_kosalyohyn-vue-route-state_target.json",
+          "sanitization_report_sha256": "645586db8c7d2c2aa76f8955279b2f08063e61d533950a8a77e6acc3b2dca961",
+          "source_archive_root": "vue-route-state-4985aa27518ea587260954a4da8c8a269613366d",
+          "upstream_name": "09_kosalyohyn-vue-route-state_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "880af0af7d37ae4c788c1d967113052169e6338cd5425f6f7a980d7ff7db32f5",
+          "url": "https://codeload.github.com/KosAlyohyn/vue-route-state/tar.gz/4985aa27518ea587260954a4da8c8a269613366d"
+        }
+      ],
+      "campaign_index": 9,
+      "repository": "KosAlyohyn/vue-route-state",
+      "selection_digest": "5bd643fc6f48e3c93d73b667f15c60f0692a51b3d4bb5fe52566e50522b1c9e3"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/10_autodidac-orphanedmiscprojects_parent.tar.gz",
+          "normalized_name": "10_autodidac-orphanedmiscprojects_parent.tar.gz",
+          "normalized_sha256": "19e08ccb374395788c4b105b95bce1a7640f04f51df792e4b0fe974521a4a5c0",
+          "required_relative_members": [],
+          "revision": "9abcf5f2323c411b2db8d426ad7679585936e4ab",
+          "sanitization_name": "10_autodidac-orphanedmiscprojects_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/10_autodidac-orphanedmiscprojects_parent.json",
+          "sanitization_report_sha256": "f5f0cb18b6d7f2e0df780d58f880c4ca740c8c63bafe26ace26190483f8e8a47",
+          "source_archive_root": "OrphanedMiscProjects-9abcf5f2323c411b2db8d426ad7679585936e4ab",
+          "upstream_name": "10_autodidac-orphanedmiscprojects_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b7fd03a82e1d6a7de7d8ad3a1ccbe50248cc420ca9ca498e085170b918f318a1",
+          "url": "https://codeload.github.com/Autodidac/OrphanedMiscProjects/tar.gz/9abcf5f2323c411b2db8d426ad7679585936e4ab"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/10_autodidac-orphanedmiscprojects_target.tar.gz",
+          "normalized_name": "10_autodidac-orphanedmiscprojects_target.tar.gz",
+          "normalized_sha256": "3b221b58882c5e3136dc7ead170c92ea7c68bc5aaf017bf375976437c31ed42f",
+          "required_relative_members": [
+            "VidCoreLargePlayer/popup-guard.js",
+            "VidCoreLargePlayer/tests/popup-guard.test.mjs"
+          ],
+          "revision": "d048cfce4d49e620cd442c2005e6edecbd478101",
+          "sanitization_name": "10_autodidac-orphanedmiscprojects_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/10_autodidac-orphanedmiscprojects_target.json",
+          "sanitization_report_sha256": "4bee5ffa03e2b11db785a945edc8d7d13402cb305a9f5a73c4441c0fbef5ceec",
+          "source_archive_root": "OrphanedMiscProjects-d048cfce4d49e620cd442c2005e6edecbd478101",
+          "upstream_name": "10_autodidac-orphanedmiscprojects_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "a1049a31f160ac25943cc2a589668134fbe77ff4a40bee85836b082be8c2e195",
+          "url": "https://codeload.github.com/Autodidac/OrphanedMiscProjects/tar.gz/d048cfce4d49e620cd442c2005e6edecbd478101"
+        }
+      ],
+      "campaign_index": 10,
+      "repository": "Autodidac/OrphanedMiscProjects",
+      "selection_digest": "bc900c6624e1703939fbb2fe101a9160f3fd17ed7b3928329ec6b4944f3a3143"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/11_frootai-frootai_parent.tar.gz",
+          "normalized_name": "11_frootai-frootai_parent.tar.gz",
+          "normalized_sha256": "69f61f6f386c951e6072d576f81f4fdd346dfaac0ee2ec0572dbb54530d0d6ec",
+          "required_relative_members": [
+            "scripts/factory/adapters/website.js"
+          ],
+          "revision": "caff35a61144afcfbe8f7a6cdba232092e3f0be5",
+          "sanitization_name": "11_frootai-frootai_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/11_frootai-frootai_parent.json",
+          "sanitization_report_sha256": "a5a75a7ce689c083fb29b1c1220fe72118b59dbc34ea58eb2830f180a3ea4e73",
+          "source_archive_root": "frootai-caff35a61144afcfbe8f7a6cdba232092e3f0be5",
+          "upstream_name": "11_frootai-frootai_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "eedf7d2c9806ce084254193687e091f69b4714dbe1d49f8d91768a1fa20840c9",
+          "url": "https://codeload.github.com/frootai/frootai/tar.gz/caff35a61144afcfbe8f7a6cdba232092e3f0be5"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/11_frootai-frootai_target.tar.gz",
+          "normalized_name": "11_frootai-frootai_target.tar.gz",
+          "normalized_sha256": "6fda3428c34b73728394d5bdb5f7ea97ba584e03deb5bf2cd972d4936c35b2cc",
+          "required_relative_members": [
+            "scripts/factory/adapters/website.js",
+            "scripts/test-solution-play-website-search.mjs"
+          ],
+          "revision": "3699686de90d9a85195f83677ac2aa5596064fc5",
+          "sanitization_name": "11_frootai-frootai_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/11_frootai-frootai_target.json",
+          "sanitization_report_sha256": "6bdb1e0f059a1019fddf46263b614a0b1e52998fa539813297f7116f14855267",
+          "source_archive_root": "frootai-3699686de90d9a85195f83677ac2aa5596064fc5",
+          "upstream_name": "11_frootai-frootai_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "8495e1c465dcadc2fcafb8b33ed230d3d11d4ebc30f8c677d6e94efbd4b4fdb4",
+          "url": "https://codeload.github.com/frootai/frootai/tar.gz/3699686de90d9a85195f83677ac2aa5596064fc5"
+        }
+      ],
+      "campaign_index": 11,
+      "repository": "frootai/frootai",
+      "selection_digest": "ab86368111988ef41cd0741baf791b1649539fd0ba8942448a2686e4dd8b19c7"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/12_plwp-chief-wiggum_parent.tar.gz",
+          "normalized_name": "12_plwp-chief-wiggum_parent.tar.gz",
+          "normalized_sha256": "8a416d5e3ebb45e13a6cb0db7681dad2f31f4f619661c5f97e3ae0cdc7f33381",
+          "required_relative_members": [
+            "scripts/chief_wiggum/artifacts.py",
+            "scripts/epic_inventory.py",
+            "scripts/tracker.py",
+            "tests/test_epic_inventory.py",
+            "tests/test_tracker.py"
+          ],
+          "revision": "d7daae9eaca9159b26fd62b45b8274c649b83fb0",
+          "sanitization_name": "12_plwp-chief-wiggum_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/12_plwp-chief-wiggum_parent.json",
+          "sanitization_report_sha256": "d70bda5c85694a9628969e234018b615c1252d583464cd8c539876f92188dba2",
+          "source_archive_root": "chief-wiggum-d7daae9eaca9159b26fd62b45b8274c649b83fb0",
+          "upstream_name": "12_plwp-chief-wiggum_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ad7538508ae5230177c79eb168adbc2a8b6029ffaf0d22ed0bb4c20d6ee9d9df",
+          "url": "https://codeload.github.com/plwp/chief-wiggum/tar.gz/d7daae9eaca9159b26fd62b45b8274c649b83fb0"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/12_plwp-chief-wiggum_target.tar.gz",
+          "normalized_name": "12_plwp-chief-wiggum_target.tar.gz",
+          "normalized_sha256": "9418b0bdc48b92ab15a6c24730ed625c4c0f9a34a2cebd58ffd6990ef8e48063",
+          "required_relative_members": [
+            "scripts/chief_wiggum/artifacts.py",
+            "scripts/epic_inventory.py",
+            "scripts/tracker.py",
+            "tests/test_epic_inventory.py",
+            "tests/test_tracker.py"
+          ],
+          "revision": "8c610550ac292b6bfcbf7b7853bee8910d9b60fb",
+          "sanitization_name": "12_plwp-chief-wiggum_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/12_plwp-chief-wiggum_target.json",
+          "sanitization_report_sha256": "51c9c7532486024445e23276f4d47097ffc2be706341564c8dc8ffbe66ba456e",
+          "source_archive_root": "chief-wiggum-8c610550ac292b6bfcbf7b7853bee8910d9b60fb",
+          "upstream_name": "12_plwp-chief-wiggum_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "96d09389b8f20deb5d6056db381c82aef226bbb1db0dcb2c5d7fa325e41a3496",
+          "url": "https://codeload.github.com/plwp/chief-wiggum/tar.gz/8c610550ac292b6bfcbf7b7853bee8910d9b60fb"
+        }
+      ],
+      "campaign_index": 12,
+      "repository": "plwp/chief-wiggum",
+      "selection_digest": "7fc3fbd92f1846bfea8117f39f4bf6e4ed15bb5839de64782e60f7fab0d18ebb"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/13_frame-consulting-quantlibxloil_parent.tar.gz",
+          "normalized_name": "13_frame-consulting-quantlibxloil_parent.tar.gz",
+          "normalized_sha256": "c378cb4c21940900c290d9f68a47cd0ff029973316f2094524871748d7b87d4e",
+          "required_relative_members": [
+            "src/quantlib_xloil/capfloor.py",
+            "tests/workbooktests/workbooks/test_capfloor.xlsx"
+          ],
+          "revision": "16941e68f52d96ee0b2f2d2a4bcf1374e0bc089d",
+          "sanitization_name": "13_frame-consulting-quantlibxloil_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/13_frame-consulting-quantlibxloil_parent.json",
+          "sanitization_report_sha256": "fe16974d26a1b00cd4913266502034bdfbedc1a8683e28d25eee1c85210b5c3b",
+          "source_archive_root": "QuantLibXlOil-16941e68f52d96ee0b2f2d2a4bcf1374e0bc089d",
+          "upstream_name": "13_frame-consulting-quantlibxloil_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "f73d120607be6358a6be049d338cf79e63ce9b55956bd0986b7df0f61e6742c6",
+          "url": "https://codeload.github.com/frame-consulting/QuantLibXlOil/tar.gz/16941e68f52d96ee0b2f2d2a4bcf1374e0bc089d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/13_frame-consulting-quantlibxloil_target.tar.gz",
+          "normalized_name": "13_frame-consulting-quantlibxloil_target.tar.gz",
+          "normalized_sha256": "16be77d68fedbc93cbb494ad3a5304c021284b6738a4218a2a831aee66506a68",
+          "required_relative_members": [
+            "src/quantlib_xloil/capfloor.py",
+            "tests/unittests/test_capfloor.py",
+            "tests/workbooktests/workbooks/test_capfloor.xlsx"
+          ],
+          "revision": "93807b3e703f5c21482f8e5fba002e2272750d73",
+          "sanitization_name": "13_frame-consulting-quantlibxloil_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/13_frame-consulting-quantlibxloil_target.json",
+          "sanitization_report_sha256": "15671727acde2f2d60a44bad361fb8a7884b8b85e727b8f57411025c233137d9",
+          "source_archive_root": "QuantLibXlOil-93807b3e703f5c21482f8e5fba002e2272750d73",
+          "upstream_name": "13_frame-consulting-quantlibxloil_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "84c2e40555946c5af5beb5dc95f9a6ab527bb0c6fa26e858e545d64c65fc267e",
+          "url": "https://codeload.github.com/frame-consulting/QuantLibXlOil/tar.gz/93807b3e703f5c21482f8e5fba002e2272750d73"
+        }
+      ],
+      "campaign_index": 13,
+      "repository": "frame-consulting/QuantLibXlOil",
+      "selection_digest": "b636aa3d125cea55bf4588a83a679ca98f978e01d2697598a161460d8c51a526"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/14_scrape-badger-scrapebadger-python_parent.tar.gz",
+          "normalized_name": "14_scrape-badger-scrapebadger-python_parent.tar.gz",
+          "normalized_sha256": "1f10e72d4d0dff7093f5a532d63199e5974a5dfcb178a3f13558aa30ba28da38",
+          "required_relative_members": [
+            "src/scrapebadger/__init__.py",
+            "src/scrapebadger/_internal/client.py",
+            "src/scrapebadger/_internal/config.py",
+            "tests/test_config.py",
+            "tests/test_retry_warnings.py"
+          ],
+          "revision": "c4af14b091201b5cdb1a209513a684ab89582b41",
+          "sanitization_name": "14_scrape-badger-scrapebadger-python_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/14_scrape-badger-scrapebadger-python_parent.json",
+          "sanitization_report_sha256": "2add9e3982c6be616ebe4abfcdbf72df1d0dc818e1444beba0ef3144559c87c6",
+          "source_archive_root": "scrapebadger-python-c4af14b091201b5cdb1a209513a684ab89582b41",
+          "upstream_name": "14_scrape-badger-scrapebadger-python_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "4f6be3ee886a74ef68afa5d0f92ffa8b35a1ce045eba1d942cc8c4bf81693a95",
+          "url": "https://codeload.github.com/scrape-badger/scrapebadger-python/tar.gz/c4af14b091201b5cdb1a209513a684ab89582b41"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/14_scrape-badger-scrapebadger-python_target.tar.gz",
+          "normalized_name": "14_scrape-badger-scrapebadger-python_target.tar.gz",
+          "normalized_sha256": "1b722e7520a98e80a189277de9732e849b1c2ac0ab3f9d3e8345fbb5a88f6be5",
+          "required_relative_members": [
+            "src/scrapebadger/__init__.py",
+            "src/scrapebadger/_internal/client.py",
+            "src/scrapebadger/_internal/config.py",
+            "tests/test_config.py",
+            "tests/test_retry_warnings.py"
+          ],
+          "revision": "42cdac4c7e4a94ad785523e905eb1f37f24b55b8",
+          "sanitization_name": "14_scrape-badger-scrapebadger-python_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/14_scrape-badger-scrapebadger-python_target.json",
+          "sanitization_report_sha256": "6ee66cd7cd989c1752298c9c8135de80b4c2a8f08a7e5715d1f87bf50d1b2a30",
+          "source_archive_root": "scrapebadger-python-42cdac4c7e4a94ad785523e905eb1f37f24b55b8",
+          "upstream_name": "14_scrape-badger-scrapebadger-python_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7468df37fe024dddf7a5d6635d259b2f47a98f2d78abaec240569c26030cfa1e",
+          "url": "https://codeload.github.com/scrape-badger/scrapebadger-python/tar.gz/42cdac4c7e4a94ad785523e905eb1f37f24b55b8"
+        }
+      ],
+      "campaign_index": 14,
+      "repository": "scrape-badger/scrapebadger-python",
+      "selection_digest": "082ebfa1462e80271df11cac7ad53f0de1acfd0789a0aa3b12ae96c6db1afc7f"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/15_ray-manaloto-macos-development-environment_parent.tar.gz",
+          "normalized_name": "15_ray-manaloto-macos-development-environment_parent.tar.gz",
+          "normalized_sha256": "6cea3d859e4b2a167127ee7f1f0422437eb2df05baf373b603781fe657e965b3",
+          "required_relative_members": [
+            "src/mde/validate/mise.py",
+            "tests/mde/test_update_lifecycle.py",
+            "tests/mde/test_validate_mise.py"
+          ],
+          "revision": "d71b790879e07dd4a665655ae7e420aee40888dc",
+          "sanitization_name": "15_ray-manaloto-macos-development-environment_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/15_ray-manaloto-macos-development-environment_parent.json",
+          "sanitization_report_sha256": "0fc82fc26b1adf11769028493390decb46027b64cb0b7f95bba86e52a3f744e0",
+          "source_archive_root": "macos-development-environment-d71b790879e07dd4a665655ae7e420aee40888dc",
+          "upstream_name": "15_ray-manaloto-macos-development-environment_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "c06cc9c110e85cb9b3e05f5f29aef67f7d6e1718f2b53a9dd1b0efc0897bb2d1",
+          "url": "https://codeload.github.com/ray-manaloto/macos-development-environment/tar.gz/d71b790879e07dd4a665655ae7e420aee40888dc"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/15_ray-manaloto-macos-development-environment_target.tar.gz",
+          "normalized_name": "15_ray-manaloto-macos-development-environment_target.tar.gz",
+          "normalized_sha256": "1e79b6ce94201260a645a347ff235131e8571069fb983b18a51dfca34965bf2c",
+          "required_relative_members": [
+            "src/mde/validate/mise.py",
+            "tests/mde/test_update_lifecycle.py",
+            "tests/mde/test_validate_mise.py"
+          ],
+          "revision": "f09da50b78af40a8f1acfd7c2b0d3a8346332543",
+          "sanitization_name": "15_ray-manaloto-macos-development-environment_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/15_ray-manaloto-macos-development-environment_target.json",
+          "sanitization_report_sha256": "e5530d51c2f0b88f9682cdaa666c69bcad6cb870adf93105ecf6ed30e40b75ba",
+          "source_archive_root": "macos-development-environment-f09da50b78af40a8f1acfd7c2b0d3a8346332543",
+          "upstream_name": "15_ray-manaloto-macos-development-environment_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "be50648d6069265733baa8a0f76be1aaa7a295632edbf5fd079aa799f9ea309f",
+          "url": "https://codeload.github.com/ray-manaloto/macos-development-environment/tar.gz/f09da50b78af40a8f1acfd7c2b0d3a8346332543"
+        }
+      ],
+      "campaign_index": 15,
+      "repository": "ray-manaloto/macos-development-environment",
+      "selection_digest": "53e4d95284032864dc83ec668924360ba4730fdee5d020e0ffa7b5c4db139416"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_parent.tar.gz",
+          "normalized_name": "16_dynatrace-wwse-codespaces-framework_parent.tar.gz",
+          "normalized_sha256": "46e74b1a28265f06454de0dd488e501eb0c763c20ed983ca1b48db393324892f",
+          "required_relative_members": [
+            "ops-server/dashboard/app.py",
+            "ops-server/tools/agentic_validator.py",
+            "ops-server/tools/bootcamp_loadtest.py",
+            "ops-server/tools/training_test_runner.py"
+          ],
+          "revision": "a8819219cb38c41a921c3ec78716942e08f39606",
+          "sanitization_name": "16_dynatrace-wwse-codespaces-framework_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/16_dynatrace-wwse-codespaces-framework_parent.json",
+          "sanitization_report_sha256": "2e237f425e81cc4282b68121a76b603b5c003942a72d28a248c3f441ada7aa92",
+          "source_archive_root": "codespaces-framework-a8819219cb38c41a921c3ec78716942e08f39606",
+          "upstream_name": "16_dynatrace-wwse-codespaces-framework_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b487ac429db6df0f7d7287bfc98b43c5cf2cd6603b24600c66dfbbe575106699",
+          "url": "https://codeload.github.com/dynatrace-wwse/codespaces-framework/tar.gz/a8819219cb38c41a921c3ec78716942e08f39606"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/16_dynatrace-wwse-codespaces-framework_target.tar.gz",
+          "normalized_name": "16_dynatrace-wwse-codespaces-framework_target.tar.gz",
+          "normalized_sha256": "1bbc4a3d47db5d94dba594b5ca61baef447cc0c4ba5029405d4b70c827a2c9f4",
+          "required_relative_members": [
+            "ops-server/dashboard/app.py",
+            "ops-server/dashboard/test_arena_auth.py",
+            "ops-server/tools/agentic_validator.py",
+            "ops-server/tools/bootcamp_loadtest.py",
+            "ops-server/tools/training_test_runner.py"
+          ],
+          "revision": "178c8f9d9e05f14c29776086d14b3a9753e00c85",
+          "sanitization_name": "16_dynatrace-wwse-codespaces-framework_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/16_dynatrace-wwse-codespaces-framework_target.json",
+          "sanitization_report_sha256": "397b1cd8e8a1b4a96f21b5c7fb3f099b412670eb8e22d2efa5542ec03d1fd444",
+          "source_archive_root": "codespaces-framework-178c8f9d9e05f14c29776086d14b3a9753e00c85",
+          "upstream_name": "16_dynatrace-wwse-codespaces-framework_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "d145cdda71ba742e8a99782ffbf100c2ec8634e48dabfb25c3d6d9d991b26c2b",
+          "url": "https://codeload.github.com/dynatrace-wwse/codespaces-framework/tar.gz/178c8f9d9e05f14c29776086d14b3a9753e00c85"
+        }
+      ],
+      "campaign_index": 16,
+      "repository": "dynatrace-wwse/codespaces-framework",
+      "selection_digest": "b88f5e916a868f79c4afe6d19957374600739387a899fde96465e1ac744b15f2"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/17_presidio-v-presidio-hardened-x402_parent.tar.gz",
+          "normalized_name": "17_presidio-v-presidio-hardened-x402_parent.tar.gz",
+          "normalized_sha256": "6b1c57b7775904de81a82113733f85791e15261e6741bbb1a333a2b8eed53f36",
+          "required_relative_members": [
+            "src/presidio_x402/__init__.py",
+            "tests/test_policy_schema.py"
+          ],
+          "revision": "a1ac78dad5286a1100de4f65dc8641de8977ca63",
+          "sanitization_name": "17_presidio-v-presidio-hardened-x402_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/17_presidio-v-presidio-hardened-x402_parent.json",
+          "sanitization_report_sha256": "8e24a266768028f98e82aa453c36d9658453f60086e570239ccc68fc626b497b",
+          "source_archive_root": "presidio-hardened-x402-a1ac78dad5286a1100de4f65dc8641de8977ca63",
+          "upstream_name": "17_presidio-v-presidio-hardened-x402_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b035668a0eb7bf75eebeb1ae15e137f843b4a9a89547d76a69644f199df725eb",
+          "url": "https://codeload.github.com/presidio-v/presidio-hardened-x402/tar.gz/a1ac78dad5286a1100de4f65dc8641de8977ca63"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/17_presidio-v-presidio-hardened-x402_target.tar.gz",
+          "normalized_name": "17_presidio-v-presidio-hardened-x402_target.tar.gz",
+          "normalized_sha256": "a591b25240c32c4ac75a4a110d3045e8aed832911561a2aadf8838573f3092a0",
+          "required_relative_members": [
+            "src/presidio_x402/__init__.py",
+            "tests/test_declared_dependencies.py",
+            "tests/test_policy_schema.py"
+          ],
+          "revision": "c39dea983f03c2e1b405acb7e045fafda698c54a",
+          "sanitization_name": "17_presidio-v-presidio-hardened-x402_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/17_presidio-v-presidio-hardened-x402_target.json",
+          "sanitization_report_sha256": "5830c06c0925249ef78e226872d6cdca3021c2526e16d2c54f1767e9443c0217",
+          "source_archive_root": "presidio-hardened-x402-c39dea983f03c2e1b405acb7e045fafda698c54a",
+          "upstream_name": "17_presidio-v-presidio-hardened-x402_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "109ac779e223c3b03cc6c490a8991ee311adb8732cb79372ff574d28f707b7d3",
+          "url": "https://codeload.github.com/presidio-v/presidio-hardened-x402/tar.gz/c39dea983f03c2e1b405acb7e045fafda698c54a"
+        }
+      ],
+      "campaign_index": 17,
+      "repository": "presidio-v/presidio-hardened-x402",
+      "selection_digest": "e6d3b7f140a4f2f3695b69a1d6b92da3d9188da29f65daeda99ca886d2214d67"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/18_nousresearch-hermes-agent_parent.tar.gz",
+          "normalized_name": "18_nousresearch-hermes-agent_parent.tar.gz",
+          "normalized_sha256": "1e86881c53812c699ccd1ff2604256310fe8fc2e30451a40bd5f14b7fd345f87",
+          "required_relative_members": [
+            "tools/lazy_deps.py"
+          ],
+          "revision": "2ba064bc54dde6929c8efcd6578f07c1c62431ca",
+          "sanitization_name": "18_nousresearch-hermes-agent_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/18_nousresearch-hermes-agent_parent.json",
+          "sanitization_report_sha256": "d3d6ec82a659b556a69378eb38929277ed0db76f916a7ba69330ff39d7a5a2d3",
+          "source_archive_root": "hermes-agent-2ba064bc54dde6929c8efcd6578f07c1c62431ca",
+          "upstream_name": "18_nousresearch-hermes-agent_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "402dbc708032d9160bde8478f139864705449ace05a1a7fc1a12c74d6fa01735",
+          "url": "https://codeload.github.com/NousResearch/hermes-agent/tar.gz/2ba064bc54dde6929c8efcd6578f07c1c62431ca"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/18_nousresearch-hermes-agent_target.tar.gz",
+          "normalized_name": "18_nousresearch-hermes-agent_target.tar.gz",
+          "normalized_sha256": "18d797a836a97717cdbf7884fff3a8b328077af936a25edac3fef20a8ac3fd60",
+          "required_relative_members": [
+            "tests/tools/test_lazy_deps_managed.py",
+            "tools/lazy_deps.py"
+          ],
+          "revision": "7f6ca14a5f6739cdf8269293268cdb1770e68d8a",
+          "sanitization_name": "18_nousresearch-hermes-agent_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/18_nousresearch-hermes-agent_target.json",
+          "sanitization_report_sha256": "631a610b2c8a66a18315ad27301036e7a14855def1352a60ffc2d8411d21526c",
+          "source_archive_root": "hermes-agent-7f6ca14a5f6739cdf8269293268cdb1770e68d8a",
+          "upstream_name": "18_nousresearch-hermes-agent_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "961bc473cd9c4cd6afe1fa339d94f0f33026282352a831c0e6a81007720339e6",
+          "url": "https://codeload.github.com/NousResearch/hermes-agent/tar.gz/7f6ca14a5f6739cdf8269293268cdb1770e68d8a"
+        }
+      ],
+      "campaign_index": 18,
+      "repository": "NousResearch/hermes-agent",
+      "selection_digest": "a84ddb9d2780a4f583afc65f84ee87f38d8b64f2376d0cf078ee8772e051a84a"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/19_cs0lar-treelang_parent.tar.gz",
+          "normalized_name": "19_cs0lar-treelang_parent.tar.gz",
+          "normalized_sha256": "9e46fe413550a23c80e28046248039df108d8db5c66a17c4e8ca1b2c674e809c",
+          "required_relative_members": [
+            "scripts/generate_json_schemas.py",
+            "tests/test_documentation.py",
+            "tests/test_schema_artifacts.py"
+          ],
+          "revision": "03f2338cfc423c633a0b2834f41eba7443b515e7",
+          "sanitization_name": "19_cs0lar-treelang_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/19_cs0lar-treelang_parent.json",
+          "sanitization_report_sha256": "6cb44b1ace6a7c1720f4315f795abded719866e747faa1b363ed36b17be5e325",
+          "source_archive_root": "treelang-03f2338cfc423c633a0b2834f41eba7443b515e7",
+          "upstream_name": "19_cs0lar-treelang_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "07b5a6c4d205e20ee982c608d2e9bffbf976f2efa0cddc86054a8b505cc3a4ac",
+          "url": "https://codeload.github.com/cs0lar/treelang/tar.gz/03f2338cfc423c633a0b2834f41eba7443b515e7"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/19_cs0lar-treelang_target.tar.gz",
+          "normalized_name": "19_cs0lar-treelang_target.tar.gz",
+          "normalized_sha256": "0651db57a9a78ff3c848ec7509412f05d633ca78af08fdd7a038a5995dd46289",
+          "required_relative_members": [
+            "scripts/generate_json_schemas.py",
+            "tests/test_documentation.py",
+            "tests/test_schema_artifacts.py"
+          ],
+          "revision": "5a6910355ebc60250d2185c1d0137660347b4669",
+          "sanitization_name": "19_cs0lar-treelang_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/19_cs0lar-treelang_target.json",
+          "sanitization_report_sha256": "1745e2984aff27426112af8b2fccb90a159c67460f03e348dc6590f67b3d42f8",
+          "source_archive_root": "treelang-5a6910355ebc60250d2185c1d0137660347b4669",
+          "upstream_name": "19_cs0lar-treelang_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "96a4b2d5f21284003b525c26217d3b5bc4961937fecfa71c586fd7266028b7d8",
+          "url": "https://codeload.github.com/cs0lar/treelang/tar.gz/5a6910355ebc60250d2185c1d0137660347b4669"
+        }
+      ],
+      "campaign_index": 19,
+      "repository": "cs0lar/treelang",
+      "selection_digest": "86b19c27439540650cf987cef501c0a13ed1bad406798b7df8202ef937a6f91b"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/20_bnet47-codexicon_parent.tar.gz",
+          "normalized_name": "20_bnet47-codexicon_parent.tar.gz",
+          "normalized_sha256": "126a91768cf7919e98537b1b39f06b4584ed0adf35dcf7ab387ffb06cb42d7f2",
+          "required_relative_members": [
+            "scripts/codexicon.py",
+            "scripts/validate_template.py",
+            "tests/test_codexicon.py"
+          ],
+          "revision": "a6f6fa8d0f3f330c77b66d6660613e5468ab0709",
+          "sanitization_name": "20_bnet47-codexicon_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/20_bnet47-codexicon_parent.json",
+          "sanitization_report_sha256": "68527882e362c9c0f636d3043af5acef1cf68bff3763cd64080e07c59ba063bc",
+          "source_archive_root": "codexicon-a6f6fa8d0f3f330c77b66d6660613e5468ab0709",
+          "upstream_name": "20_bnet47-codexicon_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "1fd2db7087eb88a2e23f56c9bdb91d9afb920bad767e04a4350a880044bd1214",
+          "url": "https://codeload.github.com/bnet47/codexicon/tar.gz/a6f6fa8d0f3f330c77b66d6660613e5468ab0709"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/20_bnet47-codexicon_target.tar.gz",
+          "normalized_name": "20_bnet47-codexicon_target.tar.gz",
+          "normalized_sha256": "1728c835332e9093eff53e8d71506f0556168a722edc9d8edd2900a662a2558e",
+          "required_relative_members": [
+            "scripts/codexicon.py",
+            "scripts/validate_template.py",
+            "tests/test_codexicon.py"
+          ],
+          "revision": "65472e28a7d31107eba87235895996567478ed98",
+          "sanitization_name": "20_bnet47-codexicon_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/20_bnet47-codexicon_target.json",
+          "sanitization_report_sha256": "a927b3c7f62058190ab1670e4792716127902e707a7fa7f99d15d08b52fdb86a",
+          "source_archive_root": "codexicon-65472e28a7d31107eba87235895996567478ed98",
+          "upstream_name": "20_bnet47-codexicon_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "1b3984481fbae2512bd3559246472082e28d274329fed85b16565d50ebcf1036",
+          "url": "https://codeload.github.com/bnet47/codexicon/tar.gz/65472e28a7d31107eba87235895996567478ed98"
+        }
+      ],
+      "campaign_index": 20,
+      "repository": "bnet47/codexicon",
+      "selection_digest": "8e783e3ef9d5f58a43a7450d594bdddc8b9d85eb8f59dcfaf163a74b97a14827"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/21_ctsdownloads-easyspeak_parent.tar.gz",
+          "normalized_name": "21_ctsdownloads-easyspeak_parent.tar.gz",
+          "normalized_sha256": "f6d4d65ac05ac2b4ed36dd0f7208b392d53cc8e093c605aa316c81be40bad74a",
+          "required_relative_members": [
+            "src/core/config.py",
+            "src/core/main.py",
+            "src/plugins/browser.py",
+            "src/plugins/zz_base.py",
+            "tests/unit/core/test_listen_modal.py",
+            "tests/unit/plugins/test_zz_base.py"
+          ],
+          "revision": "c52f57647c42b915aacfb91486026c475ae92ce8",
+          "sanitization_name": "21_ctsdownloads-easyspeak_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/21_ctsdownloads-easyspeak_parent.json",
+          "sanitization_report_sha256": "e87719fc2adbcfa599052851d5cea2ca6da7bf5dc41cd92d5547293cb5384209",
+          "source_archive_root": "easyspeak-c52f57647c42b915aacfb91486026c475ae92ce8",
+          "upstream_name": "21_ctsdownloads-easyspeak_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b2f2746c4759804dbd1b7a1c513b3587d8da896d981153421e90dd02e4c038d2",
+          "url": "https://codeload.github.com/ctsdownloads/easyspeak/tar.gz/c52f57647c42b915aacfb91486026c475ae92ce8"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/21_ctsdownloads-easyspeak_target.tar.gz",
+          "normalized_name": "21_ctsdownloads-easyspeak_target.tar.gz",
+          "normalized_sha256": "651b7d1ee6ef27d30c9b5cf04aa0041948afbcc923c13e39340816cde6e9fe5f",
+          "required_relative_members": [
+            "src/core/config.py",
+            "src/core/main.py",
+            "src/plugins/browser.py",
+            "src/plugins/zz_base.py",
+            "tests/unit/core/test_listen_modal.py",
+            "tests/unit/plugins/test_zz_base.py"
+          ],
+          "revision": "bc78b85703fbe97abcd801f05401947ee2040904",
+          "sanitization_name": "21_ctsdownloads-easyspeak_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/21_ctsdownloads-easyspeak_target.json",
+          "sanitization_report_sha256": "1f025ea2da3765bd5478878968d98c1ddd8ac601394e60abef911a8352523b26",
+          "source_archive_root": "easyspeak-bc78b85703fbe97abcd801f05401947ee2040904",
+          "upstream_name": "21_ctsdownloads-easyspeak_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "8325b115c1642d71d39f91f8d9fa5cf01cae24d38906ff35e80ead1472b2eb90",
+          "url": "https://codeload.github.com/ctsdownloads/easyspeak/tar.gz/bc78b85703fbe97abcd801f05401947ee2040904"
+        }
+      ],
+      "campaign_index": 21,
+      "repository": "ctsdownloads/easyspeak",
+      "selection_digest": "b29c2605caa5d1b5e21ecd2a36838c1264da8c6cccfe4a46b0307334dc50e8a8"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/22_tejashprakash-student-management-system_parent.tar.gz",
+          "normalized_name": "22_tejashprakash-student-management-system_parent.tar.gz",
+          "normalized_sha256": "d718b9a3af20f662856cfbc4b5a2fb710c30db383455c12e44a07dcb2c1ae388",
+          "required_relative_members": [
+            "src/main.py",
+            "src/student_repository.py"
+          ],
+          "revision": "822ec944fb7ec9907ed03db71fb68985b51121d6",
+          "sanitization_name": "22_tejashprakash-student-management-system_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/22_tejashprakash-student-management-system_parent.json",
+          "sanitization_report_sha256": "1c9653ef457088d8650fe3c737ecec6ae71fc873db5aacaf68bdbab5a07a93dd",
+          "source_archive_root": "student-management-system-822ec944fb7ec9907ed03db71fb68985b51121d6",
+          "upstream_name": "22_tejashprakash-student-management-system_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "fedcff274d18a91284dea083f0215cddd34823f56b81df530818f31974ecc59d",
+          "url": "https://codeload.github.com/TejashPrakash/student-management-system/tar.gz/822ec944fb7ec9907ed03db71fb68985b51121d6"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/22_tejashprakash-student-management-system_target.tar.gz",
+          "normalized_name": "22_tejashprakash-student-management-system_target.tar.gz",
+          "normalized_sha256": "dffa3bdaab6f3cbbe19e8f13e9d52b9272f98a0d06c73df3f4bbbb238142429c",
+          "required_relative_members": [
+            "src/input_validators.py",
+            "src/main.py",
+            "src/student_repository.py",
+            "tests/test_input_validators.py"
+          ],
+          "revision": "624af484ec5b2ff21752bf9d47bb0723c77bf8e5",
+          "sanitization_name": "22_tejashprakash-student-management-system_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/22_tejashprakash-student-management-system_target.json",
+          "sanitization_report_sha256": "9f5232dd0e55606617b2678b355821dab70f2c33750e4ab5a1260b3e164b3a46",
+          "source_archive_root": "student-management-system-624af484ec5b2ff21752bf9d47bb0723c77bf8e5",
+          "upstream_name": "22_tejashprakash-student-management-system_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ddce9ce9d45df0b756f9133bb6bb8ce772a3c1b5b2711a4d9505e70e6f7aa87e",
+          "url": "https://codeload.github.com/TejashPrakash/student-management-system/tar.gz/624af484ec5b2ff21752bf9d47bb0723c77bf8e5"
+        }
+      ],
+      "campaign_index": 22,
+      "repository": "TejashPrakash/student-management-system",
+      "selection_digest": "7c795bff5c666abcfa773f8a87433499eef2e95d8bbef7321e9341ba24e667e7"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/23_pullboxapp-pullbox-direct-providers_parent.tar.gz",
+          "normalized_name": "23_pullboxapp-pullbox-direct-providers_parent.tar.gz",
+          "normalized_sha256": "78fabbaa363288e7ac7bd9047ff855236474df54215d746c1ea4a633d615700f",
+          "required_relative_members": [
+            ".github/scripts/filter-reviewed-container-sarif.py",
+            "tests/unit/test_vulnerability_baseline.py"
+          ],
+          "revision": "fdbefc6d517abc83a1a42553e20b123d6339fc13",
+          "sanitization_name": "23_pullboxapp-pullbox-direct-providers_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/23_pullboxapp-pullbox-direct-providers_parent.json",
+          "sanitization_report_sha256": "1711ea9e8e65b02c551f9ec5fd06ee4fa621a095f0ecaab926579544854b56d1",
+          "source_archive_root": "pullbox-direct-providers-fdbefc6d517abc83a1a42553e20b123d6339fc13",
+          "upstream_name": "23_pullboxapp-pullbox-direct-providers_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "8681ba283a85d55b0af9d11e414c1f75c96903bfed7e18df1df7d377d7bb7886",
+          "url": "https://codeload.github.com/pullboxapp/pullbox-direct-providers/tar.gz/fdbefc6d517abc83a1a42553e20b123d6339fc13"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/23_pullboxapp-pullbox-direct-providers_target.tar.gz",
+          "normalized_name": "23_pullboxapp-pullbox-direct-providers_target.tar.gz",
+          "normalized_sha256": "77f925778f76b78ec8010700634646bdf53086052f01a648ee4e4d7c1dbb2e18",
+          "required_relative_members": [
+            ".github/scripts/filter-reviewed-container-sarif.py",
+            "tests/unit/test_vulnerability_baseline.py"
+          ],
+          "revision": "30427bb7aaa4e92909619111ce6d5c404ed9619a",
+          "sanitization_name": "23_pullboxapp-pullbox-direct-providers_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/23_pullboxapp-pullbox-direct-providers_target.json",
+          "sanitization_report_sha256": "9481704714487fc6b39d16ab32e8c2a28607eb930ea9f07c48bc55743868091f",
+          "source_archive_root": "pullbox-direct-providers-30427bb7aaa4e92909619111ce6d5c404ed9619a",
+          "upstream_name": "23_pullboxapp-pullbox-direct-providers_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "4490c23324d108c9c4a4a5939585741fde3666550db8530d139435a89610f3a2",
+          "url": "https://codeload.github.com/pullboxapp/pullbox-direct-providers/tar.gz/30427bb7aaa4e92909619111ce6d5c404ed9619a"
+        }
+      ],
+      "campaign_index": 23,
+      "repository": "pullboxapp/pullbox-direct-providers",
+      "selection_digest": "21d625a8d5bd3822c93d8164099d021a25425b71510cd26c7a54d547d25e66bc"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/24_openonion-connectonion_parent.tar.gz",
+          "normalized_name": "24_openonion-connectonion_parent.tar.gz",
+          "normalized_sha256": "01f23f0f358e8df1a1893697057883384b7bce7a26c6eee19d436c313068f642",
+          "required_relative_members": [
+            "connectonion/network/trust/tools.py"
+          ],
+          "revision": "7c9bc8a7cd44c33f09182173ffcb8783391ed3e5",
+          "sanitization_name": "24_openonion-connectonion_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/24_openonion-connectonion_parent.json",
+          "sanitization_report_sha256": "19a4b8e9690d40d859326547179dbfe74d70998259738836ce3e789e72585bf8",
+          "source_archive_root": "connectonion-7c9bc8a7cd44c33f09182173ffcb8783391ed3e5",
+          "upstream_name": "24_openonion-connectonion_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "5482de09e895cde90c6f5d297f4b8a1ddcdc0d4ef026450f3ae3521742c35121",
+          "url": "https://codeload.github.com/openonion/connectonion/tar.gz/7c9bc8a7cd44c33f09182173ffcb8783391ed3e5"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/24_openonion-connectonion_target.tar.gz",
+          "normalized_name": "24_openonion-connectonion_target.tar.gz",
+          "normalized_sha256": "fa6d729a366385b6a24f5203d168336edf35c17266379ea6e39b9b6016625069",
+          "required_relative_members": [
+            "connectonion/network/trust/tools.py",
+            "tests/unit/test_an_unreadable_list_is_not_empty.py"
+          ],
+          "revision": "bfc23e86d0667d37c71159132a78d8584cb53cfb",
+          "sanitization_name": "24_openonion-connectonion_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/24_openonion-connectonion_target.json",
+          "sanitization_report_sha256": "7b8da9e1d090d5816204cead1b08931c4f81495fb4691b00fbf9cb8933833151",
+          "source_archive_root": "connectonion-bfc23e86d0667d37c71159132a78d8584cb53cfb",
+          "upstream_name": "24_openonion-connectonion_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "e8a7c980944e0707e541a1ee288f78947a79435666e3b6dadfc036d999e290db",
+          "url": "https://codeload.github.com/openonion/connectonion/tar.gz/bfc23e86d0667d37c71159132a78d8584cb53cfb"
+        }
+      ],
+      "campaign_index": 24,
+      "repository": "openonion/connectonion",
+      "selection_digest": "392c5f93b5c95c2e3327facd5e8f6c070cdcf4d26f20d9fb2993404803784bcc"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_parent.tar.gz",
+          "normalized_name": "25_fibsem-os-fibsem-os_parent.tar.gz",
+          "normalized_sha256": "6181909b18c8ac3062c1611bbe4d3cc273478ebbda8b9070f1d65bc77211ac7e",
+          "required_relative_members": [
+            "fibsem/applications/autolamella/ui/AutoLamellaMainUI.py",
+            "fibsem/applications/autolamella/workflows/tasks/manager.py",
+            "fibsem/ui/widgets/workflow_timeline_widget.py"
+          ],
+          "revision": "d7211ba810a3f3db75017ed34da85cb60cc5076a",
+          "sanitization_name": "25_fibsem-os-fibsem-os_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/25_fibsem-os-fibsem-os_parent.json",
+          "sanitization_report_sha256": "f7234cf20e92cc0d575fbc1f82a4e2dd0ad69a1cb1d94ea6b203009498c23ec5",
+          "source_archive_root": "fibsem-os-d7211ba810a3f3db75017ed34da85cb60cc5076a",
+          "upstream_name": "25_fibsem-os-fibsem-os_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "d0df618514c918eb8758be86313517429cc0c10ca164a401ea1a19a84b4e771d",
+          "url": "https://codeload.github.com/fibsem-os/fibsem-os/tar.gz/d7211ba810a3f3db75017ed34da85cb60cc5076a"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/25_fibsem-os-fibsem-os_target.tar.gz",
+          "normalized_name": "25_fibsem-os-fibsem-os_target.tar.gz",
+          "normalized_sha256": "2f584468f375eb28c080c897473cf3bceb70511dc6b99a21e26a55fbedbe6d7a",
+          "required_relative_members": [
+            "fibsem/applications/autolamella/ui/AutoLamellaMainUI.py",
+            "fibsem/applications/autolamella/workflows/tasks/manager.py",
+            "fibsem/ui/widgets/workflow_timeline_widget.py",
+            "tests/autolamella/test_status_dict_vocabulary.py"
+          ],
+          "revision": "149525cd5466baaf6243a33e7a026ea883cc407c",
+          "sanitization_name": "25_fibsem-os-fibsem-os_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/25_fibsem-os-fibsem-os_target.json",
+          "sanitization_report_sha256": "398475cdbc430f4632e5c6c9f4113177b1f4052ade20d0cffb1939339a8e2f56",
+          "source_archive_root": "fibsem-os-149525cd5466baaf6243a33e7a026ea883cc407c",
+          "upstream_name": "25_fibsem-os-fibsem-os_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "336421fdb481e7bdab99ad1f4d8e682f52400d251388bf4ee8536626e18f543b",
+          "url": "https://codeload.github.com/fibsem-os/fibsem-os/tar.gz/149525cd5466baaf6243a33e7a026ea883cc407c"
+        }
+      ],
+      "campaign_index": 25,
+      "repository": "fibsem-os/fibsem-os",
+      "selection_digest": "8ba0bf62d5233093641512be2ffd1451959cb82280d764651475b5445d51bb1c"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/26_quodeq-quodeq_parent.tar.gz",
+          "normalized_name": "26_quodeq-quodeq_parent.tar.gz",
+          "normalized_sha256": "4cd26e0f01847ee30fa6d32bbf0f0f933caad182c92387bcb63cf8c6566b4e7f",
+          "required_relative_members": [
+            "src/quodeq/api/routes_findings.py",
+            "src/quodeq/api/routes_rescore.py",
+            "src/quodeq/api/routes_shared.py",
+            "src/quodeq/core/utils/io.py",
+            "src/quodeq/shared/validation.py",
+            "tests/api/test_findings_rate_limit_exempt.py",
+            "tests/api/test_routes_rescore.py",
+            "tests/core/test_contained_path.py"
+          ],
+          "revision": "7c9140ea202ec51c733a33826395e994c7cf4fc7",
+          "sanitization_name": "26_quodeq-quodeq_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/26_quodeq-quodeq_parent.json",
+          "sanitization_report_sha256": "7980ff5bceb84a9d49a45871a18db4527b652a91c1a418ead2094fac74efd399",
+          "source_archive_root": "quodeq-7c9140ea202ec51c733a33826395e994c7cf4fc7",
+          "upstream_name": "26_quodeq-quodeq_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "8030fcce8e79dabfa91a4a47967c0cd539b291643b94f43435a9cb38d2aef2e1",
+          "url": "https://codeload.github.com/quodeq/quodeq/tar.gz/7c9140ea202ec51c733a33826395e994c7cf4fc7"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/26_quodeq-quodeq_target.tar.gz",
+          "normalized_name": "26_quodeq-quodeq_target.tar.gz",
+          "normalized_sha256": "f6381957cc1f6ef9bbb204f3de73056ce2d42eebafa6b522dcddf65f13e6f703",
+          "required_relative_members": [
+            "src/quodeq/api/routes_findings.py",
+            "src/quodeq/api/routes_rescore.py",
+            "src/quodeq/api/routes_shared.py",
+            "src/quodeq/core/utils/io.py",
+            "src/quodeq/shared/validation.py",
+            "tests/api/test_findings_rate_limit_exempt.py",
+            "tests/api/test_routes_rescore.py",
+            "tests/core/test_contained_path.py"
+          ],
+          "revision": "141079e4a5bc7027fc8c25706a4f2222de4a547a",
+          "sanitization_name": "26_quodeq-quodeq_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/26_quodeq-quodeq_target.json",
+          "sanitization_report_sha256": "4d278ad8f5c9a369e5d91dba8a768095dc70102fc132c707c27de6555861d575",
+          "source_archive_root": "quodeq-141079e4a5bc7027fc8c25706a4f2222de4a547a",
+          "upstream_name": "26_quodeq-quodeq_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "99ded00885314d376689105a4ae5e7bc33ccbcbb4fd58d45f80ee7f6f5085961",
+          "url": "https://codeload.github.com/quodeq/quodeq/tar.gz/141079e4a5bc7027fc8c25706a4f2222de4a547a"
+        }
+      ],
+      "campaign_index": 26,
+      "repository": "quodeq/quodeq",
+      "selection_digest": "a58e16313b99505b4196b46d441093656ed1ae6246f91b12b3e7f862cedb23fc"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/27_malkreide-mcp-audit-skill_parent.tar.gz",
+          "normalized_name": "27_malkreide-mcp-audit-skill_parent.tar.gz",
+          "normalized_sha256": "067c7f90a9c762f338f6184426eb61e27f0b8744254e66b418719dc8d81f2819",
+          "required_relative_members": [],
+          "revision": "a268814e921b653222bdc6d578714b36b789341c",
+          "sanitization_name": "27_malkreide-mcp-audit-skill_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/27_malkreide-mcp-audit-skill_parent.json",
+          "sanitization_report_sha256": "260e3a07cd3e6a273266570ea25907e5cc87dc49c2f9f482e6c51022ee4d2208",
+          "source_archive_root": "mcp-audit-skill-a268814e921b653222bdc6d578714b36b789341c",
+          "upstream_name": "27_malkreide-mcp-audit-skill_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "cc50f152f754f5232999fc29a84d1fcc4e1ef54cc58d4453d951ab7d865db8c9",
+          "url": "https://codeload.github.com/malkreide/mcp-audit-skill/tar.gz/a268814e921b653222bdc6d578714b36b789341c"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/27_malkreide-mcp-audit-skill_target.tar.gz",
+          "normalized_name": "27_malkreide-mcp-audit-skill_target.tar.gz",
+          "normalized_sha256": "161a1392356f9fd3437600f2b4c670da0f9543cb9b1b1a30d62b8d42ab52f7b2",
+          "required_relative_members": [
+            "tests/test_carry_forward.py",
+            "tools/carry_forward.py"
+          ],
+          "revision": "1d8a06c0210d59dfe4daa4ca2fafbec29f65f8f5",
+          "sanitization_name": "27_malkreide-mcp-audit-skill_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/27_malkreide-mcp-audit-skill_target.json",
+          "sanitization_report_sha256": "ec0c206e9a5600da396ea975a5f878d59152ec0be2a94458acbe252b1f6f1e29",
+          "source_archive_root": "mcp-audit-skill-1d8a06c0210d59dfe4daa4ca2fafbec29f65f8f5",
+          "upstream_name": "27_malkreide-mcp-audit-skill_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7babffc20531b51a43351639736499c081d8b55c301c2f904e5f1547602234cc",
+          "url": "https://codeload.github.com/malkreide/mcp-audit-skill/tar.gz/1d8a06c0210d59dfe4daa4ca2fafbec29f65f8f5"
+        }
+      ],
+      "campaign_index": 27,
+      "repository": "malkreide/mcp-audit-skill",
+      "selection_digest": "07e1180759de59b8e633826de7e047b4729a70f74b2f8c88f96c7d2f1480521d"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/28_microsoft-winml-cli_parent.tar.gz",
+          "normalized_name": "28_microsoft-winml-cli_parent.tar.gz",
+          "normalized_sha256": "9353f268af2b624ce57953dedac4f4c813e5b31a447f156b9c8a3ee7e975bbcb",
+          "required_relative_members": [
+            "src/winml/modelkit/telemetry/utils.py",
+            "tests/unit/telemetry/test_click_group.py"
+          ],
+          "revision": "b538ce3878534b38e6269d98800ec9e1c862ed7f",
+          "sanitization_name": "28_microsoft-winml-cli_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/28_microsoft-winml-cli_parent.json",
+          "sanitization_report_sha256": "35a91eb9d95c3aa8856cf93397bfc8271594b06e7c355fdbcbcdfd7d50853cdf",
+          "source_archive_root": "winml-cli-b538ce3878534b38e6269d98800ec9e1c862ed7f",
+          "upstream_name": "28_microsoft-winml-cli_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "063907ffa0d90645488a289f662856d5cc83b807cc70f22775c4bb13673f4ba1",
+          "url": "https://codeload.github.com/microsoft/winml-cli/tar.gz/b538ce3878534b38e6269d98800ec9e1c862ed7f"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/28_microsoft-winml-cli_target.tar.gz",
+          "normalized_name": "28_microsoft-winml-cli_target.tar.gz",
+          "normalized_sha256": "ea9b11416af3796f1f706aa401824d41a3d8c1824bc90934da7c070959900ed9",
+          "required_relative_members": [
+            "src/winml/modelkit/telemetry/utils.py",
+            "tests/unit/telemetry/test_click_group.py"
+          ],
+          "revision": "de4331d92e5369eaabc9233a22a9d061770c6938",
+          "sanitization_name": "28_microsoft-winml-cli_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/28_microsoft-winml-cli_target.json",
+          "sanitization_report_sha256": "7910ea5fd978ace0a28ed2557ddac5ba0bae3ccea1f78df3d81f5110651c232e",
+          "source_archive_root": "winml-cli-de4331d92e5369eaabc9233a22a9d061770c6938",
+          "upstream_name": "28_microsoft-winml-cli_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "0ea0975277f9bc89b7ee4d14f7fe3ebf7814f0eaa5f91cab81dc30c1e25e0529",
+          "url": "https://codeload.github.com/microsoft/winml-cli/tar.gz/de4331d92e5369eaabc9233a22a9d061770c6938"
+        }
+      ],
+      "campaign_index": 28,
+      "repository": "microsoft/winml-cli",
+      "selection_digest": "9193fb1f9295258920da7fff3bd25c723f30e79eccdd61d874cd669e6057a315"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/29_tajd-cofferdam_parent.tar.gz",
+          "normalized_name": "29_tajd-cofferdam_parent.tar.gz",
+          "normalized_sha256": "efe7aa0bf32e54ce0b9ff9f2f6e6036a810c41dcbe09df504c0834c4867ac0a3",
+          "required_relative_members": [
+            "crates/cofferdam-cli/src/context_cmd.rs",
+            "crates/cofferdam-cli/tests/context_smoke.rs",
+            "crates/cofferdam-engine/src/config/loader.rs"
+          ],
+          "revision": "c44c8c3e1eb413d30bb74bb551de35dd8702fa12",
+          "sanitization_name": "29_tajd-cofferdam_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/29_tajd-cofferdam_parent.json",
+          "sanitization_report_sha256": "c0cd7123bcf63121485363c97feec3e3d854ceb7f550c9c12aebed75b5b4ca0c",
+          "source_archive_root": "cofferdam-c44c8c3e1eb413d30bb74bb551de35dd8702fa12",
+          "upstream_name": "29_tajd-cofferdam_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ebbe9804eeefedb807e2445bf0046751354b53fddec87a95fe4de8d88139b848",
+          "url": "https://codeload.github.com/TAJD/cofferdam/tar.gz/c44c8c3e1eb413d30bb74bb551de35dd8702fa12"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/29_tajd-cofferdam_target.tar.gz",
+          "normalized_name": "29_tajd-cofferdam_target.tar.gz",
+          "normalized_sha256": "aaf8821b060e0dedf9ca65632f5fdaa0d39fa24191620b7b3d95a3dd5cc870be",
+          "required_relative_members": [
+            "crates/cofferdam-cli/src/context_cmd.rs",
+            "crates/cofferdam-cli/tests/context_smoke.rs",
+            "crates/cofferdam-engine/src/config/loader.rs"
+          ],
+          "revision": "6f23b94fd21b331a1bf1e62589e55c4f55d3dbf9",
+          "sanitization_name": "29_tajd-cofferdam_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/29_tajd-cofferdam_target.json",
+          "sanitization_report_sha256": "2f2bbe8ea5be46faa9edbb902a83ac1d52b4a27c3185f3e22e4d37f9be251686",
+          "source_archive_root": "cofferdam-6f23b94fd21b331a1bf1e62589e55c4f55d3dbf9",
+          "upstream_name": "29_tajd-cofferdam_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "a0e5f01756d5f8c8c2bafe0c8444cfcbd2d973c048f7e47efb27d2856c17412c",
+          "url": "https://codeload.github.com/TAJD/cofferdam/tar.gz/6f23b94fd21b331a1bf1e62589e55c4f55d3dbf9"
+        }
+      ],
+      "campaign_index": 29,
+      "repository": "TAJD/cofferdam",
+      "selection_digest": "fd25f5de0cb65a30b371ec2e365d038af383f5c79664bb5c4a60b7d0d21bb5b9"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/30_kanso-lang-kanso_parent.tar.gz",
+          "normalized_name": "30_kanso-lang-kanso_parent.tar.gz",
+          "normalized_sha256": "801990a64c8af1f12000ca616e2cc5b8723cbc535d48b09f419f1811670ea193",
+          "required_relative_members": [
+            "src/beat.rs",
+            "tests/golden/mem/an_accumulator_loop_keeps_its_garbage.kso"
+          ],
+          "revision": "34a7496dc2b5f16032af25075f126255195d4d93",
+          "sanitization_name": "30_kanso-lang-kanso_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/30_kanso-lang-kanso_parent.json",
+          "sanitization_report_sha256": "0ada714ae2a131b19d16a84aa70b5596d6cb8976222bf113e609d9388809b5f5",
+          "source_archive_root": "kanso-34a7496dc2b5f16032af25075f126255195d4d93",
+          "upstream_name": "30_kanso-lang-kanso_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ba6c0926ddc7dab972777ab7a8dfb9e2e5cca0055927ac90e1e46dd8dd22a9c6",
+          "url": "https://codeload.github.com/kanso-lang/kanso/tar.gz/34a7496dc2b5f16032af25075f126255195d4d93"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/30_kanso-lang-kanso_target.tar.gz",
+          "normalized_name": "30_kanso-lang-kanso_target.tar.gz",
+          "normalized_sha256": "1296a0f1d18b9ff5b2b81fece4ad54749e3219dad1225d580d1a5ef3b8d1afe9",
+          "required_relative_members": [
+            "src/beat.rs",
+            "tests/golden/mem/an_accumulator_loop_reclaims_its_garbage.kso",
+            "tests/golden/mem/an_accumulator_loop_reclaims_its_garbage.mem",
+            "tests/golden/mem/an_accumulator_loop_reclaims_its_garbage.stdout",
+            "tests/map_accumulator_peak.rs"
+          ],
+          "revision": "97687a87c332a2549d17f653d5455ad5d48cc4c2",
+          "sanitization_name": "30_kanso-lang-kanso_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/30_kanso-lang-kanso_target.json",
+          "sanitization_report_sha256": "45079fa9de95deab18492a7cb26d437d0668f793530ff90ef81ebd1b7128b58e",
+          "source_archive_root": "kanso-97687a87c332a2549d17f653d5455ad5d48cc4c2",
+          "upstream_name": "30_kanso-lang-kanso_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "4d3732552c212604f2d2e6d731007beaca5be349d0cd14f37853859461cfd3ed",
+          "url": "https://codeload.github.com/kanso-lang/kanso/tar.gz/97687a87c332a2549d17f653d5455ad5d48cc4c2"
+        }
+      ],
+      "campaign_index": 30,
+      "repository": "kanso-lang/kanso",
+      "selection_digest": "db694b8dd24fee2cda205818d016e18a56b23fd8c51d89a5dc7f7cdff6e1c093"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/31_matssun-mcp-re_parent.tar.gz",
+          "normalized_name": "31_matssun-mcp-re_parent.tar.gz",
+          "normalized_sha256": "f8a430324e3ad1e22bd97565d00db6c817ae806856e975af74df5c206d4b46f9",
+          "required_relative_members": [
+            "mcp-re-proxy/src/app.rs",
+            "mcp-re-proxy/src/transparency.rs",
+            "mcp-re-proxy/tests/redis_replay_e2e_test.rs",
+            "mcp-re-proxy/tests/replay_race_harness_test.rs"
+          ],
+          "revision": "6a6f9284e4764f17a2265b9b2b349ed95f0f663a",
+          "sanitization_name": "31_matssun-mcp-re_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/31_matssun-mcp-re_parent.json",
+          "sanitization_report_sha256": "86731005d7ded15d5efa2cac8626daa2184913d02668e658206afb95b2400cd7",
+          "source_archive_root": "mcp-re-6a6f9284e4764f17a2265b9b2b349ed95f0f663a",
+          "upstream_name": "31_matssun-mcp-re_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "313fe5630b29b54175c967575063c7d26ae53a33d6777cb39a0a858a98680d59",
+          "url": "https://codeload.github.com/matssun/mcp-re/tar.gz/6a6f9284e4764f17a2265b9b2b349ed95f0f663a"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/31_matssun-mcp-re_target.tar.gz",
+          "normalized_name": "31_matssun-mcp-re_target.tar.gz",
+          "normalized_sha256": "7046bcc01ee5a96c9b4d7f3340bf4512f1b7086fd18e3e1aa1ee0433eee85f5f",
+          "required_relative_members": [
+            "mcp-re-proxy/src/app.rs",
+            "mcp-re-proxy/src/transparency.rs",
+            "mcp-re-proxy/tests/redis_replay_e2e_test.rs",
+            "mcp-re-proxy/tests/replay_race_harness_test.rs"
+          ],
+          "revision": "3623a528603c86213b114b1db3e3aafd50c97240",
+          "sanitization_name": "31_matssun-mcp-re_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/31_matssun-mcp-re_target.json",
+          "sanitization_report_sha256": "e4df4ab97d3bf004524d7fe110ca298767e4a4fa1303299179c7ea6e294b776b",
+          "source_archive_root": "mcp-re-3623a528603c86213b114b1db3e3aafd50c97240",
+          "upstream_name": "31_matssun-mcp-re_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "97b8211018e0cefdd7b230ac9718f02f4ddd8f386d8901bd93c60104f6640a76",
+          "url": "https://codeload.github.com/matssun/mcp-re/tar.gz/3623a528603c86213b114b1db3e3aafd50c97240"
+        }
+      ],
+      "campaign_index": 31,
+      "repository": "matssun/mcp-re",
+      "selection_digest": "31d8eec6c5efa4d493aa2ef6669cd89109d15d8dd15af927a8223a5009e34c4f"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/32_rul1an-assay_parent.tar.gz",
+          "normalized_name": "32_rul1an-assay_parent.tar.gz",
+          "normalized_sha256": "50d0435d60ed9132efcf7b9e8948e81415639a6943decaf37ddc913d06617fec",
+          "required_relative_members": [
+            "crates/assay-cli/src/cli/commands/evidence/mcp_tunnel_observed.rs",
+            "crates/assay-cli/tests/evidence_test/mcp_tunnel_observed.rs"
+          ],
+          "revision": "688641ba193c081ad85a068b476010ca52727d7d",
+          "sanitization_name": "32_rul1an-assay_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/32_rul1an-assay_parent.json",
+          "sanitization_report_sha256": "c0db215611e4691ac15c44cfec65d202d0821036c69f0f13b93f374e89484686",
+          "source_archive_root": "assay-688641ba193c081ad85a068b476010ca52727d7d",
+          "upstream_name": "32_rul1an-assay_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ceaf07cd7033e043e1efff1df0bd38f306dc4e6852f83a027e0411a0a6c43450",
+          "url": "https://codeload.github.com/Rul1an/assay/tar.gz/688641ba193c081ad85a068b476010ca52727d7d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/32_rul1an-assay_target.tar.gz",
+          "normalized_name": "32_rul1an-assay_target.tar.gz",
+          "normalized_sha256": "27c86478f647b42144dc68ffb208fff9c5baad1db3a0d893b390d0fd82ea60bb",
+          "required_relative_members": [
+            "crates/assay-cli/src/cli/commands/evidence/mcp_tunnel_observed.rs",
+            "crates/assay-cli/tests/evidence_test/mcp_tunnel_observed.rs"
+          ],
+          "revision": "1b256c9145c5e531f01889e8ec1c965269b36886",
+          "sanitization_name": "32_rul1an-assay_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/32_rul1an-assay_target.json",
+          "sanitization_report_sha256": "a435d9f5ab38db3a814e9c753a467d99c390080fb36f2a84000fea437a4a0b90",
+          "source_archive_root": "assay-1b256c9145c5e531f01889e8ec1c965269b36886",
+          "upstream_name": "32_rul1an-assay_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "680254ebff02e4a51157779186f975b3cf01528c88932c58690beb701364b5b9",
+          "url": "https://codeload.github.com/Rul1an/assay/tar.gz/1b256c9145c5e531f01889e8ec1c965269b36886"
+        }
+      ],
+      "campaign_index": 32,
+      "repository": "Rul1an/assay",
+      "selection_digest": "02ea5702d9a3fd598b36d5c632ef148c0f58a1b25b154a7382e279e9d7bc4596"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/33_elan8-sysml-v2-parser_parent.tar.gz",
+          "normalized_name": "33_elan8-sysml-v2-parser_parent.tar.gz",
+          "normalized_sha256": "dfe2d78abb0d4c89da78ffb51ed222ad2be196ffd9c1fc4d20b132acf665423c",
+          "required_relative_members": [
+            "src/ast/behavior.rs",
+            "src/ast/mod.rs",
+            "src/ast/structure.rs",
+            "src/lib.rs",
+            "src/parser/part/body.rs",
+            "src/parser/part/usage.rs",
+            "src/parser/state.rs",
+            "tests/apollo_regressions.rs"
+          ],
+          "revision": "5e3d7cf5909888a42c8332fe92d6baa423538462",
+          "sanitization_name": "33_elan8-sysml-v2-parser_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/33_elan8-sysml-v2-parser_parent.json",
+          "sanitization_report_sha256": "0dbffb228c3321238faebb3107f190f37979e10cd7b2c402dafdff259a838284",
+          "source_archive_root": "sysml-v2-parser-5e3d7cf5909888a42c8332fe92d6baa423538462",
+          "upstream_name": "33_elan8-sysml-v2-parser_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "288b4e40c3096e65aea2f9ed80b234baf4d4ed878cab970ccf7776a7a567d011",
+          "url": "https://codeload.github.com/elan8/sysml-v2-parser/tar.gz/5e3d7cf5909888a42c8332fe92d6baa423538462"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/33_elan8-sysml-v2-parser_target.tar.gz",
+          "normalized_name": "33_elan8-sysml-v2-parser_target.tar.gz",
+          "normalized_sha256": "a9fd174734cab6cf30f1c0c55278c1a0f1fad903aedd20146d08bf65090c1f72",
+          "required_relative_members": [
+            "src/ast/behavior.rs",
+            "src/ast/mod.rs",
+            "src/ast/structure.rs",
+            "src/lib.rs",
+            "src/parser/part/body.rs",
+            "src/parser/part/usage.rs",
+            "src/parser/state.rs",
+            "tests/apollo_regressions.rs"
+          ],
+          "revision": "6477625da2be7d9fb7bffa4439eef506f2c87573",
+          "sanitization_name": "33_elan8-sysml-v2-parser_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/33_elan8-sysml-v2-parser_target.json",
+          "sanitization_report_sha256": "5545c7eb3dd61f67c4535c90f4664acab8acadfa5bab6994cad52b0058935842",
+          "source_archive_root": "sysml-v2-parser-6477625da2be7d9fb7bffa4439eef506f2c87573",
+          "upstream_name": "33_elan8-sysml-v2-parser_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "31cb89dca7e4a13956b889455c365fa629394a38ff1a5de5701850f6f30395cf",
+          "url": "https://codeload.github.com/elan8/sysml-v2-parser/tar.gz/6477625da2be7d9fb7bffa4439eef506f2c87573"
+        }
+      ],
+      "campaign_index": 33,
+      "repository": "elan8/sysml-v2-parser",
+      "selection_digest": "2a1fbfbb80ed137f96edb6d5eee4302dabc92551292740080e11b648d7176f78"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/34_elan8-spec42_parent.tar.gz",
+          "normalized_name": "34_elan8-spec42_parent.tar.gz",
+          "normalized_sha256": "b609b2ece50676c973df9cf18cc310af8e5c4b84e03cac408dcf69fdb3e31c5d",
+          "required_relative_members": [
+            "crates/lsp_server/tests/integration/interconnection_visualization.rs",
+            "crates/sysml_model/src/semantic/component_view.rs",
+            "crates/sysml_model/src/semantic/graph.rs",
+            "crates/sysml_model/src/semantic/library_loader.rs",
+            "crates/sysml_model/src/semantic/library_loader/package_scan.rs",
+            "crates/sysml_model/src/semantic/pipeline.rs",
+            "crates/sysml_model/src/semantic/source/providers/filesystem.rs",
+            "crates/workspace/src/library_graph_cache.rs"
+          ],
+          "revision": "78b51c24445179d092ffae39aca99cf1be8e41f9",
+          "sanitization_name": "34_elan8-spec42_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/34_elan8-spec42_parent.json",
+          "sanitization_report_sha256": "90349dcc1e23f487f50467cd22b2af5c4116ed7d075bf0e76bf7495d3e1c9cc0",
+          "source_archive_root": "spec42-78b51c24445179d092ffae39aca99cf1be8e41f9",
+          "upstream_name": "34_elan8-spec42_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "c6c7a7bcd519b3e49251521b788106d53d5b66fc6372e98abd005d90d2bae318",
+          "url": "https://codeload.github.com/elan8/spec42/tar.gz/78b51c24445179d092ffae39aca99cf1be8e41f9"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/34_elan8-spec42_target.tar.gz",
+          "normalized_name": "34_elan8-spec42_target.tar.gz",
+          "normalized_sha256": "f720052f1758c65d908f06cd206e791b65a5a78d687f80300c0db01edbf5b016",
+          "required_relative_members": [
+            "crates/lsp_server/tests/integration/interconnection_visualization.rs",
+            "crates/sysml_model/src/semantic/component_view.rs",
+            "crates/sysml_model/src/semantic/graph.rs",
+            "crates/sysml_model/src/semantic/library_loader.rs",
+            "crates/sysml_model/src/semantic/library_loader/package_scan.rs",
+            "crates/sysml_model/src/semantic/pipeline.rs",
+            "crates/sysml_model/src/semantic/source/providers/filesystem.rs",
+            "crates/workspace/src/library_graph_cache.rs"
+          ],
+          "revision": "185ac8719c42dab82ead64f7afacc5106e8dd497",
+          "sanitization_name": "34_elan8-spec42_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/34_elan8-spec42_target.json",
+          "sanitization_report_sha256": "ea3df713ac542b7fe0f96acae0db624b657a676506609c45954dd548c4024b4d",
+          "source_archive_root": "spec42-185ac8719c42dab82ead64f7afacc5106e8dd497",
+          "upstream_name": "34_elan8-spec42_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "85d5e15dc8e68b6d43cfa02fa305be7e6f889ec0ab6b564f8d0ce640319fe247",
+          "url": "https://codeload.github.com/elan8/spec42/tar.gz/185ac8719c42dab82ead64f7afacc5106e8dd497"
+        }
+      ],
+      "campaign_index": 34,
+      "repository": "elan8/spec42",
+      "selection_digest": "da241913c288f0859f29f76bb0d60a06db6a4121abb5678f12e5975003d14bf1"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_parent.tar.gz",
+          "normalized_name": "35_knoguchi-marsdb_parent.tar.gz",
+          "normalized_sha256": "fb9f478eccb18c7192419fb73cc5d4790b833e493968d4f0b703034642124481",
+          "required_relative_members": [
+            "marsdb-cli/src/main.rs",
+            "marsdb-query/src/lib.rs",
+            "marsdb-query/src/parser.rs",
+            "marsdb/src/lib.rs",
+            "marsdb/tests/embed.rs"
+          ],
+          "revision": "4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4",
+          "sanitization_name": "35_knoguchi-marsdb_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/35_knoguchi-marsdb_parent.json",
+          "sanitization_report_sha256": "4fe508c15186d54165ecd7f2ec13be222b3126d2d05a349b5144744d589aa885",
+          "source_archive_root": "marsdb-4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4",
+          "upstream_name": "35_knoguchi-marsdb_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "1cd30b368b07af8896752c00cbf15e6baf96a24345c0ec24884105bb6dc6a3e9",
+          "url": "https://codeload.github.com/knoguchi/marsdb/tar.gz/4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_target.tar.gz",
+          "normalized_name": "35_knoguchi-marsdb_target.tar.gz",
+          "normalized_sha256": "20f2427c60900e542ecde798adda0a569d56fb815a33e16020dcb9696acebf6c",
+          "required_relative_members": [
+            "marsdb-cli/src/main.rs",
+            "marsdb-query/src/lib.rs",
+            "marsdb-query/src/parser.rs",
+            "marsdb/src/lib.rs",
+            "marsdb/tests/embed.rs"
+          ],
+          "revision": "720b3e9a43c1680ad783d0a8884167aaefb0a54e",
+          "sanitization_name": "35_knoguchi-marsdb_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/35_knoguchi-marsdb_target.json",
+          "sanitization_report_sha256": "51ebfc10bbd3341410077ed98418f91e8a516cf04cdf3b9fc79ae16121ac5660",
+          "source_archive_root": "marsdb-720b3e9a43c1680ad783d0a8884167aaefb0a54e",
+          "upstream_name": "35_knoguchi-marsdb_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "59753de276c8238ced140a2588fd2221d3451d2542ef1b36a044976a30f3cac0",
+          "url": "https://codeload.github.com/knoguchi/marsdb/tar.gz/720b3e9a43c1680ad783d0a8884167aaefb0a54e"
+        }
+      ],
+      "campaign_index": 35,
+      "repository": "knoguchi/marsdb",
+      "selection_digest": "67b671e4eb384b2248999f26ad7a174a5456ce534732275399234fe5ccf9fdaf"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_parent.tar.gz",
+          "normalized_name": "36_tomerwave-godlint_parent.tar.gz",
+          "normalized_sha256": "7bfba9fcf161ebeb08cbaca77a8746d628675b728857d0fc345699a81a694b1d",
+          "required_relative_members": [
+            "crates/godlint-core/src/glob.rs",
+            "crates/godlint-core/tests/glob.rs"
+          ],
+          "revision": "2cce6eb6cd77bb18d74b1c22e75f0e85deeaf15b",
+          "sanitization_name": "36_tomerwave-godlint_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/36_tomerwave-godlint_parent.json",
+          "sanitization_report_sha256": "494f22f283da8b790771fa6a8501bb5a3922c93cff1c8f4ad1a60c70c7959c97",
+          "source_archive_root": "godlint-2cce6eb6cd77bb18d74b1c22e75f0e85deeaf15b",
+          "upstream_name": "36_tomerwave-godlint_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "18df6208a74bd44ba6ccc4341f788248b871a18f31160b71794ceeec11b8569f",
+          "url": "https://codeload.github.com/tomerwave/godlint/tar.gz/2cce6eb6cd77bb18d74b1c22e75f0e85deeaf15b"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/36_tomerwave-godlint_target.tar.gz",
+          "normalized_name": "36_tomerwave-godlint_target.tar.gz",
+          "normalized_sha256": "806712b8523ab101b3c6388591dc85d3ca084bf641fdb8b2fd9a19b83273f55e",
+          "required_relative_members": [
+            "crates/godlint-core/src/glob.rs",
+            "crates/godlint-core/tests/glob.rs"
+          ],
+          "revision": "4fcd19cfcee3010e5c0c922ac071f0712130e8f1",
+          "sanitization_name": "36_tomerwave-godlint_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/36_tomerwave-godlint_target.json",
+          "sanitization_report_sha256": "b3c3251cbe770b40004b41d17ebb70243837be6312c7b91965ce7214f0fe33ad",
+          "source_archive_root": "godlint-4fcd19cfcee3010e5c0c922ac071f0712130e8f1",
+          "upstream_name": "36_tomerwave-godlint_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "03af84ddc3ac843e40bb3b815fb7727efd44e28f4005bb254e9b515c0e307155",
+          "url": "https://codeload.github.com/tomerwave/godlint/tar.gz/4fcd19cfcee3010e5c0c922ac071f0712130e8f1"
+        }
+      ],
+      "campaign_index": 36,
+      "repository": "tomerwave/godlint",
+      "selection_digest": "ffe1e43b1e2e5882de1abe395b15746e03f29e1887afb31c8342fb2d6a87209f"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/37_brokkai-bifrost_parent.tar.gz",
+          "normalized_name": "37_brokkai-bifrost_parent.tar.gz",
+          "normalized_sha256": "1fadf1d054071d6b2a08a4ba63fac9db782b5168c5174a5dca6deae3e3c98a9b",
+          "required_relative_members": [
+            "crates/bifrost-analysis/src/analyzer/policy/taint_policy.rs",
+            "crates/bifrost-analysis/src/analyzer/structural/search/witness_projection.rs",
+            "tests/suite_bench_policy/taint_policy_adapter.rs"
+          ],
+          "revision": "5c479d140d8a1452167a88863e070735faa8d400",
+          "sanitization_name": "37_brokkai-bifrost_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/37_brokkai-bifrost_parent.json",
+          "sanitization_report_sha256": "28eba17ecb7011df39b0f7bd8106767eb71dad6eaab8e3d7fd3f59b5030f51df",
+          "source_archive_root": "bifrost-5c479d140d8a1452167a88863e070735faa8d400",
+          "upstream_name": "37_brokkai-bifrost_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "337d6b51b0e7ec639f80f2e61e674764eb512587f5258ccee0ff40a05a69f1bc",
+          "url": "https://codeload.github.com/BrokkAi/bifrost/tar.gz/5c479d140d8a1452167a88863e070735faa8d400"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/37_brokkai-bifrost_target.tar.gz",
+          "normalized_name": "37_brokkai-bifrost_target.tar.gz",
+          "normalized_sha256": "f7e9f514bb97a3f62fd16ff808a2b5b1d537e514667f0183cd2af98fba2c183a",
+          "required_relative_members": [
+            "crates/bifrost-analysis/src/analyzer/policy/taint_policy.rs",
+            "crates/bifrost-analysis/src/analyzer/structural/search/witness_projection.rs",
+            "tests/suite_bench_policy/taint_policy_adapter.rs"
+          ],
+          "revision": "88ad582a8bc8c95b13e32f3cd90d087bd9f21f3c",
+          "sanitization_name": "37_brokkai-bifrost_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/37_brokkai-bifrost_target.json",
+          "sanitization_report_sha256": "7e862df93b273aefc9e319bf7efefe7775697d98dcc9113edbb91da5bfd724a9",
+          "source_archive_root": "bifrost-88ad582a8bc8c95b13e32f3cd90d087bd9f21f3c",
+          "upstream_name": "37_brokkai-bifrost_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "309b808e9a1e67a3945ad9f88914a3640d1dc4deb40f820dc15a09531134430d",
+          "url": "https://codeload.github.com/BrokkAi/bifrost/tar.gz/88ad582a8bc8c95b13e32f3cd90d087bd9f21f3c"
+        }
+      ],
+      "campaign_index": 37,
+      "repository": "BrokkAi/bifrost",
+      "selection_digest": "00684b79bcf301b0308f8fb47ed69b57c24a214998cc1bbd395b68637ec6bf97"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/38_surrealdb-surrealkv_parent.tar.gz",
+          "normalized_name": "38_surrealdb-surrealkv_parent.tar.gz",
+          "normalized_sha256": "0a16b4918f95aa366eb19a9ae9c91f334067adf39caa104e2e1279e358ab71b7",
+          "required_relative_members": [
+            "src/compaction/compactor.rs",
+            "src/levels/mod.rs",
+            "src/lib.rs",
+            "src/memtable/mod.rs",
+            "src/test/mod.rs",
+            "src/vfs.rs"
+          ],
+          "revision": "490052928e4a12e3cf6650b70c2b2f448f63adf2",
+          "sanitization_name": "38_surrealdb-surrealkv_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/38_surrealdb-surrealkv_parent.json",
+          "sanitization_report_sha256": "80db9d514802601895ecec61ad69e844099a68d737830ae03e7889609bea30fc",
+          "source_archive_root": "surrealkv-490052928e4a12e3cf6650b70c2b2f448f63adf2",
+          "upstream_name": "38_surrealdb-surrealkv_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6cbc97fa2e65ee402fc42ef9c759a716208163514ec8ba92292756f239242e3f",
+          "url": "https://codeload.github.com/surrealdb/surrealkv/tar.gz/490052928e4a12e3cf6650b70c2b2f448f63adf2"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/38_surrealdb-surrealkv_target.tar.gz",
+          "normalized_name": "38_surrealdb-surrealkv_target.tar.gz",
+          "normalized_sha256": "bff6c8a9f90903cb5058ec96d73101c4a065b3d12bea42d4a0c3eaf1daf6d8b4",
+          "required_relative_members": [
+            "src/compaction/compactor.rs",
+            "src/levels/mod.rs",
+            "src/lib.rs",
+            "src/memtable/mod.rs",
+            "src/test/crash_consistency_tests.rs",
+            "src/test/mod.rs",
+            "src/vfs.rs"
+          ],
+          "revision": "c8c2f40dbd1a48363a29510021c6437694534514",
+          "sanitization_name": "38_surrealdb-surrealkv_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/38_surrealdb-surrealkv_target.json",
+          "sanitization_report_sha256": "8c70a8ed03693f67cec912e24dc3f04f87251d538a9344a391cb504cb244c19f",
+          "source_archive_root": "surrealkv-c8c2f40dbd1a48363a29510021c6437694534514",
+          "upstream_name": "38_surrealdb-surrealkv_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "a91990321572aab332e55a171a1d6cb304ad4038dc9fb3fa1b8b2eef2beac566",
+          "url": "https://codeload.github.com/surrealdb/surrealkv/tar.gz/c8c2f40dbd1a48363a29510021c6437694534514"
+        }
+      ],
+      "campaign_index": 38,
+      "repository": "surrealdb/surrealkv",
+      "selection_digest": "57bf8af9a72e2ccd1132d30edea034841011f2ccea3021afc31e0220ef59c949"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/39_syynth-brink_parent.tar.gz",
+          "normalized_name": "39_syynth-brink_parent.tar.gz",
+          "normalized_sha256": "6223ff1b66f8b204cd1276498116fa6cd93f4e192aeda6b545e104dff5c3d48e",
+          "required_relative_members": [
+            "crates/brink-compiler/tests/tm3_strict_policy.rs",
+            "crates/internal/brink-analyzer/src/infer/body.rs",
+            "crates/internal/brink-analyzer/src/infer/mod.rs",
+            "crates/internal/brink-analyzer/src/strict.rs",
+            "docs/t1e-spec.md"
+          ],
+          "revision": "1cb3298167b7fa71cf7389933d6be111767dd5b0",
+          "sanitization_name": "39_syynth-brink_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/39_syynth-brink_parent.json",
+          "sanitization_report_sha256": "baa6bf2e1725e56cf0686f5ff0fb1e67252bd56ac1955e68a55bf3e7f0231445",
+          "source_archive_root": "brink-1cb3298167b7fa71cf7389933d6be111767dd5b0",
+          "upstream_name": "39_syynth-brink_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "cb0ec03726f55f93ee37e7a6f59cc8ec3406db54760bb66b6b2348362fa9b00b",
+          "url": "https://codeload.github.com/Syynth/brink/tar.gz/1cb3298167b7fa71cf7389933d6be111767dd5b0"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/39_syynth-brink_target.tar.gz",
+          "normalized_name": "39_syynth-brink_target.tar.gz",
+          "normalized_sha256": "9d31f418f259c677f925a37359b6ccf8506f6acc5189044369e8c0da845168ae",
+          "required_relative_members": [
+            "crates/brink-compiler/tests/tm3_strict_policy.rs",
+            "crates/internal/brink-analyzer/src/infer/body.rs",
+            "crates/internal/brink-analyzer/src/infer/mod.rs",
+            "crates/internal/brink-analyzer/src/strict.rs",
+            "docs/t1e-spec.md"
+          ],
+          "revision": "ec2632fe0041ce7d8f3abc070f7d662409302ff6",
+          "sanitization_name": "39_syynth-brink_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/39_syynth-brink_target.json",
+          "sanitization_report_sha256": "2202f18363794d0989ae321c15ffc370c1bc2ab401496fcc48c62d5befae80d6",
+          "source_archive_root": "brink-ec2632fe0041ce7d8f3abc070f7d662409302ff6",
+          "upstream_name": "39_syynth-brink_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6447a714592484cda62b684f576242acfb8eaf6b0d87d78e24428baa65db3837",
+          "url": "https://codeload.github.com/Syynth/brink/tar.gz/ec2632fe0041ce7d8f3abc070f7d662409302ff6"
+        }
+      ],
+      "campaign_index": 39,
+      "repository": "Syynth/brink",
+      "selection_digest": "427ba13b24bf76bd84daed4551f0ecab63f505b4066f90ef5befbb514f2adb95"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/40_ainetus-co-study4grid_parent.tar.gz",
+          "normalized_name": "40_ainetus-co-study4grid_parent.tar.gz",
+          "normalized_sha256": "5b7bd0cecba86d5d5bccfb48c4d3a9045c1963d23aacb78f6aac44cfbf12b689",
+          "required_relative_members": [
+            "frontend/src/App.tsx",
+            "frontend/src/game/solutionLog.test.ts",
+            "frontend/src/game/solutionLog.ts",
+            "frontend/src/hooks/useAnalysis.test.ts",
+            "frontend/src/hooks/useAnalysis.ts"
+          ],
+          "revision": "d568a7bb5b9ca536317d453d55e5da890c14798c",
+          "sanitization_name": "40_ainetus-co-study4grid_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/40_ainetus-co-study4grid_parent.json",
+          "sanitization_report_sha256": "824d412e873577d2afd79d0340638943fbdf3ba5b5a32145c1913db93f7ad4c7",
+          "source_archive_root": "Co-Study4Grid-d568a7bb5b9ca536317d453d55e5da890c14798c",
+          "upstream_name": "40_ainetus-co-study4grid_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "59767891e716c88ff792ef4ebec2f1a22197ae5b8ce2dac0b13974edd06ea395",
+          "url": "https://codeload.github.com/ainetus/Co-Study4Grid/tar.gz/d568a7bb5b9ca536317d453d55e5da890c14798c"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/40_ainetus-co-study4grid_target.tar.gz",
+          "normalized_name": "40_ainetus-co-study4grid_target.tar.gz",
+          "normalized_sha256": "86a286eb61ee9817d4d984159ddc761913ae595e1a784ce5ef2f4c883d7a5912",
+          "required_relative_members": [
+            "frontend/src/App.tsx",
+            "frontend/src/game/solutionLog.test.ts",
+            "frontend/src/game/solutionLog.ts",
+            "frontend/src/hooks/useAnalysis.test.ts",
+            "frontend/src/hooks/useAnalysis.ts"
+          ],
+          "revision": "73a82fb767101682c1c44cbf47ec67231c982e88",
+          "sanitization_name": "40_ainetus-co-study4grid_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/40_ainetus-co-study4grid_target.json",
+          "sanitization_report_sha256": "9ba53ae85b369eb58ff1748d51c1d735d94bb8644cae66f55d94b0348cdcfd69",
+          "source_archive_root": "Co-Study4Grid-73a82fb767101682c1c44cbf47ec67231c982e88",
+          "upstream_name": "40_ainetus-co-study4grid_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ce51a2a7a5081463cbfe9b4fa471a3615446b392493691dd8cfefdaef668fbb0",
+          "url": "https://codeload.github.com/ainetus/Co-Study4Grid/tar.gz/73a82fb767101682c1c44cbf47ec67231c982e88"
+        }
+      ],
+      "campaign_index": 40,
+      "repository": "ainetus/Co-Study4Grid",
+      "selection_digest": "5ee60d2ed0c3256a029e33198a5f73d60c8306ec665ebcd4d495660f74e093f1"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/41_positonic-exponential_parent.tar.gz",
+          "normalized_name": "41_positonic-exponential_parent.tar.gz",
+          "normalized_sha256": "2d473d5402167f3e68ab0fc11b2441c5241bbe7be8aa2a7ee3c7408a444fcd94",
+          "required_relative_members": [
+            "src/server/services/ticketSync/__tests__/roundTripProperty.test.ts",
+            "src/server/services/ticketSync/engine.ts",
+            "src/server/services/ticketSync/merge.ts"
+          ],
+          "revision": "aa1d0660ad605babf147c0a37b1e818579a76ab7",
+          "sanitization_name": "41_positonic-exponential_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/41_positonic-exponential_parent.json",
+          "sanitization_report_sha256": "0f7f96b9ff850fbfe6fe56d06c67186ed57757684f05897db306096e19ed09de",
+          "source_archive_root": "exponential-aa1d0660ad605babf147c0a37b1e818579a76ab7",
+          "upstream_name": "41_positonic-exponential_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7b726f096d71d4eb7741b50484ce0f166e0b6ace5ae74b3de1049ad9922bfd76",
+          "url": "https://codeload.github.com/positonic/exponential/tar.gz/aa1d0660ad605babf147c0a37b1e818579a76ab7"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/41_positonic-exponential_target.tar.gz",
+          "normalized_name": "41_positonic-exponential_target.tar.gz",
+          "normalized_sha256": "fa28a992741750fffe58b5bbc5c42bd515c9f0c7db4b5bab49a52d5ae62d1e27",
+          "required_relative_members": [
+            "src/server/services/ticketSync/__tests__/roundTripProperty.test.ts",
+            "src/server/services/ticketSync/engine.ts",
+            "src/server/services/ticketSync/merge.ts"
+          ],
+          "revision": "35fda0b18bf7ba1a5bdec3fe8584fb53d9915faf",
+          "sanitization_name": "41_positonic-exponential_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/41_positonic-exponential_target.json",
+          "sanitization_report_sha256": "cb957e9c89434a79e6026599127b2da04c7dead53a11807442a28caeca267ad1",
+          "source_archive_root": "exponential-35fda0b18bf7ba1a5bdec3fe8584fb53d9915faf",
+          "upstream_name": "41_positonic-exponential_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "0895294d3e8f4b3e9a4a8c2a791301519f6c305ba2c409f277a412e89f9399c8",
+          "url": "https://codeload.github.com/positonic/exponential/tar.gz/35fda0b18bf7ba1a5bdec3fe8584fb53d9915faf"
+        }
+      ],
+      "campaign_index": 41,
+      "repository": "positonic/exponential",
+      "selection_digest": "76277fd0a8b421632e52d51c87de9ab40e552e8495ae0078140570918359a115"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/42_constructive-io-constructive_parent.tar.gz",
+          "normalized_name": "42_constructive-io-constructive_parent.tar.gz",
+          "normalized_sha256": "f86b5bafe63772cdc108a2305c6ef134654585984e2de183c7538cf5932b5742",
+          "required_relative_members": [
+            "pgpm/transform/__tests__/program.test.ts",
+            "pgpm/transform/src/granularity-driver.ts",
+            "pgpm/transform/src/partition-driver.ts",
+            "pgpm/transform/src/program.ts",
+            "pgpm/transform/src/semantic-diff-driver.ts",
+            "pgpm/transform/src/sub-object.ts"
+          ],
+          "revision": "501fe4171adc6068a201dc10a932d0d4705f6b7b",
+          "sanitization_name": "42_constructive-io-constructive_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/42_constructive-io-constructive_parent.json",
+          "sanitization_report_sha256": "568c392e6790a0176d3cdf4baab4b7ea3e15261fabadaba4d0a2303873f86573",
+          "source_archive_root": "constructive-501fe4171adc6068a201dc10a932d0d4705f6b7b",
+          "upstream_name": "42_constructive-io-constructive_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "1434419f2ad7269f8db0e9f81ce56e29083795ac23121bda99b1821d87332085",
+          "url": "https://codeload.github.com/constructive-io/constructive/tar.gz/501fe4171adc6068a201dc10a932d0d4705f6b7b"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/42_constructive-io-constructive_target.tar.gz",
+          "normalized_name": "42_constructive-io-constructive_target.tar.gz",
+          "normalized_sha256": "eab8287baa6b484e6910c9d7b059e17021f415ce8858feca1b5d360f53bbcd26",
+          "required_relative_members": [
+            "pgpm/transform/__tests__/byte-slice.test.ts",
+            "pgpm/transform/__tests__/program.test.ts",
+            "pgpm/transform/src/byte-slice.ts",
+            "pgpm/transform/src/granularity-driver.ts",
+            "pgpm/transform/src/partition-driver.ts",
+            "pgpm/transform/src/program.ts",
+            "pgpm/transform/src/semantic-diff-driver.ts",
+            "pgpm/transform/src/sub-object.ts"
+          ],
+          "revision": "e6aafe336ce5108a7ae719b3a45362027f6a2f13",
+          "sanitization_name": "42_constructive-io-constructive_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/42_constructive-io-constructive_target.json",
+          "sanitization_report_sha256": "6072b38df003154fa2e119e84cbade1974a345e0c436cb91edca82593b9c5b27",
+          "source_archive_root": "constructive-e6aafe336ce5108a7ae719b3a45362027f6a2f13",
+          "upstream_name": "42_constructive-io-constructive_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "78860891e299e47611d3cbb49366624f98dbbfbbc9e9ee9930e56952f50edbb2",
+          "url": "https://codeload.github.com/constructive-io/constructive/tar.gz/e6aafe336ce5108a7ae719b3a45362027f6a2f13"
+        }
+      ],
+      "campaign_index": 42,
+      "repository": "constructive-io/constructive",
+      "selection_digest": "ae3b86984f4244d572b4314bce449946e36392422f70ca7d0873549e38c87ae9"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/43_cwh555-animelist_parent.tar.gz",
+          "normalized_name": "43_cwh555-animelist_parent.tar.gz",
+          "normalized_sha256": "a41ee546ec9e18ea303daceb0d859f1e80e3a41986310ccc8f4c22c0ec911720",
+          "required_relative_members": [
+            "src/cover-cache.ts",
+            "src/score-dashboard-feature.ts",
+            "tests/test-catalog.mjs"
+          ],
+          "revision": "9dd87e57428341742ccef71f06cf80c70f8fc628",
+          "sanitization_name": "43_cwh555-animelist_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/43_cwh555-animelist_parent.json",
+          "sanitization_report_sha256": "5fc35595a7ce98ebb98982fd83d589f66666dd8a47767a52f31ab0af77f0aa7e",
+          "source_archive_root": "AnimeList-9dd87e57428341742ccef71f06cf80c70f8fc628",
+          "upstream_name": "43_cwh555-animelist_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "207a0a434db88d3b93648224a5bef091011f89415bfe02d159e42bc7ded90e3a",
+          "url": "https://codeload.github.com/cwh555/AnimeList/tar.gz/9dd87e57428341742ccef71f06cf80c70f8fc628"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/43_cwh555-animelist_target.tar.gz",
+          "normalized_name": "43_cwh555-animelist_target.tar.gz",
+          "normalized_sha256": "4cda64899695bea4c0139c0f5691043dd7d069c64adc86944e984a3cf8830406",
+          "required_relative_members": [
+            "src/cover-cache.ts",
+            "src/score-dashboard-cover-sources.ts",
+            "src/score-dashboard-feature.ts",
+            "tests/score-dashboard-cover-sources.test.ts",
+            "tests/test-catalog.mjs"
+          ],
+          "revision": "900fa36972ef6425ce340d853500c5d527ec8ea7",
+          "sanitization_name": "43_cwh555-animelist_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/43_cwh555-animelist_target.json",
+          "sanitization_report_sha256": "db0ab86d49d8569f0874cc38b5dd1a34a4ce4772db334400c7fbbc66996881cd",
+          "source_archive_root": "AnimeList-900fa36972ef6425ce340d853500c5d527ec8ea7",
+          "upstream_name": "43_cwh555-animelist_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "a325fc1a6e0927c9de24087b7dc0ae4b3dad1708b4b783c054ba1f92b9d2dd11",
+          "url": "https://codeload.github.com/cwh555/AnimeList/tar.gz/900fa36972ef6425ce340d853500c5d527ec8ea7"
+        }
+      ],
+      "campaign_index": 43,
+      "repository": "cwh555/AnimeList",
+      "selection_digest": "e7f48a250a50873b6177e63fc643b2e0acbc0da39256f1efdf7a88f1bfc2f8cc"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/44_gigadrive-sdk_parent.tar.gz",
+          "normalized_name": "44_gigadrive-sdk_parent.tar.gz",
+          "normalized_sha256": "8fce9817e7cc8eed2b63a648b51b0cb515280d08a751f6a8eac39ddf72297daa",
+          "required_relative_members": [
+            "packages/network-config/src/nextjs-runtime-cache-client.test.ts",
+            "packages/network-config/src/nextjs-runtime-cache-client.ts"
+          ],
+          "revision": "8ff822c2b73162f3e01cb4481d2b2219a019a22d",
+          "sanitization_name": "44_gigadrive-sdk_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/44_gigadrive-sdk_parent.json",
+          "sanitization_report_sha256": "558789451e986bcc558c50ad150c3b52610c944ccae3605f3ddc34e7beb0be5e",
+          "source_archive_root": "sdk-8ff822c2b73162f3e01cb4481d2b2219a019a22d",
+          "upstream_name": "44_gigadrive-sdk_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ac0ddea95d0f0957262ffc408acf73ec6a3455df7c18159ebd867370a01fde7a",
+          "url": "https://codeload.github.com/Gigadrive/sdk/tar.gz/8ff822c2b73162f3e01cb4481d2b2219a019a22d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/44_gigadrive-sdk_target.tar.gz",
+          "normalized_name": "44_gigadrive-sdk_target.tar.gz",
+          "normalized_sha256": "6d48ce91760b6b1d9db77b8fc361dfdbea8175631501d02fe5ea7ebdd60f5770",
+          "required_relative_members": [
+            "packages/network-config/src/nextjs-runtime-cache-client.test.ts",
+            "packages/network-config/src/nextjs-runtime-cache-client.ts"
+          ],
+          "revision": "10ceb01d7926b0d4ad8edf3cda841eb467f816c4",
+          "sanitization_name": "44_gigadrive-sdk_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/44_gigadrive-sdk_target.json",
+          "sanitization_report_sha256": "f7707af4f1d34eaec286552b3ba2902ac969563437fef3abe41589f0c6e7306c",
+          "source_archive_root": "sdk-10ceb01d7926b0d4ad8edf3cda841eb467f816c4",
+          "upstream_name": "44_gigadrive-sdk_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7e11d970e6a55807d0ddddf3d7e0a42819af9c801b8743eaaf6da19c473d998a",
+          "url": "https://codeload.github.com/Gigadrive/sdk/tar.gz/10ceb01d7926b0d4ad8edf3cda841eb467f816c4"
+        }
+      ],
+      "campaign_index": 44,
+      "repository": "Gigadrive/sdk",
+      "selection_digest": "78855773a491fea1ac5815c8db8a13a13f0cfcb75076738e747e50f87931e476"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/45_embassy-of-the-free-mind-sourcelibrary-v2_parent.tar.gz",
+          "normalized_name": "45_embassy-of-the-free-mind-sourcelibrary-v2_parent.tar.gz",
+          "normalized_sha256": "7cbd6670726bd2533184f1f13286a660600793ab7e28d294e3fe89bcc710c2f9",
+          "required_relative_members": [
+            "src/app/api/upload/from-s3/route.ts",
+            "src/app/api/upload/route.ts",
+            "src/app/api/upload/update-book/route.ts",
+            "src/app/book/[id]/capture/page.tsx"
+          ],
+          "revision": "bbf2e36c86a684e233e493decb8ff37c319354fd",
+          "sanitization_name": "45_embassy-of-the-free-mind-sourcelibrary-v2_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/45_embassy-of-the-free-mind-sourcelibrary-v2_parent.json",
+          "sanitization_report_sha256": "cf277616b105c573f724c73aabd67948c83db30e7e06cd00b6665a5956d0d354",
+          "source_archive_root": "sourcelibrary-v2-bbf2e36c86a684e233e493decb8ff37c319354fd",
+          "upstream_name": "45_embassy-of-the-free-mind-sourcelibrary-v2_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6ac9d78743f7783bf9a21bed02b9f4642b3c4d90cb92e0dfe1451b2ffd589707",
+          "url": "https://codeload.github.com/Embassy-of-the-Free-Mind/sourcelibrary-v2/tar.gz/bbf2e36c86a684e233e493decb8ff37c319354fd"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/45_embassy-of-the-free-mind-sourcelibrary-v2_target.tar.gz",
+          "normalized_name": "45_embassy-of-the-free-mind-sourcelibrary-v2_target.tar.gz",
+          "normalized_sha256": "db14f0e293935bae986ee50cfdd73d38c83cc00b69ec3b552eea3d6ed581596e",
+          "required_relative_members": [
+            "src/app/api/upload/from-s3/route.ts",
+            "src/app/api/upload/route.ts",
+            "src/app/api/upload/update-book/route.ts",
+            "src/app/book/[id]/capture/page.tsx",
+            "tests/unit/upload-auth.test.ts"
+          ],
+          "revision": "9c2aee4830ef54206f95e1ecf8aaa1c15f69fbe2",
+          "sanitization_name": "45_embassy-of-the-free-mind-sourcelibrary-v2_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/45_embassy-of-the-free-mind-sourcelibrary-v2_target.json",
+          "sanitization_report_sha256": "fc94f5d0ec5d61de65a2d7d60317906d147dcf61ef618a2b0df5bdede5aac545",
+          "source_archive_root": "sourcelibrary-v2-9c2aee4830ef54206f95e1ecf8aaa1c15f69fbe2",
+          "upstream_name": "45_embassy-of-the-free-mind-sourcelibrary-v2_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b4f6bc6ccb4c1ad1ef6304bbb109c94fca91e6dcd1b708676508b8fcc38038fc",
+          "url": "https://codeload.github.com/Embassy-of-the-Free-Mind/sourcelibrary-v2/tar.gz/9c2aee4830ef54206f95e1ecf8aaa1c15f69fbe2"
+        }
+      ],
+      "campaign_index": 45,
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2",
+      "selection_digest": "daaa4502e1902f54537d2b8f6d2a8869512144ce1d642d31c1b33a7acdd67c8c"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/46_celados-gkit_parent.tar.gz",
+          "normalized_name": "46_celados-gkit_parent.tar.gz",
+          "normalized_sha256": "da48c57ed1b673a074a058383329c6e239c46c5e3cd43281a936ff6127716325",
+          "required_relative_members": [
+            "packages/gkit/scripts/generate-dataforseo.test.ts",
+            "packages/gkit/scripts/verify-package-artifact.ts"
+          ],
+          "revision": "2c77440fdc5de6d098d513a1f21d9822216b42bd",
+          "sanitization_name": "46_celados-gkit_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/46_celados-gkit_parent.json",
+          "sanitization_report_sha256": "25cc279010a69cea3e081d0c98794d614062e8594b5f9dbe158bd07927890fe4",
+          "source_archive_root": "gkit-2c77440fdc5de6d098d513a1f21d9822216b42bd",
+          "upstream_name": "46_celados-gkit_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "2f65f5007a14d980f7c0cc6f0f97c843ab5d4ca95eb19e5aef919df838b6ad8a",
+          "url": "https://codeload.github.com/celados/gkit/tar.gz/2c77440fdc5de6d098d513a1f21d9822216b42bd"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/46_celados-gkit_target.tar.gz",
+          "normalized_name": "46_celados-gkit_target.tar.gz",
+          "normalized_sha256": "0145bdb0dc2d519ff9cf106fd69b756374cee043c05744638f3e1f3c7f202414",
+          "required_relative_members": [
+            "packages/gkit/scripts/generate-dataforseo.test.ts",
+            "packages/gkit/scripts/release-preflight.test.ts",
+            "packages/gkit/scripts/release-preflight.ts",
+            "packages/gkit/scripts/verify-package-artifact.ts"
+          ],
+          "revision": "250b2366c2080d1432adebedbdc5023dad80b3e5",
+          "sanitization_name": "46_celados-gkit_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/46_celados-gkit_target.json",
+          "sanitization_report_sha256": "08d329cde55806b4e7e5d491407330d36c2abe5ba5795c959301de6f2ad69c46",
+          "source_archive_root": "gkit-250b2366c2080d1432adebedbdc5023dad80b3e5",
+          "upstream_name": "46_celados-gkit_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "544a3850d70af7902c823e73042f6dc26bb53ba662e7ca25830ef7d04ca19cb7",
+          "url": "https://codeload.github.com/celados/gkit/tar.gz/250b2366c2080d1432adebedbdc5023dad80b3e5"
+        }
+      ],
+      "campaign_index": 46,
+      "repository": "celados/gkit",
+      "selection_digest": "a208d04c11204e30da47ad3bf94fee1e01ad975176fcdf5bb8b91e3baac995b0"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/47_handsontable-examples_parent.tar.gz",
+          "normalized_name": "47_handsontable-examples_parent.tar.gz",
+          "normalized_sha256": "bfee105cfb8c20635b7ab260cb66fe800c3ac340d7eee32044b520bba8db2c53",
+          "required_relative_members": [
+            "runner/apps/authoring/src/App.tsx"
+          ],
+          "revision": "55a30b22022ee4a986f2f465f0ad3194bfa29b7c",
+          "sanitization_name": "47_handsontable-examples_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/47_handsontable-examples_parent.json",
+          "sanitization_report_sha256": "a0d51eb694c1cdde57d0f5f70b42724fb721c4fc231830bba5f6fcb6c92f32e8",
+          "source_archive_root": "examples-55a30b22022ee4a986f2f465f0ad3194bfa29b7c",
+          "upstream_name": "47_handsontable-examples_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "e943d3990875a29ecb33cd6b48c5fee8162b4088e589c4326869c3a7a19bc339",
+          "url": "https://codeload.github.com/handsontable/examples/tar.gz/55a30b22022ee4a986f2f465f0ad3194bfa29b7c"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/47_handsontable-examples_target.tar.gz",
+          "normalized_name": "47_handsontable-examples_target.tar.gz",
+          "normalized_sha256": "366359596841e1bac0a61142c5a06f09a8614eb24e6f995a4b48fe6d1595843c",
+          "required_relative_members": [
+            "runner/apps/authoring/src/App.tsx",
+            "runner/e2e/sidebar-crud.spec.ts"
+          ],
+          "revision": "25ee6baa1e19a23f2415746fe6c888c81e08e1b5",
+          "sanitization_name": "47_handsontable-examples_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/47_handsontable-examples_target.json",
+          "sanitization_report_sha256": "597097f3120c26d3b3984ea0479980f7e295f1ea874e23e06d9a367296324640",
+          "source_archive_root": "examples-25ee6baa1e19a23f2415746fe6c888c81e08e1b5",
+          "upstream_name": "47_handsontable-examples_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "8aafc271d94f8bf5e2aa100e8d7a9a3afb31ff46b112598c197faed449201705",
+          "url": "https://codeload.github.com/handsontable/examples/tar.gz/25ee6baa1e19a23f2415746fe6c888c81e08e1b5"
+        }
+      ],
+      "campaign_index": 47,
+      "repository": "handsontable/examples",
+      "selection_digest": "6d8efe64649d758bc23b351ca88336471daec7cf79638f7d2b5774d5bb177bc9"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/48_pokle-glidecomp_parent.tar.gz",
+          "normalized_name": "48_pokle-glidecomp_parent.tar.gz",
+          "normalized_sha256": "b2959e4c77ea1076b571f4cc303b6310c8eb781a1e63166267d50da39d268a5a",
+          "required_relative_members": [
+            "web/frontend/src/analysis/analysis-panel.ts",
+            "web/frontend/src/analysis/mapbox-provider.ts"
+          ],
+          "revision": "7a5539bfd16bd70ef6c4b25c40547b1d10915951",
+          "sanitization_name": "48_pokle-glidecomp_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/48_pokle-glidecomp_parent.json",
+          "sanitization_report_sha256": "13fa47cbbd64762bee01ebb9611310fb88e636a6d7641a3dd23a590d078f2cb2",
+          "source_archive_root": "glidecomp-7a5539bfd16bd70ef6c4b25c40547b1d10915951",
+          "upstream_name": "48_pokle-glidecomp_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "aa671fe602048a0850d9c3c37bdce45934de8710d1fefa7b75962202dc696336",
+          "url": "https://codeload.github.com/pokle/glidecomp/tar.gz/7a5539bfd16bd70ef6c4b25c40547b1d10915951"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/48_pokle-glidecomp_target.tar.gz",
+          "normalized_name": "48_pokle-glidecomp_target.tar.gz",
+          "normalized_sha256": "6362e74552635abde3356b527558b1083c132b3f9c599e141bcb457137374879",
+          "required_relative_members": [
+            "web/frontend/src/analysis/analysis-panel.ts",
+            "web/frontend/src/analysis/mapbox-provider.ts",
+            "web/frontend/src/analysis/panel-tab.test.ts",
+            "web/frontend/src/analysis/panel-tab.ts"
+          ],
+          "revision": "69f6b594fd7fbbfa6ae2589d75fda5a62528edba",
+          "sanitization_name": "48_pokle-glidecomp_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/48_pokle-glidecomp_target.json",
+          "sanitization_report_sha256": "fa6c7481905551b691bbd32c1987e437435612514a97bd34eb88b4657c8b640a",
+          "source_archive_root": "glidecomp-69f6b594fd7fbbfa6ae2589d75fda5a62528edba",
+          "upstream_name": "48_pokle-glidecomp_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "bfd8c067a0432eadb0bbc28abf880967f8eb503124e87ad907a9d01cab0c1c82",
+          "url": "https://codeload.github.com/pokle/glidecomp/tar.gz/69f6b594fd7fbbfa6ae2589d75fda5a62528edba"
+        }
+      ],
+      "campaign_index": 48,
+      "repository": "pokle/glidecomp",
+      "selection_digest": "767b0cd016e710d7d0e4dc4503917bda86aaa59956e72e574482b06661c71de8"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/49_akogut-flakemetry_parent.tar.gz",
+          "normalized_name": "49_akogut-flakemetry_parent.tar.gz",
+          "normalized_sha256": "e63654f976f006fa5d72d3bd3d0e89288ec8506ff59908e7a101a32259264ee2",
+          "required_relative_members": [
+            "apps/web/src/app/projects/[projectId]/tests/[testId]/page.tsx",
+            "apps/web/src/lib/actions.ts",
+            "packages/queries/src/__tests__/identity-split.test.ts",
+            "packages/queries/src/identity.ts"
+          ],
+          "revision": "e9586118bae2e1b7e15bc1b6bf7c93229609f68c",
+          "sanitization_name": "49_akogut-flakemetry_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/49_akogut-flakemetry_parent.json",
+          "sanitization_report_sha256": "5ce85d287ed7efd5f80b51c384ddfdbbdd654612a0fc1644ef990a8fb977cde6",
+          "source_archive_root": "flakemetry-e9586118bae2e1b7e15bc1b6bf7c93229609f68c",
+          "upstream_name": "49_akogut-flakemetry_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "ac9f6fff694ba825b57a0561c27222771ee2f886de474bdab4473bacd91b4189",
+          "url": "https://codeload.github.com/AKogut/flakemetry/tar.gz/e9586118bae2e1b7e15bc1b6bf7c93229609f68c"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/49_akogut-flakemetry_target.tar.gz",
+          "normalized_name": "49_akogut-flakemetry_target.tar.gz",
+          "normalized_sha256": "6af93fc7a5fe57bdd9210ff53b44474bb112aeb24079b22540dde1d5ec3c8b2b",
+          "required_relative_members": [
+            "apps/web/src/app/projects/[projectId]/tests/[testId]/page.tsx",
+            "apps/web/src/lib/actions.ts",
+            "packages/queries/src/__tests__/identity-split.test.ts",
+            "packages/queries/src/identity.ts"
+          ],
+          "revision": "8d40b9d88d014863c1e88f19818dac4a4b2b816c",
+          "sanitization_name": "49_akogut-flakemetry_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/49_akogut-flakemetry_target.json",
+          "sanitization_report_sha256": "58e5a6b0f5ed953ebfaba79ee892b8f06e524c7bff95140540a9f7539827fc35",
+          "source_archive_root": "flakemetry-8d40b9d88d014863c1e88f19818dac4a4b2b816c",
+          "upstream_name": "49_akogut-flakemetry_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "a357741c0a6df7a8682dff7bfc579f8f4964f35108cdd5584a5f91b95ad2fc4b",
+          "url": "https://codeload.github.com/AKogut/flakemetry/tar.gz/8d40b9d88d014863c1e88f19818dac4a4b2b816c"
+        }
+      ],
+      "campaign_index": 49,
+      "repository": "AKogut/flakemetry",
+      "selection_digest": "eb885db4cd15fd4aaccd63ff6a49c17b41aee0aaf981a2d9730af73f8d989e4f"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/50_tutur3u-platform_parent.tar.gz",
+          "normalized_name": "50_tutur3u-platform_parent.tar.gz",
+          "normalized_sha256": "7912001eb3e9e0f6fd96dc8d665c24a9089421bf8d7767755c76829c5bc48edc",
+          "required_relative_members": [
+            "apps/web/src/app/api/v1/workspaces/[wsId]/external-chat/config/route.test.ts",
+            "apps/web/src/lib/external-chat/schemas.ts"
+          ],
+          "revision": "17a2b1689d547dc37339a922c90f22b976e97e6e",
+          "sanitization_name": "50_tutur3u-platform_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/50_tutur3u-platform_parent.json",
+          "sanitization_report_sha256": "2b8628d0abb1e5ba3bcbffe617a2c2a018f2c8c2c467f54efc8d52551bedcbe4",
+          "source_archive_root": "platform-17a2b1689d547dc37339a922c90f22b976e97e6e",
+          "upstream_name": "50_tutur3u-platform_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "9325508fb91b8c9836426759e1d869933e74ee61fd0ba520c03cf6e01f5d4bc5",
+          "url": "https://codeload.github.com/tutur3u/platform/tar.gz/17a2b1689d547dc37339a922c90f22b976e97e6e"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/50_tutur3u-platform_target.tar.gz",
+          "normalized_name": "50_tutur3u-platform_target.tar.gz",
+          "normalized_sha256": "5ab5750b6a4633c49236e7b4bf1525483ffc664ec7aff6507cd9a4dde92d044e",
+          "required_relative_members": [
+            "apps/web/src/app/api/v1/workspaces/[wsId]/external-chat/config/route.test.ts",
+            "apps/web/src/lib/external-chat/schemas.ts"
+          ],
+          "revision": "b259d9de7bc3a49e7a4cf0af5c28b91b2f343d78",
+          "sanitization_name": "50_tutur3u-platform_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/50_tutur3u-platform_target.json",
+          "sanitization_report_sha256": "3ea4b112f92b289efde63f6c2f50996a8ae85d7b4f2e0acd1cd87ed2c124ef9a",
+          "source_archive_root": "platform-b259d9de7bc3a49e7a4cf0af5c28b91b2f343d78",
+          "upstream_name": "50_tutur3u-platform_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "30ef1b3e58ceb2c03870ad01e1d27d02ee5904c5b6801dd17d14c9c0ddd3576e",
+          "url": "https://codeload.github.com/tutur3u/platform/tar.gz/b259d9de7bc3a49e7a4cf0af5c28b91b2f343d78"
+        }
+      ],
+      "campaign_index": 50,
+      "repository": "tutur3u/platform",
+      "selection_digest": "747009b73bad966011a34f880dfc071f38d2b6e5aca29c6df5eef4248d76dba3"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/51_inkeep-open-knowledge_parent.tar.gz",
+          "normalized_name": "51_inkeep-open-knowledge_parent.tar.gz",
+          "normalized_sha256": "0a0f1732f2c4fdcbc59f5f45d9e39a3af19c580679feb1ed90fa602a54683f57",
+          "required_relative_members": [
+            "packages/app/src/App.dom.test.tsx",
+            "packages/app/src/components/navigation-targets.test.ts",
+            "packages/app/src/components/navigation-targets.ts"
+          ],
+          "revision": "8c126bfa13d3fc7b8be33cecf72981bf9aa0dda4",
+          "sanitization_name": "51_inkeep-open-knowledge_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/51_inkeep-open-knowledge_parent.json",
+          "sanitization_report_sha256": "b20dc8dde3044fcd7f089eda787f2f1cfd3becb1a31a29f1c350e55bbfa48491",
+          "source_archive_root": "open-knowledge-8c126bfa13d3fc7b8be33cecf72981bf9aa0dda4",
+          "upstream_name": "51_inkeep-open-knowledge_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "6dfa08efd9e1a77db58b5b208bbbc5eb6a3029bd74ce684bfacef2d5c33f817b",
+          "url": "https://codeload.github.com/inkeep/open-knowledge/tar.gz/8c126bfa13d3fc7b8be33cecf72981bf9aa0dda4"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/51_inkeep-open-knowledge_target.tar.gz",
+          "normalized_name": "51_inkeep-open-knowledge_target.tar.gz",
+          "normalized_sha256": "9d1f9afb76c0de436bc3a776befadd8b49c6033e2b4e2f447b5e00366d9a93e5",
+          "required_relative_members": [
+            "packages/app/src/App.dom.test.tsx",
+            "packages/app/src/components/navigation-targets.test.ts",
+            "packages/app/src/components/navigation-targets.ts"
+          ],
+          "revision": "395579f3158acbe2efafe4a58ef4eee870e70acc",
+          "sanitization_name": "51_inkeep-open-knowledge_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/51_inkeep-open-knowledge_target.json",
+          "sanitization_report_sha256": "a5876e32e1b9d76b0253ca778808e85a0fcac1a7fa34c1ba08fb75a701eb8168",
+          "source_archive_root": "open-knowledge-395579f3158acbe2efafe4a58ef4eee870e70acc",
+          "upstream_name": "51_inkeep-open-knowledge_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b54a67cd784821e4d52a789d4faf12d32facb9aaf1d310caa2b685ae88a0df37",
+          "url": "https://codeload.github.com/inkeep/open-knowledge/tar.gz/395579f3158acbe2efafe4a58ef4eee870e70acc"
+        }
+      ],
+      "campaign_index": 51,
+      "repository": "inkeep/open-knowledge",
+      "selection_digest": "74dad37f8a00b299aefca24bc6b90c76a0d53d047d1e1d0c93d87c20c6a975e2"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/52_masumi-network-sokosumi_parent.tar.gz",
+          "normalized_name": "52_masumi-network-sokosumi_parent.tar.gz",
+          "normalized_sha256": "0c26db774fd5caaa8c1bf5b350c6e339211d2554f1c1d10bda18a5612b87d2d7",
+          "required_relative_members": [
+            "apps/web/src/app/(app)/chat/components/__tests__/room-message-row.test.tsx",
+            "apps/web/src/app/(app)/chat/components/room-message-row.tsx"
+          ],
+          "revision": "8f9b52b086e10cf640e42917ad5f4fc27c156e28",
+          "sanitization_name": "52_masumi-network-sokosumi_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/52_masumi-network-sokosumi_parent.json",
+          "sanitization_report_sha256": "1c6417fb9720e696ee369b6a4f20df3d742563f2da792ceb1490f30e3a5d134c",
+          "source_archive_root": "sokosumi-8f9b52b086e10cf640e42917ad5f4fc27c156e28",
+          "upstream_name": "52_masumi-network-sokosumi_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "f73e66224cc527bf45711306589d45162b45a19c9e3af383c2ba697454de1815",
+          "url": "https://codeload.github.com/masumi-network/sokosumi/tar.gz/8f9b52b086e10cf640e42917ad5f4fc27c156e28"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/52_masumi-network-sokosumi_target.tar.gz",
+          "normalized_name": "52_masumi-network-sokosumi_target.tar.gz",
+          "normalized_sha256": "f86a0d41d630cda5feb2a0a969093a4f13bdb9d9f09c2d601bf038ac1318e1fb",
+          "required_relative_members": [
+            "apps/web/src/app/(app)/chat/components/__tests__/room-message-row.test.tsx",
+            "apps/web/src/app/(app)/chat/components/room-message-row.tsx"
+          ],
+          "revision": "53d4f696332e3fde7a52e1385a4863c89772d75e",
+          "sanitization_name": "52_masumi-network-sokosumi_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/52_masumi-network-sokosumi_target.json",
+          "sanitization_report_sha256": "71890e8cde317bfb08ce580671bd63d57772204ab4c30bfaf9c71bb71a31030f",
+          "source_archive_root": "sokosumi-53d4f696332e3fde7a52e1385a4863c89772d75e",
+          "upstream_name": "52_masumi-network-sokosumi_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "3d62cd5947902de1667acc13579893b41f71080abb04b62ef6aedb78c7eb64cb",
+          "url": "https://codeload.github.com/masumi-network/sokosumi/tar.gz/53d4f696332e3fde7a52e1385a4863c89772d75e"
+        }
+      ],
+      "campaign_index": 52,
+      "repository": "masumi-network/sokosumi",
+      "selection_digest": "1bcbb34187770d79441dc0c9e1dc0e0d7820c2c69bf24211dc77135c509aaa9e"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/53_omnist-dev-omnist-ts_parent.tar.gz",
+          "normalized_name": "53_omnist-dev-omnist-ts_parent.tar.gz",
+          "normalized_sha256": "fff9d2f0cbc05fa50129a7bc875af2eb23ca2392c6e07976416adcb328b9820d",
+          "required_relative_members": [
+            "src/index.ts",
+            "test/index.test.ts"
+          ],
+          "revision": "6c342eb4e9169ef4275b73ced9e2d51f4bee14ba",
+          "sanitization_name": "53_omnist-dev-omnist-ts_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/53_omnist-dev-omnist-ts_parent.json",
+          "sanitization_report_sha256": "b0a5a255487fab9c97ba17cc890120dcfa073ab8fa1e90520b1b90b8776a2909",
+          "source_archive_root": "omnist-ts-6c342eb4e9169ef4275b73ced9e2d51f4bee14ba",
+          "upstream_name": "53_omnist-dev-omnist-ts_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "892ec8df9f3461a78eac9572536aba29c6e277726655216ae9575ba047dfd9fc",
+          "url": "https://codeload.github.com/omnist-dev/omnist-ts/tar.gz/6c342eb4e9169ef4275b73ced9e2d51f4bee14ba"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/53_omnist-dev-omnist-ts_target.tar.gz",
+          "normalized_name": "53_omnist-dev-omnist-ts_target.tar.gz",
+          "normalized_sha256": "287b05ccbaadef6ddd6e4bfcc88c48ffab2d3429b58925bceef1db5095182120",
+          "required_relative_members": [
+            "src/index.ts",
+            "test/index.test.ts"
+          ],
+          "revision": "36ce1ce6c85d6681424545451728f6177e728d7d",
+          "sanitization_name": "53_omnist-dev-omnist-ts_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/53_omnist-dev-omnist-ts_target.json",
+          "sanitization_report_sha256": "b42ee52d0b98a051537493eea3d5aefc21320c6e776f21f9d9cd6ad7f3083c13",
+          "source_archive_root": "omnist-ts-36ce1ce6c85d6681424545451728f6177e728d7d",
+          "upstream_name": "53_omnist-dev-omnist-ts_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "426ba8360ad5ceecd33888ed747aadb9b0d248f1624d600064d361cf647f3479",
+          "url": "https://codeload.github.com/omnist-dev/omnist-ts/tar.gz/36ce1ce6c85d6681424545451728f6177e728d7d"
+        }
+      ],
+      "campaign_index": 53,
+      "repository": "omnist-dev/omnist-ts",
+      "selection_digest": "f03385a4bdb492fecdfd9f0e4817036b5a478afd5f0193f900be4bcf9555ccc1"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/54_passionworkeer-obsidian-shared-memory-bus_parent.tar.gz",
+          "normalized_name": "54_passionworkeer-obsidian-shared-memory-bus_parent.tar.gz",
+          "normalized_sha256": "7261659cec303e8fcb5d2f818869afdfc94a9da2f547dbef406c36abd6234921",
+          "required_relative_members": [],
+          "revision": "5551bb03b8ea980dd709e6d0bcf20fff9ffe5678",
+          "sanitization_name": "54_passionworkeer-obsidian-shared-memory-bus_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/54_passionworkeer-obsidian-shared-memory-bus_parent.json",
+          "sanitization_report_sha256": "c170d67ad7da3a87274540ee0a3f790b7567499afdc465cbd6d6b25b5fc91e3d",
+          "source_archive_root": "obsidian-shared-memory-bus-5551bb03b8ea980dd709e6d0bcf20fff9ffe5678",
+          "upstream_name": "54_passionworkeer-obsidian-shared-memory-bus_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "cd66456bec164513fa07f75623676cbac89d2278568aa78de9a45f69391e25b4",
+          "url": "https://codeload.github.com/passionworkeer/obsidian-shared-memory-bus/tar.gz/5551bb03b8ea980dd709e6d0bcf20fff9ffe5678"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/54_passionworkeer-obsidian-shared-memory-bus_target.tar.gz",
+          "normalized_name": "54_passionworkeer-obsidian-shared-memory-bus_target.tar.gz",
+          "normalized_sha256": "d3e49bfc01fe002e7eff18002e997982b62643d823cd615d063bad8b8c8811d9",
+          "required_relative_members": [
+            "scripts/migrate-runtime-secrets.mjs",
+            "tests/unit/js/migrate-runtime-secrets.test.js"
+          ],
+          "revision": "67dd8204af1bb8aafc2bb7049ba1ee20b43fe594",
+          "sanitization_name": "54_passionworkeer-obsidian-shared-memory-bus_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/54_passionworkeer-obsidian-shared-memory-bus_target.json",
+          "sanitization_report_sha256": "1d2edef0d309d683946338a958ff139dcc0aa364ac500efcfd07d9bd26ae6e30",
+          "source_archive_root": "obsidian-shared-memory-bus-67dd8204af1bb8aafc2bb7049ba1ee20b43fe594",
+          "upstream_name": "54_passionworkeer-obsidian-shared-memory-bus_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "8b80c063f3c989d0a622190f5a168fa142802d44d796cb24113e28f4f579305a",
+          "url": "https://codeload.github.com/passionworkeer/obsidian-shared-memory-bus/tar.gz/67dd8204af1bb8aafc2bb7049ba1ee20b43fe594"
+        }
+      ],
+      "campaign_index": 54,
+      "repository": "passionworkeer/obsidian-shared-memory-bus",
+      "selection_digest": "aeb1a6f6af7b65d39b75837afaf72571c03cf9734cb82c8aab5b8bf85524267b"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/55_rickfelix-ehg-engineer_parent.tar.gz",
+          "normalized_name": "55_rickfelix-ehg-engineer_parent.tar.gz",
+          "normalized_sha256": "eb63cbbdb902ad0c568773b639a8b1231c9b618f2c8384d539e886fb4efac3b2",
+          "required_relative_members": [
+            "lib/security/rls-probe-template.cjs",
+            "tests/unit/security/rls-probe-template.test.js"
+          ],
+          "revision": "881f1498c74fcdf526c30fbba2eacc3b4824c57d",
+          "sanitization_name": "55_rickfelix-ehg-engineer_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/55_rickfelix-ehg-engineer_parent.json",
+          "sanitization_report_sha256": "35c3a32e90504e2cb0124853db8a8ef8429178ce01b4cf8bf6786408cfca6aee",
+          "source_archive_root": "EHG_Engineer-881f1498c74fcdf526c30fbba2eacc3b4824c57d",
+          "upstream_name": "55_rickfelix-ehg-engineer_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "c7f4aa7094bc64a03d60b525cad3331bc97ffe387467662b58cf297dd25731fb",
+          "url": "https://codeload.github.com/rickfelix/EHG_Engineer/tar.gz/881f1498c74fcdf526c30fbba2eacc3b4824c57d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/55_rickfelix-ehg-engineer_target.tar.gz",
+          "normalized_name": "55_rickfelix-ehg-engineer_target.tar.gz",
+          "normalized_sha256": "bc096da9bd1ef3b23c3d31fc7c55b4f9c7a0fa520179592992ab951d4897317c",
+          "required_relative_members": [
+            "lib/security/rls-probe-template.cjs",
+            "scripts/security/rls-coexisting-permissive-census.mjs",
+            "tests/unit/security/rls-probe-template.test.js"
+          ],
+          "revision": "5a1eeeed64d0443e15bb1019e1466bd8983ba932",
+          "sanitization_name": "55_rickfelix-ehg-engineer_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/55_rickfelix-ehg-engineer_target.json",
+          "sanitization_report_sha256": "38be63f3548c4ba8b193000bd75ad2339cc006c3fdbcf17b3b85aa546fa2eac8",
+          "source_archive_root": "EHG_Engineer-5a1eeeed64d0443e15bb1019e1466bd8983ba932",
+          "upstream_name": "55_rickfelix-ehg-engineer_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "bb670bae70d540e715b53eca8a97f1c9f1582688c7c9341e5f18597a606ced8a",
+          "url": "https://codeload.github.com/rickfelix/EHG_Engineer/tar.gz/5a1eeeed64d0443e15bb1019e1466bd8983ba932"
+        }
+      ],
+      "campaign_index": 55,
+      "repository": "rickfelix/EHG_Engineer",
+      "selection_digest": "a88aeb4c9c34a5ffe8e8201c747fb3d3d243f994c83cd064eb931f7bbe56f21a"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_parent.tar.gz",
+          "normalized_name": "56_absolutemode-session-recall_parent.tar.gz",
+          "normalized_sha256": "970326306f6c83d7f23c7dcf0ba79b820c1a400ed1358a6cda1d7ab68e32d55f",
+          "required_relative_members": [
+            "src/session_recall/share/cli.py",
+            "src/session_recall/share/transport.py",
+            "tests/test_share_cli.py",
+            "tests/test_share_transport.py"
+          ],
+          "revision": "e9b86bc20db00efef894f9c23eed38fd55c9b3b4",
+          "sanitization_name": "56_absolutemode-session-recall_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/56_absolutemode-session-recall_parent.json",
+          "sanitization_report_sha256": "f3ad305a1af95e6972d18db6e528110d9b5b60091d917d2c3bd08d9e47f93e2d",
+          "source_archive_root": "session-recall-e9b86bc20db00efef894f9c23eed38fd55c9b3b4",
+          "upstream_name": "56_absolutemode-session-recall_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "60e8bc432e77c8bd4e7e3cfa4a8522b9b0b16c82edaf97c1ae979068142c4052",
+          "url": "https://codeload.github.com/AbsoluteMode/session-recall/tar.gz/e9b86bc20db00efef894f9c23eed38fd55c9b3b4"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/56_absolutemode-session-recall_target.tar.gz",
+          "normalized_name": "56_absolutemode-session-recall_target.tar.gz",
+          "normalized_sha256": "87ce5c0d72e64f0c2973c60d21e1236ab7f5e9e3d29fba098c96451e0c6d9a69",
+          "required_relative_members": [
+            "src/session_recall/share/cli.py",
+            "src/session_recall/share/transport.py",
+            "tests/test_share_cli.py",
+            "tests/test_share_transport.py"
+          ],
+          "revision": "8f2beafd775613953cf6607c5448aad0625505d6",
+          "sanitization_name": "56_absolutemode-session-recall_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/56_absolutemode-session-recall_target.json",
+          "sanitization_report_sha256": "093d9ac7ea5301d3a0aa1d0a0cb96baa2f72e6cbd55350fc00c8d78031b79506",
+          "source_archive_root": "session-recall-8f2beafd775613953cf6607c5448aad0625505d6",
+          "upstream_name": "56_absolutemode-session-recall_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "454fa96104170c70ace6adddf605d8f899eb512635cb256e518625e8d6c207e1",
+          "url": "https://codeload.github.com/AbsoluteMode/session-recall/tar.gz/8f2beafd775613953cf6607c5448aad0625505d6"
+        }
+      ],
+      "campaign_index": 56,
+      "repository": "AbsoluteMode/session-recall",
+      "selection_digest": "b83dc5719f7acdf4da85297f0db0a14bdd463105d1ac02401545b67a98acc8a1"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/57_matt82198-aesop_parent.tar.gz",
+          "normalized_name": "57_matt82198-aesop_parent.tar.gz",
+          "normalized_sha256": "d4898ea5aa94bdd0f12d2e3ba2701389d85334434ef4f94239832798d39b4717",
+          "required_relative_members": [
+            "tests/test_merge_queue.py",
+            "tools/merge_queue.py"
+          ],
+          "revision": "272c44bb9f957b3b640030e3bf64a78787761b90",
+          "sanitization_name": "57_matt82198-aesop_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/57_matt82198-aesop_parent.json",
+          "sanitization_report_sha256": "32baf05436c6650193cd18aed2a069c394898803562d0395fc8a5fef60847792",
+          "source_archive_root": "aesop-272c44bb9f957b3b640030e3bf64a78787761b90",
+          "upstream_name": "57_matt82198-aesop_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "d6ef3eaa02c4624d0771c520c33575f3798bf3d3d5f459dfa8eee95abff6a39d",
+          "url": "https://codeload.github.com/matt82198/aesop/tar.gz/272c44bb9f957b3b640030e3bf64a78787761b90"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/57_matt82198-aesop_target.tar.gz",
+          "normalized_name": "57_matt82198-aesop_target.tar.gz",
+          "normalized_sha256": "d32539f4234e982eba2239511b899a289d18014991ab52a3bd7d72483ed637e8",
+          "required_relative_members": [
+            "tests/test_merge_queue.py",
+            "tools/merge_queue.py"
+          ],
+          "revision": "59e760115454f09e443b4b0484302b670a428445",
+          "sanitization_name": "57_matt82198-aesop_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/57_matt82198-aesop_target.json",
+          "sanitization_report_sha256": "cbf3425bdf6df3cee6a1b2bfea78c49d78a39eb13e305374b515c848beecd564",
+          "source_archive_root": "aesop-59e760115454f09e443b4b0484302b670a428445",
+          "upstream_name": "57_matt82198-aesop_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "bf6b54bf981c9561d93e30b6c786f4054fdebc697535614746c464f017018d69",
+          "url": "https://codeload.github.com/matt82198/aesop/tar.gz/59e760115454f09e443b4b0484302b670a428445"
+        }
+      ],
+      "campaign_index": 57,
+      "repository": "matt82198/aesop",
+      "selection_digest": "e108749baa36511915fa6d081944129ea49408f1ca957f957845d76ceda3f1e0"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/58_shadowenemyx-serien-sammler_parent.tar.gz",
+          "normalized_name": "58_shadowenemyx-serien-sammler_parent.tar.gz",
+          "normalized_sha256": "bb7a68c732f943529d5dd57c6dd8e9381b55dd9c21cac757f39be08663bd4e88",
+          "required_relative_members": [
+            "series_collector/__init__.py",
+            "series_collector/core.py",
+            "tests/test_core.py"
+          ],
+          "revision": "0891181d39220fe81bca87d9c3a5b2b9e1c91dfb",
+          "sanitization_name": "58_shadowenemyx-serien-sammler_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/58_shadowenemyx-serien-sammler_parent.json",
+          "sanitization_report_sha256": "802154ee68c93f1481f9a4d7cf76e1fed4c76f887b1852a49099fd58023c05cc",
+          "source_archive_root": "serien-sammler-0891181d39220fe81bca87d9c3a5b2b9e1c91dfb",
+          "upstream_name": "58_shadowenemyx-serien-sammler_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "e03be09e72bf8abef495d5a3b6cb30fb2fad388a9734ebdb87608d2fe3c70916",
+          "url": "https://codeload.github.com/ShadowEnemyx/serien-sammler/tar.gz/0891181d39220fe81bca87d9c3a5b2b9e1c91dfb"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/58_shadowenemyx-serien-sammler_target.tar.gz",
+          "normalized_name": "58_shadowenemyx-serien-sammler_target.tar.gz",
+          "normalized_sha256": "0ef778c4129cf0f0f876cea7ac53e307b6ea9d4874598980577cb1f2681d14f2",
+          "required_relative_members": [
+            "series_collector/__init__.py",
+            "series_collector/core.py",
+            "tests/test_core.py"
+          ],
+          "revision": "fbdf7be90a69b512a357f51c2302f2fb1d55e566",
+          "sanitization_name": "58_shadowenemyx-serien-sammler_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/58_shadowenemyx-serien-sammler_target.json",
+          "sanitization_report_sha256": "3155ed7a398c3601a9038d54ea86b44f1028986a83b709f7f958d4f96d87d162",
+          "source_archive_root": "serien-sammler-fbdf7be90a69b512a357f51c2302f2fb1d55e566",
+          "upstream_name": "58_shadowenemyx-serien-sammler_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "0f8710135d78a4f411f63f8dadd9919ceca5bf18dd11db7126fceecbe719cf25",
+          "url": "https://codeload.github.com/ShadowEnemyx/serien-sammler/tar.gz/fbdf7be90a69b512a357f51c2302f2fb1d55e566"
+        }
+      ],
+      "campaign_index": 58,
+      "repository": "ShadowEnemyx/serien-sammler",
+      "selection_digest": "ff4e3a943a1046dd46d4b16d5c2db43ca3e1857802803bc5cd15716540c8c56a"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/59_dcdpr-jp_parent.tar.gz",
+          "normalized_name": "59_dcdpr-jp_parent.tar.gz",
+          "normalized_sha256": "c15b8e4686703842f4d2ab8e10fd5a32373dba58d9002c0687f9da0c00e06743",
+          "required_relative_members": [
+            ".config/jp/tools/src/cargo.rs",
+            ".config/jp/tools/src/cargo/check.rs",
+            ".config/jp/tools/src/cargo/check_tests.rs"
+          ],
+          "revision": "48158278a61d555631787d04d579b5ac4adb276d",
+          "sanitization_name": "59_dcdpr-jp_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/59_dcdpr-jp_parent.json",
+          "sanitization_report_sha256": "9c956944bbf7610f7c7a5207134cdc76504a3428c2912e8330003cd000e251d9",
+          "source_archive_root": "jp-48158278a61d555631787d04d579b5ac4adb276d",
+          "upstream_name": "59_dcdpr-jp_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "b585414112d20ce0dfd0eaa6cfaaee77cb3d8000b974ab315a5fd3c8613792ba",
+          "url": "https://codeload.github.com/dcdpr/jp/tar.gz/48158278a61d555631787d04d579b5ac4adb276d"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/59_dcdpr-jp_target.tar.gz",
+          "normalized_name": "59_dcdpr-jp_target.tar.gz",
+          "normalized_sha256": "8152f7f9787451ff323b454c78f34ffa45562eae27dd0548ce9301f53c0a615d",
+          "required_relative_members": [
+            ".config/jp/tools/src/cargo.rs",
+            ".config/jp/tools/src/cargo/check.rs",
+            ".config/jp/tools/src/cargo/check_tests.rs"
+          ],
+          "revision": "6b721d731fb1f2d56fb2d335cc1add3293668928",
+          "sanitization_name": "59_dcdpr-jp_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/59_dcdpr-jp_target.json",
+          "sanitization_report_sha256": "e0155c31bd62ef47d0385dd1a4989b0eacb5523801d2726c375a591e3087b572",
+          "source_archive_root": "jp-6b721d731fb1f2d56fb2d335cc1add3293668928",
+          "upstream_name": "59_dcdpr-jp_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "2c4e457884650e282b7edba109efc7cae06f381c9818c035ee1025dd232e6372",
+          "url": "https://codeload.github.com/dcdpr/jp/tar.gz/6b721d731fb1f2d56fb2d335cc1add3293668928"
+        }
+      ],
+      "campaign_index": 59,
+      "repository": "dcdpr/jp",
+      "selection_digest": "ccd72400b3d824711e504f5489a396b6a7f40af9df6f440970c486a23c38c832"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/60_tsz-org-tsz_parent.tar.gz",
+          "normalized_name": "60_tsz-org-tsz_parent.tar.gz",
+          "normalized_sha256": "de984ec42d12494fb394a2d464888def3e6cf01936f25dbe2fce68c39cbd09f3",
+          "required_relative_members": [
+            "crates/tsz-cli/src/driver/check_utils.rs",
+            "crates/tsz-cli/src/driver/check_utils/tests.rs"
+          ],
+          "revision": "63c9863c98f579bcbadf43b39222e057641cfa10",
+          "sanitization_name": "60_tsz-org-tsz_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/60_tsz-org-tsz_parent.json",
+          "sanitization_report_sha256": "710b888a04040061d42f35590df8c0effbf02fe87edba4e4c5ce2f5356f452dc",
+          "source_archive_root": "tsz-63c9863c98f579bcbadf43b39222e057641cfa10",
+          "upstream_name": "60_tsz-org-tsz_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "97ff4df25c9e16fb5d34d65d76c51362fe80e862832b82b38235fe120cb387ab",
+          "url": "https://codeload.github.com/tsz-org/tsz/tar.gz/63c9863c98f579bcbadf43b39222e057641cfa10"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/60_tsz-org-tsz_target.tar.gz",
+          "normalized_name": "60_tsz-org-tsz_target.tar.gz",
+          "normalized_sha256": "9b44aab42ea6d17aa89be9cf810872b8d17e2c5d703713bb3cef83f19fcdfc9e",
+          "required_relative_members": [
+            "crates/tsz-cli/src/driver/check_utils.rs",
+            "crates/tsz-cli/src/driver/check_utils/tests.rs"
+          ],
+          "revision": "9f26e9bc151c4cb5dee9109f54bd4b739a5fb04c",
+          "sanitization_name": "60_tsz-org-tsz_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/60_tsz-org-tsz_target.json",
+          "sanitization_report_sha256": "2c064c890b347bbee9b8fd4b9124426521fc4ea2c5ff5f8b599a30b558c41401",
+          "source_archive_root": "tsz-9f26e9bc151c4cb5dee9109f54bd4b739a5fb04c",
+          "upstream_name": "60_tsz-org-tsz_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "f2eda42d7ac042b069cdea54b0269b1f50426b3e5562507a37b0f0f2f84e2388",
+          "url": "https://codeload.github.com/tsz-org/tsz/tar.gz/9f26e9bc151c4cb5dee9109f54bd4b739a5fb04c"
+        }
+      ],
+      "campaign_index": 60,
+      "repository": "tsz-org/tsz",
+      "selection_digest": "5b5823263d19050eb3d3b6288774ee9cda626b5dd7ed7a59f659fc9b26ce449e"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_parent.tar.gz",
+          "normalized_name": "61_pocket-stack-pocketjs_parent.tar.gz",
+          "normalized_sha256": "4db0668a4a78ba9d2a3426e3424f42b5c6ec104e8ffb5fc0ca1f49599633729e",
+          "required_relative_members": [
+            "framework/src/components.ts",
+            "framework/src/osk.tsx",
+            "tests/golden-specs.ts"
+          ],
+          "revision": "8910dac8937ba808d6e162ad18cc5d75868d309f",
+          "sanitization_name": "61_pocket-stack-pocketjs_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/61_pocket-stack-pocketjs_parent.json",
+          "sanitization_report_sha256": "4c76fd52d9ce7ebb27203cf7834fac0cb8d3801b8ecc84d5148f8d872bd7d969",
+          "source_archive_root": "pocketjs-8910dac8937ba808d6e162ad18cc5d75868d309f",
+          "upstream_name": "61_pocket-stack-pocketjs_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "f0abef51ca7af62c34b4f1bc349a901d988ada3ba71be76353b6bde9a3b2cd6f",
+          "url": "https://codeload.github.com/pocket-stack/pocketjs/tar.gz/8910dac8937ba808d6e162ad18cc5d75868d309f"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/61_pocket-stack-pocketjs_target.tar.gz",
+          "normalized_name": "61_pocket-stack-pocketjs_target.tar.gz",
+          "normalized_sha256": "34d9e05ef2dff353422a85e66c756de22915545a9fdaf2d71b0e5631d549dab3",
+          "required_relative_members": [
+            "framework/src/components.ts",
+            "framework/src/osk.tsx",
+            "tests/golden-specs.ts",
+            "tests/goldens/vita/im-rowtap.40.png",
+            "tests/goldens/vita/im-rowtap.90.png",
+            "tests/goldens/web/im-rowtap.40.png",
+            "tests/goldens/web/im-rowtap.90.png",
+            "tests/portal-hit.test.ts"
+          ],
+          "revision": "eba783e27ec1869d3b9a6d843fee9275556be680",
+          "sanitization_name": "61_pocket-stack-pocketjs_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/61_pocket-stack-pocketjs_target.json",
+          "sanitization_report_sha256": "b7fb246c8736b0de1647942d76865ff2ffcfa1ce7baface50396a1e0bb5db469",
+          "source_archive_root": "pocketjs-eba783e27ec1869d3b9a6d843fee9275556be680",
+          "upstream_name": "61_pocket-stack-pocketjs_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7802a76060e966b9649260a1acf8dd8e5b96625200d6917eb81e225187f80ff7",
+          "url": "https://codeload.github.com/pocket-stack/pocketjs/tar.gz/eba783e27ec1869d3b9a6d843fee9275556be680"
+        }
+      ],
+      "campaign_index": 61,
+      "repository": "pocket-stack/pocketjs",
+      "selection_digest": "746ea58db2342a529ea8b86f56317ebf3f4dc6d57380013ac55f777fad85d598"
+    },
+    {
+      "artifacts": [
+        {
+          "faults": [],
+          "label": "parent",
+          "normalized": "runtime/vcm_evaluator/source_archives/62_conorbronsdon-substack-mcp_parent.tar.gz",
+          "normalized_name": "62_conorbronsdon-substack-mcp_parent.tar.gz",
+          "normalized_sha256": "4ca4cb23460ff67769fed3f6dbb195dc4d390ccce1d2ddbabe35a3d0c88d18d5",
+          "required_relative_members": [
+            "src/__tests__/client.test.ts",
+            "src/api/client.ts",
+            "src/server.ts"
+          ],
+          "revision": "15c2822224691088e373eec1609842d67efb1d7f",
+          "sanitization_name": "62_conorbronsdon-substack-mcp_parent.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/62_conorbronsdon-substack-mcp_parent.json",
+          "sanitization_report_sha256": "887eee497206ccc411c9184da915f70b84792fe4f35fc9bb1f109f242c446fb5",
+          "source_archive_root": "substack-mcp-15c2822224691088e373eec1609842d67efb1d7f",
+          "upstream_name": "62_conorbronsdon-substack-mcp_parent_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "7e8aa6ef4de7cef67cb8d6394af0a29fc79219a9daa4fe0048bc5290be0f05f2",
+          "url": "https://codeload.github.com/conorbronsdon/substack-mcp/tar.gz/15c2822224691088e373eec1609842d67efb1d7f"
+        },
+        {
+          "faults": [],
+          "label": "target",
+          "normalized": "runtime/vcm_evaluator/source_archives/62_conorbronsdon-substack-mcp_target.tar.gz",
+          "normalized_name": "62_conorbronsdon-substack-mcp_target.tar.gz",
+          "normalized_sha256": "11beef47897544dbb181b51e50691e3cdb2cb1ef44388c06ceaf4bbecb382c8f",
+          "required_relative_members": [
+            "src/__tests__/client.test.ts",
+            "src/__tests__/server.test.ts",
+            "src/api/client.ts",
+            "src/server.ts"
+          ],
+          "revision": "4ef00e8860ee6df0413498b3f12d790b765d583b",
+          "sanitization_name": "62_conorbronsdon-substack-mcp_target.json",
+          "sanitization_report": "reports/theseus_vcm_repository_closure_sanitization/62_conorbronsdon-substack-mcp_target.json",
+          "sanitization_report_sha256": "18ed71c97f0156989b552ec67b6997da532dc81bfa3d5769df04177cc6d903a7",
+          "source_archive_root": "substack-mcp-4ef00e8860ee6df0413498b3f12d790b765d583b",
+          "upstream_name": "62_conorbronsdon-substack-mcp_target_upstream.tar.gz",
+          "upstream_retained": false,
+          "upstream_sha256": "35ed8b8f1dc57c230483e610645d1ac9adb1ccb1fbbe10e9846093e2bd1bb3eb",
+          "url": "https://codeload.github.com/conorbronsdon/substack-mcp/tar.gz/4ef00e8860ee6df0413498b3f12d790b765d583b"
+        }
+      ],
+      "campaign_index": 62,
+      "repository": "conorbronsdon/substack-mcp",
+      "selection_digest": "8940329a56cf2eda5c655e6ccee88612d08d36422dcae7fe9211f47c8283f88d"
+    }
+  ],
+  "transformed_registry_sha256": "74ee3b43e5d9bf384df02eda8ca10a60cda7c7f342fb07cab3f13b5416aae244",
+  "trigger_state": "GREEN"
+}

@@ -1,0 +1,28 @@
+{
+  "admitted_regular_file_or_directory_count": 73,
+  "faults": [],
+  "input": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_parent_upstream.tar.gz",
+    "sha256": "1cd30b368b07af8896752c00cbf15e6baf96a24345c0ec24884105bb6dc6a3e9"
+  },
+  "maximum_inference": "Archive transport normalization only; no task, model, or subsystem claim.",
+  "normalization": {
+    "allowed_types": [
+      "regular_file",
+      "directory"
+    ],
+    "gzip_mtime": 0,
+    "member_order": "upstream_archive_order",
+    "mtime": 0,
+    "uid_gid": 0,
+    "user_group_names": "empty"
+  },
+  "omitted_members": [],
+  "output": {
+    "path": "/Users/corbensorenson/Documents/Theseus-Hive/runtime/vcm_evaluator/source_archives/35_knoguchi-marsdb_parent.tar.gz",
+    "sha256": "fb9f478eccb18c7192419fb73cc5d4790b833e493968d4f0b703034642124481"
+  },
+  "policy": "project_theseus_p2b_source_archive_sanitizer_v1",
+  "source_archive_root": "marsdb-4ce15c95d8037f17ace77f6b7fb8bbc1415b83a4",
+  "trigger_state": "GREEN"
+}
