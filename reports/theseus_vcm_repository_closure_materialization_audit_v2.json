@@ -1,0 +1,397 @@
+{
+  "archive_artifact_count": 124,
+  "audit_kind": "role-separated_rederivation",
+  "audited_rows": [
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 1,
+      "repository": "endoftheline818/opensourcesai-cmdcenter"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 2,
+      "repository": "Aditya8369/Pollution-Control-Hub"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 3,
+      "repository": "QoderAI/better-harness"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 4,
+      "repository": "frappe/draw"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 5,
+      "repository": "didaquis/didibudget-frontend"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 6,
+      "repository": "elkimek/get-based"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 7,
+      "repository": "moshcoder/moshcode"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 8,
+      "repository": "manufosela/karajan-code"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 9,
+      "repository": "KosAlyohyn/vue-route-state"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 10,
+      "repository": "Autodidac/OrphanedMiscProjects"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 11,
+      "repository": "frootai/frootai"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 12,
+      "repository": "plwp/chief-wiggum"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 13,
+      "repository": "paulomtts/pyjinhx"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 14,
+      "repository": "scrape-badger/scrapebadger-python"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 15,
+      "repository": "ray-manaloto/macos-development-environment"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 16,
+      "repository": "dynatrace-wwse/codespaces-framework"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 17,
+      "repository": "presidio-v/presidio-hardened-x402"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 18,
+      "repository": "NousResearch/hermes-agent"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 19,
+      "repository": "cs0lar/treelang"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 20,
+      "repository": "bnet47/codexicon"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 21,
+      "repository": "ctsdownloads/easyspeak"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 22,
+      "repository": "TejashPrakash/student-management-system"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 23,
+      "repository": "pullboxapp/pullbox-direct-providers"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 24,
+      "repository": "openonion/connectonion"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 25,
+      "repository": "fibsem-os/fibsem-os"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 26,
+      "repository": "quodeq/quodeq"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 27,
+      "repository": "malkreide/mcp-audit-skill"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 28,
+      "repository": "microsoft/winml-cli"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 29,
+      "repository": "TAJD/cofferdam"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 30,
+      "repository": "kanso-lang/kanso"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 31,
+      "repository": "matssun/mcp-re"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 32,
+      "repository": "Rul1an/assay"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 33,
+      "repository": "elan8/sysml-v2-parser"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 34,
+      "repository": "elan8/spec42"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 35,
+      "repository": "knoguchi/marsdb"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 36,
+      "repository": "tomerwave/godlint"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 37,
+      "repository": "BrokkAi/bifrost"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 38,
+      "repository": "surrealdb/surrealkv"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 39,
+      "repository": "Syynth/brink"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 40,
+      "repository": "ainetus/Co-Study4Grid"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 41,
+      "repository": "positonic/exponential"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 42,
+      "repository": "constructive-io/constructive"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 43,
+      "repository": "cwh555/AnimeList"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 44,
+      "repository": "Gigadrive/sdk"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 45,
+      "repository": "Embassy-of-the-Free-Mind/sourcelibrary-v2"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 46,
+      "repository": "celados/gkit"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 47,
+      "repository": "handsontable/examples"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 48,
+      "repository": "pokle/glidecomp"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 49,
+      "repository": "AKogut/flakemetry"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 50,
+      "repository": "tutur3u/platform"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 51,
+      "repository": "inkeep/open-knowledge"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 52,
+      "repository": "masumi-network/sokosumi"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 53,
+      "repository": "omnist-dev/omnist-ts"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 54,
+      "repository": "passionworkeer/obsidian-shared-memory-bus"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 55,
+      "repository": "rickfelix/EHG_Engineer"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 56,
+      "repository": "AbsoluteMode/session-recall"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 57,
+      "repository": "matt82198/aesop"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 58,
+      "repository": "ShadowEnemyx/serien-sammler"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 59,
+      "repository": "dcdpr/jp"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 60,
+      "repository": "tsz-org/tsz"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 61,
+      "repository": "pocket-stack/pocketjs"
+    },
+    {
+      "artifact_count": 2,
+      "faults": [],
+      "index": 62,
+      "repository": "conorbronsdon/substack-mcp"
+    }
+  ],
+  "config": {
+    "path": "configs/theseus_vcm_repository_closure_materialization_audit_v2.json",
+    "sha256": "71f8ac183e91e338a6e60161af62fc192740f089b4c1e4eb31dd8780838cf141"
+  },
+  "created_utc": "2026-08-09T05:45:12.713641Z",
+  "external_reference_calls": 0,
+  "faults": [],
+  "local_model_calls": 0,
+  "maximum_inference": "A GREEN v2 audit proves only that 61 already-audited closure pairs remain byte-identical and the host-adequate Task 13 successor has two independently verified exact normalized closures. It executes no repository, dependency, evaluator, model, Luna, D1, or D2 surface.",
+  "network_calls": 0,
+  "parent_target_or_evaluator_executions": 0,
+  "policy": "project_theseus_vcm_repository_closure_materialization_audit_v2",
+  "replacement_archive_count": 2,
+  "replacement_index": 13,
+  "replacement_task_count": 1,
+  "replayed_unchanged_task_count": 61,
+  "state": "HOST_ADEQUATE_62_ROW_CLOSURES_ROLE_SEPARATELY_REDERIVED",
+  "task_count": 62,
+  "trigger_state": "GREEN"
+}
